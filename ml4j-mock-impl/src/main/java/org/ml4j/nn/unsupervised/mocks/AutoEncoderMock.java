@@ -41,11 +41,11 @@ public class AutoEncoderMock implements AutoEncoder {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(AutoEncoderMock.class);
   
-  private FeedForwardLayer<?> encodingLayer;
-  private FeedForwardLayer<?> decodingLayer;
+  private FeedForwardLayer<?, ?> encodingLayer;
+  private FeedForwardLayer<?, ?> decodingLayer;
   
-  public AutoEncoderMock(FeedForwardLayer<?> encodingLayer, 
-      FeedForwardLayer<?> decodingLayer) {
+  public AutoEncoderMock(FeedForwardLayer<?, ?> encodingLayer, 
+      FeedForwardLayer<?, ?> decodingLayer) {
     this.encodingLayer = encodingLayer;
     this.decodingLayer = decodingLayer;
   }
@@ -56,8 +56,8 @@ public class AutoEncoderMock implements AutoEncoder {
   }
 
   @Override
-  public List<FeedForwardLayer<?>> getLayers() {
-    List<FeedForwardLayer<?>> layers = new ArrayList<>();
+  public List<FeedForwardLayer<?, ?>> getLayers() {
+    List<FeedForwardLayer<?, ?>> layers = new ArrayList<>();
     layers.add(encodingLayer);
     layers.add(decodingLayer);
     return layers;
@@ -69,17 +69,17 @@ public class AutoEncoderMock implements AutoEncoder {
   }
 
   @Override
-  public FeedForwardLayer<?> getLayer(int layerIndex) {
+  public FeedForwardLayer<?, ?> getLayer(int layerIndex) {
     return getLayers().get(layerIndex);
   }
 
   @Override
-  public FeedForwardLayer<?> getFirstLayer() {
+  public FeedForwardLayer<?, ?> getFirstLayer() {
     return encodingLayer;
   }
 
   @Override
-  public FeedForwardLayer<?> getFinalLayer() {
+  public FeedForwardLayer<?, ?> getFinalLayer() {
     return decodingLayer;
   }
 
@@ -103,5 +103,4 @@ public class AutoEncoderMock implements AutoEncoder {
         encoded.getActivations().getRows(), decodingLayer.getOutputNeuronCount()), false,
         NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
   }
-
 }

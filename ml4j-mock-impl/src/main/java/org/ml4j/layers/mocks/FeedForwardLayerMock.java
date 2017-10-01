@@ -16,40 +16,51 @@
 
 package org.ml4j.layers.mocks;
 
+import org.ml4j.axons.mocks.AxonsMock;
+import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.neurons.Neurons;
 
 /**
  * A minimal mock skeleton FeedForwardLayer.
  * 
  * @author Michael Lavelle
  */
-public class FeedForwardLayerMock implements FeedForwardLayer<FeedForwardLayerMock> {
+public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxons<?, ?>, 
+    FeedForwardLayerMock> {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
+ 
+  private FullyConnectedAxons<?, ?> primaryAxons;
   
-  private int inputNeuronCount;
-  private int outputNeuronCount;
+  public FeedForwardLayerMock(Neurons inputNeurons, Neurons outputNeurons) {
+      this(new AxonsMock(inputNeurons, outputNeurons));
+  }
   
-  public FeedForwardLayerMock(int inputNeuronCount, int outputNeuronCount) {
-    this.inputNeuronCount = inputNeuronCount;
-    this.outputNeuronCount = outputNeuronCount;
+  protected FeedForwardLayerMock(FullyConnectedAxons<?, ?> primaryAxons) {
+    this.primaryAxons = primaryAxons;
   }
 
   @Override
   public FeedForwardLayerMock dup() {
-    return new FeedForwardLayerMock(inputNeuronCount, outputNeuronCount);
+    return new FeedForwardLayerMock(primaryAxons);
   }
 
   @Override
   public int getInputNeuronCount() {
-    return inputNeuronCount;
+    return primaryAxons.getLeftNeurons().getNeuronCountIncludingBias();
   }
 
   @Override
   public int getOutputNeuronCount() {
-    return outputNeuronCount;
+    return primaryAxons.getRightNeurons().getNeuronCountIncludingBias();
+  }
+
+  @Override
+  public FullyConnectedAxons<?, ?> getPrimaryAxons() {
+    return primaryAxons;
   }
 }
