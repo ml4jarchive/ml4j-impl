@@ -29,9 +29,27 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FeedForwardLayerMo
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
+  
+  private int inputNeuronCount;
+  private int outputNeuronCount;
+  
+  public FeedForwardLayerMock(int inputNeuronCount, int outputNeuronCount) {
+    this.inputNeuronCount = inputNeuronCount;
+    this.outputNeuronCount = outputNeuronCount;
+  }
 
   @Override
   public FeedForwardLayerMock dup() {
-    return new FeedForwardLayerMock();
+    return new FeedForwardLayerMock(inputNeuronCount, outputNeuronCount);
+  }
+
+  @Override
+  public int getInputNeuronCount() {
+    return inputNeuronCount;
+  }
+
+  @Override
+  public int getOutputNeuronCount() {
+    return outputNeuronCount;
   }
 }

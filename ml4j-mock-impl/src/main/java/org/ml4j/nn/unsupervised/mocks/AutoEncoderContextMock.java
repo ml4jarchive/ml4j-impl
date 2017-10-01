@@ -36,7 +36,12 @@ public class AutoEncoderContextMock implements AutoEncoderContext {
    * The MatrixFactory we configure for this context.
    */
   private MatrixFactory matrixFactory;
-
+ 
+  /**
+   * Construct a new mock AutoEncoderContext.
+   * 
+   * @param matrixFactory The MatrixFactory we configure for this context
+   */
   public AutoEncoderContextMock(MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
   }

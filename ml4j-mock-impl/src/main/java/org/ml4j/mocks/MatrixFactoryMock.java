@@ -28,21 +28,21 @@ public class MatrixFactoryMock implements MatrixFactory {
 
   @Override
   public Matrix createOnes(int rows, int columns) {
-    return new MatrixMock(rows, columns);
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   @Override
   public Matrix createMatrix(double[][] data) {
-    return new MatrixMock(data.length, data[0].length);
+    return new MatrixMock(data);
   }
 
   @Override
   public Matrix createZeros(int rows, int columns) {
-    return new MatrixMock(rows, columns);
+    return new MatrixMock(new double[rows][columns]);
   }
 
   @Override
   public Matrix createRandn(int rows, int columns) {
-    return new MatrixMock(rows, columns);
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 }
