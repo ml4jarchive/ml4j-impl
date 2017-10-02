@@ -5,7 +5,7 @@ import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
-public class AxonsMock implements FullyConnectedAxons<Neurons, Neurons> {
+public class AxonsMock implements FullyConnectedAxons {
 
   /**
    * Default serialization id.

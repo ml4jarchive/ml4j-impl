@@ -26,7 +26,7 @@ import org.ml4j.nn.neurons.Neurons;
  * 
  * @author Michael Lavelle
  */
-public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxons<?, ?>, 
+public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxons, 
     FeedForwardLayerMock> {
 
   /**
@@ -34,13 +34,13 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
    */
   private static final long serialVersionUID = 1L;
  
-  private FullyConnectedAxons<?, ?> primaryAxons;
+  private FullyConnectedAxons primaryAxons;
   
   public FeedForwardLayerMock(Neurons inputNeurons, Neurons outputNeurons) {
       this(new AxonsMock(inputNeurons, outputNeurons));
   }
   
-  protected FeedForwardLayerMock(FullyConnectedAxons<?, ?> primaryAxons) {
+  protected FeedForwardLayerMock(FullyConnectedAxons primaryAxons) {
     this.primaryAxons = primaryAxons;
   }
 
@@ -60,7 +60,7 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
   }
 
   @Override
-  public FullyConnectedAxons<?, ?> getPrimaryAxons() {
+  public FullyConnectedAxons getPrimaryAxons() {
     return primaryAxons;
   }
 }
