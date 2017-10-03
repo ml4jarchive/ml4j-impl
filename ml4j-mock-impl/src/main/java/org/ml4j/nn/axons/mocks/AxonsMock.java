@@ -1,4 +1,4 @@
-package org.ml4j.axons.mocks;
+package org.ml4j.nn.axons.mocks;
 
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.FullyConnectedAxons;
