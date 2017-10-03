@@ -19,6 +19,7 @@ package org.ml4j.nn.layers.mocks;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.axons.mocks.AxonsMock;
+import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.Neurons;
@@ -89,5 +90,16 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
   @Override
   public DifferentiableActivationFunction getPrimaryActivationFunction() {
     return primaryActivationFunction;
+  }
+
+  @Override
+  public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
+      DirectedLayerContext directedLayerContext) {
+    LOGGER.debug("Mock forward propagating through layer");
+    return new DirectedLayerActivationMock(new NeuronsActivation(
+        directedLayerContext.getMatrixFactory()
+        .createZeros(inputNeuronsActivation.getActivations().getRows(), 
+            getOutputNeuronCount()), false, 
+        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
   }
 }

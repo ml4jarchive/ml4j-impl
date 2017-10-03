@@ -18,7 +18,6 @@ package org.ml4j.nn.unsupervised.mocks;
 
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.unsupervised.AutoEncoder;
 import org.ml4j.nn.unsupervised.AutoEncoderContext;
 import org.slf4j.Logger;
@@ -90,17 +89,13 @@ public class AutoEncoderMock implements AutoEncoder {
 
   @Override
   public NeuronsActivation encode(NeuronsActivation unencoded, AutoEncoderContext context) {
-    LOGGER.debug("Mock encoding through AutoEncoderMock");
-    return new NeuronsActivation(context.getMatrixFactory().createZeros(
-        unencoded.getActivations().getRows(), encodingLayer.getOutputNeuronCount()), false ,
-        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+    LOGGER.debug("Encoding through AutoEncoderMock");
+    return encodingLayer.forwardPropagate(unencoded, context.createLayerContext(0)).getOutput();
   }
 
   @Override
   public NeuronsActivation decode(NeuronsActivation encoded, AutoEncoderContext context) {
-    LOGGER.debug("Mock decoding through AutoEncoderMock");
-    return new NeuronsActivation(context.getMatrixFactory().createZeros(
-        encoded.getActivations().getRows(), decodingLayer.getOutputNeuronCount()), false,
-        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+    LOGGER.debug("Decoding through AutoEncoderMock");
+    return decodingLayer.forwardPropagate(encoded, context.createLayerContext(1)).getOutput();
   }
 }
