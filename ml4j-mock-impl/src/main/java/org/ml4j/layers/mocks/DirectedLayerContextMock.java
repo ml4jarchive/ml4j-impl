@@ -14,47 +14,40 @@
  * limitations under the License.
  */
 
-package org.ml4j.nn.unsupervised.mocks;
+package org.ml4j.layers.mocks;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.layers.mocks.DirectedLayerContextMock;
 import org.ml4j.nn.layers.DirectedLayerContext;
-import org.ml4j.nn.unsupervised.AutoEncoderContext;
 
 /**
- * Simple mock implementation of AutoEncoderContext.
+ * Simple mock implementation of DirectedLayerContext.
  * 
  * @author Michael Lavelle
  * 
  */
-public class AutoEncoderContextMock implements AutoEncoderContext {
+public class DirectedLayerContextMock implements DirectedLayerContext {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
-
+  
   /**
    * The MatrixFactory we configure for this context.
    */
   private MatrixFactory matrixFactory;
- 
+  
   /**
-   * Construct a new mock AutoEncoderContext.
+   * Construct a new mock DirectedLayerContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public AutoEncoderContextMock(MatrixFactory matrixFactory) {
+  public DirectedLayerContextMock(MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
   }
-
+ 
   @Override
   public MatrixFactory getMatrixFactory() {
     return matrixFactory;
-  }
-
-  @Override
-  public DirectedLayerContext createLayerContext(int layerIndex) {
-    return new DirectedLayerContextMock(matrixFactory);
   }
 }

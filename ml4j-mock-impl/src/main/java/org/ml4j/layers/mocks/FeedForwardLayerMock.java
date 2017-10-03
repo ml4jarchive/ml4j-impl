@@ -16,7 +16,10 @@
 
 package org.ml4j.layers.mocks;
 
+import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
 /**
  * A minimal mock skeleton FeedForwardLayer.
@@ -51,5 +54,13 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FeedForwardLayerMo
   @Override
   public int getOutputNeuronCount() {
     return outputNeuronCount;
+  }
+
+  @Override
+  public NeuronsActivation getOptimalInputForOutputNeuron(int outpuNeuronIndex,
+      DirectedLayerContext directedLayerContext) {
+    return new NeuronsActivation(directedLayerContext.getMatrixFactory()
+        .createZeros(1, getInputNeuronCount()), false, 
+        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
   }
 }
