@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.layers.mocks;
 
+import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.mocks.AxonsMock;
@@ -54,8 +55,8 @@ public class FeedForwardLayerMock implements FeedForwardLayer<Axons<?, ?, ?>,
   private DifferentiableActivationFunction primaryActivationFunction;
   
   public FeedForwardLayerMock(Neurons inputNeurons, Neurons outputNeurons, 
-      DifferentiableActivationFunction primaryActivationFunction) {
-      this(new AxonsMock(inputNeurons, outputNeurons));
+      DifferentiableActivationFunction primaryActivationFunction, Matrix connectionWeights) {
+      this(new AxonsMock(inputNeurons, outputNeurons, connectionWeights));
     this.primaryActivationFunction = primaryActivationFunction;
   }
   
@@ -87,9 +88,36 @@ public class FeedForwardLayerMock implements FeedForwardLayer<Axons<?, ?, ?>,
   public NeuronsActivation getOptimalInputForOutputNeuron(int outputNeuronIndex,
       DirectedLayerContext directedLayerContext) {
     LOGGER.debug("Mock obtaining optimal input for output neuron with index:" + outputNeuronIndex);
-    return new NeuronsActivation(directedLayerContext.getMatrixFactory()
-        .createZeros(1, getInputNeuronCount()), false, 
-        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+    int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
+    double[] maximisingInputFeatures = new double[countJ];
+    Matrix weights = ((AxonsMock) getPrimaryAxons()).getConnectionWeights();
+    boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();
+
+    for (int j = 0; j < countJ; j++) {
+      double wij = getWij(j, outputNeuronIndex, weights, hasBiasUnit);
+      double sum = 0;
+
+      if (wij != 0) {
+
+        for (int j2 = 0; j2 < countJ; j2++) {
+          double weight = getWij(j2, outputNeuronIndex, weights, hasBiasUnit);
+          if (weight != 0) {
+            sum = sum + Math.pow(weight, 2);
+          }
+        }
+        sum = Math.sqrt(sum);
+      }
+      maximisingInputFeatures[j] = wij / sum;
+    }
+    return new NeuronsActivation(
+        directedLayerContext.getMatrixFactory()
+            .createMatrix(new double[][] {maximisingInputFeatures}),
+        false, NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+  }
+  
+  private double getWij(int indI, int indJ, Matrix weights, boolean hasBiasUnit) {
+    int indICorrected = indI + (hasBiasUnit ? 1 : 0);
+    return weights.get(indICorrected, indJ);
   }
 
   @Override

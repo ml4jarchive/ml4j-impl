@@ -1,10 +1,10 @@
 package org.ml4j.nn.axons.mocks;
 
+import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +20,19 @@ public class AxonsMock implements FullyConnectedAxons {
   
   private Neurons leftNeurons;
   private Neurons rightNeurons;
+  private Matrix connectionWeights;
   
-  public AxonsMock(Neurons leftNeurons, Neurons rightNeurons) {
+  /**
+   * Construct a new mock Axons instance.
+   * 
+   * @param leftNeurons The Neurons on the left hand side of these Axons
+   * @param rightNeurons The Neurons on the right hand side of these Axons
+   * @param connectionWeights The connection weights Matrix
+   */
+  public AxonsMock(Neurons leftNeurons, Neurons rightNeurons, Matrix connectionWeights) {
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
+    this.connectionWeights = connectionWeights;
   }
   
   @Override
@@ -39,11 +48,10 @@ public class AxonsMock implements FullyConnectedAxons {
   @Override
   public NeuronsActivation pushLeftToRight(NeuronsActivation leftNeuronsActivation,
       AxonsContext axonsContext) {
-    LOGGER.debug("Mock pushing left to right through Axons");
-    return new NeuronsActivation(axonsContext.getMatrixFactory().createZeros(
-        leftNeuronsActivation.getActivations().getRows(), 
-        rightNeurons.getNeuronCountIncludingBias()), 
-        rightNeurons.hasBiasUnit(), NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+    LOGGER.debug("Pushing left to right through Axons");
+    Matrix outputMatrix = leftNeuronsActivation.getActivations().mmul(connectionWeights);
+    return new NeuronsActivation(outputMatrix, rightNeurons.hasBiasUnit(), 
+        leftNeuronsActivation.getFeatureOrientation());
   }
 
   @Override
@@ -54,6 +62,15 @@ public class AxonsMock implements FullyConnectedAxons {
 
   @Override
   public FullyConnectedAxons dup() {
-    return new AxonsMock(leftNeurons, rightNeurons);
+    return new AxonsMock(leftNeurons, rightNeurons, connectionWeights.dup());
   }
+
+  public void setConnectionWeights(Matrix connectionWeights) {
+    this.connectionWeights = connectionWeights;
+  }
+
+  public Matrix getConnectionWeights() {
+    return connectionWeights;
+  }
+  
 }

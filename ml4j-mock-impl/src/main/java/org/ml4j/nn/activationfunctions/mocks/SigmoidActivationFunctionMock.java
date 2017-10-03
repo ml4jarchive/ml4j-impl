@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.activationfunctions.mocks;
 
+import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
@@ -28,15 +29,17 @@ import org.slf4j.LoggerFactory;
  * @author Michael Lavelle
  *
  */
-public class DifferentiableActivationFunctionMock implements DifferentiableActivationFunction {
+public class SigmoidActivationFunctionMock implements DifferentiableActivationFunction {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(
-      DifferentiableActivationFunctionMock.class);
+      SigmoidActivationFunctionMock.class);
   
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
-    LOGGER.debug("Mock activating through DifferentiableActivationFunctionMock");
-    return input;
+    LOGGER.debug("Activating through SigmoidActivationFunctionMock");
+    Matrix sigmoidOfInputActivationsMatrix = input.getActivations().sigmoid();
+    return new NeuronsActivation(sigmoidOfInputActivationsMatrix, 
+        input.isBiasUnitIncluded(), input.getFeatureOrientation() );
   }
 
   @Override

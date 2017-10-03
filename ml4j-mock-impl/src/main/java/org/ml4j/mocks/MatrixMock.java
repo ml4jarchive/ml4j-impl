@@ -81,6 +81,55 @@ public class MatrixMock implements Matrix {
 
   @Override
   public Matrix getColumn(int columnIndex) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    double[][] data = new double[getRows()][1];
+    for (int r = 0; r < getRows(); r++) {
+      data[r][0] = this.data[r][columnIndex];
+    }
+    return new MatrixMock(data);
+  }
+
+  @Override
+  public Matrix sigmoid() {
+    double[][] dataArray = new double[rows][columns];
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < columns; c++) {
+        double exp = Math.exp(data[r][c]);
+        dataArray[r][c] = exp / (1 + exp);
+      }
+    }
+    return new MatrixMock(dataArray);
+  }
+
+  @Override
+  public Matrix mmul(Matrix other) {
+    double[][] dataArray = new double[rows][other.getColumns()];
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < other.getColumns(); c++) {
+        double result = 0;
+        double[] thisRow = getRow(r).toArray();
+        double[] otherColumn = other.getColumn(c).toArray();
+        for (int i = 0; i < thisRow.length; i++) {
+          result = result + thisRow[i] * otherColumn[i];
+        }
+        dataArray[r][c] = result;
+      }
+    }
+    return new MatrixMock(dataArray);
+  }
+
+  @Override
+  public double get(int row, int column) {
+    return data[row][column];
+  }
+
+  @Override
+  public Matrix dup() {
+    double[][] dataArray = new double[rows][columns];
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < columns; c++) {
+        dataArray[r][c] = data[r][c];
+      }
+    }
+    return new MatrixMock(dataArray);
   }
 }
