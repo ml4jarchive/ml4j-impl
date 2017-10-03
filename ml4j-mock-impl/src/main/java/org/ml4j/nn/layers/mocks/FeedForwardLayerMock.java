@@ -95,11 +95,14 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
   @Override
   public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
       DirectedLayerContext directedLayerContext) {
-    LOGGER.debug("Mock forward propagating through layer");
-    return new DirectedLayerActivationMock(new NeuronsActivation(
-        directedLayerContext.getMatrixFactory()
-        .createZeros(inputNeuronsActivation.getActivations().getRows(), 
-            getOutputNeuronCount()), false, 
-        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
+    LOGGER.debug("Forward propagating through layer");
+    NeuronsActivation axonsOutputActivation = 
+        getPrimaryAxons().pushLeftToRight(inputNeuronsActivation, 
+            directedLayerContext.createPrimaryAxonsContext());
+    
+    NeuronsActivation activationFunctionOutputActivation = 
+        getPrimaryActivationFunction().activate(axonsOutputActivation, directedLayerContext);
+    
+    return new DirectedLayerActivationMock(activationFunctionOutputActivation);
   }
 }

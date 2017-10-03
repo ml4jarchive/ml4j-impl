@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package org.ml4j.nn.layers.mocks;
-
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.axons.mocks.AxonsContextMock;
-import org.ml4j.nn.layers.DirectedLayerContext;
+package org.ml4j.nn.axons.mocks;
 
 /**
- * Simple mock implementation of DirectedLayerContext.
+ * Simple mock implementation of AxonsContext.
  * 
  * @author Michael Lavelle
- * 
  */
-public class DirectedLayerContextMock implements DirectedLayerContext {
+import org.ml4j.MatrixFactory;
+import org.ml4j.nn.axons.AxonsContext;
+
+public class AxonsContextMock implements AxonsContext {
 
   /**
    * Default serialization id.
@@ -40,21 +37,17 @@ public class DirectedLayerContextMock implements DirectedLayerContext {
   private MatrixFactory matrixFactory;
   
   /**
-   * Construct a new mock DirectedLayerContext.
+   * Construct a new mock AxonsContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public DirectedLayerContextMock(MatrixFactory matrixFactory) {
+  public AxonsContextMock(MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
   }
- 
+
   @Override
   public MatrixFactory getMatrixFactory() {
     return matrixFactory;
   }
 
-  @Override
-  public AxonsContext createPrimaryAxonsContext() {
-    return new AxonsContextMock(matrixFactory);
-  }
 }

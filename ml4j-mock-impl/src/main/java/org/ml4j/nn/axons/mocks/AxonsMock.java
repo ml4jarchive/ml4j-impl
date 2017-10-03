@@ -4,6 +4,9 @@ import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AxonsMock implements FullyConnectedAxons {
 
@@ -12,6 +15,9 @@ public class AxonsMock implements FullyConnectedAxons {
    */
   private static final long serialVersionUID = 1L;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      AxonsMock.class);
+  
   private Neurons leftNeurons;
   private Neurons rightNeurons;
   
@@ -33,7 +39,11 @@ public class AxonsMock implements FullyConnectedAxons {
   @Override
   public NeuronsActivation pushLeftToRight(NeuronsActivation leftNeuronsActivation,
       AxonsContext axonsContext) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    LOGGER.debug("Mock pushing left to right through Axons");
+    return new NeuronsActivation(axonsContext.getMatrixFactory().createZeros(
+        leftNeuronsActivation.getActivations().getRows(), 
+        rightNeurons.getNeuronCountIncludingBias()), 
+        rightNeurons.hasBiasUnit(), NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
   }
 
   @Override

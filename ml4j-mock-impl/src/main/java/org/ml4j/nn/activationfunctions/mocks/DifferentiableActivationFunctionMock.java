@@ -19,6 +19,8 @@ package org.ml4j.nn.activationfunctions.mocks;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mock implementation of DifferentiableActivationFunction.
@@ -28,9 +30,13 @@ import org.ml4j.nn.neurons.NeuronsActivationContext;
  */
 public class DifferentiableActivationFunctionMock implements DifferentiableActivationFunction {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      DifferentiableActivationFunctionMock.class);
+  
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LOGGER.debug("Mock activating through DifferentiableActivationFunctionMock");
+    return input;
   }
 
   @Override
