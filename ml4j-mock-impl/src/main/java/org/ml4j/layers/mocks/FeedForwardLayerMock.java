@@ -20,6 +20,8 @@ import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A minimal mock skeleton FeedForwardLayer.
@@ -32,6 +34,10 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FeedForwardLayerMo
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
+
+  private static final Logger LOGGER = 
+      LoggerFactory.getLogger(FeedForwardLayerMock.class);
+
   
   private int inputNeuronCount;
   private int outputNeuronCount;
@@ -57,8 +63,9 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FeedForwardLayerMo
   }
 
   @Override
-  public NeuronsActivation getOptimalInputForOutputNeuron(int outpuNeuronIndex,
+  public NeuronsActivation getOptimalInputForOutputNeuron(int outputNeuronIndex,
       DirectedLayerContext directedLayerContext) {
+    LOGGER.debug("Mock obtaining optimal input for output neuron with index:" + outputNeuronIndex);
     return new NeuronsActivation(directedLayerContext.getMatrixFactory()
         .createZeros(1, getInputNeuronCount()), false, 
         NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
