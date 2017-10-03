@@ -17,8 +17,8 @@
 package org.ml4j.nn.unsupervised.mocks;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.layers.mocks.DirectedLayerContextMock;
 import org.ml4j.nn.layers.DirectedLayerContext;
+import org.ml4j.nn.layers.mocks.DirectedLayerContextMock;
 import org.ml4j.nn.unsupervised.AutoEncoderContext;
 
 /**

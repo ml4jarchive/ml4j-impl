@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.ml4j.layers.mocks;
+package org.ml4j.nn.layers.mocks;
 
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.axons.mocks.AxonsMock;
