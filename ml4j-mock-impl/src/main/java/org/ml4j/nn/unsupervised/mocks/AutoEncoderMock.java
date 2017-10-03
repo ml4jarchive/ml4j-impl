@@ -17,8 +17,10 @@
 package org.ml4j.nn.unsupervised.mocks;
 
 import org.ml4j.mocks.MatrixMock;
+import org.ml4j.nn.ForwardPropagation;
 import org.ml4j.nn.axons.mocks.AxonsMock;
 import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.unsupervised.AutoEncoder;
 import org.ml4j.nn.unsupervised.AutoEncoderContext;
@@ -102,12 +104,49 @@ public class AutoEncoderMock implements AutoEncoder {
   @Override
   public NeuronsActivation encode(NeuronsActivation unencoded, AutoEncoderContext context) {
     LOGGER.debug("Encoding through AutoEncoderMock");
-    return encodingLayer.forwardPropagate(unencoded, context.createLayerContext(0)).getOutput();
+    if (context.getEndLayerIndex() == null
+        || context.getEndLayerIndex() >= (this.getNumberOfLayers() - 1)) {
+      throw new IllegalArgumentException("End layer index for encoding through AutoEncoder "
+          + " must be specified and must not be the index of the last layer");
+    }
+    return forwardPropagate(unencoded, context).getOutputs();
   }
 
   @Override
   public NeuronsActivation decode(NeuronsActivation encoded, AutoEncoderContext context) {
     LOGGER.debug("Decoding through AutoEncoderMock");
-    return decodingLayer.forwardPropagate(encoded, context.createLayerContext(1)).getOutput();
+    if (context.getStartLayerIndex() == 0) {
+      throw new IllegalArgumentException("Start layer index for decoding through AutoEncoder "
+          + " must not be 0 - the index of the first layer");
+    }
+    return forwardPropagate(encoded, context).getOutputs();
+  }
+
+  @Override
+  public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
+      AutoEncoderContext context) {
+    
+    int endLayerIndex =
+        context.getEndLayerIndex() == null ? (getNumberOfLayers() - 1) : context.getEndLayerIndex();
+
+    LOGGER.debug("Forward propagating through AutoEncoderMock from layerIndex:"
+        + context.getStartLayerIndex() + " to layerIndex:" + endLayerIndex);
+        
+    NeuronsActivation inFlightActivations = inputActivation;
+    int layerIndex = 0;
+
+    for (FeedForwardLayer<?, ?> layer : getLayers()) {
+
+      if (layerIndex >= context.getStartLayerIndex() && layerIndex <= endLayerIndex) {
+
+        inFlightActivations =
+            layer.forwardPropagate(inFlightActivations, context.createLayerContext(layerIndex))
+                .getOutput();
+      }
+      layerIndex++;
+
+    }
+    
+    return new ForwardPropagationMock(inFlightActivations);
   }
 }
