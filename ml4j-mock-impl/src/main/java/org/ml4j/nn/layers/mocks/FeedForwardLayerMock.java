@@ -25,8 +25,13 @@ import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.synapses.DirectedSynapses;
+import org.ml4j.nn.synapses.mocks.DirectedSynapsesMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A minimal mock skeleton FeedForwardLayer.
@@ -96,13 +101,21 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
   public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
       DirectedLayerContext directedLayerContext) {
     LOGGER.debug("Forward propagating through layer");
-    NeuronsActivation axonsOutputActivation = 
-        getPrimaryAxons().pushLeftToRight(inputNeuronsActivation, 
-            directedLayerContext.createPrimaryAxonsContext());
+   
+    NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
     
-    NeuronsActivation activationFunctionOutputActivation = 
-        getPrimaryActivationFunction().activate(axonsOutputActivation, directedLayerContext);
-    
-    return new DirectedLayerActivationMock(activationFunctionOutputActivation);
+    for (DirectedSynapses<?> synapses : getSynapses()) {
+      inFlightNeuronsActivation = synapses.forwardPropagate(inFlightNeuronsActivation, 
+              directedLayerContext.createSynapsesContext()).getOutput();
+    }
+ 
+    return new DirectedLayerActivationMock(inFlightNeuronsActivation);
+  }
+
+  @Override
+  public List<DirectedSynapses<?>> getSynapses() {
+    List<DirectedSynapses<?>> synapses = new ArrayList<>();
+    synapses.add(new DirectedSynapsesMock(getPrimaryAxons(), getPrimaryActivationFunction()));
+    return synapses;
   }
 }
