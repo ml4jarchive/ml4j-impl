@@ -51,4 +51,9 @@ public class AxonsMock implements FullyConnectedAxons {
       AxonsContext axonsContext) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
+
+  @Override
+  public FullyConnectedAxons dup() {
+    return new AxonsMock(leftNeurons, rightNeurons);
+  }
 }
