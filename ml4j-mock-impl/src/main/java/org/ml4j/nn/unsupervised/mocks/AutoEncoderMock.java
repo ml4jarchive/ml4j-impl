@@ -16,10 +16,13 @@
 
 package org.ml4j.nn.unsupervised.mocks;
 
+import org.ml4j.mocks.MatrixMock;
+import org.ml4j.nn.axons.mocks.AxonsMock;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.unsupervised.AutoEncoder;
 import org.ml4j.nn.unsupervised.AutoEncoderContext;
+import org.ml4j.util.SerializationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +54,17 @@ public class AutoEncoderMock implements AutoEncoder {
  
   @Override
   public void train(NeuronsActivation trainingDataActivations, AutoEncoderContext trainingContext) {
-    LOGGER.debug("Mock training AutoEncoderMock - no op for now");
+    LOGGER.debug(
+        "Mock training AutoEncoderMock - simulating training by loading pre-trained weights");
+
+    AxonsMock encodingLayerAxons = (AxonsMock) encodingLayer.getPrimaryAxons();
+    AxonsMock decodingLayerAxons = (AxonsMock) decodingLayer.getPrimaryAxons();
+    SerializationHelper helper =
+        new SerializationHelper(AutoEncoderMock.class.getClassLoader(), "pretrainedweights");
+    double[][] layer1Array = helper.deserialize(double[][].class, "layer1");
+    double[][] layer2Array = helper.deserialize(double[][].class, "layer2");
+    encodingLayerAxons.setConnectionWeights(new MatrixMock(layer1Array));
+    decodingLayerAxons.setConnectionWeights(new MatrixMock(layer2Array));
   }
 
   @Override
