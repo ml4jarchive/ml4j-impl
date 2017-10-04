@@ -56,7 +56,6 @@ public class AutoEncoderMock implements AutoEncoder {
  
   @Override
   public void train(NeuronsActivation trainingDataActivations, AutoEncoderContext trainingContext) {
-    LOGGER.debug("Mock training AutoEncoderMock - no op for now");
     LOGGER.debug(
         "Mock training AutoEncoderMock - simulating training by loading pre-trained weights");
 
