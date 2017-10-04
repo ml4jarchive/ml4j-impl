@@ -17,7 +17,7 @@
 package org.ml4j.nn.synapses.mocks;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.FullyConnectedAxons;
+import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public class DirectedSynapsesMock implements DirectedSynapses<FullyConnectedAxons> {
+public class DirectedSynapsesMock implements DirectedSynapses<Axons<?, ?, ?>> {
 
   /**
    * Default serialization id.
@@ -40,7 +40,7 @@ public class DirectedSynapsesMock implements DirectedSynapses<FullyConnectedAxon
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesMock.class);
   
-  private FullyConnectedAxons axons;
+  private Axons<?, ?, ?> axons;
   private DifferentiableActivationFunction activationFunction;
   
   /**
@@ -49,7 +49,7 @@ public class DirectedSynapsesMock implements DirectedSynapses<FullyConnectedAxon
    * @param axons The Axons within these synapses
    * @param activationFunction The activation function within these synapses
    */
-  public DirectedSynapsesMock(FullyConnectedAxons axons,
+  public DirectedSynapsesMock(Axons<?, ?, ?> axons,
       DifferentiableActivationFunction activationFunction) {
     super();
     this.axons = axons;
@@ -57,12 +57,12 @@ public class DirectedSynapsesMock implements DirectedSynapses<FullyConnectedAxon
   }
 
   @Override
-  public FullyConnectedAxons getAxons() {
+  public Axons<?, ?, ?> getAxons() {
     return axons;
   }
 
   @Override
-  public DirectedSynapses<FullyConnectedAxons> dup() {
+  public DirectedSynapses<Axons<?, ?, ?>> dup() {
     return new DirectedSynapsesMock(axons.dup(), activationFunction);
   }
 
