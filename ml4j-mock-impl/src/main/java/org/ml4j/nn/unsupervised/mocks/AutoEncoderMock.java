@@ -57,15 +57,17 @@ public class AutoEncoderMock implements AutoEncoder {
   @Override
   public void train(NeuronsActivation trainingDataActivations, AutoEncoderContext trainingContext) {
     LOGGER.debug("Mock training AutoEncoderMock - no op for now");
-    
-    AxonsMock encodingLayerAxons = (AxonsMock)encodingLayer.getPrimaryAxons();
-    AxonsMock decodingLayerAxons = (AxonsMock)decodingLayer.getPrimaryAxons();
-    SerializationHelper helper = new SerializationHelper("/Users/michael/Desktop/sers");
-    double[][] layer1Array = helper.deserialize(double[][].class, "layer1A");
-    double[][] layer2Array = helper.deserialize(double[][].class, "layer2A");
+    LOGGER.debug(
+        "Mock training AutoEncoderMock - simulating training by loading pre-trained weights");
+
+    AxonsMock encodingLayerAxons = (AxonsMock) encodingLayer.getPrimaryAxons();
+    AxonsMock decodingLayerAxons = (AxonsMock) decodingLayer.getPrimaryAxons();
+    SerializationHelper helper =
+        new SerializationHelper(AutoEncoderMock.class.getClassLoader(), "pretrainedweights");
+    double[][] layer1Array = helper.deserialize(double[][].class, "layer1");
+    double[][] layer2Array = helper.deserialize(double[][].class, "layer2");
     encodingLayerAxons.setConnectionWeights(new MatrixMock(layer1Array));
     decodingLayerAxons.setConnectionWeights(new MatrixMock(layer2Array));
-
   }
 
   @Override
