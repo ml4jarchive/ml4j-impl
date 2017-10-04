@@ -17,7 +17,7 @@
 package org.ml4j.nn.layers.mocks;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.FullyConnectedAxons;
+import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.mocks.AxonsMock;
 import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.FeedForwardLayer;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxons, 
+public class FeedForwardLayerMock implements FeedForwardLayer<Axons<?, ?, ?>, 
     FeedForwardLayerMock> {
 
   /**
@@ -43,7 +43,7 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(FeedForwardLayerMock.class);
 
-  private FullyConnectedAxons primaryAxons;
+  private Axons<?, ?, ?> primaryAxons;
   
   private DifferentiableActivationFunction primaryActivationFunction;
   
@@ -53,7 +53,7 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
     this.primaryActivationFunction = primaryActivationFunction;
   }
   
-  protected FeedForwardLayerMock(FullyConnectedAxons primaryAxons) {
+  protected FeedForwardLayerMock(Axons<?, ?, ?> primaryAxons) {
     this.primaryAxons = primaryAxons;
   }
 
@@ -73,7 +73,7 @@ public class FeedForwardLayerMock implements FeedForwardLayer<FullyConnectedAxon
   }
 
   @Override
-  public FullyConnectedAxons getPrimaryAxons() {
+  public Axons<?, ?, ?> getPrimaryAxons() {
     return primaryAxons;
   }
 
