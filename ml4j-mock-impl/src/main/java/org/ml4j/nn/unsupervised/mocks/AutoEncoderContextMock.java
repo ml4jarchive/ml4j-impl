@@ -38,25 +38,14 @@ public class AutoEncoderContextMock implements AutoEncoderContext {
    * The MatrixFactory we configure for this context.
    */
   private MatrixFactory matrixFactory;
-
-  private int startLayerIndex;
-  
-  private Integer endLayerIndex;
  
   /**
    * Construct a new mock AutoEncoderContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public AutoEncoderContextMock(MatrixFactory matrixFactory, 
-      int startLayerIndex, Integer endLayerIndex) {
+  public AutoEncoderContextMock(MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
-    this.startLayerIndex = startLayerIndex;
-    this.endLayerIndex = endLayerIndex;
-    if (endLayerIndex != null && startLayerIndex > endLayerIndex) {
-      throw new IllegalArgumentException("Start layer index cannot be greater "
-          + "than end layer index");
-    }
   }
 
   @Override
@@ -67,15 +56,5 @@ public class AutoEncoderContextMock implements AutoEncoderContext {
   @Override
   public DirectedLayerContext createLayerContext(int layerIndex) {
     return new DirectedLayerContextMock(matrixFactory);
-  }
-
-  @Override
-  public int getStartLayerIndex() {
-    return startLayerIndex;
-  }
-
-  @Override
-  public Integer getEndLayerIndex() {
-    return endLayerIndex;
   }
 }
