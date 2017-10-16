@@ -28,7 +28,13 @@ public class MatrixFactoryMock implements MatrixFactory {
 
   @Override
   public Matrix createOnes(int rows, int columns) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    double[][] data = new double[rows][columns];
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < columns; c++) {
+        data[r][c] = 1;
+      }
+    }
+    return createMatrix(data);
   }
 
   @Override
