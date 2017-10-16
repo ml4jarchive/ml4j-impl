@@ -132,4 +132,34 @@ public class MatrixMock implements Matrix {
     }
     return new MatrixMock(dataArray);
   }
+
+  @Override
+  public Matrix appendHorizontally(Matrix other) {
+    double[][] dataArray = new double[rows][columns + other.getColumns()];
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < columns; c++) {
+        dataArray[r][c] = data[r][c];
+      }
+      for (int c = 0; c < other.getColumns(); c++) {
+        dataArray[r][c + columns] = other.get(r, c);
+      }
+    }
+    return new MatrixMock(dataArray);
+  }
+
+  @Override
+  public Matrix appendVertically(Matrix other) {
+    double[][] dataArray = new double[rows + other.getRows()][columns];
+    for (int r = 0; r < rows; r++) {
+      for (int c = 0; c < columns; c++) {
+        dataArray[r][c] = data[r][c];
+      }
+    }
+    for (int r = 0; r < other.getRows(); r++) {
+      for (int c = 0; c < columns; c++) {
+        dataArray[r + rows][c] = other.get(r, c);
+      }
+    }
+    return new MatrixMock(dataArray);
+  }
 }
