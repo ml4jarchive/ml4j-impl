@@ -14,10 +14,19 @@
 
 package org.ml4j.nn.unsupervised;
 
+import org.ml4j.mocks.MatrixMock;
 import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.axons.AxonsImpl;
+import org.ml4j.nn.axons.mocks.AxonsMock;
 import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.unsupervised.mocks.AutoEncoderMock;
+import org.ml4j.util.SerializationHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,65 +36,120 @@ import java.util.List;
  */
 public class AutoEncoderImpl implements AutoEncoder {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AutoEncoderImpl.class);
+  
+  private List<FeedForwardLayer<?, ?>> layers;
+  
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Constructor for a simple 2-layer AutoEncoder.
+   * 
+   * @param encodingLayer The encoding Layer
+   * @param decodingLayer The decoding Layer
+   */
   public AutoEncoderImpl(FeedForwardLayer<?, ?> encodingLayer,
       FeedForwardLayer<?, ?> decodingLayer) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    this.layers = new ArrayList<FeedForwardLayer<?, ?>>();
+    this.layers.add(encodingLayer);
+    this.layers.add(decodingLayer);
   }
 
   @Override
   public void train(NeuronsActivation trainingDataActivations, AutoEncoderContext trainingContext) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LOGGER.debug(
+        "Mock training AutoEncoderMock - simulating training by loading pre-trained weights");
+
+    AxonsImpl encodingLayerAxons = (AxonsImpl) getLayer(0).getPrimaryAxons();
+    AxonsImpl decodingLayerAxons = (AxonsImpl) getLayer(1).getPrimaryAxons();
+    SerializationHelper helper =
+        new SerializationHelper(AutoEncoderMock.class.getClassLoader(), "pretrainedweights");
+    double[][] layer1Array = helper.deserialize(double[][].class, "layer1");
+    double[][] layer2Array = helper.deserialize(double[][].class, "layer2");
+    encodingLayerAxons.setConnectionWeights(new MatrixMock(layer1Array));
+    decodingLayerAxons.setConnectionWeights(new MatrixMock(layer2Array));
   }
 
   @Override
   public List<FeedForwardLayer<?, ?>> getLayers() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return layers;
   }
 
   @Override
   public int getNumberOfLayers() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return layers.size();
   }
 
   @Override
   public FeedForwardLayer<?, ?> getLayer(int layerIndex) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return layers.get(layerIndex);
   }
 
   @Override
   public FeedForwardLayer<?, ?> getFirstLayer() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return layers.get(0);
   }
 
   @Override
   public FeedForwardLayer<?, ?> getFinalLayer() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return layers.get(getNumberOfLayers() - 1);
+
   }
 
   @Override
   public AutoEncoder dup() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return new AutoEncoderImpl(getLayer(0), getLayer(1));
   }
 
   @Override
   public NeuronsActivation encode(NeuronsActivation unencoded, AutoEncoderContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
-
+    LOGGER.debug("Encoding through AutoEncoder");
+    if (context.getEndLayerIndex() == null
+        || context.getEndLayerIndex() >= (this.getNumberOfLayers() - 1)) {
+      throw new IllegalArgumentException("End layer index for encoding through AutoEncoder "
+          + " must be specified and must not be the index of the last layer");
+    }
+    return forwardPropagate(unencoded, context).getOutputs();
   }
 
   @Override
   public NeuronsActivation decode(NeuronsActivation encoded, AutoEncoderContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LOGGER.debug("Decoding through AutoEncoder");
+    if (context.getStartLayerIndex() == 0) {
+      throw new IllegalArgumentException("Start layer index for decoding through AutoEncoder "
+          + " must not be 0 - the index of the first layer");
+    }
+    return forwardPropagate(encoded, context).getOutputs();
   }
 
   @Override
   public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
       AutoEncoderContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    
+    int endLayerIndex =
+        context.getEndLayerIndex() == null ? (getNumberOfLayers() - 1) : context.getEndLayerIndex();
+
+    LOGGER.debug("Forward propagating through AutoEncoderMock from layerIndex:"
+        + context.getStartLayerIndex() + " to layerIndex:" + endLayerIndex);
+        
+    NeuronsActivation inFlightActivations = inputActivation;
+    int layerIndex = 0;
+
+    for (FeedForwardLayer<?, ?> layer : getLayers()) {
+
+      if (layerIndex >= context.getStartLayerIndex() && layerIndex <= endLayerIndex) {
+
+        inFlightActivations =
+            layer.forwardPropagate(inFlightActivations, context.createLayerContext(layerIndex))
+                .getOutput();
+      }
+      layerIndex++;
+
+    }
+    
+    return new ForwardPropagationMock(inFlightActivations);
   }
 }

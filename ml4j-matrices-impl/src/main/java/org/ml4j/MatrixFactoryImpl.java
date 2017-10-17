@@ -16,6 +16,7 @@ package org.ml4j;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
+import org.ml4j.mocks.MatrixFactoryMock;
 
 /**
  * The default ml4j MatrixFactory.
@@ -24,14 +25,21 @@ import org.ml4j.MatrixFactory;
  */
 public class MatrixFactoryImpl implements MatrixFactory {
 
+  private MatrixFactory delegatedFactory;
+
+  public MatrixFactoryImpl() {
+    this.delegatedFactory = new MatrixFactoryMock();
+  }
+
+
   @Override
   public Matrix createOnes(int rows, int columns) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return delegatedFactory.createOnes(rows, columns);
   }
 
   @Override
   public Matrix createMatrix(double[][] data) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return delegatedFactory.createMatrix(data);
   }
 
   @Override

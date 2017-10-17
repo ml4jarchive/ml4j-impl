@@ -14,8 +14,11 @@
 
 package org.ml4j.nn.activationfunctions;
 
+import org.ml4j.Matrix;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The default Sigmoid Activation Function.
@@ -25,9 +28,14 @@ import org.ml4j.nn.neurons.NeuronsActivationContext;
  */
 public class SigmoidActivationFunction implements DifferentiableActivationFunction {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SigmoidActivationFunction.class);
+
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LOGGER.debug("Activating through SigmoidActivationFunctionMock");
+    Matrix sigmoidOfInputActivationsMatrix = input.getActivations().sigmoid();
+    return new NeuronsActivation(sigmoidOfInputActivationsMatrix, input.isBiasUnitIncluded(),
+        input.getFeatureOrientation());
   }
 
   @Override
