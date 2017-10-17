@@ -17,7 +17,7 @@ package org.ml4j.nn.unsupervised;
 import org.ml4j.mocks.MatrixMock;
 import org.ml4j.nn.ForwardPropagation;
 import org.ml4j.nn.axons.AxonsImpl;
-import org.ml4j.nn.axons.mocks.AxonsMock;
+
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
