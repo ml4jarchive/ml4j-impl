@@ -14,15 +14,10 @@
 
 package org.ml4j.nn.unsupervised;
 
-import org.ml4j.mocks.MatrixMock;
 import org.ml4j.nn.ForwardPropagation;
-import org.ml4j.nn.axons.AxonsImpl;
-
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.unsupervised.mocks.AutoEncoderMock;
-import org.ml4j.util.SerializationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,17 +55,7 @@ public class AutoEncoderImpl implements AutoEncoder {
 
   @Override
   public void train(NeuronsActivation trainingDataActivations, AutoEncoderContext trainingContext) {
-    LOGGER.debug(
-        "Mock training AutoEncoderMock - simulating training by loading pre-trained weights");
-
-    AxonsImpl encodingLayerAxons = (AxonsImpl) getLayer(0).getPrimaryAxons();
-    AxonsImpl decodingLayerAxons = (AxonsImpl) getLayer(1).getPrimaryAxons();
-    SerializationHelper helper =
-        new SerializationHelper(AutoEncoderMock.class.getClassLoader(), "pretrainedweights");
-    double[][] layer1Array = helper.deserialize(double[][].class, "layer1");
-    double[][] layer2Array = helper.deserialize(double[][].class, "layer2");
-    encodingLayerAxons.setConnectionWeights(new MatrixMock(layer1Array));
-    decodingLayerAxons.setConnectionWeights(new MatrixMock(layer2Array));
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   @Override
