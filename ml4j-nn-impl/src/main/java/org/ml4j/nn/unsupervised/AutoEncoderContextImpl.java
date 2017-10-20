@@ -43,6 +43,10 @@ public class AutoEncoderContextImpl implements AutoEncoderContext {
   
   private Integer endLayerIndex;
  
+  private Integer trainingIterations;
+  
+  private Double trainingLearningRate;
+  
   /**
    * Construct a default AutoEncoderContext.
    * 
@@ -77,5 +81,29 @@ public class AutoEncoderContextImpl implements AutoEncoderContext {
   @Override
   public Integer getEndLayerIndex() {
     return endLayerIndex;
+  }
+
+  @Override
+  public int getTrainingIterations() {
+    if (trainingIterations == null) {
+      throw new IllegalStateException("Number of training iterations not set on context");
+    }
+    return trainingIterations.intValue();
+  }
+
+  @Override
+  public double getTrainingLearningRate() {
+    if (trainingLearningRate == null) {
+      throw new IllegalStateException("Training learning rate not set on context");
+    }
+    return trainingLearningRate.doubleValue();
+  }
+
+  public void setTrainingIterations(int trainingIterations) {
+    this.trainingIterations = trainingIterations;
+  }
+
+  public void setTrainingLearningRate(double trainingLearningRate) {
+    this.trainingLearningRate = trainingLearningRate;
   }
 }

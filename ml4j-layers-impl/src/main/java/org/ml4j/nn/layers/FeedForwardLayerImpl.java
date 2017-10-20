@@ -29,6 +29,7 @@ import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.synapses.DirectedSynapses;
+import org.ml4j.nn.synapses.DirectedSynapsesActivation;
 import org.ml4j.nn.synapses.mocks.DirectedSynapsesMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,15 +152,20 @@ public class FeedForwardLayerImpl implements FeedForwardLayer<Axons<?, ?, ?>,
   public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
       DirectedLayerContext directedLayerContext) {
     LOGGER.debug("Forward propagating through layer");
-   
-    NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
     
+    NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
+    List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();
+    int synapsesIndex = 0;
     for (DirectedSynapses<?> synapses : getSynapses()) {
-      inFlightNeuronsActivation = synapses.forwardPropagate(inFlightNeuronsActivation, 
-              directedLayerContext.createSynapsesContext()).getOutput();
+      DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
+          synapses.forwardPropagate(inFlightNeuronsActivation, 
+              directedLayerContext.createSynapsesContext(synapsesIndex++));
+      synapseActivations.add(inFlightNeuronsSynapseActivation);
+      inFlightNeuronsActivation = inFlightNeuronsSynapseActivation.getOutput();
     }
  
-    return new DirectedLayerActivationMock(inFlightNeuronsActivation);
+    return new DirectedLayerActivationMock(this, synapseActivations, 
+        inFlightNeuronsActivation);
   }
 
   @Override

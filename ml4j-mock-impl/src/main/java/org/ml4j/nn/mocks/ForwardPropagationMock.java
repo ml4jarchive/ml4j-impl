@@ -16,8 +16,16 @@
 
 package org.ml4j.nn.mocks;
 
+import org.ml4j.nn.BackPropagation;
+import org.ml4j.nn.DirectedNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.layers.DirectedLayerActivation;
+import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Mock implementation of ForwardPropagation.
@@ -27,21 +35,54 @@ import org.ml4j.nn.neurons.NeuronsActivation;
 public class ForwardPropagationMock implements ForwardPropagation {
   
   private NeuronsActivation outputActivations;
+  private List<DirectedLayerActivation> activations;
   
   /**
    * Create a new mock ForwardPropagation instance from the output activations at the
    * right hand side of a DirectedNeuralNetwork after a forward propagation.
    * 
+   * @param activations All the DirectedLayerActivation instaces generated
+   *        by the forward propagation.
    * @param outputActivations The output activations at the
    *        right hand side of a DirectedNeuralNetwork after a forward propagation.
    */
-  public ForwardPropagationMock(NeuronsActivation outputActivations) {
+  public ForwardPropagationMock(List<DirectedLayerActivation> activations, 
+      NeuronsActivation outputActivations) {
     super();
     this.outputActivations = outputActivations;
+    this.activations = activations;
   }
 
   @Override
   public NeuronsActivation getOutputs() {
     return outputActivations;
   }
+
+  @Override
+  public BackPropagation backPropagate(NeuronsActivation neuronActivationGradients, 
+      DirectedNeuralNetworkContext context) {
+    
+    List<DirectedLayerActivation> reversedActivations = new ArrayList<>();
+    reversedActivations.addAll(activations);
+    NeuronsActivation gradients = neuronActivationGradients;
+    List<DirectedLayerGradient> gradientsRet = new ArrayList<>();
+    Collections.reverse(reversedActivations);
+    int layerIndex = reversedActivations.size() - 1;
+    boolean outerLayer = true;
+    
+    for (DirectedLayerActivation activation : reversedActivations) {
+
+      DirectedLayerGradient gradient =
+          activation.backPropagate(gradients, 
+              context.createLayerContext(layerIndex), outerLayer);
+      gradientsRet.add(gradient);
+      outerLayer = false;
+      gradients = gradient.getSynapsesGradients().get(0).getOutput();
+      layerIndex--;
+    }
+    return new BackPropagationMock(gradientsRet);
+  }
+  
+  
+  
 }
