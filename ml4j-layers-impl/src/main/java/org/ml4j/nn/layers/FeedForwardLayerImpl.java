@@ -17,20 +17,19 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.Matrix;
-import org.ml4j.mocks.MatrixFactoryMock;
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsImpl;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.FeedForwardLayer;
-import org.ml4j.nn.layers.mocks.DirectedLayerActivationMock;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
-import org.ml4j.nn.synapses.mocks.DirectedSynapsesMock;
+import org.ml4j.nn.synapses.DirectedSynapsesImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A minimal mock skeleton FeedForwardLayer.
+ * A default implementation of FeedForwardLayer.
  * 
  * @author Michael Lavelle
  */
@@ -63,9 +62,9 @@ public class FeedForwardLayerImpl implements FeedForwardLayer<Axons<?, ?, ?>,
    * @param primaryActivationFunction The primary activation function.
    */
   public FeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons, 
-      DifferentiableActivationFunction primaryActivationFunction) {
+      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
       this(new AxonsImpl(inputNeurons, outputNeurons, 
-          createInitialAxonConnectionWeights(inputNeurons, outputNeurons)));
+          createInitialAxonConnectionWeights(inputNeurons, outputNeurons, matrixFactory)));
     this.primaryActivationFunction = primaryActivationFunction;
   }
   
@@ -74,11 +73,12 @@ public class FeedForwardLayerImpl implements FeedForwardLayer<Axons<?, ?, ?>,
    * 
    * @param inputNeurons The input Neurons
    * @param outputNeurons The output Neurons
+   * @param matrixFactory The matrix factory
    * @return The initial conn
    */
   private static Matrix createInitialAxonConnectionWeights(Neurons inputNeurons,
-      Neurons outputNeurons) {
-    return new MatrixFactoryMock().createZeros(inputNeurons.getNeuronCountIncludingBias(),
+      Neurons outputNeurons, MatrixFactory matrixFactory) {
+    return matrixFactory.createZeros(inputNeurons.getNeuronCountIncludingBias(),
         outputNeurons.getNeuronCountIncludingBias());
     // throw new UnsupportedOperationException("Not yet implemented");
   }
@@ -164,14 +164,14 @@ public class FeedForwardLayerImpl implements FeedForwardLayer<Axons<?, ?, ?>,
       inFlightNeuronsActivation = inFlightNeuronsSynapseActivation.getOutput();
     }
  
-    return new DirectedLayerActivationMock(this, synapseActivations, 
+    return new DirectedLayerActivationImpl(this, synapseActivations, 
         inFlightNeuronsActivation);
   }
 
   @Override
   public List<DirectedSynapses<?>> getSynapses() {
     List<DirectedSynapses<?>> synapses = new ArrayList<>();
-    synapses.add(new DirectedSynapsesMock(getPrimaryAxons(), getPrimaryActivationFunction()));
+    synapses.add(new DirectedSynapsesImpl(getPrimaryAxons(), getPrimaryActivationFunction()));
     return synapses;
   }
 }

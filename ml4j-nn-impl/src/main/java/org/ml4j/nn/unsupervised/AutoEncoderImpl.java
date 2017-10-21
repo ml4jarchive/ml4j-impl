@@ -17,12 +17,12 @@ package org.ml4j.nn.unsupervised;
 import org.ml4j.Matrix;
 import org.ml4j.nn.BackPropagation;
 import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.ForwardPropagationImpl;
 import org.ml4j.nn.axons.AxonsImpl;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.layers.FeedForwardLayer;
-import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -231,6 +231,6 @@ public class AutoEncoderImpl implements AutoEncoder {
 
     }
     
-    return new ForwardPropagationMock(activations, inFlightActivations);
+    return new ForwardPropagationImpl(activations, inFlightActivations);
   }
 }

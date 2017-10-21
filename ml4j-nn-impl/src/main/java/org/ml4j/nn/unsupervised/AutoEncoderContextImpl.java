@@ -18,7 +18,7 @@ package org.ml4j.nn.unsupervised;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.layers.DirectedLayerContext;
-import org.ml4j.nn.layers.mocks.DirectedLayerContextMock;
+import org.ml4j.nn.layers.DirectedLayerContextImpl;
 import org.ml4j.nn.unsupervised.AutoEncoderContext;
 
 /**
@@ -70,7 +70,7 @@ public class AutoEncoderContextImpl implements AutoEncoderContext {
 
   @Override
   public DirectedLayerContext createLayerContext(int layerIndex) {
-    return new DirectedLayerContextMock(matrixFactory);
+    return new DirectedLayerContextImpl(matrixFactory);
   }
 
   @Override
