@@ -36,4 +36,27 @@ public class NeuralNetUtils {
     result = sig.subi(sig.mul(sig));
     return result;
   }
+  
+  /**
+   * Returns a matrix that has the first derivative of the sigmoid function applied to each element
+   * of given input matrix. http://en.wikipedia.org/wiki/Sigmoid_function
+   */
+  public static Matrix softmaxGradient(Matrix x1) {
+    Matrix result = x1;
+    Matrix sa = softmax(result);
+    result = sa.subi(sa.mul(sa));
+
+    // result = s.mul( s.mul(-1).add(1) );
+    return result;
+  }
+
+  /**
+   * Returns a matrix that has the sigmoid function applied to each element of given input matrix
+   * http://en.wikipedia.org/wiki/Sigmoid_function
+   */
+  public static Matrix softmax(Matrix x1) {
+    Matrix exp = x1.expi();
+    Matrix sums = exp.rowSums();
+    return exp.diviColumnVector(sums);
+  }
 }
