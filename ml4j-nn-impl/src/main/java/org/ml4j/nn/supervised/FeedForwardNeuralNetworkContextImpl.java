@@ -19,7 +19,7 @@ package org.ml4j.nn.supervised;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.layers.DirectedLayerContext;
-import org.ml4j.nn.layers.mocks.DirectedLayerContextMock;
+import org.ml4j.nn.layers.DirectedLayerContextImpl;
 
 /**
  * Simple default implementation of AutoEncoderContext.
@@ -70,7 +70,7 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
 
   @Override
   public DirectedLayerContext createLayerContext(int layerIndex) {
-    return new DirectedLayerContextMock(matrixFactory);
+    return new DirectedLayerContextImpl(matrixFactory);
   }
 
   @Override

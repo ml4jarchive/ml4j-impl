@@ -4,25 +4,33 @@ import org.ml4j.Matrix;
 
 public class MultiClassCrossEntropyCostFunction {
 
+  /**
+   * 
+   * @param desiredOutputs The desired outputs.
+   * @param actualOutputs The actual outputs.
+   * @return The cost associated with producing the actual outputs given the desired outputs.
+   */
   public double getCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    int m = desiredOutputs.getRows();
+    
+    int count = desiredOutputs.getRows();
 
-    Matrix J_part = (desiredOutputs.mul(-1).mul(limitLog(actualOutputs))).rowSums();
+    Matrix jpart = (desiredOutputs.mul(-1).mul(limitLog(actualOutputs))).rowSums();
 
-    return J_part.sum() / (2 * m);
+    return jpart.sum() / (2 * count);
 
   }
 
-  private double limit(double p) {
-    p = Math.min(p, 1 - 0.000000000000001);
-    p = Math.max(p, 0.000000000000001);
-    return p;
+  private double limit(double value) {
+    value = Math.min(value, 1 - 0.000000000000001);
+    value = Math.max(value, 0.000000000000001);
+    return value;
   }
 
-  private Matrix limitLog(Matrix m) {
-    Matrix x = m.dup();
-    for (int i = 0; i < x.getLength(); i++)
-      x.put(i, (double) Math.log(limit(x.get(i))));
-    return x;
+  private Matrix limitLog(Matrix matrix) {
+    Matrix dupMatrix = matrix.dup();
+    for (int i = 0; i < dupMatrix.getLength(); i++) {
+      dupMatrix.put(i, (double) Math.log(limit(dupMatrix.get(i))));
+    }
+    return dupMatrix;
   }
 }

@@ -18,12 +18,12 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.BackPropagation;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.ForwardPropagationImpl;
 import org.ml4j.nn.axons.AxonsImpl;
 import org.ml4j.nn.costfunctions.MultiClassCrossEntropyCostFunction;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.layers.FeedForwardLayer;
-import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -149,16 +149,16 @@ public class SupervisedFeedForwardNeuralNetworkImpl
       double learningRate = trainingContext.getTrainingLearningRate();
       
       for (int axonsIndex = 0; axonsIndex < axonsGradients.size(); axonsIndex++) {
-        AxonsImpl primaryAxons = axonsList.get(axonsIndex);
+        AxonsImpl axons = axonsList.get(axonsIndex);
         // Transpose the axon gradients into matrices that correspond to the orientation of the
         // connection weights ( COLUMNS_SPAN_FEATURE_SET )
         Matrix axonsGrad = axonsGradients.get(axonsIndex).transpose();
-        Matrix exisitingAxonsWeights = primaryAxons.getConnectionWeights();
+        Matrix exisitingAxonsWeights = axons.getConnectionWeights();
 
         // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
         // gradient matrices
         Matrix newAxonsWeights = exisitingAxonsWeights.sub(axonsGrad.mul(learningRate));
-        primaryAxons.setConnectionWeights(newAxonsWeights);
+        axons.setConnectionWeights(newAxonsWeights);
       }
 
       // Obtain the cost from the cost function
@@ -224,6 +224,6 @@ public class SupervisedFeedForwardNeuralNetworkImpl
       layerIndex++;
     }
     
-    return new ForwardPropagationMock(activations, inFlightActivations);
+    return new ForwardPropagationImpl(activations, inFlightActivations);
   }
 }
