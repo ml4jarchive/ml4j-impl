@@ -77,13 +77,6 @@ public class DirectedSynapsesActivationMock implements DirectedSynapsesActivatio
               input.getActivations().getColumns()));
 
     }
-    
-    if (!synapses.getAxons().getRightNeurons().hasBiasUnit()
-        && outerActivationGradient.isBiasUnitIncluded()) {
-      LOGGER.debug("Removing biases from back propagated deltas");
-      input = new NeuronsActivation(adjustDeltas(input.getActivations()), false,
-          input.getFeatureOrientation());
-    }
 
     NeuronsActivation activationFunctionGradient = outerLayer ? outputActivation
         : synapses.getActivationFunction().activationGradient(outputActivation, context);
@@ -110,15 +103,18 @@ public class DirectedSynapsesActivationMock implements DirectedSynapsesActivatio
     Matrix axonsGradient = dz
         .mmul(this.inputActivation.getActivations());
 
+    if (inputGradient.isBiasUnitIncluded()) {
+      LOGGER.debug("Removing biases from back propagated deltas");
+      inputGradient = new NeuronsActivation(adjustDeltas(inputGradient.getActivations()), false,
+          inputGradient.getFeatureOrientation());
+    }
+    
     return new DirectedSynapsesGradientMock(inputGradient, 
         axonsGradient);
   }
   
   private Matrix adjustDeltas(Matrix deltas) {
-    // System.out.println("Adjusting:" + deltas.getRows() + ":" + deltas.getColumns());
-    
 
-    // System.out.println("REMOVING from:" + deltas.getRows());
     int[] cols = new int[deltas.getColumns()];
     int[] rows = new int[deltas.getRows() - 1];
     for (int j = 0; j < deltas.getColumns(); j++) {

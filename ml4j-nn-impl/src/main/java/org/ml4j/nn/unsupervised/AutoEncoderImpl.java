@@ -26,6 +26,7 @@ import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 
 import org.slf4j.Logger;
@@ -82,19 +83,21 @@ public class AutoEncoderImpl implements AutoEncoder {
     
     LOGGER.info("Training AutoEncoderImpl...");
 
-    LOGGER.debug("Initialising primary Axon weights...");
-    List<AxonsImpl> primaryAxonsList = new ArrayList<>();
+    LOGGER.debug("Initialising Axon weights...");
+    List<AxonsImpl> axonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
-      
-      FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
-      AxonsImpl primaryAxons = (AxonsImpl) layer.getPrimaryAxons();
 
-      Matrix weights = trainingContext.getMatrixFactory().createRandn(
-          primaryAxons.getLeftNeurons().getNeuronCountIncludingBias(),
-          primaryAxons.getRightNeurons().getNeuronCountIncludingBias());
-      
-      primaryAxons.setConnectionWeights(weights.mul(0.01));
-      primaryAxonsList.add(primaryAxons);
+      FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
+      for (DirectedSynapses<?> synapses : layer.getSynapses()) {
+        AxonsImpl axons = (AxonsImpl) synapses.getAxons();
+
+        Matrix weights = trainingContext.getMatrixFactory().createRandn(
+            axons.getLeftNeurons().getNeuronCountIncludingBias(),
+            axons.getRightNeurons().getNeuronCountIncludingBias());
+
+        axons.setConnectionWeights(weights.mul(0.01));
+        axonsList.add(axons);
+      }
     }
     
     for (int i = 0; i < numberOfTrainingIterations; i++) {
@@ -124,7 +127,10 @@ public class AutoEncoderImpl implements AutoEncoder {
       // Obtain the gradients of each set of Axons we wish to train - for this example it is
       // all the Axons
       List<Matrix> axonsGradients = new ArrayList<>();
-      for (DirectedLayerGradient gradient : backPropagation.getDirectedLayerGradients()) {
+      List<DirectedLayerGradient> reversed = new ArrayList<>();
+      reversed.addAll(backPropagation.getDirectedLayerGradients());
+      Collections.reverse(reversed);
+      for (DirectedLayerGradient gradient : reversed) {
         for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
           axonsGradients.add(synapsesGradient.getAxonsGradient());
         }
@@ -134,16 +140,16 @@ public class AutoEncoderImpl implements AutoEncoder {
       double learningRate = trainingContext.getTrainingLearningRate();
       
       for (int axonsIndex = 0; axonsIndex < axonsGradients.size(); axonsIndex++) {
-        AxonsImpl primaryAxons = primaryAxonsList.get(axonsIndex);
+        AxonsImpl axons = axonsList.get(axonsIndex);
         // Transpose the axon gradients into matrices that correspond to the orientation of the
         // connection weights ( COLUMNS_SPAN_FEATURE_SET )
         Matrix axonsGrad = axonsGradients.get(axonsIndex).transpose();
-        Matrix exisitingAxonsWeights = primaryAxons.getConnectionWeights();
+        Matrix existingAxonsWeights = axons.getConnectionWeights();
 
         // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
         // gradient matrices
-        Matrix newAxonsWeights = exisitingAxonsWeights.sub(axonsGrad.mul(learningRate));
-        primaryAxons.setConnectionWeights(newAxonsWeights);
+        Matrix newAxonsWeights = existingAxonsWeights.sub(axonsGrad.mul(learningRate));
+        axons.setConnectionWeights(newAxonsWeights);
       }
 
       // Obtain the cost from the cost function

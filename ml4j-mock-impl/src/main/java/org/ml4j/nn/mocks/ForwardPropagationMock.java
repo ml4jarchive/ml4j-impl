@@ -71,15 +71,18 @@ public class ForwardPropagationMock implements ForwardPropagation {
     boolean outerLayer = true;
     
     for (DirectedLayerActivation activation : reversedActivations) {
-
       DirectedLayerGradient gradient =
           activation.backPropagate(gradients, 
               context.createLayerContext(layerIndex), outerLayer);
       gradientsRet.add(gradient);
       outerLayer = false;
-      gradients = gradient.getSynapsesGradients().get(0).getOutput();
+      gradients = 
+          gradient.getSynapsesGradients()
+          .get(gradient.getSynapsesGradients().size() - 1).getOutput();
       layerIndex--;
     }
+    Collections.reverse(gradientsRet);
+
     return new BackPropagationMock(gradientsRet);
   }
   
