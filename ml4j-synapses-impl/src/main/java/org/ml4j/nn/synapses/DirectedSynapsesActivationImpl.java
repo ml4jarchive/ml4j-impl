@@ -17,6 +17,7 @@
 package org.ml4j.nn.synapses;
 
 import org.ml4j.Matrix;
+import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
@@ -102,9 +103,13 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
 
     double numberOfTrainingExamples = da.getActivations().getColumns();
     
-    Matrix axonsGradient = dz
-        .mmul(this.inputActivation.getActivations()).div(numberOfTrainingExamples);
-   
+    Matrix trainableAxonsGradient = null;
+    
+    if (synapses.getAxons() instanceof TrainableAxons) {
+      trainableAxonsGradient = 
+          dz.mmul(this.inputActivation.getActivations()).div(numberOfTrainingExamples);
+    }
+  
     if (inputGradient.isBiasUnitIncluded()) {
       LOGGER.debug("Removing biases from back propagated deltas");
       inputGradient = new NeuronsActivation(adjustDeltas(inputGradient.getActivations()), false,
@@ -112,7 +117,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     }
     
     return new DirectedSynapsesGradientImpl(inputGradient, 
-        axonsGradient);
+        trainableAxonsGradient);
   }
   
   private Matrix adjustDeltas(Matrix deltas) {

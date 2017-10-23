@@ -36,7 +36,7 @@ public class DirectedSynapsesGradientMock implements DirectedSynapsesGradient {
   }
 
   @Override
-  public Matrix getAxonsGradient() {
+  public Matrix getTrainableAxonsGradient() {
     return axonsGradient;
   }
 

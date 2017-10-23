@@ -105,8 +105,9 @@ public class AxonsImpl implements FullyConnectedAxons {
   public void setConnectionWeights(Matrix connectionWeights) {
     this.connectionWeights = connectionWeights;
   }
-
-  public Matrix getConnectionWeights() {
-    return connectionWeights;
+  
+  @Override
+  public Matrix getDetachedConnectionWeights() {
+    return connectionWeights.dup();
   }
 }

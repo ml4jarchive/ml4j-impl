@@ -18,7 +18,7 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.BackPropagation;
 import org.ml4j.nn.ForwardPropagation;
 import org.ml4j.nn.ForwardPropagationImpl;
-import org.ml4j.nn.axons.AxonsImpl;
+import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerGradient;
@@ -83,16 +83,18 @@ public class AutoEncoderImpl implements AutoEncoder {
     
     LOGGER.info("Training AutoEncoderImpl...");
 
-    List<AxonsImpl> axonsList = new ArrayList<>();
+    List<TrainableAxons<?, ?, ?>> trainableAxonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
 
       FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
       for (DirectedSynapses<?> synapses : layer.getSynapses()) {
-        AxonsImpl axons = (AxonsImpl) synapses.getAxons();
-        axonsList.add(axons);
+        if (synapses.getAxons() instanceof TrainableAxons) {
+          TrainableAxons<?, ?, ?> axons = (TrainableAxons<?, ?, ?>) synapses.getAxons();
+          trainableAxonsList.add(axons);
+        }
       }
     }
-    
+
     for (int i = 0; i < numberOfTrainingIterations; i++) {
 
       // Forward propagate the trainingDataActivations through the entire AutoEncoder
@@ -119,25 +121,29 @@ public class AutoEncoderImpl implements AutoEncoder {
 
       // Obtain the gradients of each set of Axons we wish to train - for this example it is
       // all the Axons
-      List<Matrix> axonsGradients = new ArrayList<>();
+      List<Matrix> trainableAxonsGradients = new ArrayList<>();
       List<DirectedLayerGradient> reversed = new ArrayList<>();
       reversed.addAll(backPropagation.getDirectedLayerGradients());
       Collections.reverse(reversed);
       for (DirectedLayerGradient gradient : reversed) {
         for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
-          axonsGradients.add(synapsesGradient.getAxonsGradient());
+          Matrix trainableAxonsGradient = synapsesGradient.getTrainableAxonsGradient();
+          if (trainableAxonsGradient != null) {
+            trainableAxonsGradients.add(synapsesGradient.getTrainableAxonsGradient());
+          }
+          
         }
       }
-      Collections.reverse(axonsGradients);
+      Collections.reverse(trainableAxonsGradients);
       
       double learningRate = trainingContext.getTrainingLearningRate();
       
-      for (int axonsIndex = 0; axonsIndex < axonsGradients.size(); axonsIndex++) {
-        AxonsImpl axons = axonsList.get(axonsIndex);
+      for (int axonsIndex = 0; axonsIndex < trainableAxonsGradients.size(); axonsIndex++) {
+        TrainableAxons<?, ?, ?> axons = trainableAxonsList.get(axonsIndex);
         // Transpose the axon gradients into matrices that correspond to the orientation of the
         // connection weights ( COLUMNS_SPAN_FEATURE_SET )
-        Matrix axonsGrad = axonsGradients.get(axonsIndex).transpose();
-        Matrix existingAxonsWeights = axons.getConnectionWeights();
+        Matrix axonsGrad = trainableAxonsGradients.get(axonsIndex).transpose();
+        Matrix existingAxonsWeights = axons.getDetachedConnectionWeights();
 
         // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
         // gradient matrices

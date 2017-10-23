@@ -91,7 +91,7 @@ public class FeedForwardLayerMock implements FeedForwardLayer<Axons<?, ?, ?>,
     LOGGER.debug("Mock obtaining optimal input for output neuron with index:" + outputNeuronIndex);
     int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
     double[] maximisingInputFeatures = new double[countJ];
-    Matrix weights = ((AxonsMock) getPrimaryAxons()).getConnectionWeights();
+    Matrix weights = ((AxonsMock) getPrimaryAxons()).getDetachedConnectionWeights();
     boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();
 
     for (int j = 0; j < countJ; j++) {

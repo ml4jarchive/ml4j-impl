@@ -36,7 +36,7 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
   }
 
   @Override
-  public Matrix getAxonsGradient() {
+  public Matrix getTrainableAxonsGradient() {
     return axonsGradient;
   }
 

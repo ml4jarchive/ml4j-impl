@@ -78,8 +78,8 @@ public class AxonsMock implements FullyConnectedAxons {
     this.connectionWeights = connectionWeights;
   }
 
-  public Matrix getConnectionWeights() {
+  @Override
+  public Matrix getDetachedConnectionWeights() {
     return connectionWeights;
   }
-  
 }
