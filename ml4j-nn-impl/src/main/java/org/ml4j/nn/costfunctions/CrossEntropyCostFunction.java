@@ -18,7 +18,7 @@ package org.ml4j.nn.costfunctions;
 
 import org.ml4j.Matrix;
 
-public class CrossEntropyCostFunction {
+public class CrossEntropyCostFunction implements CostFunction {
 
   /**
    * Returns the cost of producing the actualOutputs given the desiredOutputs.
@@ -28,6 +28,7 @@ public class CrossEntropyCostFunction {
    * @return The cost of producing the actualOutputs given the desiredOutputs.
    * 
    */
+  @Override
   public double getCost(Matrix desiredOutputs, Matrix actualOutputs) {
     int numberOfExamples = desiredOutputs.getRows();
     Matrix jpart = (desiredOutputs.mul(-1).mul(actualOutputs.log())

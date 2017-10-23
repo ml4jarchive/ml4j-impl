@@ -2,7 +2,7 @@ package org.ml4j.nn.costfunctions;
 
 import org.ml4j.Matrix;
 
-public class MultiClassCrossEntropyCostFunction {
+public class MultiClassCrossEntropyCostFunction implements CostFunction {
 
   /**
    * 
@@ -10,6 +10,7 @@ public class MultiClassCrossEntropyCostFunction {
    * @param actualOutputs The actual outputs.
    * @return The cost associated with producing the actual outputs given the desired outputs.
    */
+  @Override
   public double getCost(Matrix desiredOutputs, Matrix actualOutputs) {
     
     int numberOfExamples = desiredOutputs.getRows();
