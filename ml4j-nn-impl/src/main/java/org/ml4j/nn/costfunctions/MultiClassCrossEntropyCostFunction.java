@@ -12,11 +12,11 @@ public class MultiClassCrossEntropyCostFunction {
    */
   public double getCost(Matrix desiredOutputs, Matrix actualOutputs) {
     
-    int count = desiredOutputs.getRows();
+    int numberOfExamples = desiredOutputs.getRows();
 
     Matrix jpart = (desiredOutputs.mul(-1).mul(limitLog(actualOutputs))).rowSums();
 
-    return jpart.sum() / (2 * count);
+    return jpart.sum() / numberOfExamples;
 
   }
 

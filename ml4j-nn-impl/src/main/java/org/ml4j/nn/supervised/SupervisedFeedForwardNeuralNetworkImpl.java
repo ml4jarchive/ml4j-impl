@@ -15,6 +15,7 @@
 package org.ml4j.nn.supervised;
 
 import org.ml4j.Matrix;
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.BackPropagation;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
@@ -88,19 +89,12 @@ public class SupervisedFeedForwardNeuralNetworkImpl
     
     LOGGER.info("Training SupervisedFeedForwardNeuralNetworkImpl...");
 
-    LOGGER.debug("Initialising Axon weights...");
     List<AxonsImpl> axonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
 
       FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
       for (DirectedSynapses<?> synapses : layer.getSynapses()) {
         AxonsImpl axons = (AxonsImpl) synapses.getAxons();
-
-        Matrix weights = trainingContext.getMatrixFactory().createRandn(
-            axons.getLeftNeurons().getNeuronCountIncludingBias(),
-            axons.getRightNeurons().getNeuronCountIncludingBias());
-
-        axons.setConnectionWeights(weights.mul(0.01));
         axonsList.add(axons);
       }
     }
@@ -166,6 +160,51 @@ public class SupervisedFeedForwardNeuralNetworkImpl
           forwardPropagation.getOutputs().getActivations());
       LOGGER.info("COST:" + cost);
     }
+  }
+  
+  /**
+   * Return the prediction accuracy.
+   * 
+   * @param inputActivations The input activations.
+   * @param desiredClassificationActivations The desired prediction activations.
+   * @param context The context.
+   * @return The accuracy
+   */
+  @Override
+  public double getClassificationAccuracy(NeuronsActivation inputActivations,
+      NeuronsActivation desiredClassificationActivations, FeedForwardNeuralNetworkContext context) {
+
+    // Forward propagate the trainingDataActivations
+    ForwardPropagation forwardPropagation = forwardPropagate(inputActivations, context);
+
+    Matrix predictions = getClassifications(forwardPropagation.getOutputs().getActivations(),
+        context.getMatrixFactory());
+
+    return computeAccuracy(predictions, desiredClassificationActivations.getActivations());
+  }
+
+  private Matrix getClassifications(Matrix outputActivations, MatrixFactory matrixFactory) {
+
+    Matrix predictions = 
+        matrixFactory.createZeros(outputActivations.getRows(), outputActivations.getColumns());
+    for (int row = 0; row < outputActivations.getRows(); row++) {
+
+      int index = outputActivations.getRow(row).argmax();
+      predictions.put(row, index, 1);
+    }
+    return predictions;
+  }
+
+  /**
+   * Helper function to compute the accuracy of predictions using calculated predictions predictions
+   * and correct output matrix.
+   *
+   * @param predictions The predictions
+   * @param Y The desired output labels
+   * @return The accuracy of the network
+   */
+  protected double computeAccuracy(Matrix predictions, Matrix outputs) {
+    return ((predictions.mul(outputs)).sum()) * 100 / outputs.getRows();
   }
 
   @Override
