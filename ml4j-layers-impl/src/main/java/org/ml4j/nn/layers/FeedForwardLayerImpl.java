@@ -61,11 +61,12 @@ public class FeedForwardLayerImpl implements FeedForwardLayer<Axons<?, ?, ?>,
    * @param outputNeurons The output Neurons
    * @param primaryActivationFunction The primary activation function.
    */
-  public FeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons, 
+  public FeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
-      this(new AxonsImpl(inputNeurons, outputNeurons, 
-          createInitialAxonConnectionWeights(inputNeurons, outputNeurons, matrixFactory)));
-    this.primaryActivationFunction = primaryActivationFunction;
+    this(
+        new AxonsImpl(inputNeurons, outputNeurons,
+            createInitialAxonConnectionWeights(inputNeurons, outputNeurons, matrixFactory)),
+        primaryActivationFunction);
   }
   
   /**
@@ -78,18 +79,27 @@ public class FeedForwardLayerImpl implements FeedForwardLayer<Axons<?, ?, ?>,
    */
   private static Matrix createInitialAxonConnectionWeights(Neurons inputNeurons,
       Neurons outputNeurons, MatrixFactory matrixFactory) {
-    return matrixFactory.createZeros(inputNeurons.getNeuronCountIncludingBias(),
+   
+    LOGGER.debug("Initialising Axon weights...");
+    
+    Matrix weights = matrixFactory.createRandn(inputNeurons.getNeuronCountIncludingBias(),
         outputNeurons.getNeuronCountIncludingBias());
-    // throw new UnsupportedOperationException("Not yet implemented");
+
+    double scalingFactor = 
+        Math.sqrt(2 / ((double)inputNeurons.getNeuronCountIncludingBias()));
+    
+    return weights.mul(scalingFactor);
   }
 
-  protected FeedForwardLayerImpl(Axons<?, ?, ?> primaryAxons) {
+  protected FeedForwardLayerImpl(Axons<?, ?, ?> primaryAxons, 
+      DifferentiableActivationFunction activationFunction) {
     this.primaryAxons = primaryAxons;
+    this.primaryActivationFunction = activationFunction;
   }
 
   @Override
   public FeedForwardLayerImpl dup() {
-    return new FeedForwardLayerImpl(primaryAxons);
+    return new FeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
   }
 
   @Override
