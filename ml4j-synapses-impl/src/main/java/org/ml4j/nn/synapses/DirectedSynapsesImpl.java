@@ -89,7 +89,7 @@ public class DirectedSynapsesImpl implements DirectedSynapses<Axons<?, ?, ?>> {
         activationFunction.activate(axonsOutputActivation, synapsesContext);
     
     return new DirectedSynapsesActivationImpl(this, 
-        inputNeuronsActivation, activationFunctionOutputActivation);
+        inputNeuronsActivation, axonsOutputActivation, activationFunctionOutputActivation);
   
   }
 

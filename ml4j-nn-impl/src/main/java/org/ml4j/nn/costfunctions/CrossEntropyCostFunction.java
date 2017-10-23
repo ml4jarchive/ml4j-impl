@@ -29,9 +29,9 @@ public class CrossEntropyCostFunction {
    * 
    */
   public double getCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    int mn = desiredOutputs.getRows();
+    int numberOfExamples = desiredOutputs.getRows();
     Matrix jpart = (desiredOutputs.mul(-1).mul(actualOutputs.log())
         .sub(desiredOutputs.mul(-1).add(1).mul(actualOutputs.mul(-1).add(1).log()))).rowSums();
-    return jpart.sum() / (2 * mn);
+    return jpart.sum() / numberOfExamples;
   }
 }

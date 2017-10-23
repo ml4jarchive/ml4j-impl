@@ -83,19 +83,12 @@ public class AutoEncoderImpl implements AutoEncoder {
     
     LOGGER.info("Training AutoEncoderImpl...");
 
-    LOGGER.debug("Initialising Axon weights...");
     List<AxonsImpl> axonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
 
       FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
       for (DirectedSynapses<?> synapses : layer.getSynapses()) {
         AxonsImpl axons = (AxonsImpl) synapses.getAxons();
-
-        Matrix weights = trainingContext.getMatrixFactory().createRandn(
-            axons.getLeftNeurons().getNeuronCountIncludingBias(),
-            axons.getRightNeurons().getNeuronCountIncludingBias());
-
-        axons.setConnectionWeights(weights.mul(0.01));
         axonsList.add(axons);
       }
     }

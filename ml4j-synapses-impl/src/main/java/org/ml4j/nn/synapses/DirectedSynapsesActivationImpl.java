@@ -35,8 +35,9 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesActivationImpl.class);
   
-  private NeuronsActivation outputActivation;
   private NeuronsActivation inputActivation;
+  private NeuronsActivation axonsActivation;
+  private NeuronsActivation outputActivation;
   private DirectedSynapses<?> synapses;
   
   /**
@@ -45,15 +46,18 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
    * @param synapses The DirectedSynapses
    * @param inputActivation The input NeuronsActivation of the DirectedSynapses
    *        following a forward propagation
+   * @param axonsActivation The axons NeuronsActivation of the DirectedSynapses
+   *        following a forward propagation    
    * @param outputActivation The output NeuronsActivation of the DirectedSynapses
    *        following a forward propagation.
    */
   public DirectedSynapsesActivationImpl(DirectedSynapses<?> synapses, 
       NeuronsActivation inputActivation, 
-      NeuronsActivation outputActivation) {
+      NeuronsActivation axonsActivation, NeuronsActivation outputActivation) {
     this.inputActivation = inputActivation;
     this.outputActivation = outputActivation;
     this.synapses = synapses;
+    this.axonsActivation = axonsActivation;
   }
   
   @Override
@@ -62,47 +66,45 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   }
 
   @Override
-  public DirectedSynapsesGradient backPropagate(NeuronsActivation outerActivationGradient,
+  public DirectedSynapsesGradient backPropagate(NeuronsActivation da,
       DirectedSynapsesContext context, boolean outerLayer) {
+   
     LOGGER.debug(context.toString() + " Back propagating through synapses activation....");
-    
-    NeuronsActivation input = outerActivationGradient;
-
+   
     if (synapses.getAxons().getRightNeurons().hasBiasUnit()
-        && !outerActivationGradient.isBiasUnitIncluded()) {
+        && !da.isBiasUnitIncluded()) {
       LOGGER.debug("Adding zeros for biases to back propagated deltas");
-      input = outerActivationGradient.withBiasUnit(true, context);
-      input.getActivations().putRow(0,
+      da = da.withBiasUnit(true, context);
+      da.getActivations().putRow(0,
           context.getMatrixFactory().createZeros(1, 
-              input.getActivations().getColumns()));
-
+              da.getActivations().getColumns()));
     }
-
-    NeuronsActivation activationFunctionGradient = outerLayer ? outputActivation
-        : synapses.getActivationFunction().activationGradient(outputActivation, context);
-
-    Matrix dz =
-        input.getActivations().mul(
-            activationFunctionGradient.getActivations().transpose());
     
-    if (input.getFeatureCountIncludingBias() != synapses.getAxons().getRightNeurons()
+    Matrix dz = outerLayer ? da.getActivations()
+        : da.getActivations().mul(synapses.getActivationFunction()
+            .activationGradient(axonsActivation, context).getActivations());
+
+    if (da.getFeatureCountIncludingBias() != synapses.getAxons().getRightNeurons()
         .getNeuronCountIncludingBias()) {
       throw new IllegalArgumentException("Expected feature count to be:"
           + synapses.getAxons().getRightNeurons().getNeuronCountIncludingBias() + " but was:"
-          + input.getFeatureCountIncludingBias());
+          + da.getFeatureCountIncludingBias());
     }
     
     NeuronsActivation dzN = new NeuronsActivation(dz, 
         synapses.getAxons().getRightNeurons().hasBiasUnit(),
-        outerActivationGradient.getFeatureOrientation());
+        da.getFeatureOrientation());
 
     LOGGER.debug(context.toString() + " Pushing data right to left through axons...");
     NeuronsActivation inputGradient =
         synapses.getAxons().pushRightToLeft(dzN, context.createAxonsContext());
     
-    Matrix axonsGradient = dz
-        .mmul(this.inputActivation.getActivations());
 
+    double numberOfTrainingExamples = da.getActivations().getColumns();
+    
+    Matrix axonsGradient = dz
+        .mmul(this.inputActivation.getActivations()).div(numberOfTrainingExamples);
+   
     if (inputGradient.isBiasUnitIncluded()) {
       LOGGER.debug("Removing biases from back propagated deltas");
       inputGradient = new NeuronsActivation(adjustDeltas(inputGradient.getActivations()), false,
