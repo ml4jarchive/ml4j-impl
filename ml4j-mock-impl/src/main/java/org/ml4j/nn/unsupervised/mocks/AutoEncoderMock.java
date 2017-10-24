@@ -19,6 +19,7 @@ package org.ml4j.nn.unsupervised.mocks;
 import org.ml4j.mocks.MatrixMock;
 import org.ml4j.nn.ForwardPropagation;
 import org.ml4j.nn.axons.mocks.AxonsMock;
+import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.mocks.ForwardPropagationMock;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -135,19 +136,20 @@ public class AutoEncoderMock implements AutoEncoder {
         
     NeuronsActivation inFlightActivations = inputActivation;
     int layerIndex = 0;
-
+    List<DirectedLayerActivation> activations = new ArrayList<>();
     for (FeedForwardLayer<?, ?> layer : getLayers()) {
 
       if (layerIndex >= context.getStartLayerIndex() && layerIndex <= endLayerIndex) {
 
-        inFlightActivations =
-            layer.forwardPropagate(inFlightActivations, context.createLayerContext(layerIndex))
-                .getOutput();
+        DirectedLayerActivation inFlightLayerActivations = 
+            layer.forwardPropagate(inFlightActivations, context.createLayerContext(layerIndex));
+        activations.add(inFlightLayerActivations);
+        inFlightActivations = inFlightLayerActivations.getOutput();
       }
       layerIndex++;
 
     }
     
-    return new ForwardPropagationMock(inFlightActivations);
+    return new ForwardPropagationMock(activations, inFlightActivations);
   }
 }

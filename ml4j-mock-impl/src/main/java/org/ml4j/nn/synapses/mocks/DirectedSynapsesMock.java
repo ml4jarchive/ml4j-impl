@@ -75,6 +75,11 @@ public class DirectedSynapsesMock implements DirectedSynapses<Axons<?, ?, ?>> {
   public DirectedSynapsesActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
       DirectedSynapsesContext synapsesContext) {
    
+    if (!inputNeuronsActivation.isBiasUnitIncluded() && axons.getLeftNeurons().hasBiasUnit()) {
+      inputNeuronsActivation = inputNeuronsActivation.withBiasUnit(true, synapsesContext);
+    }
+    
+    
     LOGGER.debug("Forward propagating through DirectedSynapses");
     NeuronsActivation axonsOutputActivation = 
         axons.pushLeftToRight(inputNeuronsActivation, 
@@ -83,7 +88,8 @@ public class DirectedSynapsesMock implements DirectedSynapses<Axons<?, ?, ?>> {
     NeuronsActivation activationFunctionOutputActivation = 
         activationFunction.activate(axonsOutputActivation, synapsesContext);
     
-    return new DirectedSynapsesActivationMock(activationFunctionOutputActivation);
+    return new DirectedSynapsesActivationMock(this, 
+        inputNeuronsActivation, activationFunctionOutputActivation);
   
   }
 

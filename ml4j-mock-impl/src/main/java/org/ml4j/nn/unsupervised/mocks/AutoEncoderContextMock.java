@@ -78,4 +78,24 @@ public class AutoEncoderContextMock implements AutoEncoderContext {
   public Integer getEndLayerIndex() {
     return endLayerIndex;
   }
+
+  @Override
+  public int getTrainingIterations() {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  @Override
+  public double getTrainingLearningRate() {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  @Override
+  public void setTrainingIterations(int arg0) {
+    throw new UnsupportedOperationException("Not yet implemented");    
+  }
+
+  @Override
+  public void setTrainingLearningRate(double arg0) {
+    throw new UnsupportedOperationException("Not yet implemented");    
+  }
 }
