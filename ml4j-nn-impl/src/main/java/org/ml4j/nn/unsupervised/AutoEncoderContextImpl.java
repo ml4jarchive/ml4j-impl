@@ -59,4 +59,24 @@ public class AutoEncoderContextImpl implements AutoEncoderContext {
   public Integer getEndLayerIndex() {
     throw new UnsupportedOperationException("Not implemented yet");
   }
+
+  @Override
+  public int getTrainingIterations() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public double getTrainingLearningRate() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void setTrainingIterations(int iterations) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void setTrainingLearningRate(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
 }

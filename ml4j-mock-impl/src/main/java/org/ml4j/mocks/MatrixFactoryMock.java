@@ -36,10 +36,36 @@ public class MatrixFactoryMock implements MatrixFactory {
     }
     return createMatrix(data);
   }
+  
+  @Override
+  public Matrix createOnes(int arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
 
   @Override
   public Matrix createMatrix(double[][] data) {
     return new MatrixMock(data);
+  }
+  
+  @Override
+  public Matrix createMatrix() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix createMatrix(double[] arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix createMatrix(int arg0, int arg1, double[] arg2) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix createMatrix(int arg0, int arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   @Override
@@ -51,4 +77,20 @@ public class MatrixFactoryMock implements MatrixFactory {
   public Matrix createRandn(int rows, int columns) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
+
+  @Override
+  public Matrix createHorizontalConcatenation(Matrix arg0, Matrix arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+ 
+  @Override
+  public Matrix createRand(int arg0, int arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix createVerticalConcatenation(Matrix arg0, Matrix arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+ 
 }
