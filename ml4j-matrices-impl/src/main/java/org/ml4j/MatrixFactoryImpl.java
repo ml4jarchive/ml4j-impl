@@ -31,7 +31,6 @@ public class MatrixFactoryImpl implements MatrixFactory {
     this.delegatedFactory = new MatrixFactoryMock();
   }
 
-
   @Override
   public Matrix createOnes(int rows, int columns) {
     return delegatedFactory.createOnes(rows, columns);
@@ -53,19 +52,17 @@ public class MatrixFactoryImpl implements MatrixFactory {
   }
 
   @Override
-  public Matrix createMatrix(int arg0, int arg1) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-
-  @Override
   public Matrix createMatrix(int arg0, int arg1, double[] arg2) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 
-  
   @Override
   public Matrix createMatrix() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix createMatrix(int arg0, int arg1) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 
@@ -87,7 +84,6 @@ public class MatrixFactoryImpl implements MatrixFactory {
   @Override
   public Matrix createRand(int arg0, int arg1) {
     throw new UnsupportedOperationException("Not implemented yet");
-
   }
 
   @Override
