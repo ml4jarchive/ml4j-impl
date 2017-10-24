@@ -54,7 +54,7 @@ public class DirectedLayerContextMock implements DirectedLayerContext {
   }
 
   @Override
-  public DirectedSynapsesContext createSynapsesContext() {
+  public DirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
     return new DirectedSynapsesContextMock(matrixFactory);
   }
 }

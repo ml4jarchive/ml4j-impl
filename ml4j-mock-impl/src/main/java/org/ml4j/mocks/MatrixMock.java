@@ -56,10 +56,20 @@ public class MatrixMock implements Matrix {
   public int getRows() {
     return rows;
   }
+  
+  @Override
+  public Matrix getRows(int[] arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
 
   @Override
   public int getColumns() {
     return columns;
+  }
+  
+  @Override
+  public Matrix getColumns(int[] arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   @Override
@@ -116,10 +126,25 @@ public class MatrixMock implements Matrix {
     }
     return new MatrixMock(dataArray);
   }
+  
+  @Override
+  public Matrix mmul(Matrix arg0, Matrix arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
 
   @Override
   public double get(int row, int column) {
     return data[row][column];
+  }
+  
+  @Override
+  public double get(int arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+  
+  @Override
+  public Matrix get(int[] arg0, int[] arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   @Override
@@ -161,5 +186,191 @@ public class MatrixMock implements Matrix {
       }
     }
     return new MatrixMock(dataArray);
+  }
+
+  @Override
+  public Matrix add(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix add(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix addi(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix addi(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public int argmax() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix copy(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix div(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix divi(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix diviColumnVector(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public double dot(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public int[] findIndices() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public int getLength() {
+    throw new UnsupportedOperationException("Not implemented yet");
+
+  }
+
+  @Override
+  public Matrix getRowRange(int arg0, int arg1, int arg2) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix mul(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix mul(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix muli(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix muli(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void put(int arg0, double arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void put(int arg0, int arg1, double arg2) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void put(int[] arg0, int arg1, Matrix arg2) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void putColumn(int arg0, Matrix arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void putRow(int arg0, Matrix arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public void reshape(int arg0, int arg1) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public int[] rowArgmaxs() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix rowSums() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix sub(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix subi(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public double sum() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public double[][] toArray2() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix transpose() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix asCudaMatrix() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix asJBlasMatrix() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix expi() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix log() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix logi() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix pow(int arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public Matrix powi(int arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 }
