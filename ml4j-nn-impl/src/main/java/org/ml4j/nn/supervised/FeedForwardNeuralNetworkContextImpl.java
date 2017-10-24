@@ -22,7 +22,7 @@ import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.DirectedLayerContextImpl;
 
 /**
- * Simple default implementation of AutoEncoderContext.
+ * Simple default implementation of FeedForwardNeuralNetworkContext.
  * 
  * @author Michael Lavelle
  * 

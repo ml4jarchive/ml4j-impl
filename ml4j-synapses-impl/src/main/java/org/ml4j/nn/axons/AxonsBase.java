@@ -17,15 +17,25 @@
 package org.ml4j.nn.axons;
 
 import org.ml4j.Matrix;
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AxonsImpl implements FullyConnectedAxons {
+/**
+ * Default base Axons implementation.
+ * 
+ * @author Michael Lavelle
+ *
+ * @param <L> The type of Neurons on the left hand side of these Axons
+ * @param <R> The type of Neurons on the right hand side of these Axons
+ * @param <A> The type of these Axons
+ */
+public abstract class AxonsBase<L extends Neurons, 
+    R extends Neurons, A extends Axons<L, R, A>> implements Axons<L, R, A> {
 
   /**
    * Default serialization id.
@@ -33,32 +43,37 @@ public class AxonsImpl implements FullyConnectedAxons {
   private static final long serialVersionUID = 1L;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(
-      AxonsImpl.class);
+      AxonsBase.class);
   
-  private Neurons leftNeurons;
-  private Neurons rightNeurons;
-  private Matrix connectionWeights;
+  protected L leftNeurons;
+  protected R rightNeurons;
+  protected MatrixFactory matrixFactory;
+  protected Matrix connectionWeights;
   
   /**
-   * Construct a new mock Axons instance.
+   * Construct a new Axons instance.
    * 
    * @param leftNeurons The Neurons on the left hand side of these Axons
    * @param rightNeurons The Neurons on the right hand side of these Axons
    * @param connectionWeights The connection weights Matrix
    */
-  public AxonsImpl(Neurons leftNeurons, Neurons rightNeurons, Matrix connectionWeights) {
+  public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
+      Matrix connectionWeights) {
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
-    this.connectionWeights = connectionWeights;
+    this.matrixFactory = matrixFactory;
+    this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
+        rightNeurons.getNeuronCountIncludingBias());
+    adjustConnectionWeights(connectionWeights, ConnectionWeightsAdjustmentDirection.ADDITION);
   }
   
   @Override
-  public Neurons getLeftNeurons() {
+  public L getLeftNeurons() {
     return leftNeurons;
   }
 
   @Override
-  public Neurons getRightNeurons() {
+  public R getRightNeurons() {
     return rightNeurons;
   }
 
@@ -96,18 +111,18 @@ public class AxonsImpl implements FullyConnectedAxons {
         rightNeuronsActivation.getFeatureOrientation()).withBiasUnit(leftNeurons.hasBiasUnit(),
             axonsContext);
   }
-
-  @Override
-  public FullyConnectedAxons dup() {
-    return new AxonsImpl(leftNeurons, rightNeurons, connectionWeights.dup());
-  }
-
-  public void setConnectionWeights(Matrix connectionWeights) {
-    this.connectionWeights = connectionWeights;
-  }
   
   @Override
   public Matrix getDetachedConnectionWeights() {
     return connectionWeights.dup();
+  }
+  
+  protected void adjustConnectionWeights(Matrix adjustment,
+      ConnectionWeightsAdjustmentDirection adjustmentDirection) {
+    if (adjustmentDirection == ConnectionWeightsAdjustmentDirection.ADDITION) {
+      connectionWeights.addi(adjustment);
+    } else {
+      connectionWeights.subi(adjustment);
+    }
   }
 }

@@ -2,6 +2,7 @@ package org.ml4j.nn.axons.mocks;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -74,6 +75,16 @@ public class AxonsMock implements FullyConnectedAxons {
     return new AxonsMock(leftNeurons, rightNeurons, connectionWeights.dup());
   }
 
+  @Override
+  public void adjustConnectionWeights(Matrix adjustment,
+      ConnectionWeightsAdjustmentDirection adjustmentDirection) {
+    if (adjustmentDirection == ConnectionWeightsAdjustmentDirection.ADDITION) {
+      connectionWeights.addi(adjustment);
+    } else {
+      connectionWeights.subi(adjustment);
+    }
+  }
+  
   public void setConnectionWeights(Matrix connectionWeights) {
     this.connectionWeights = connectionWeights;
   }

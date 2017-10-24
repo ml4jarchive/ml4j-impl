@@ -33,7 +33,7 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
 
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
-    LOGGER.debug("Activating through SigmoidActivationFunctionMock");
+    LOGGER.debug("Activating through SigmoidActivationFunction");
     Matrix sigmoidOfInputActivationsMatrix = input.getActivations().sigmoid();
     return new NeuronsActivation(sigmoidOfInputActivationsMatrix, input.isBiasUnitIncluded(),
         input.getFeatureOrientation());

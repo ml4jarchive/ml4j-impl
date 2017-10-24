@@ -18,6 +18,7 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
 import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
+import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CostFunction;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
@@ -137,12 +138,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
         // Transpose the axon gradients into matrices that correspond to the orientation of the
         // connection weights ( COLUMNS_SPAN_FEATURE_SET )
         Matrix axonsGrad = trainableAxonsGradients.get(axonsIndex).transpose();
-        Matrix exisitingAxonsWeights = trainableAxons.getDetachedConnectionWeights();
 
         // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
         // gradient matrices
-        Matrix newAxonsWeights = exisitingAxonsWeights.sub(axonsGrad.mul(learningRate));
-        trainableAxons.setConnectionWeights(newAxonsWeights);
+        trainableAxons.adjustConnectionWeights(axonsGrad.mul(learningRate), 
+            ConnectionWeightsAdjustmentDirection.SUBTRACTION);
       }
 
       // Obtain the cost from the cost function
