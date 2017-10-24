@@ -68,7 +68,7 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
   @Override
   public DirectedLayerGradient backPropagate(NeuronsActivation activationGradient, 
       DirectedLayerContext arg1,
-      boolean outerLayer) {
+      boolean outerMostLayer) {
     
     LOGGER.debug(arg1.toString() + ":" 
           + "Back propagating through layer activation....");
@@ -79,15 +79,16 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     Collections.reverse(reversedSynapseActivations);
     NeuronsActivation actGrad = activationGradient;
     int index = reversedSynapseActivations.size() - 1;
+    boolean outerMostSynapses = outerMostLayer;
     List<DirectedSynapsesGradient> acts = new ArrayList<>();
     for (DirectedSynapsesActivation activation : reversedSynapseActivations) {
       DirectedSynapsesContext context = arg1.createSynapsesContext(index);
       DirectedSynapsesGradient grad = 
-          activation.backPropagate(actGrad, context, outerLayer);
+          activation.backPropagate(actGrad, context, outerMostSynapses);
       actGrad = grad.getOutput();
-      outerLayer = false;
+      outerMostSynapses = false;
       acts.add(grad);
-      //index--;
+      index--;
     }
     return new DirectedLayerGradientImpl(acts);
   }

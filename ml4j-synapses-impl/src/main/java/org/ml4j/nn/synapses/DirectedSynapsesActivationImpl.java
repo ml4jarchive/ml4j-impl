@@ -68,7 +68,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
 
   @Override
   public DirectedSynapsesGradient backPropagate(NeuronsActivation da,
-      DirectedSynapsesContext context, boolean outerLayer) {
+      DirectedSynapsesContext context, boolean outerMostSynapses) {
    
     LOGGER.debug(context.toString() + " Back propagating through synapses activation....");
    
@@ -81,7 +81,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
               da.getActivations().getColumns()));
     }
     
-    Matrix dz = outerLayer ? da.getActivations()
+    Matrix dz = outerMostSynapses ? da.getActivations()
         : da.getActivations().mul(synapses.getActivationFunction()
             .activationGradient(axonsActivation, context).getActivations());
 
