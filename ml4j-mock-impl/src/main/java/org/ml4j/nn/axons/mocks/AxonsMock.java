@@ -1,6 +1,7 @@
 package org.ml4j.nn.axons.mocks;
 
 import org.ml4j.Matrix;
+import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.FullyConnectedAxons;
@@ -48,8 +49,8 @@ public class AxonsMock implements FullyConnectedAxons {
   }
 
   @Override
-  public NeuronsActivation pushLeftToRight(NeuronsActivation leftNeuronsActivation,
-      AxonsContext axonsContext) {
+  public AxonsActivation pushLeftToRight(NeuronsActivation leftNeuronsActivation,
+      AxonsActivation previousRightToLeftActivation, AxonsContext axonsContext) {
     LOGGER.debug("Pushing left to right through Axons");
     if (leftNeuronsActivation.getFeatureOrientation()
             != NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
@@ -59,14 +60,14 @@ public class AxonsMock implements FullyConnectedAxons {
     Matrix outputMatrix =
         leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext).getActivations()
             .mmul(connectionWeights);
-    return new NeuronsActivation(outputMatrix, rightNeurons.hasBiasUnit(),
+    return new AxonsActivationMock(new NeuronsActivation(outputMatrix, rightNeurons.hasBiasUnit(),
         leftNeuronsActivation.getFeatureOrientation()).withBiasUnit(rightNeurons.hasBiasUnit(),
-            axonsContext);
+            axonsContext));
   }
 
   @Override
-  public NeuronsActivation pushRightToLeft(NeuronsActivation rightNeuronsActivation,
-      AxonsContext axonsContext) {
+  public AxonsActivation pushRightToLeft(NeuronsActivation rightNeuronsActivation,
+      AxonsActivation previousLeftToRightActivation, AxonsContext axonsContext) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 

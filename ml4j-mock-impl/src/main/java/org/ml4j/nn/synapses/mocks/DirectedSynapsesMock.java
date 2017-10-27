@@ -82,8 +82,8 @@ public class DirectedSynapsesMock implements DirectedSynapses<Axons<?, ?, ?>> {
     
     LOGGER.debug("Forward propagating through DirectedSynapses");
     NeuronsActivation axonsOutputActivation = 
-        axons.pushLeftToRight(inputNeuronsActivation, 
-            synapsesContext.createAxonsContext());
+        axons.pushLeftToRight(inputNeuronsActivation, null, 
+            synapsesContext.createAxonsContext()).getOutput();
     
     NeuronsActivation activationFunctionOutputActivation = 
         activationFunction.activate(axonsOutputActivation, synapsesContext);
