@@ -34,6 +34,11 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through SigmoidActivationFunction");
+    if (input.isBiasUnitIncluded()) {
+      throw new UnsupportedOperationException(
+          "Activations passing through activation function should not include a bias unit"
+          + " as this has not yet been implemented");
+    }
     Matrix sigmoidOfInputActivationsMatrix = NeuralNetUtils.softmax(input.getActivations());
     return new NeuronsActivation(sigmoidOfInputActivationsMatrix, input.isBiasUnitIncluded(),
         input.getFeatureOrientation());
@@ -42,7 +47,11 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
-    
+    if (outputActivation.isBiasUnitIncluded()) {
+      throw new UnsupportedOperationException(
+          "Activations passing through activation function should not include a bias unit"
+          + " as this has not yet been implemented");
+    }
     LOGGER.debug("Performing softmax gradient of NeuronsActivation");
     return new NeuronsActivation(
         NeuralNetUtils.softmaxGradient(outputActivation.getActivations()),
