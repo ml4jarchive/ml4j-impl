@@ -14,28 +14,40 @@
  * limitations under the License.
  */
 
-package org.ml4j.nn.unsupervised;
-
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.supervised.FeedForwardNeuralNetworkContextImpl;
-import org.ml4j.nn.unsupervised.AutoEncoderContext;
+package org.ml4j.nn.axons;
 
 /**
- * Simple default implementation of AutoEncoderContext.
+ * Simple mock implementation of AxonsContext.
  * 
  * @author Michael Lavelle
- * 
  */
-public class AutoEncoderContextImpl 
-    extends FeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
+import org.ml4j.MatrixFactory;
+import org.ml4j.nn.axons.AxonsContext;
+
+public class AxonsContextImpl implements AxonsContext {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
-
-  public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
-      Integer endLayerIndex) {
-    super(matrixFactory, startLayerIndex, endLayerIndex);
+  
+  /**
+   * The MatrixFactory we configure for this context.
+   */
+  private MatrixFactory matrixFactory;
+  
+  /**
+   * Construct a new mock AxonsContext.
+   * 
+   * @param matrixFactory The MatrixFactory we configure for this context
+   */
+  public AxonsContextImpl(MatrixFactory matrixFactory) {
+    this.matrixFactory = matrixFactory;
   }
+
+  @Override
+  public MatrixFactory getMatrixFactory() {
+    return matrixFactory;
+  }
+
 }

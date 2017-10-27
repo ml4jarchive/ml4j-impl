@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 
-package org.ml4j.nn.unsupervised;
+package org.ml4j.nn.costfunctions;
 
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.supervised.FeedForwardNeuralNetworkContextImpl;
-import org.ml4j.nn.unsupervised.AutoEncoderContext;
+import org.ml4j.Matrix;
 
 /**
- * Simple default implementation of AutoEncoderContext.
+ * Interface for a cost function which calculates cost of generating an output Matrix
+ * given a desired output Matrix. 
  * 
  * @author Michael Lavelle
- * 
  */
-public class AutoEncoderContextImpl 
-    extends FeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
+public interface CostFunction {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-
-  public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
-      Integer endLayerIndex) {
-    super(matrixFactory, startLayerIndex, endLayerIndex);
-  }
+  double getCost(Matrix desiredOutputs, Matrix actualOutputs);
 }

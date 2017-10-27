@@ -27,14 +27,14 @@ import org.slf4j.LoggerFactory;
  * @author Michael Lavelle
  *
  */
-public class SigmoidActivationFunction implements DifferentiableActivationFunction {
+public class SoftmaxActivationFunction implements DifferentiableActivationFunction {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SigmoidActivationFunction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SoftmaxActivationFunction.class);
 
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through SigmoidActivationFunction");
-    Matrix sigmoidOfInputActivationsMatrix = input.getActivations().sigmoid();
+    Matrix sigmoidOfInputActivationsMatrix = NeuralNetUtils.softmax(input.getActivations());
     return new NeuronsActivation(sigmoidOfInputActivationsMatrix, input.isBiasUnitIncluded(),
         input.getFeatureOrientation());
   }
@@ -43,9 +43,9 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
     
-    LOGGER.debug("Performing sigmoid gradient of NeuronsActivation");
+    LOGGER.debug("Performing softmax gradient of NeuronsActivation");
     return new NeuronsActivation(
-        NeuralNetUtils.sigmoidGradient(outputActivation.getActivations()),
+        NeuralNetUtils.softmaxGradient(outputActivation.getActivations()),
         outputActivation.isBiasUnitIncluded(), outputActivation.getFeatureOrientation());
 
   }

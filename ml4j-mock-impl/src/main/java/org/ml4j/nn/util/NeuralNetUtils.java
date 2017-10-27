@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package org.ml4j.nn.unsupervised;
+package org.ml4j.nn.util;
 
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.supervised.FeedForwardNeuralNetworkContextImpl;
-import org.ml4j.nn.unsupervised.AutoEncoderContext;
+import org.ml4j.Matrix;
 
 /**
- * Simple default implementation of AutoEncoderContext.
+ * Neural Network Utils.
  * 
  * @author Michael Lavelle
- * 
  */
-public class AutoEncoderContextImpl 
-    extends FeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
+public class NeuralNetUtils {
 
   /**
-   * Default serialization id.
+   * Returns a matrix that has the first derivative of the sigmoid function applied to each element
+   * of given input matrix. http://en.wikipedia.org/wiki/Sigmoid_function
    */
-  private static final long serialVersionUID = 1L;
-
-  public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
-      Integer endLayerIndex) {
-    super(matrixFactory, startLayerIndex, endLayerIndex);
+  public static Matrix sigmoidGradient(Matrix input) {
+    Matrix result = null;
+    result = input;
+    Matrix sig = result.sigmoid();
+    result = sig.subi(sig.mul(sig));
+    return result;
   }
 }

@@ -14,78 +14,75 @@
 
 package org.ml4j.nn.unsupervised;
 
-import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.FeedForwardNeuralNetworkBase;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation of AutoEncoder consisting of 2 default FeedForwardLayers.
+ * Default implementation of AutoEncoder consisting of FeedForwardLayers.
  *
  * @author Michael Lavelle
  */
-public class AutoEncoderImpl implements AutoEncoder {
+public class AutoEncoderImpl extends 
+    FeedForwardNeuralNetworkBase<AutoEncoderContext, AutoEncoder> implements AutoEncoder {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
-
+  
+  private static final Logger LOGGER = LoggerFactory.getLogger(AutoEncoderImpl.class);
+ 
+  /**
+   * Constructor for a simple 2-layer AutoEncoder.
+   * 
+   * @param encodingLayer The encoding Layer
+   * @param decodingLayer The decoding Layer
+   */
   public AutoEncoderImpl(FeedForwardLayer<?, ?> encodingLayer,
       FeedForwardLayer<?, ?> decodingLayer) {
-    throw new UnsupportedOperationException("Not implemented yet");
+      super(encodingLayer, decodingLayer);
   }
-
-  @Override
-  public void train(NeuronsActivation trainingDataActivations, AutoEncoderContext trainingContext) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  @Override
-  public List<FeedForwardLayer<?, ?>> getLayers() {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  @Override
-  public int getNumberOfLayers() {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  @Override
-  public FeedForwardLayer<?, ?> getLayer(int layerIndex) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  @Override
-  public FeedForwardLayer<?, ?> getFirstLayer() {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  @Override
-  public FeedForwardLayer<?, ?> getFinalLayer() {
-    throw new UnsupportedOperationException("Not implemented yet");
+  
+  /**
+   * Constructor for a multi-layer AutoEncoder.
+   * 
+   * @param layers The layers
+   */
+  public AutoEncoderImpl(FeedForwardLayer<?, ?>... layers) {
+      super(layers);
   }
 
   @Override
   public AutoEncoder dup() {
-    throw new UnsupportedOperationException("Not implemented yet");
+    return new AutoEncoderImpl(getLayer(0), getLayer(1));
   }
 
   @Override
   public NeuronsActivation encode(NeuronsActivation unencoded, AutoEncoderContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
-
+    LOGGER.debug("Encoding through AutoEncoder");
+    if (context.getEndLayerIndex() == null
+        || context.getEndLayerIndex() >= (this.getNumberOfLayers() - 1)) {
+      throw new IllegalArgumentException("End layer index for encoding through AutoEncoder "
+          + " must be specified and must not be the index of the last layer");
+    }
+    return forwardPropagate(unencoded, context).getOutputs();
   }
 
   @Override
   public NeuronsActivation decode(NeuronsActivation encoded, AutoEncoderContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    LOGGER.debug("Decoding through AutoEncoder");
+    if (context.getStartLayerIndex() == 0) {
+      throw new IllegalArgumentException("Start layer index for decoding through AutoEncoder "
+          + " must not be 0 - the index of the first layer");
+    }
+    return forwardPropagate(encoded, context).getOutputs();
   }
 
   @Override
-  public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
-      AutoEncoderContext context) {
-    throw new UnsupportedOperationException("Not implemented yet");
+  public void train(NeuronsActivation inputActivations, AutoEncoderContext trainingContext) {
+    super.train(inputActivations, inputActivations, trainingContext);
   }
 }

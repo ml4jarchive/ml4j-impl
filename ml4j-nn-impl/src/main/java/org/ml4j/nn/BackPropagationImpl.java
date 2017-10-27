@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.ml4j.nn.unsupervised;
+package org.ml4j.nn;
 
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.supervised.FeedForwardNeuralNetworkContextImpl;
-import org.ml4j.nn.unsupervised.AutoEncoderContext;
+import org.ml4j.nn.BackPropagation;
+import org.ml4j.nn.layers.DirectedLayerGradient;
+
+import java.util.List;
 
 /**
- * Simple default implementation of AutoEncoderContext.
+ * Default implementation of BackPropagation.
  * 
  * @author Michael Lavelle
- * 
  */
-public class AutoEncoderContextImpl 
-    extends FeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
+public class BackPropagationImpl implements BackPropagation {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+  private List<DirectedLayerGradient> directedLayerGradients;
 
-  public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
-      Integer endLayerIndex) {
-    super(matrixFactory, startLayerIndex, endLayerIndex);
+  public BackPropagationImpl(List<DirectedLayerGradient> directedLayerGradients) {
+    this.directedLayerGradients = directedLayerGradients;
+  }
+
+  @Override
+  public List<DirectedLayerGradient> getDirectedLayerGradients() {
+    return directedLayerGradients;
   }
 }
