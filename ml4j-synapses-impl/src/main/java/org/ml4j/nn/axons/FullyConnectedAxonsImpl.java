@@ -47,15 +47,24 @@ public class FullyConnectedAxonsImpl
    */
   public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
       MatrixFactory matrixFactory) {
-    this(leftNeurons, rightNeurons, matrixFactory, 
-        createInitialAxonConnectionWeights(leftNeurons, rightNeurons, matrixFactory));
+    super(leftNeurons, rightNeurons, matrixFactory);
   }
   
-  private FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
+  public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
       MatrixFactory matrixFactory, Matrix connectionWeights) {
-    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights);
+    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights, null);
   }
   
+  protected FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 
+        Matrix connectionWeights, Matrix connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+  }
+ 
+  @Override
+  protected Matrix createConnectionWeightsMask(MatrixFactory matrixFactory) {
+    return null;
+  }
+
   /**
    * Obtain the initial axon connection weights.
    * 
@@ -64,22 +73,22 @@ public class FullyConnectedAxonsImpl
    * @param matrixFactory The matrix factory
    * @return The initial connection weights
    */
-  private static Matrix createInitialAxonConnectionWeights(Neurons inputNeurons,
-      Neurons outputNeurons, MatrixFactory matrixFactory) {
+  protected Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory) {
    
     LOGGER.debug("Initialising FullyConnectedAxon weights...");
     
-    Matrix weights = matrixFactory.createRandn(inputNeurons.getNeuronCountIncludingBias(),
-        outputNeurons.getNeuronCountIncludingBias());
+    Matrix weights = matrixFactory.createRandn(leftNeurons.getNeuronCountIncludingBias(),
+        rightNeurons.getNeuronCountIncludingBias());
 
     double scalingFactor = 
-        Math.sqrt(2 / ((double)inputNeurons.getNeuronCountIncludingBias()));
+        Math.sqrt(2 / ((double)leftNeurons.getNeuronCountIncludingBias()));
     
     return weights.mul(scalingFactor);
   }
 
   @Override
   public FullyConnectedAxons dup() {
-    return new FullyConnectedAxonsImpl(leftNeurons, rightNeurons, matrixFactory, connectionWeights);
+    return new FullyConnectedAxonsImpl(leftNeurons, rightNeurons, 
+        connectionWeights.dup(), connectionWeightsMask);
   }
 }

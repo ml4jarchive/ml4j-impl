@@ -18,8 +18,27 @@ public abstract class TrainableAxonsBase<L extends Neurons,
     extends AxonsBase<L, R, A> implements TrainableAxons<L, R, A> {
 
   public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      MatrixFactory matrixFactory, Matrix initialConnectionWeights, 
+          Matrix connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, matrixFactory, 
+        initialConnectionWeights, connectionWeightsMask);
+  }
+  
+  public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
       MatrixFactory matrixFactory, Matrix initialConnectionWeights) {
-    super(leftNeurons, rightNeurons, matrixFactory, initialConnectionWeights);
+    super(leftNeurons, rightNeurons, matrixFactory, 
+        initialConnectionWeights);
+  }
+  
+  public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      MatrixFactory matrixFactory) {
+    super(leftNeurons, rightNeurons, matrixFactory);
+  }
+  
+ 
+  protected TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      Matrix connectionWeights, Matrix connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
   }
 
   /**
@@ -30,6 +49,6 @@ public abstract class TrainableAxonsBase<L extends Neurons,
   @Override
   public void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection) {
-    super.adjustConnectionWeights(adjustment, adjustmentDirection);
+    super.adjustConnectionWeights(adjustment, adjustmentDirection, false);
   }
 }
