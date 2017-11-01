@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.layers;
 
+import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.FullyConnectedAxons;
@@ -52,6 +53,22 @@ public class FullyConnectedFeedForwardLayerImpl
     super(
         new FullyConnectedAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory),
+        primaryActivationFunction);
+  }
+  
+  /**
+   * @param inputNeurons The input Neurons.
+   * @param outputNeurons The output Neurons
+   * @param primaryActivationFunction The primary activation function.
+   * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param connectionWeights The connection weights
+   */
+  public FullyConnectedFeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons,
+      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
+      Matrix connectionWeights) {
+    super(
+        new FullyConnectedAxonsImpl(inputNeurons, outputNeurons,
+            matrixFactory, connectionWeights),
         primaryActivationFunction);
   }
 

@@ -16,7 +16,6 @@ package org.ml4j.nn.axons;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +39,6 @@ public class ConvolutionalAxonsImpl extends
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConvolutionalAxonsImpl.class);
 
-  @SuppressWarnings("unused")
-  private Matrix weightsMask;
   private boolean sameBiasWithinEachFilter;
   private Map<Integer, int[][]> sharedValueIndexesByFilterIndex;
 
@@ -53,15 +50,20 @@ public class ConvolutionalAxonsImpl extends
    */
   public ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
       MatrixFactory matrixFactory) {
-    this(leftNeurons, rightNeurons, matrixFactory,
-        createInitialAxonConnectionWeights(leftNeurons, rightNeurons, matrixFactory));
+    super(leftNeurons, rightNeurons, matrixFactory);
+    this.sharedValueIndexesByFilterIndex = new HashMap<Integer, int[][]>();
   }
-
-  private ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
+  
+  public ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
       MatrixFactory matrixFactory, Matrix connectionWeights) {
     super(leftNeurons, rightNeurons, matrixFactory, connectionWeights);
     this.sharedValueIndexesByFilterIndex = new HashMap<Integer, int[][]>();
-    this.weightsMask = createWeightsMask(matrixFactory);
+  }
+  
+  protected ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, 
+        Matrix connectionWeights, Matrix connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+    this.sharedValueIndexesByFilterIndex = new HashMap<Integer, int[][]>();
   }
 
   /**
@@ -72,38 +74,30 @@ public class ConvolutionalAxonsImpl extends
    * @param matrixFactory The matrix factory
    * @return The initial connection weights
    */
-  private static Matrix createInitialAxonConnectionWeights(Neurons inputNeurons,
-      Neurons outputNeurons, MatrixFactory matrixFactory) {
+  @Override
+  protected Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory) {
 
     LOGGER.debug("Initialising FullyConnectedAxon weights...");
 
-    Matrix weights = matrixFactory.createRandn(inputNeurons.getNeuronCountIncludingBias(),
-        outputNeurons.getNeuronCountIncludingBias());
+    Matrix weights = matrixFactory.createRandn(leftNeurons.getNeuronCountIncludingBias(),
+        rightNeurons.getNeuronCountIncludingBias());
 
-    double scalingFactor = Math.sqrt(2 / ((double) inputNeurons.getNeuronCountIncludingBias()));
+    double scalingFactor = Math.sqrt(2d / ((double) leftNeurons.getNeuronCountIncludingBias()));
 
     return weights.mul(scalingFactor);
   }
 
   @Override
   public ConvolutionalAxons dup() {
-    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, matrixFactory, connectionWeights);
+    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, 
+        connectionWeights, connectionWeightsMask);
   }
-
+ 
   @Override
-  public void adjustConnectionWeights(Matrix adjustmentRequest,
-      ConnectionWeightsAdjustmentDirection adjustmentDirection) {
-    applyConstraints(adjustmentRequest);
-    super.adjustConnectionWeights(adjustmentRequest, adjustmentDirection);
-  }
-
-  private void applyConstraints(Matrix adjustmentRequest) {
-    applyWeightEqualityConstraints(adjustmentRequest.muli(createWeightsMask(matrixFactory)));
-  }
-
-  private void applyWeightEqualityConstraints(Matrix adjustmentRequest) {
+  protected void applyAdditionalConnectionWeightAdjustmentConstraints(Matrix adjustmentRequest) {
+    
+    
     boolean hasBiasUnit = this.getLeftNeurons().hasBiasUnit();
-
 
     int inputWidth = (int) Math.sqrt(getInputSynapseCount() / getDepth());
     int outputWidth = (int) Math.sqrt(getOutputSynapseCount() / getFilterCount());
@@ -156,13 +150,10 @@ public class ConvolutionalAxonsImpl extends
 
     int filterOutputSize = getRightNeurons().getNeuronCountExcludingBias() / getFilterCount();
 
-
     int startColumnIndex =
         index * filterOutputSize + (this.getRightNeurons().hasBiasUnit() ? 1 : 0);
 
-
     boolean hasBiasUnit = this.getLeftNeurons().hasBiasUnit();
-
 
     int inputWidth = (int) Math.sqrt(getInputSynapseCount() / getDepth());
     int outputWidth = (int) Math.sqrt(getOutputSynapseCount() / getFilterCount());
@@ -181,7 +172,6 @@ public class ConvolutionalAxonsImpl extends
       sharedValueIndexes[column] = inds;
 
     }
-
 
     sharedValueIndexesByFilterIndex.put(index, sharedValueIndexes);
 
@@ -212,7 +202,7 @@ public class ConvolutionalAxonsImpl extends
     int[] inds = inputNeuronsIndexesForOutputNeuronIndex[column];
 
     if (inds == null) {
-      inds = createWeightsMask(matrixFactory).getColumn(column).findIndices();
+      inds = this.connectionWeightsMask.getColumn(column).findIndices();
       inputNeuronsIndexesForOutputNeuronIndex[column] = inds;
     }
 
@@ -223,12 +213,12 @@ public class ConvolutionalAxonsImpl extends
     return getRightNeurons().getNeuronCountIncludingBias();
   }
 
-
   public int getInputNeuronCount() {
     return getLeftNeurons().getNeuronCountIncludingBias();
   }
 
-  protected Matrix createWeightsMask(MatrixFactory matrixFactory) {
+  @Override
+  protected Matrix createConnectionWeightsMask(MatrixFactory matrixFactory) {
 
     Matrix thetasMask =
         matrixFactory.createZeros(this.getLeftNeurons().getNeuronCountExcludingBias(),
@@ -279,5 +269,4 @@ public class ConvolutionalAxonsImpl extends
   private int getStride() {
     return 1;
   }
-
 }

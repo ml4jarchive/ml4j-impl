@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.layers;
 
+import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.ConvolutionalAxons;
@@ -52,6 +53,22 @@ public class ConvolutionalFeedForwardLayerImpl
     super(
         new ConvolutionalAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory),
+        primaryActivationFunction);
+  }
+  
+  /**
+   * @param inputNeurons The input Neurons.
+   * @param outputNeurons The output Neurons
+   * @param primaryActivationFunction The primary activation function.
+   * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param connectionWeights The connectionWeights
+   */
+  public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
+      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
+      Matrix connectionWeights) {
+    super(
+        new ConvolutionalAxonsImpl(inputNeurons, outputNeurons,
+            matrixFactory, connectionWeights),
         primaryActivationFunction);
   }
 

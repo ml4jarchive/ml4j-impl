@@ -17,13 +17,13 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.axons.AveragePoolingAxons;
 import org.ml4j.nn.axons.AveragePoolingAxonsImpl;
 import org.ml4j.nn.neurons.Neurons3D;
 
 /**
- * Default implementation of a MaxPoolingFeedForwardLayer.
+ * Default implementation of an AveragePoolingFeedForwardLayer.
  * 
  * @author Michael Lavelle
  */
@@ -36,27 +36,25 @@ public class AveragePoolingFeedForwardLayerImpl
    */
   private static final long serialVersionUID = 1L;
  
-  public AveragePoolingFeedForwardLayerImpl(AveragePoolingAxons primaryAxons,
-      DifferentiableActivationFunction activationFunction) {
-    super(primaryAxons, activationFunction);
+  public AveragePoolingFeedForwardLayerImpl(AveragePoolingAxons primaryAxons) {
+    super(primaryAxons, new LinearActivationFunction());
   }
   
   /**
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
-   * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    */
-  public AveragePoolingFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
-      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
+  public AveragePoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
+      Neurons3D outputNeurons, MatrixFactory matrixFactory) {
     super(
         new AveragePoolingAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory),
-        primaryActivationFunction);
+        new LinearActivationFunction());
   }
 
   @Override
   public AveragePoolingFeedForwardLayer dup() {
-    return new AveragePoolingFeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
+    return new AveragePoolingFeedForwardLayerImpl(primaryAxons.dup());
   }
 }

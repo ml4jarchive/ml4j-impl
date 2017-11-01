@@ -17,7 +17,7 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.axons.MaxPoolingAxons;
 import org.ml4j.nn.axons.MaxPoolingAxonsImpl;
 import org.ml4j.nn.neurons.Neurons3D;
@@ -36,27 +36,40 @@ public class MaxPoolingFeedForwardLayerImpl
    */
   private static final long serialVersionUID = 1L;
  
-  public MaxPoolingFeedForwardLayerImpl(MaxPoolingAxons primaryAxons,
-      DifferentiableActivationFunction activationFunction) {
-    super(primaryAxons, activationFunction);
+  public MaxPoolingFeedForwardLayerImpl(MaxPoolingAxons primaryAxons) {
+    super(primaryAxons, new LinearActivationFunction());
   }
   
   /**
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
-   * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    */
-  public MaxPoolingFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
-      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
+  public MaxPoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
+      Neurons3D outputNeurons, MatrixFactory matrixFactory) {
     super(
         new MaxPoolingAxonsImpl(inputNeurons, outputNeurons,
-            matrixFactory),
-        primaryActivationFunction);
+            matrixFactory, false),
+        new LinearActivationFunction());
+  }
+  
+  /**
+   * @param inputNeurons The input Neurons.
+   * @param outputNeurons The output Neurons
+   * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param scaleOutputs Whether to scale outputs up by a factor equal to the reduction factor due
+   *        to only outputting max-elements.
+   */
+  public MaxPoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
+      Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean scaleOutputs) {
+    super(
+        new MaxPoolingAxonsImpl(inputNeurons, outputNeurons,
+            matrixFactory, scaleOutputs),
+        new LinearActivationFunction());
   }
 
   @Override
   public MaxPoolingFeedForwardLayer dup() {
-    return new MaxPoolingFeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
+    return new MaxPoolingFeedForwardLayerImpl(primaryAxons.dup());
   }
 }

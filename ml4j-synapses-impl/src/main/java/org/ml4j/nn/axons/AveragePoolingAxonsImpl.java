@@ -18,7 +18,6 @@ package org.ml4j.nn.axons;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class AveragePoolingAxonsImpl 
-    extends AxonsBase<Neurons3D, Neurons3D, AveragePoolingAxons>
+    extends PoolingAxonsBase<AveragePoolingAxons>
     implements AveragePoolingAxons {
 
   /**
@@ -48,11 +47,20 @@ public class AveragePoolingAxonsImpl
    */
   public AveragePoolingAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
       MatrixFactory matrixFactory) {
-    super(leftNeurons, rightNeurons, matrixFactory, 
-        createAxonConnectionWeights(leftNeurons, rightNeurons, matrixFactory));
+    super(leftNeurons, rightNeurons, matrixFactory);
+    if (leftNeurons.hasBiasUnit()) {
+      throw new UnsupportedOperationException("Left neurons with bias not yet supported");
+    }
+    if (rightNeurons.hasBiasUnit()) {
+      throw new UnsupportedOperationException("Left neurons with bias not yet supported");
+    }
   }
  
-  
+  protected AveragePoolingAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, 
+        Matrix connectionWeights, Matrix connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+  }
+ 
   /**
    * Obtain the axon connection weights.
    * 
@@ -61,14 +69,29 @@ public class AveragePoolingAxonsImpl
    * @param matrixFactory The matrix factory
    * @return The initial connection weights
    */
-  private static Matrix createAxonConnectionWeights(Neurons inputNeurons,
-      Neurons outputNeurons, MatrixFactory matrixFactory) {
+  @Override
+  protected Matrix createDefaultInitialConnectionWeights(
+        MatrixFactory matrixFactory) {
     LOGGER.debug("Initialising Average Pooling weights...");
-    throw new UnsupportedOperationException("Not yet implemented");
+    
+    int outputDim =
+        (int) Math.sqrt(this.getRightNeurons().getNeuronCountIncludingBias()
+            / this.getRightNeurons().getDepth());
+    int inputDim = (int) Math.sqrt(
+        this.getLeftNeurons().getNeuronCountIncludingBias() / getLeftNeurons().getDepth());
+    
+    double scaleDown = inputDim / outputDim;
+    double scalingFactor = 1d / (scaleDown * scaleDown);
+    
+    return matrixFactory.createOnes(leftNeurons.getNeuronCountIncludingBias(),
+        rightNeurons.getNeuronCountIncludingBias()).mul(scalingFactor).mul(connectionWeightsMask);
   }
+
+ 
 
   @Override
   public AveragePoolingAxons dup() {
-    return new AveragePoolingAxonsImpl(leftNeurons, rightNeurons, matrixFactory);
+    return new AveragePoolingAxonsImpl(leftNeurons, rightNeurons, 
+        connectionWeights, connectionWeightsMask);
   }
 }

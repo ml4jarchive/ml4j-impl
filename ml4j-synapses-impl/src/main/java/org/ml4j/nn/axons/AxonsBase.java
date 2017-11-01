@@ -47,8 +47,8 @@ public abstract class AxonsBase<L extends Neurons,
   
   protected L leftNeurons;
   protected R rightNeurons;
-  protected MatrixFactory matrixFactory;
   protected Matrix connectionWeights;
+  protected Matrix connectionWeightsMask;
   
   /**
    * Construct a new Axons instance.
@@ -58,15 +58,67 @@ public abstract class AxonsBase<L extends Neurons,
    * @param connectionWeights The connection weights Matrix
    */
   public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
+      Matrix connectionWeights, Matrix connectionWeightsMask) {
+    this(leftNeurons, rightNeurons, matrixFactory
+        .createZeros(leftNeurons.getNeuronCountIncludingBias(), 
+            rightNeurons.getNeuronCountIncludingBias()), connectionWeightsMask);
+    adjustConnectionWeights(connectionWeights, 
+        ConnectionWeightsAdjustmentDirection.ADDITION, true);
+  }
+  
+  /**
+   * Construct a new AxonsBase instance.
+   * 
+   * @param leftNeurons The Neurons on the left hand side of these Axons
+   * @param rightNeurons The Neurons on the right hand side of these Axons
+   */
+  public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory) {
+    this.leftNeurons = leftNeurons;
+    this.rightNeurons = rightNeurons;
+    this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
+    this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(), 
+        rightNeurons.getNeuronCountIncludingBias());
+    adjustConnectionWeights(createDefaultInitialConnectionWeights(matrixFactory), 
+        ConnectionWeightsAdjustmentDirection.ADDITION, true);
+  }
+  
+  /**
+   * Construct a new AxonsBase instance.
+   * 
+   * @param leftNeurons The Neurons on the left hand side of these Axons
+   * @param rightNeurons The Neurons on the right hand side of these Axons
+   */
+  public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
       Matrix connectionWeights) {
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
-    this.matrixFactory = matrixFactory;
-    this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
-        rightNeurons.getNeuronCountIncludingBias());
-    adjustConnectionWeights(connectionWeights, ConnectionWeightsAdjustmentDirection.ADDITION);
+    this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
+    this.connectionWeights = matrixFactory.createZeros(
+        leftNeurons.getNeuronCountIncludingBias(), rightNeurons.getNeuronCountIncludingBias());
+    adjustConnectionWeights(connectionWeights, 
+        ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
   
+  /**
+   * Construct a new Axons instance.
+   * 
+   * @param leftNeurons The Neurons on the left hand side of these Axons
+   * @param rightNeurons The Neurons on the right hand side of these Axons
+   * @param connectionWeights The connection weights Matrix
+   */
+  protected AxonsBase(L leftNeurons, R rightNeurons,
+      Matrix connectionWeights, Matrix connectionWeightsMask) {
+    this.leftNeurons = leftNeurons;
+    this.rightNeurons = rightNeurons;
+    this.connectionWeightsMask = connectionWeightsMask;
+    this.connectionWeights = connectionWeights;
+  }
+
+  protected abstract Matrix createConnectionWeightsMask(MatrixFactory matrixFactory);
+
+  protected abstract 
+      Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory);
+
   @Override
   public L getLeftNeurons() {
     return leftNeurons;
@@ -97,21 +149,25 @@ public abstract class AxonsBase<L extends Neurons,
       outputDropoutMask = previousInputDropoutMask.transpose();
     }
 
+    Matrix inputMatrix = null;
     if (inputDropoutMask != null) {
       double postDropoutScaling = getLeftInputPostDropoutScaling(axonsContext);
       if (postDropoutScaling != 1) {
-        outputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
-            .getActivations().mul(inputDropoutMask).mul(postDropoutScaling).mmul(connectionWeights);
+        inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
+            .getActivations().mul(inputDropoutMask).mul(postDropoutScaling);
+        outputMatrix = inputMatrix.mmul(connectionWeights);
       } else {
-        outputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
-            .getActivations().mul(inputDropoutMask).mmul(connectionWeights);
+        inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
+            .getActivations().mul(inputDropoutMask);
+        outputMatrix = inputMatrix.mmul(connectionWeights);
       }
 
     } else {
-      outputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
-          .getActivations().mmul(connectionWeights);
+      inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
+          .getActivations();
+      outputMatrix = inputMatrix.mmul(connectionWeights);
     }
-    
+   
     if (outputDropoutMask != null) {
       outputMatrix = outputMatrix.mul(outputDropoutMask);
     }
@@ -136,7 +192,20 @@ public abstract class AxonsBase<L extends Neurons,
     if (leftHandInputDropoutKeepProbability == 1) {
       return null;
     } else {
-      throw new UnsupportedOperationException("Dropout mask creation not implemented yet");
+
+      Matrix dropoutMask = axonsContext.getMatrixFactory().createZeros(
+          leftNeuronsActivation.getActivations().getRows(),
+          leftNeuronsActivation.getActivations().getColumns());
+      int startRow = leftNeuronsActivation.isBiasUnitIncluded() ? 1 : 0;
+      for (int i = 0; i < dropoutMask.getRows(); i++) {
+        for (int j = 0; j < dropoutMask.getColumns(); j++) {
+          if ((i < startRow) || (Math.random() < leftHandInputDropoutKeepProbability)) {
+            dropoutMask.put(i, j, 1);
+          }
+        }
+      }
+      return dropoutMask;
+
     }
   }
   
@@ -199,20 +268,24 @@ public abstract class AxonsBase<L extends Neurons,
       outputDropoutMask = previousInputDropoutMask.transpose();
     }
 
+    Matrix inputMatrix = null;
     if (inputDropoutMask != null) {
       double postDropoutScaling = getRightInputPostDropoutScaling(axonsContext);
       if (postDropoutScaling != 1) {
+        inputMatrix = rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext)
+            .getActivations().mul(inputDropoutMask).mul(postDropoutScaling);
         outputMatrix = connectionWeights
-            .mmul(rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext)
-                .getActivations().mul(inputDropoutMask).mul(postDropoutScaling));
+            .mmul(inputMatrix);
       } else {
+        inputMatrix = rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext)
+            .getActivations().mul(inputDropoutMask);
         outputMatrix = connectionWeights
-            .mmul(rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext)
-                .getActivations().mul(inputDropoutMask));
+            .mmul(inputMatrix);
       }
     } else {
-      outputMatrix = connectionWeights.mmul(rightNeuronsActivation
-          .withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext).getActivations());
+      inputMatrix = rightNeuronsActivation
+          .withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext).getActivations();
+      outputMatrix = connectionWeights.mmul(inputMatrix);
     }
     
     if (outputDropoutMask != null) {
@@ -231,11 +304,21 @@ public abstract class AxonsBase<L extends Neurons,
   }
   
   protected void adjustConnectionWeights(Matrix adjustment,
-      ConnectionWeightsAdjustmentDirection adjustmentDirection) {
+      ConnectionWeightsAdjustmentDirection adjustmentDirection, boolean initialisation) {
+    if (connectionWeightsMask != null) {
+      adjustment.muli(connectionWeightsMask);
+    }
+    if (!initialisation) {
+      applyAdditionalConnectionWeightAdjustmentConstraints(adjustment);
+    }
     if (adjustmentDirection == ConnectionWeightsAdjustmentDirection.ADDITION) {
       connectionWeights.addi(adjustment);
     } else {
       connectionWeights.subi(adjustment);
     }
+  }
+
+  protected void applyAdditionalConnectionWeightAdjustmentConstraints(Matrix adjustment) {
+    // No-op by default
   }
 }
