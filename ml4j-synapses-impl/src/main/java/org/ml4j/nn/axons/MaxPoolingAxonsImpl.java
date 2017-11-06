@@ -68,11 +68,10 @@ public class MaxPoolingAxonsImpl
   }
 
   protected MaxPoolingAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, 
-        Matrix connectionWeights, Matrix connectionWeightsMask) {
+        Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
   }
   
-
   /**
    * Obtain the initial axon connection weights.
    * 
@@ -85,7 +84,8 @@ public class MaxPoolingAxonsImpl
   protected Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory) {
     LOGGER.debug("Initialising Max Pooling weights...");
     return matrixFactory.createOnes(leftNeurons.getNeuronCountIncludingBias(),
-        rightNeurons.getNeuronCountIncludingBias()).mul(connectionWeightsMask);
+        rightNeurons.getNeuronCountIncludingBias()).mul(connectionWeightsMask
+            .getWeightsMask());
   }
 
   @Override
@@ -111,75 +111,28 @@ public class MaxPoolingAxonsImpl
       MatrixFactory matrixFactory) {
     Matrix dropoutMask = matrixFactory.createZeros(leftNeuronsActivation.getActivations().getRows(),
         leftNeuronsActivation.getActivations().getColumns());
-
-    int[][] inputMasks = createInputMasks();
-    for (int[] inputMask : inputMasks) {
-
+        
+    for (int outputNeuronIndex = 0; outputNeuronIndex < connectionWeightsMask.getWeightsMask()
+        .getColumns(); outputNeuronIndex++) {
+      int[] unmaskedInputNeuronIndexesForOutputNeuronIndex = connectionWeightsMask
+          .getUnmaskedInputNeuronIndexesForOutputNeuronIndex(outputNeuronIndex);
       for (int r = 0; r < leftNeuronsActivation.getActivations().getRows(); r++) {
         Double maxVal = null;
         Integer maxInd = null;
-        for (int i = 0; i < inputMask.length; i++) {
-          double val = leftNeuronsActivation.getActivations().get(r, inputMask[i]);
+        for (int i = 0; i < unmaskedInputNeuronIndexesForOutputNeuronIndex.length; i++) {
+          double val = leftNeuronsActivation.getActivations().get(r,
+              unmaskedInputNeuronIndexesForOutputNeuronIndex[i]);
           if (maxVal == null || val > maxVal.doubleValue()) {
-            maxInd = inputMask[i];
+            maxInd = unmaskedInputNeuronIndexesForOutputNeuronIndex[i];
             maxVal = val;
           }
         }
         dropoutMask.put(r, maxInd, 1);
-
       }
     }
     return dropoutMask;
-
   }
   
-  
-  
-  private int[][] createInputMasks() {
-
-    int outputNeuronCount = this.getRightNeurons().getNeuronCountExcludingBias();
-    int inputNeuronCount = this.getLeftNeurons().getNeuronCountExcludingBias();
-    int depth = this.getLeftNeurons().getDepth();
-
-    int outputDim = (int) Math.sqrt(outputNeuronCount / depth);
-    int inputDim = (int) Math.sqrt(inputNeuronCount / depth);
-
-    int gridInputSize = inputNeuronCount / depth;
-    int gridOutputSize = outputNeuronCount / depth;
-
-    int scale = inputDim / outputDim;
-
-    int[][] inputMasks = new int[outputDim * outputDim * depth][scale * scale];
-
-
-
-    for (int grid = 0; grid < depth; grid++) {
-      for (int i = 0; i < outputDim; i++) {
-        for (int j = 0; j < outputDim; j++) {
-
-          int startInputRow = i * scale;
-          int startInputCol = j * scale;
-          int outputInd = grid * gridOutputSize + (i * outputDim + j);
-          int[] inputMask = new int[scale * scale];
-          int ind = 0;
-          for (int r = 0; r < scale; r++) {
-            for (int c = 0; c < scale; c++) {
-              int row = startInputRow + r;
-              int col = startInputCol + c;
-              int inputInd = grid * gridInputSize + row * inputDim + col;
-              // thetasMask.put(outputInd, inputInd, 1);
-              inputMask[ind++] = inputInd;
-
-            }
-          }
-          inputMasks[outputInd] = inputMask;
-        }
-      }
-    }
-    return inputMasks;
-  }
-
-
   @Override
   protected double getLeftInputPostDropoutScaling(AxonsContext axonsContext) {
 

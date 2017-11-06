@@ -56,12 +56,12 @@ public class FullyConnectedAxonsImpl
   }
   
   protected FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 
-        Matrix connectionWeights, Matrix connectionWeightsMask) {
+        Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
   }
  
   @Override
-  protected Matrix createConnectionWeightsMask(MatrixFactory matrixFactory) {
+  protected ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory) {
     return null;
   }
 
@@ -83,7 +83,17 @@ public class FullyConnectedAxonsImpl
     double scalingFactor = 
         Math.sqrt(2 / ((double)leftNeurons.getNeuronCountIncludingBias()));
     
-    return weights.mul(scalingFactor);
+    Matrix initialWeights =  weights.mul(scalingFactor);
+    if (getLeftNeurons().hasBiasUnit()) {
+      
+      initialWeights.putRow(0, matrixFactory.createZeros(1, initialWeights.getColumns()));
+      
+    }
+    if (getRightNeurons().hasBiasUnit()) {
+      initialWeights.putColumn(0, matrixFactory.createZeros(initialWeights.getRows(),1));
+    }
+    
+    return initialWeights;
   }
 
   @Override

@@ -22,7 +22,6 @@ package org.ml4j.nn.axons;
  * @author Michael Lavelle
  */
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.axons.AxonsContext;
 
 public class AxonsContextImpl implements AxonsContext {
 

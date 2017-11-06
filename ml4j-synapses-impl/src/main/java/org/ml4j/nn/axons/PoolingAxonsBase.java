@@ -50,58 +50,23 @@ public abstract class PoolingAxonsBase<A extends PoolingAxons<A>>
   }
 
   protected PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons, 
-        Matrix connectionWeights, Matrix connectionWeightsMask) {
+        Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
   }
 
   @Override
-  protected Matrix createConnectionWeightsMask(MatrixFactory matrixFactory) {
+  protected ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory) {
     LOGGER.debug("Creating Pooling Connection Weights Mask");
     
-    int inputNeuronCount = getLeftNeurons().getNeuronCountExcludingBias();
-    int outputNeuronCount = getRightNeurons().getNeuronCountExcludingBias();
-
-    int depth = getLeftNeurons().getDepth();
+    int inputDim = leftNeurons.getWidth() * leftNeurons.getHeight();
+    int outputDim = rightNeurons.getWidth() * rightNeurons.getHeight();
     
-    Matrix thetasMask = matrixFactory.createMatrix(inputNeuronCount, outputNeuronCount);
-
-    int outputDim = (int) Math.sqrt(outputNeuronCount / depth);
-    int inputDim = (int) Math.sqrt(inputNeuronCount / depth);
-
-    int gridInputSize = inputNeuronCount / depth;
-    int gridOutputSize = outputNeuronCount / depth;
-
     int scale = inputDim / outputDim;
-
-    for (int grid = 0; grid < depth; grid++) {
-      for (int i = 0; i < outputDim; i++) {
-        for (int j = 0; j < outputDim; j++) {
-
-          int startInputRow = i * scale;
-          int startInputCol = j * scale;
-          int outputInd = grid * gridOutputSize + (i * outputDim + j);
-          for (int r = 0; r < scale; r++) {
-            for (int c = 0; c < scale; c++) {
-              int row = startInputRow + r;
-              int col = startInputCol + c;
-              int inputInd = grid * gridInputSize + row * inputDim + col;
-              thetasMask.put(inputInd, outputInd, 1);
-
-            }
-          }
-        }
-      }
-    }
     
-    if (getLeftNeurons().hasBiasUnit()) {
-      thetasMask =
-          matrixFactory.createZeros(1, thetasMask.getColumns()).appendVertically(thetasMask);
-    }
-    if (getRightNeurons().hasBiasUnit()) {
-      thetasMask =
-          matrixFactory.createZeros(thetasMask.getRows(), 1).appendHorizontally(thetasMask);
-    }
-        
-    return thetasMask;
+    int stride = (int)(Math.sqrt(scale));
+    
+    return 
+        new ConvolutionalWeightsMask(matrixFactory, 
+            leftNeurons, rightNeurons, stride, false);
   }
 }
