@@ -18,7 +18,6 @@ package org.ml4j.nn.axons;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -48,17 +47,17 @@ public abstract class AxonsBase<L extends Neurons,
   protected L leftNeurons;
   protected R rightNeurons;
   protected Matrix connectionWeights;
-  protected Matrix connectionWeightsMask;
+  protected ConnectionWeightsMask connectionWeightsMask;
   
   /**
    * Construct a new Axons instance.
    * 
    * @param leftNeurons The Neurons on the left hand side of these Axons
    * @param rightNeurons The Neurons on the right hand side of these Axons
-   * @param connectionWeights The connection weights Matrix
+   * @param connectionWeights The connection weights mask
    */
   public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
-      Matrix connectionWeights, Matrix connectionWeightsMask) {
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     this(leftNeurons, rightNeurons, matrixFactory
         .createZeros(leftNeurons.getNeuronCountIncludingBias(), 
             rightNeurons.getNeuronCountIncludingBias()), connectionWeightsMask);
@@ -107,14 +106,14 @@ public abstract class AxonsBase<L extends Neurons,
    * @param connectionWeights The connection weights Matrix
    */
   protected AxonsBase(L leftNeurons, R rightNeurons,
-      Matrix connectionWeights, Matrix connectionWeightsMask) {
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = connectionWeightsMask;
     this.connectionWeights = connectionWeights;
   }
 
-  protected abstract Matrix createConnectionWeightsMask(MatrixFactory matrixFactory);
+  protected abstract ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory);
 
   protected abstract 
       Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory);
@@ -155,6 +154,16 @@ public abstract class AxonsBase<L extends Neurons,
       if (postDropoutScaling != 1) {
         inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
             .getActivations().mul(inputDropoutMask).mul(postDropoutScaling);
+        if (leftNeuronsActivation.isBiasUnitIncluded() && leftNeuronsActivation
+            .getFeatureOrientation() 
+            == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
+          inputMatrix.putColumn(0,
+              axonsContext.getMatrixFactory().createOnes(inputMatrix.getRows(), 1));
+        } else if (leftNeuronsActivation.isBiasUnitIncluded() && leftNeuronsActivation
+            .getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+          inputMatrix.putRow(0,
+              axonsContext.getMatrixFactory().createOnes(1, inputMatrix.getColumns()));
+        }
         outputMatrix = inputMatrix.mmul(connectionWeights);
       } else {
         inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
@@ -306,11 +315,9 @@ public abstract class AxonsBase<L extends Neurons,
   protected void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection, boolean initialisation) {
     if (connectionWeightsMask != null) {
-      adjustment.muli(connectionWeightsMask);
+      adjustment.muli(connectionWeightsMask.getWeightsMask());
     }
-    if (!initialisation) {
-      applyAdditionalConnectionWeightAdjustmentConstraints(adjustment);
-    }
+    applyAdditionalConnectionWeightAdjustmentConstraints(adjustment);
     if (adjustmentDirection == ConnectionWeightsAdjustmentDirection.ADDITION) {
       connectionWeights.addi(adjustment);
     } else {

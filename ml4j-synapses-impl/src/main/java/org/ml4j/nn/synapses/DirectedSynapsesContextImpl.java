@@ -19,7 +19,6 @@ package org.ml4j.nn.synapses;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
-import org.ml4j.nn.synapses.DirectedSynapsesContext;
 
 /**
  * Simple default implementation of DirectedSynapsesContext.

@@ -57,7 +57,7 @@ public class AveragePoolingAxonsImpl
   }
  
   protected AveragePoolingAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, 
-        Matrix connectionWeights, Matrix connectionWeightsMask) {
+        Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
   }
  
@@ -84,11 +84,10 @@ public class AveragePoolingAxonsImpl
     double scalingFactor = 1d / (scaleDown * scaleDown);
     
     return matrixFactory.createOnes(leftNeurons.getNeuronCountIncludingBias(),
-        rightNeurons.getNeuronCountIncludingBias()).mul(scalingFactor).mul(connectionWeightsMask);
+        rightNeurons.getNeuronCountIncludingBias())
+        .mul(scalingFactor).mul(connectionWeightsMask.getWeightsMask());
   }
-
- 
-
+  
   @Override
   public AveragePoolingAxons dup() {
     return new AveragePoolingAxonsImpl(leftNeurons, rightNeurons, 

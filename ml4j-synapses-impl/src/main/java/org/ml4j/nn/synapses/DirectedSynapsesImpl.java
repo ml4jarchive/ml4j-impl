@@ -20,9 +20,6 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.synapses.DirectedSynapses;
-import org.ml4j.nn.synapses.DirectedSynapsesActivation;
-import org.ml4j.nn.synapses.DirectedSynapsesContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

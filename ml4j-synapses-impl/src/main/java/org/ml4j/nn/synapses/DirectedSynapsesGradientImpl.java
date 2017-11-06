@@ -18,7 +18,6 @@ package org.ml4j.nn.synapses;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 
 /**
  * Default implementation of DirectedSynapsesGradient.

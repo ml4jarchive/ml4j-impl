@@ -17,9 +17,14 @@ public abstract class TrainableAxonsBase<L extends Neurons,
     R extends Neurons, A extends TrainableAxons<L, R, A>> 
     extends AxonsBase<L, R, A> implements TrainableAxons<L, R, A> {
 
+  /**
+   * Default serialization id.
+   */
+  private static final long serialVersionUID = 1L;
+  
   public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
       MatrixFactory matrixFactory, Matrix initialConnectionWeights, 
-          Matrix connectionWeightsMask) {
+          ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, matrixFactory, 
         initialConnectionWeights, connectionWeightsMask);
   }
@@ -35,16 +40,10 @@ public abstract class TrainableAxonsBase<L extends Neurons,
     super(leftNeurons, rightNeurons, matrixFactory);
   }
   
- 
   protected TrainableAxonsBase(L leftNeurons, R rightNeurons, 
-      Matrix connectionWeights, Matrix connectionWeightsMask) {
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
   }
-
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
 
   @Override
   public void adjustConnectionWeights(Matrix adjustment,

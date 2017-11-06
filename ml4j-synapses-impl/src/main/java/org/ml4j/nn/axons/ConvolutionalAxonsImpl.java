@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * Default implementation of ConvolutionalAxons.
  * 
@@ -39,10 +40,8 @@ public class ConvolutionalAxonsImpl extends
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConvolutionalAxonsImpl.class);
 
-  private boolean sameBiasWithinEachFilter;
-  private Map<Integer, int[][]> sharedValueIndexesByFilterIndex;
-
-
+  private Map<Integer, WeightIndex[][]> sharedValueListsForOutputChannel;
+  
   /**
    * @param leftNeurons The left Neurons
    * @param rightNeurons The right Neurons
@@ -51,19 +50,35 @@ public class ConvolutionalAxonsImpl extends
   public ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
       MatrixFactory matrixFactory) {
     super(leftNeurons, rightNeurons, matrixFactory);
-    this.sharedValueIndexesByFilterIndex = new HashMap<Integer, int[][]>();
+    validate();
   }
-  
+
   public ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
       MatrixFactory matrixFactory, Matrix connectionWeights) {
     super(leftNeurons, rightNeurons, matrixFactory, connectionWeights);
-    this.sharedValueIndexesByFilterIndex = new HashMap<Integer, int[][]>();
+    validate();
+  }
+
+  protected ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+    validate();
   }
   
-  protected ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, 
-        Matrix connectionWeights, Matrix connectionWeightsMask) {
-    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
-    this.sharedValueIndexesByFilterIndex = new HashMap<Integer, int[][]>();
+  private void validate() {
+    int inputWidth = getLeftNeurons().getWidth();
+    int outputWidth = getRightNeurons().getWidth();
+
+    int filterWidth = inputWidth + (1 - outputWidth) * (getStride());
+    if (filterWidth  <= 0) {
+      throw new IllegalStateException("Filter width must be greater than 0");
+    }
+    int validOutputWidth =
+        (int) (((double) (inputWidth - filterWidth)) / ((double) getStride())) + 1;
+
+    if (validOutputWidth != outputWidth) {
+      throw new IllegalStateException("Invalid configuration");
+    }
   }
 
   /**
@@ -84,99 +99,140 @@ public class ConvolutionalAxonsImpl extends
 
     double scalingFactor = Math.sqrt(2d / ((double) leftNeurons.getNeuronCountIncludingBias()));
 
-    return weights.mul(scalingFactor);
+   
+    Matrix initialWeights =  weights.mul(scalingFactor);
+    if (getLeftNeurons().hasBiasUnit()) {
+      
+      initialWeights.putRow(0, matrixFactory.createZeros(1, initialWeights.getColumns()));
+      
+    }
+    if (getRightNeurons().hasBiasUnit()) {
+      initialWeights.putColumn(0, matrixFactory.createZeros(initialWeights.getRows(),1));
+    }
+    return initialWeights;
   }
 
   @Override
   public ConvolutionalAxons dup() {
-    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, 
-        connectionWeights, connectionWeightsMask);
+    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, connectionWeights,
+        connectionWeightsMask);
   }
- 
+
   @Override
   protected void applyAdditionalConnectionWeightAdjustmentConstraints(Matrix adjustmentRequest) {
     
-    
-    boolean hasBiasUnit = this.getLeftNeurons().hasBiasUnit();
+    // For each output channel
+    for (int outputChannel = 0; outputChannel < getRightNeurons().getDepth(); outputChannel++) {
 
-    int inputWidth = (int) Math.sqrt(getInputSynapseCount() / getDepth());
-    int outputWidth = (int) Math.sqrt(getOutputSynapseCount() / getFilterCount());
-    int filterWidth = inputWidth + (1 - outputWidth) * (getStride());
-    int sharedValueCount =
-        filterWidth * filterWidth * getDepth() + (hasBiasUnit && sameBiasWithinEachFilter ? 1 : 0);
+      // Obtain a list of the shared value matrix indexes for each shared value (parameter)
+      WeightIndex[][] sharedValueLists = getSharedValueListsForOutputChannel(outputChannel);
 
-    int filterOutputSize = getRightNeurons().getNeuronCountExcludingBias() / getFilterCount();
-
-    for (int f = 0; f < getFilterCount(); f++) {
-
-      int startColumnIndex = f * filterOutputSize + (this.getRightNeurons().hasBiasUnit() ? 1 : 0);
-
-      int[][] sharedValueIndexes = getSharedValueIndexes(f);
-      double[] averageValues = new double[sharedValueCount];
-      for (int column = 0; column < filterOutputSize; column++) {
-        int[] inds = getUnmaskedInputNeuronIndexesForOutputNeuronIndex(column + startColumnIndex);
-        sharedValueIndexes[column] = inds;
-        for (int i = 0; i < averageValues.length; i++) {
-          averageValues[i] = averageValues[i]
-              + adjustmentRequest.get(inds[+i + (hasBiasUnit && !sameBiasWithinEachFilter ? 1 : 0)],
-                  column + startColumnIndex);
+      // The number of shared values (parameters)
+      int sharedValueCount = sharedValueLists.length;
+      
+      // For each parameter 
+      for (int sharedValueId = 0; sharedValueId <  sharedValueCount; sharedValueId++) {
+        
+        // Obtain the list of indexes of all the elements sharing the same parameter value.
+        WeightIndex[] sharedValueList = sharedValueLists[sharedValueId];
+        
+        double total = 0;
+        double count = 0;
+        
+        // Average the values of all these elements.
+        for (WeightIndex sharedWeightIndex : sharedValueList) {
+          total = total
+              + adjustmentRequest.get(sharedWeightIndex.getRow(), sharedWeightIndex.getColumn());
+          count++;
         }
-      }
+        double average = total / count;
 
-      for (int i = 0; i < averageValues.length; i++) {
-        averageValues[i] = averageValues[i] / filterOutputSize;
-      }
-      for (int column = 0; column < filterOutputSize; column++) {
-        for (int sharedValueIndex = 0; sharedValueIndex < sharedValueCount; sharedValueIndex++) {
-          adjustmentRequest.put(
-              sharedValueIndexes[column][sharedValueIndex
-                  + +(hasBiasUnit && !sameBiasWithinEachFilter ? 1 : 0)],
-              column + startColumnIndex, averageValues[sharedValueIndex]);
+        // Set the value of each of these elements to be the average.
+        for (WeightIndex sharedWeightIndex : sharedValueList) {            
+          adjustmentRequest.put(sharedWeightIndex.getRow(), 
+              sharedWeightIndex.getColumn(), average);
         }
       }
     }
   }
 
-  private int[][] getSharedValueIndexes(int index) {
-
-    if (sharedValueIndexesByFilterIndex == null) {
-      sharedValueIndexesByFilterIndex = new HashMap<>();
+  private WeightIndex[][] getSharedValueListsForOutputChannel(int outputChannelIndex) {
+    
+    if (sharedValueListsForOutputChannel == null) {
+      sharedValueListsForOutputChannel = new HashMap<>();
     }
     
-    int[][] indexes = sharedValueIndexesByFilterIndex.get(index);
-    if (indexes != null) {
-      return indexes;
+    WeightIndex[][] sharedValueLists = sharedValueListsForOutputChannel.get(outputChannelIndex);
+    if (sharedValueLists != null) {
+      return sharedValueLists;
     }
-
-    int filterOutputSize = getRightNeurons().getNeuronCountExcludingBias() / getFilterCount();
-
-    int startColumnIndex =
-        index * filterOutputSize + (this.getRightNeurons().hasBiasUnit() ? 1 : 0);
-
-    boolean hasBiasUnit = this.getLeftNeurons().hasBiasUnit();
-
-    int inputWidth = (int) Math.sqrt(getInputSynapseCount() / getDepth());
-    int outputWidth = (int) Math.sqrt(getOutputSynapseCount() / getFilterCount());
-
-
+    
+    // int startColumnIndex = outputChannel * filterOutputSize;
+    int inputWidth = getLeftNeurons().getWidth();
+    int outputWidth = getRightNeurons().getWidth();
+    int inputHeight = getLeftNeurons().getHeight();
+    int outputHeight = getRightNeurons().getHeight();
     int filterWidth = inputWidth + (1 - outputWidth) * (getStride());
+    int filterHeight = inputHeight + (1 - outputHeight) * (getStride());
 
+    // We have a shared value list for each element that our filter spans.
+    // This shared value list will contain an entry for every output neuron
+    // in the channel.
+    int sharedValueListCount = filterWidth * filterHeight * this.getLeftNeurons().getDepth()
+        + (leftNeurons.hasBiasUnit() ? (isSharedBias() ? 1 : 0) : 0);
 
-    int sharedValueCount =
-        filterWidth * filterWidth * getDepth() + (hasBiasUnit && sameBiasWithinEachFilter ? 1 : 0);
+    int outputChannelNeuronCount = getOutputNeuronCount() / this.getRightNeurons().getDepth();
 
-    int[][] sharedValueIndexes = new int[filterOutputSize][sharedValueCount
-        + (hasBiasUnit && !sameBiasWithinEachFilter ? 1 : 0)];
-    for (int column = 0; column < filterOutputSize; column++) {
-      int[] inds = getUnmaskedInputNeuronIndexesForOutputNeuronIndex(column + startColumnIndex);
-      sharedValueIndexes[column] = inds;
+    sharedValueLists =
+        new WeightIndex[sharedValueListCount][outputChannelNeuronCount];
 
+    for (int outputChannelNeuronIndex =
+        0; outputChannelNeuronIndex < outputChannelNeuronCount; outputChannelNeuronIndex++) {
+
+      int outputNeuronIndex = outputChannelNeuronIndex 
+           + outputChannelNeuronCount * outputChannelIndex;
+
+      int[] inputIndexesForOutputNeuron = connectionWeightsMask
+          .getUnmaskedInputNeuronIndexesForOutputNeuronIndex(outputNeuronIndex);
+
+      int[] sharedValueIndexesForSpecifiedOutputNeuron = null;
+      if (this.getLeftNeurons().hasBiasUnit()) {
+        if (!isSharedBias()) {
+          sharedValueIndexesForSpecifiedOutputNeuron =
+              new int[inputIndexesForOutputNeuron.length - 1];
+
+          int numberOfSharedValues = sharedValueIndexesForSpecifiedOutputNeuron.length;
+
+          for (int sharedValueId = 0; sharedValueId < numberOfSharedValues; sharedValueId++) {
+            sharedValueIndexesForSpecifiedOutputNeuron[sharedValueId] =
+                inputIndexesForOutputNeuron[sharedValueId + 1];
+          }
+
+        } else {
+          sharedValueIndexesForSpecifiedOutputNeuron = inputIndexesForOutputNeuron;
+
+        }
+      } else {
+        sharedValueIndexesForSpecifiedOutputNeuron = inputIndexesForOutputNeuron;
+      }
+
+      int numberOfSharedValues = sharedValueIndexesForSpecifiedOutputNeuron.length;
+
+      for (int sharedValueId =
+          0; sharedValueId < numberOfSharedValues; sharedValueId++) {
+
+        int sharedValueIndexForSpecifiedOutputNeuronAndSharedValueId =
+            sharedValueIndexesForSpecifiedOutputNeuron[sharedValueId];
+
+        sharedValueLists[sharedValueId][outputChannelNeuronIndex] = new WeightIndex(
+            sharedValueIndexForSpecifiedOutputNeuronAndSharedValueId, outputNeuronIndex);
+
+      }
     }
-
-    sharedValueIndexesByFilterIndex.put(index, sharedValueIndexes);
-
-    return sharedValueIndexes;
+    sharedValueListsForOutputChannel.put(outputChannelIndex, sharedValueLists);
+    return sharedValueLists;
   }
+
 
   public int getInputSynapseCount() {
     return getLeftNeurons().getNeuronCountIncludingBias();
@@ -184,29 +240,6 @@ public class ConvolutionalAxonsImpl extends
 
   public int getOutputSynapseCount() {
     return getRightNeurons().getNeuronCountIncludingBias();
-  }
-
-  private int getFilterCount() {
-    return getRightNeurons().getDepth();
-  }
-
-  private int getDepth() {
-    return getLeftNeurons().getDepth();
-  }
-
-  protected int[] getUnmaskedInputNeuronIndexesForOutputNeuronIndex(int column) {
-
-    int[][] inputNeuronsIndexesForOutputNeuronIndex = new int[getOutputNeuronCount()][];
-
-
-    int[] inds = inputNeuronsIndexesForOutputNeuronIndex[column];
-
-    if (inds == null) {
-      inds = this.connectionWeightsMask.getColumn(column).findIndices();
-      inputNeuronsIndexesForOutputNeuronIndex[column] = inds;
-    }
-
-    return inds;
   }
 
   public int getOutputNeuronCount() {
@@ -218,55 +251,51 @@ public class ConvolutionalAxonsImpl extends
   }
 
   @Override
-  protected Matrix createConnectionWeightsMask(MatrixFactory matrixFactory) {
-
-    Matrix thetasMask =
-        matrixFactory.createZeros(this.getLeftNeurons().getNeuronCountExcludingBias(),
-            this.getRightNeurons().getNeuronCountExcludingBias());
-    if (this.getLeftNeurons().hasBiasUnit()) {
-      thetasMask =
-          matrixFactory.createOnes(1, thetasMask.getColumns()).appendVertically(thetasMask);
-    }
-
-    if (this.getRightNeurons().hasBiasUnit()) {
-      thetasMask = matrixFactory.createOnes(thetasMask.getRows(), 1).appendHorizontally(thetasMask);
-    }
-
-    int outputDim = (int) Math.sqrt(
-        this.getRightNeurons().getNeuronCountExcludingBias() / this.getRightNeurons().getDepth());
-    int inputDim = (int) Math.sqrt(
-        this.getLeftNeurons().getNeuronCountExcludingBias() / this.getLeftNeurons().getDepth());
-
-    int filterWidth = inputDim + (1 - outputDim) * (getStride());
-    int gridInputSize =
-        this.getLeftNeurons().getNeuronCountExcludingBias() / this.getLeftNeurons().getDepth();
-    int filterOutputSize =
-        this.getRightNeurons().getNeuronCountExcludingBias() / this.getRightNeurons().getDepth();
-
-    int strideAmount = getStride();
-
-    for (int grid = 0; grid < this.getLeftNeurons().getDepth(); grid++) {
-      for (int f = 0; f < this.getRightNeurons().getDepth(); f++) {
-        for (int i = 0; i < outputDim; i++) {
-          for (int j = 0; j < outputDim; j++) {
-            for (int r = i * strideAmount; r < i * strideAmount + filterWidth; r++) {
-              for (int c = j * strideAmount; c < j * strideAmount + filterWidth; c++) {
-                int outputInd = (filterOutputSize * f) + (i * outputDim + j)
-                    + (this.getRightNeurons().hasBiasUnit() ? 1 : 0);;
-                int inputInd = grid * gridInputSize + r * inputDim + c
-                    + (this.getLeftNeurons().hasBiasUnit() ? 1 : 0);
-
-                thetasMask.put(inputInd, outputInd, 1);
-              }
-            }
-          }
-        }
-      }
-    }
-    return thetasMask;
+  protected ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory) {
+    return new ConvolutionalWeightsMask(matrixFactory, leftNeurons, rightNeurons, getStride(),
+        true);
   }
 
   private int getStride() {
     return 1;
+  }
+  
+  /**
+   * 
+   * @return Whether the bias (if present) is shared by each application of the filter over the
+   *         input volume, or whether each filter application has its own bias.
+   */
+  private boolean isSharedBias() {
+    return false;
+  }
+  
+  
+  private class WeightIndex {
+
+    private int row;
+    private int column;
+    
+    /**
+     * @param row The row.
+     * @param column The column.
+     */
+    public WeightIndex(int row, int column) {
+      super();
+      this.row = row;
+      this.column = column;
+    }
+
+    public int getRow() {
+      return row;
+    }
+
+    public int getColumn() {
+      return column;
+    }
+
+    @Override
+    public String toString() {
+      return row + "-" + column;
+    }
   }
 }
