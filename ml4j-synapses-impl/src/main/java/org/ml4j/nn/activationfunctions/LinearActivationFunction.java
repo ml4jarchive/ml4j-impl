@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The default Linear Activation Function.
+ * The default Linear Activation Function - actually the identify function but the common
+ * name when used in neural netnets is linear activation function.
  * 
  * @author Michael Lavelle
  *

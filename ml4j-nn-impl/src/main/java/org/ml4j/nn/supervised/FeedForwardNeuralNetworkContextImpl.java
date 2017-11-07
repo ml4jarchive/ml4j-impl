@@ -108,22 +108,25 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
     return trainingLearningRate.doubleValue();
   }
 
+  @Override
   public void setTrainingIterations(int trainingIterations) {
     this.trainingIterations = trainingIterations;
   }
 
+  @Override
   public void setTrainingLearningRate(double trainingLearningRate) {
     this.trainingLearningRate = trainingLearningRate;
   }
   
+  @Override
   public double getLayerInputDropoutKeepProbability(int layerIndex) {
     Double specifiedKeepProbability = layerInputDropoutKeepProbabilities.get(layerIndex);
     return specifiedKeepProbability == null ? 1d : specifiedKeepProbability.doubleValue();
   }
   
+  @Override
   public void setLayerInputDropoutKeepProbability(int layerIndex,
       double inputDropoutKeepProbability) {
     layerInputDropoutKeepProbabilities.put(layerIndex, inputDropoutKeepProbability);
   }
-
 }
