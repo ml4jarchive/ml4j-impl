@@ -21,6 +21,9 @@ import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.DirectedLayerContextImpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Simple default implementation of FeedForwardNeuralNetworkContext.
  * 
@@ -47,6 +50,8 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   
   private Double trainingLearningRate;
   
+  private Map<Integer, Double> layerInputDropoutKeepProbabilities;
+  
   /**
    * Construct a default AutoEncoderContext.
    * 
@@ -61,7 +66,10 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
       throw new IllegalArgumentException("Start layer index cannot be greater "
           + "than end layer index");
     }
+    this.layerInputDropoutKeepProbabilities = new HashMap<>();
   }
+  
+  
 
   @Override
   public MatrixFactory getMatrixFactory() {
@@ -70,7 +78,8 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
 
   @Override
   public DirectedLayerContext createLayerContext(int layerIndex) {
-    return new DirectedLayerContextImpl(matrixFactory);
+    return new DirectedLayerContextImpl(matrixFactory,
+        getLayerInputDropoutKeepProbability(layerIndex));
   }
 
   @Override
@@ -99,11 +108,25 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
     return trainingLearningRate.doubleValue();
   }
 
+  @Override
   public void setTrainingIterations(int trainingIterations) {
     this.trainingIterations = trainingIterations;
   }
 
+  @Override
   public void setTrainingLearningRate(double trainingLearningRate) {
     this.trainingLearningRate = trainingLearningRate;
+  }
+  
+  @Override
+  public double getLayerInputDropoutKeepProbability(int layerIndex) {
+    Double specifiedKeepProbability = layerInputDropoutKeepProbabilities.get(layerIndex);
+    return specifiedKeepProbability == null ? 1d : specifiedKeepProbability.doubleValue();
+  }
+  
+  @Override
+  public void setLayerInputDropoutKeepProbability(int layerIndex,
+      double inputDropoutKeepProbability) {
+    layerInputDropoutKeepProbabilities.put(layerIndex, inputDropoutKeepProbability);
   }
 }

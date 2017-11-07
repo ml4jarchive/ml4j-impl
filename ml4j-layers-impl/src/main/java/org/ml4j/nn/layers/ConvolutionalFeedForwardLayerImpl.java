@@ -19,25 +19,25 @@ package org.ml4j.nn.layers;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.FullyConnectedAxons;
-import org.ml4j.nn.axons.FullyConnectedAxonsImpl;
-import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.axons.ConvolutionalAxons;
+import org.ml4j.nn.axons.ConvolutionalAxonsImpl;
+import org.ml4j.nn.neurons.Neurons3D;
 
 /**
- * Default implementation of a FullyConnectedFeedForwardLayer.
+ * Default implementation of a ConvolutionalFeedForwardLayer.
  * 
  * @author Michael Lavelle
  */
-public class FullyConnectedFeedForwardLayerImpl 
-    extends FeedForwardLayerBase<FullyConnectedAxons, FullyConnectedFeedForwardLayer>
-    implements FullyConnectedFeedForwardLayer {
+public class ConvolutionalFeedForwardLayerImpl 
+    extends FeedForwardLayerBase<ConvolutionalAxons, ConvolutionalFeedForwardLayer>
+    implements ConvolutionalFeedForwardLayer {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
  
-  public FullyConnectedFeedForwardLayerImpl(FullyConnectedAxons primaryAxons,
+  public ConvolutionalFeedForwardLayerImpl(ConvolutionalAxons primaryAxons,
       DifferentiableActivationFunction activationFunction) {
     super(primaryAxons, activationFunction);
   }
@@ -48,10 +48,10 @@ public class FullyConnectedFeedForwardLayerImpl
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    */
-  public FullyConnectedFeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons,
+  public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
     super(
-        new FullyConnectedAxonsImpl(inputNeurons, outputNeurons,
+        new ConvolutionalAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory),
         primaryActivationFunction);
   }
@@ -61,19 +61,19 @@ public class FullyConnectedFeedForwardLayerImpl
    * @param outputNeurons The output Neurons
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
-   * @param connectionWeights The connection weights
+   * @param connectionWeights The connectionWeights
    */
-  public FullyConnectedFeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons,
+  public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
       Matrix connectionWeights) {
     super(
-        new FullyConnectedAxonsImpl(inputNeurons, outputNeurons,
+        new ConvolutionalAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory, connectionWeights),
         primaryActivationFunction);
   }
 
   @Override
-  public FullyConnectedFeedForwardLayer dup() {
-    return new FullyConnectedFeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
+  public ConvolutionalFeedForwardLayer dup() {
+    return new ConvolutionalFeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
   }
 }

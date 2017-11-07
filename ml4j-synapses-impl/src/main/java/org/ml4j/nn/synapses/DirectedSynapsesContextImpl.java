@@ -19,7 +19,6 @@ package org.ml4j.nn.synapses;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
-import org.ml4j.nn.synapses.DirectedSynapsesContext;
 
 /**
  * Simple default implementation of DirectedSynapsesContext.
@@ -38,14 +37,18 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    * The MatrixFactory we configure for this context.
    */
   private MatrixFactory matrixFactory;
+  private double inputDropoutKeepProbability;
   
   /**
    * Construct a new default DirectedSynapsesContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
+   * @param inputDropoutKeepProbability The input dropout keep probability.
    */
-  public DirectedSynapsesContextImpl(MatrixFactory matrixFactory) {
+  public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, 
+      double inputDropoutKeepProbability) {
     this.matrixFactory = matrixFactory;
+    this.inputDropoutKeepProbability = inputDropoutKeepProbability;
   }
  
   @Override
@@ -55,6 +58,6 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
 
   @Override
   public AxonsContext createAxonsContext() {
-    return new AxonsContextImpl(matrixFactory);
+    return new AxonsContextImpl(matrixFactory, inputDropoutKeepProbability);
   }
 }

@@ -98,7 +98,7 @@ public class DirectedSynapsesActivationMock implements DirectedSynapsesActivatio
 
     LOGGER.debug(context.toString() + " Pushing data right to left through axons...");
     NeuronsActivation inputGradient =
-        synapses.getAxons().pushRightToLeft(dzN, context.createAxonsContext());
+        synapses.getAxons().pushRightToLeft(dzN, null, context.createAxonsContext()).getOutput();
     
     Matrix axonsGradient = dz
         .mmul(this.inputActivation.getActivations());

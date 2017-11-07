@@ -17,19 +17,37 @@ public abstract class TrainableAxonsBase<L extends Neurons,
     R extends Neurons, A extends TrainableAxons<L, R, A>> 
     extends AxonsBase<L, R, A> implements TrainableAxons<L, R, A> {
 
-  public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
-      MatrixFactory matrixFactory, Matrix initialConnectionWeights) {
-    super(leftNeurons, rightNeurons, matrixFactory, initialConnectionWeights);
-  }
-
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
+  
+  public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      MatrixFactory matrixFactory, Matrix initialConnectionWeights, 
+          ConnectionWeightsMask connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, matrixFactory, 
+        initialConnectionWeights, connectionWeightsMask);
+  }
+  
+  public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      MatrixFactory matrixFactory, Matrix initialConnectionWeights) {
+    super(leftNeurons, rightNeurons, matrixFactory, 
+        initialConnectionWeights);
+  }
+  
+  public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      MatrixFactory matrixFactory) {
+    super(leftNeurons, rightNeurons, matrixFactory);
+  }
+  
+  protected TrainableAxonsBase(L leftNeurons, R rightNeurons, 
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+  }
 
   @Override
   public void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection) {
-    super.adjustConnectionWeights(adjustment, adjustmentDirection);
+    super.adjustConnectionWeights(adjustment, adjustmentDirection, false);
   }
 }

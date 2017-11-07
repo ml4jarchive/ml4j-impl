@@ -50,4 +50,9 @@ public class AxonsContextMock implements AxonsContext {
     return matrixFactory;
   }
 
+  @Override
+  public double getLeftHandInputDropoutKeepProbability() {
+    return 1d;
+  }
+
 }

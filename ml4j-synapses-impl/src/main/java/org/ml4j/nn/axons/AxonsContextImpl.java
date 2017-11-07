@@ -22,7 +22,6 @@ package org.ml4j.nn.axons;
  * @author Michael Lavelle
  */
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.axons.AxonsContext;
 
 public class AxonsContextImpl implements AxonsContext {
 
@@ -36,18 +35,29 @@ public class AxonsContextImpl implements AxonsContext {
    */
   private MatrixFactory matrixFactory;
   
+  private double leftHandDropoutKeepProbability;
+  
   /**
    * Construct a new mock AxonsContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
+   * @param leftHandDropoutKeepProbability The dropout keep-probability on the left hand side of
+   *        these Axons.
    */
-  public AxonsContextImpl(MatrixFactory matrixFactory) {
+  public AxonsContextImpl(MatrixFactory matrixFactory, 
+      double leftHandDropoutKeepProbability) {
     this.matrixFactory = matrixFactory;
+    this.leftHandDropoutKeepProbability = leftHandDropoutKeepProbability;
   }
 
   @Override
   public MatrixFactory getMatrixFactory() {
     return matrixFactory;
+  }
+
+  @Override
+  public double getLeftHandInputDropoutKeepProbability() {
+    return leftHandDropoutKeepProbability;
   }
 
 }

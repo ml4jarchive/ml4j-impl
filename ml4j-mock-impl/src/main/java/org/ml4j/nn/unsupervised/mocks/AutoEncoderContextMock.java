@@ -98,4 +98,14 @@ public class AutoEncoderContextMock implements AutoEncoderContext {
   public void setTrainingLearningRate(double arg0) {
     throw new UnsupportedOperationException("Not yet implemented");    
   }
+
+  @Override
+  public double getLayerInputDropoutKeepProbability(int arg0) {
+    throw new UnsupportedOperationException("Not yet implemented");    
+  }
+
+  @Override
+  public void setLayerInputDropoutKeepProbability(int arg0, double arg1) {
+    throw new UnsupportedOperationException("Not yet implemented");        
+  }
 }

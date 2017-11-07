@@ -72,7 +72,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
     final int numberOfTrainingIterations = trainingContext.getTrainingIterations();
     
-    LOGGER.info("Training the FeedForwardNeuralNetwork...");
+    LOGGER.info("Training the FeedForwardNeuralNetwork for "
+          + numberOfTrainingIterations + " iterations");
 
     List<TrainableAxons<?, ?, ?>> trainableAxonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
