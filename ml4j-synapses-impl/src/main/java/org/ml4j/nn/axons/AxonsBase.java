@@ -152,17 +152,21 @@ public abstract class AxonsBase<L extends Neurons,
     if (inputDropoutMask != null) {
       double postDropoutScaling = getLeftInputPostDropoutScaling(axonsContext);
       if (postDropoutScaling != 1) {
-        inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
-            .getActivations().mul(inputDropoutMask).mul(postDropoutScaling);
+        Matrix preScaling =  leftNeuronsActivation.withBiasUnit(
+            leftNeurons.hasBiasUnit(), axonsContext)
+            .getActivations().mul(inputDropoutMask);
+       
+        inputMatrix = preScaling.mul(postDropoutScaling);
+        
         if (leftNeuronsActivation.isBiasUnitIncluded() && leftNeuronsActivation
             .getFeatureOrientation() 
             == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
           inputMatrix.putColumn(0,
-              axonsContext.getMatrixFactory().createOnes(inputMatrix.getRows(), 1));
+              preScaling.getColumn(0));
         } else if (leftNeuronsActivation.isBiasUnitIncluded() && leftNeuronsActivation
             .getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
           inputMatrix.putRow(0,
-              axonsContext.getMatrixFactory().createOnes(1, inputMatrix.getColumns()));
+              preScaling.getRow(0));
         }
         outputMatrix = inputMatrix.mmul(connectionWeights);
       } else {
