@@ -65,7 +65,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
 
   @Override
   public DirectedSynapsesGradient backPropagate(NeuronsActivation da,
-      DirectedSynapsesContext context, boolean outerMostSynapses) {
+      DirectedSynapsesContext context, boolean outerMostSynapses, double regularisationLamdba) {
    
     LOGGER.debug(context.toString() + " Back propagating through synapses activation....");
    
@@ -99,16 +99,39 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     NeuronsActivation inputGradient =
         synapses.getAxons().pushRightToLeft(dzN, axonsActivation, 
             context.createAxonsContext()).getOutput();
-    
-    double numberOfTrainingExamples = da.getActivations().getColumns();
-    
-    Matrix trainableAxonsGradient = null;
+       
+    Matrix totalTrainableAxonsGradient = null;
     
     if (synapses.getAxons() instanceof TrainableAxons) {
-      trainableAxonsGradient = 
-          dz.mmul(this.inputActivation.getActivations()).div(numberOfTrainingExamples);
+      totalTrainableAxonsGradient = 
+          dz.mmul(this.inputActivation.getActivations());
+      
+      if (regularisationLamdba != 0) {
+       
+        Matrix connectionWeightsCopy = synapses.getAxons().getDetachedConnectionWeights();
+
+        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
+        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
+
+        totalTrainableAxonsGradient = totalTrainableAxonsGradient
+            .addi(connectionWeightsCopy.muli(regularisationLamdba));
+        
+        if (synapses.getAxons().getLeftNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putRow(0, firstRow);
+        }
+
+        if (synapses.getAxons().getLeftNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putRow(0, firstRow);
+        }
+        if (synapses.getAxons().getRightNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putColumn(0, firstColumn);
+        }
+      }
     }
-  
+   
     if (inputGradient.isBiasUnitIncluded()) {
       LOGGER.debug("Removing biases from back propagated deltas");
       inputGradient = new NeuronsActivation(adjustDeltas(inputGradient.getActivations()), false,
@@ -116,7 +139,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     }
     
     return new DirectedSynapsesGradientImpl(inputGradient, 
-        trainableAxonsGradient);
+        totalTrainableAxonsGradient);
   }
   
   private Matrix adjustDeltas(Matrix deltas) {
@@ -136,5 +159,38 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   @Override
   public DirectedSynapses<?> getSynapses() {
     return synapses;
+  }
+
+  @Override
+  public double getAverageRegularisationCost(double regularisationLambda) {
+    return getTotalRegularisationCost(regularisationLambda) 
+        / outputActivation.getActivations().getRows();
+  }
+
+  @Override
+  public double getTotalRegularisationCost(double regularisationLambda) {
+  
+    if (regularisationLambda != 0) {
+
+      Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
+
+      int[] rows = new int[weightsWithBiases.getRows()
+          - (this.getSynapses().getAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
+      int[] cols = new int[weightsWithBiases.getColumns()
+          - (this.getSynapses().getAxons().getRightNeurons().hasBiasUnit() ? 1 : 0)];
+      for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
+        cols[j - (this.getSynapses().getAxons().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
+      }
+      for (int j = 1; j < weightsWithBiases.getRows(); j++) {
+        rows[j - (this.getSynapses().getAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
+      }
+
+      Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
+
+      double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
+      return ((regularisationLambda) * regularisationMatrix) / 2;
+    } else {
+      return 0;
+    }
   }
 }

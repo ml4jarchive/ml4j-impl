@@ -16,6 +16,7 @@ package org.ml4j.nn;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
 import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
@@ -23,6 +24,7 @@ import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CostFunction;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.MultiClassCrossEntropyCostFunction;
+import org.ml4j.nn.costfunctions.SumSquaredErrorCostFunction;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.layers.FeedForwardLayer;
@@ -74,7 +76,81 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
     LOGGER.info("Training the FeedForwardNeuralNetwork for "
           + numberOfTrainingIterations + " iterations");
+    
+    for (int i = 0; i < numberOfTrainingIterations; i++) {
 
+      CostAndGradients costAndGradients = getCostAndGradients(trainingDataActivations, 
+          trainingLabelActivations, trainingContext);
+      
+      LOGGER.info("Iteration:" + i + " Cost:" + costAndGradients.getAverageCost());
+      
+      adjustConnectionWeights(trainingContext, 
+          costAndGradients.getAverageTrainableAxonsGradients());
+    }
+  }
+ 
+  protected CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
+      NeuronsActivation desiredOutpuActivations, C trainingContext) {
+    
+    final CostFunction costFunction = getCostFunction();
+    
+    // Forward propagate the trainingDataActivations through the entire AutoEncoder
+    ForwardPropagation forwardPropagation =
+        forwardPropagate(inputActivations, trainingContext);
+    
+    // When using either of the cross entropy cross functions, 
+    // the deltas we backpropagate
+    // end up being the difference between the target activations ( which are the 
+    // same as the trainingDataActivations as this is an AutoEncoder), and the
+    // activations resulting from the forward propagation
+    Matrix deltasM = forwardPropagation.getOutputs().getActivations()
+        .sub(desiredOutpuActivations.getActivations());
+    
+    // The deltas we back propagate are in the transposed orientation to the inputs
+    NeuronsActivation deltas = new NeuronsActivation(deltasM.transpose(),
+        forwardPropagation.getOutputs().isBiasUnitIncluded(),
+        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+   
+    // Back propagate the deltas through the nework
+    BackPropagation backPropagation = forwardPropagation.backPropagate(deltas, trainingContext);
+
+    // Obtain the gradients of each set of Axons we wish to train - for this example it is
+    // all the Axons
+    List<Matrix> totalTrainableAxonsGradients = new ArrayList<>();
+    List<DirectedLayerGradient> reversed = new ArrayList<>();
+    reversed.addAll(backPropagation.getDirectedLayerGradients());
+    Collections.reverse(reversed);
+
+    for (DirectedLayerGradient gradient : reversed) {
+      for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
+        
+        Matrix totalTrainableAxonsGradient = synapsesGradient.getTotalTrainableAxonsGradient();
+        
+        if (totalTrainableAxonsGradient != null) {
+          totalTrainableAxonsGradients.add(totalTrainableAxonsGradient);
+        }
+      }
+    }
+    
+    // Obtain the cost from the cost function
+    double totalCost = costFunction.getTotalCost(desiredOutpuActivations.getActivations(),
+        forwardPropagation.getOutputs().getActivations());
+    
+    double totalRegularisationCost = forwardPropagation.getTotalRegularisationCost(trainingContext);
+        
+    double totalCostWithRegularisation = totalCost + totalRegularisationCost;
+    
+    Collections.reverse(totalTrainableAxonsGradients);
+
+    int numberOfTrainingExamples = inputActivations.getActivations().getRows();
+    
+    return new CostAndGradients(totalCostWithRegularisation, 
+          totalTrainableAxonsGradients, numberOfTrainingExamples);
+    
+  }
+  
+  private List<TrainableAxons<?, ?, ?>> getTrainableAxonsList() {
+    
     List<TrainableAxons<?, ?, ?>> trainableAxonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
 
@@ -86,70 +162,25 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
         }
       }
     }
+    return trainableAxonsList;
     
-    for (int i = 0; i < numberOfTrainingIterations; i++) {
+  }
+  
+  private void adjustConnectionWeights(C trainingContext, List<Matrix> trainableAxonsGradients) {
+    double learningRate = trainingContext.getTrainingLearningRate();
+    
+    List<TrainableAxons<?, ?, ?>> trainableAxonsList = getTrainableAxonsList();
+    
+    for (int axonsIndex = 0; axonsIndex < trainableAxonsGradients.size(); axonsIndex++) {
+      TrainableAxons<?, ?, ?> trainableAxons = trainableAxonsList.get(axonsIndex);
+      // Transpose the axon gradients into matrices that correspond to the orientation of the
+      // connection weights ( COLUMNS_SPAN_FEATURE_SET )
+      Matrix axonsGrad = trainableAxonsGradients.get(axonsIndex).transpose();
 
-      // Forward propagate the trainingDataActivations through the entire AutoEncoder
-      ForwardPropagation forwardPropagation =
-          forwardPropagate(trainingDataActivations, trainingContext);
-     
-      final CostFunction costFunction = getCostFunction();
-      
-      // When using either of the cross entropy cross functions, 
-      // the deltas we backpropagate
-      // end up being the difference between the target activations ( which are the 
-      // same as the trainingDataActivations as this is an AutoEncoder), and the
-      // activations resulting from the forward propagation
-      Matrix deltasM = forwardPropagation.getOutputs().getActivations()
-          .sub(trainingLabelActivations.getActivations());
-      
-      // The deltas we back propagate are in the transposed orientation to the inputs
-      NeuronsActivation deltas = new NeuronsActivation(deltasM.transpose(),
-          forwardPropagation.getOutputs().isBiasUnitIncluded(),
-          NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
-     
-      // Back propagate the deltas through the nework
-      BackPropagation backPropagation = forwardPropagation.backPropagate(deltas, trainingContext);
-
-      // Obtain the gradients of each set of Axons we wish to train - for this example it is
-      // all the Axons
-      List<Matrix> trainableAxonsGradients = new ArrayList<>();
-      List<DirectedLayerGradient> reversed = new ArrayList<>();
-      reversed.addAll(backPropagation.getDirectedLayerGradients());
-      Collections.reverse(reversed);
-
-      for (DirectedLayerGradient gradient : reversed) {
-        for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
-          
-          Matrix trainableAxonsGradient = synapsesGradient.getTrainableAxonsGradient();
-          
-          if (trainableAxonsGradient != null) {
-            trainableAxonsGradients.add(trainableAxonsGradient);
-          }
-        }
-      }
-      
-      Collections.reverse(trainableAxonsGradients);
-
-      
-      double learningRate = trainingContext.getTrainingLearningRate();
-      
-      for (int axonsIndex = 0; axonsIndex < trainableAxonsGradients.size(); axonsIndex++) {
-        TrainableAxons<?, ?, ?> trainableAxons = trainableAxonsList.get(axonsIndex);
-        // Transpose the axon gradients into matrices that correspond to the orientation of the
-        // connection weights ( COLUMNS_SPAN_FEATURE_SET )
-        Matrix axonsGrad = trainableAxonsGradients.get(axonsIndex).transpose();
-
-        // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
-        // gradient matrices
-        trainableAxons.adjustConnectionWeights(axonsGrad.mul(learningRate), 
-            ConnectionWeightsAdjustmentDirection.SUBTRACTION);
-      }
-
-      // Obtain the cost from the cost function
-      double cost = costFunction.getCost(trainingLabelActivations.getActivations(),
-          forwardPropagation.getOutputs().getActivations());
-      LOGGER.info("COST:" + cost);
+      // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
+      // gradient matrices
+      trainableAxons.adjustConnectionWeights(axonsGrad.mul(learningRate), 
+          ConnectionWeightsAdjustmentDirection.SUBTRACTION);
     }
   }
 
@@ -197,7 +228,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       if (layerIndex >= context.getStartLayerIndex() && layerIndex <= endLayerIndex) {
 
         DirectedLayerActivation inFlightLayerActivations = 
-            layer.forwardPropagate(inFlightActivations, context.createLayerContext(layerIndex));
+            layer.forwardPropagate(inFlightActivations, context.getLayerContext(layerIndex));
         activations.add(inFlightLayerActivations);
         inFlightActivations = inFlightLayerActivations.getOutput();
       }
@@ -211,7 +242,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
    * @return The default cost function for use by this Network.
    */
   protected CostFunction getCostFunction() {
-    
+
     List<DirectedSynapses<?>> synapseList = getFinalLayer().getSynapses();
     DirectedSynapses<?> finalSynapses = synapseList.get(synapseList.size() - 1);
     DifferentiableActivationFunction activationFunction = finalSynapses.getActivationFunction();
@@ -221,6 +252,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     } else if (activationFunction instanceof SoftmaxActivationFunction) {
       LOGGER.debug("Defaulting to use MultiClassCrossEntropyCostFunction");
       return new MultiClassCrossEntropyCostFunction();
+    } else if (activationFunction instanceof LinearActivationFunction) {
+      LOGGER.debug("Defaulting to use SumSquredErrorCostFunction");
+      return new SumSquaredErrorCostFunction();
     } else {
       throw new UnsupportedOperationException(
           "Default cost function not yet defined for:" + activationFunction.getClass());

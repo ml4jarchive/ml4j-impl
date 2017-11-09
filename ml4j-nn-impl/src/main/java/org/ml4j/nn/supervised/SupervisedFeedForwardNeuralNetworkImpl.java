@@ -16,6 +16,7 @@ package org.ml4j.nn.supervised;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
+import org.ml4j.nn.CostAndGradients;
 import org.ml4j.nn.FeedForwardNeuralNetworkBase;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
@@ -99,5 +100,11 @@ public class SupervisedFeedForwardNeuralNetworkImpl
   @Override
   public SupervisedFeedForwardNeuralNetwork dup() {
     return new SupervisedFeedForwardNeuralNetworkImpl(getLayer(0), getLayer(1));
+  }
+  
+  @Override
+  public CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
+      NeuronsActivation desiredOutpuActivations, FeedForwardNeuralNetworkContext trainingContext) {
+    return super.getCostAndGradients(inputActivations, desiredOutpuActivations, trainingContext);
   }
 }
