@@ -35,8 +35,13 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
   }
 
   @Override
-  public Matrix getTrainableAxonsGradient() {
+  public Matrix getTotalTrainableAxonsGradient() {
     return axonsGradient;
+  }
+  
+  @Override
+  public Matrix getAverageTrainableAxonsGradient() {
+    return axonsGradient == null ? null : axonsGradient.div(axonsGradient.getColumns());
   }
 
   @Override

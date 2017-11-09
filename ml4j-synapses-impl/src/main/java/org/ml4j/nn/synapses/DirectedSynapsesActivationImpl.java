@@ -99,14 +99,12 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     NeuronsActivation inputGradient =
         synapses.getAxons().pushRightToLeft(dzN, axonsActivation, 
             context.createAxonsContext()).getOutput();
-    
-    double numberOfTrainingExamples = da.getActivations().getColumns();
-    
-    Matrix trainableAxonsGradient = null;
+       
+    Matrix totalTrainableAxonsGradient = null;
     
     if (synapses.getAxons() instanceof TrainableAxons) {
-      trainableAxonsGradient = 
-          dz.mmul(this.inputActivation.getActivations()).div(numberOfTrainingExamples);
+      totalTrainableAxonsGradient = 
+          dz.mmul(this.inputActivation.getActivations());
     }
   
     if (inputGradient.isBiasUnitIncluded()) {
@@ -116,7 +114,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     }
     
     return new DirectedSynapsesGradientImpl(inputGradient, 
-        trainableAxonsGradient);
+        totalTrainableAxonsGradient);
   }
   
   private Matrix adjustDeltas(Matrix deltas) {

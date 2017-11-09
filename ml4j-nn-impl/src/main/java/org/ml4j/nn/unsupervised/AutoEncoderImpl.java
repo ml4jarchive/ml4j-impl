@@ -14,6 +14,7 @@
 
 package org.ml4j.nn.unsupervised;
 
+import org.ml4j.nn.CostAndGradients;
 import org.ml4j.nn.FeedForwardNeuralNetworkBase;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -84,5 +85,11 @@ public class AutoEncoderImpl extends
   @Override
   public void train(NeuronsActivation inputActivations, AutoEncoderContext trainingContext) {
     super.train(inputActivations, inputActivations, trainingContext);
+  }
+
+  @Override
+  public CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
+      AutoEncoderContext trainingContext) {
+    return super.getCostAndGradients(inputActivations, inputActivations, trainingContext);
   }
 }

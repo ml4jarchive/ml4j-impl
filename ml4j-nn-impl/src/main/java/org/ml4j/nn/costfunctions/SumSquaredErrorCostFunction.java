@@ -17,37 +17,23 @@ package org.ml4j.nn.costfunctions;
 import org.ml4j.Matrix;
 
 /**
- * Multi class cross entropy cost function.
+ * Sum Squared Error cost function.
  * 
  * @author Michael Lavelle
  *
  */
-public class MultiClassCrossEntropyCostFunction implements CostFunction {
+public class SumSquaredErrorCostFunction implements CostFunction {
 
   @Override
   public double getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
-   
-    Matrix jpart = (desiredOutputs.mul(-1).mul(limitLog(actualOutputs))).rowSums();
-
+    Matrix e1 = desiredOutputs.sub(actualOutputs);
+    Matrix jpart = e1.mul(e1);
     return jpart.sum();
   }
-
-  private double limit(double value) {
-    value = Math.min(value, 1 - 0.000000000000001);
-    value = Math.max(value, 0.000000000000001);
-    return value;
-  }
-
-  private Matrix limitLog(Matrix matrix) {
-    Matrix dupMatrix = matrix.dup();
-    for (int i = 0; i < dupMatrix.getLength(); i++) {
-      dupMatrix.put(i, (double) Math.log(limit(dupMatrix.get(i))));
-    }
-    return dupMatrix;
-  }
-
+  
   @Override
   public double getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    return getAverageCost(desiredOutputs, actualOutputs);
+    int m1 = desiredOutputs.getRows();
+    return getTotalCost(actualOutputs, actualOutputs) / m1;
   }
 }
