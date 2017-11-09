@@ -114,7 +114,7 @@ public class ConvolutionalAxonsImpl extends
 
   @Override
   public ConvolutionalAxons dup() {
-    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, connectionWeights,
+    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, connectionWeights.dup(),
         connectionWeightsMask);
   }
 

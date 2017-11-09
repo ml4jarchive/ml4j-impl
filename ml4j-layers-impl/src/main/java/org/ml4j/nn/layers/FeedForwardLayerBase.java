@@ -77,7 +77,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   @Override
   public NeuronsActivation getOptimalInputForOutputNeuron(int outputNeuronIndex,
       DirectedLayerContext directedLayerContext) {
-    LOGGER.debug("Mock obtaining optimal input for output neuron with index:" + outputNeuronIndex);
+    LOGGER.debug("Obtaining optimal input for output neuron with index:" + outputNeuronIndex);
     int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
     double[] maximisingInputFeatures = new double[countJ];
     Matrix weights = getPrimaryAxons().getDetachedConnectionWeights();

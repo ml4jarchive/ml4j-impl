@@ -17,7 +17,7 @@
 package org.ml4j.nn.axons;
 
 /**
- * Simple mock implementation of AxonsContext.
+ * Simple implementation of AxonsContext.
  * 
  * @author Michael Lavelle
  */
@@ -38,7 +38,7 @@ public class AxonsContextImpl implements AxonsContext {
   private double leftHandDropoutKeepProbability;
   
   /**
-   * Construct a new mock AxonsContext.
+   * Construct a new AxonsContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
    * @param leftHandDropoutKeepProbability The dropout keep-probability on the left hand side of
