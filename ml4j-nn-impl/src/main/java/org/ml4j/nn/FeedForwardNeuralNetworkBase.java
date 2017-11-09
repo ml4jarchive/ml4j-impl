@@ -136,16 +136,20 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     double totalCost = costFunction.getTotalCost(desiredOutpuActivations.getActivations(),
         forwardPropagation.getOutputs().getActivations());
     
+    double totalRegularisationCost = forwardPropagation.getTotalRegularisationCost(trainingContext);
+        
+    double totalCostWithRegularisation = totalCost + totalRegularisationCost;
+    
     Collections.reverse(totalTrainableAxonsGradients);
 
     int numberOfTrainingExamples = inputActivations.getActivations().getRows();
     
-    return new CostAndGradients(totalCost, totalTrainableAxonsGradients, numberOfTrainingExamples);
+    return new CostAndGradients(totalCostWithRegularisation, 
+          totalTrainableAxonsGradients, numberOfTrainingExamples);
     
   }
   
-  private void adjustConnectionWeights(C trainingContext, List<Matrix> trainableAxonsGradients) {
-    double learningRate = trainingContext.getTrainingLearningRate();
+  private List<TrainableAxons<?, ?, ?>> getTrainableAxonsList() {
     
     List<TrainableAxons<?, ?, ?>> trainableAxonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
@@ -158,6 +162,14 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
         }
       }
     }
+    return trainableAxonsList;
+    
+  }
+  
+  private void adjustConnectionWeights(C trainingContext, List<Matrix> trainableAxonsGradients) {
+    double learningRate = trainingContext.getTrainingLearningRate();
+    
+    List<TrainableAxons<?, ?, ?>> trainableAxonsList = getTrainableAxonsList();
     
     for (int axonsIndex = 0; axonsIndex < trainableAxonsGradients.size(); axonsIndex++) {
       TrainableAxons<?, ?, ?> trainableAxons = trainableAxonsList.get(axonsIndex);
