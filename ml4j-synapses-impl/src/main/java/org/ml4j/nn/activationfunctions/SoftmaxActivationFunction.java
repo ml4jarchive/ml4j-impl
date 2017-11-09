@@ -33,7 +33,7 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
 
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
-    LOGGER.debug("Activating through SigmoidActivationFunction");
+    LOGGER.debug("Activating through SoftmaxActivationFunction");
     if (input.isBiasUnitIncluded()) {
       throw new UnsupportedOperationException(
           "Activations passing through activation function should not include a bias unit"

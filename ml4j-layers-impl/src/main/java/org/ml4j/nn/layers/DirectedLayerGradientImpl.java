@@ -41,7 +41,7 @@ public class DirectedLayerGradientImpl implements DirectedLayerGradient {
 
   @Override
   public String toString() {
-    return "DirectedLayerGradientMock [directedSynapsesGradients=" 
+    return "DirectedLayerGradientImpl [directedSynapsesGradients=" 
         + directedSynapsesGradients + "]";
   }
 }
