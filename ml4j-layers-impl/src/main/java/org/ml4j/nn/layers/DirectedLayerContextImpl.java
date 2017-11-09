@@ -39,18 +39,15 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
    */
   private MatrixFactory matrixFactory;
   
-  private double layerInputDropoutKeepProbability;
+  private double layerInputDropoutKeepProbability = 1;
   
   /**
    * Construct a new DirectedLayerContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
-   * @param layerInputDropoutKeepProbability The input dropout keep probability for this Layer.
    */
-  public DirectedLayerContextImpl(MatrixFactory matrixFactory,
-      double layerInputDropoutKeepProbability) {
+  public DirectedLayerContextImpl(MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
-    this.layerInputDropoutKeepProbability = layerInputDropoutKeepProbability;
   }
  
   @Override
@@ -63,5 +60,15 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
     double synapseInputDropoutKeepProbability =
         synapsesIndex == 0 ? layerInputDropoutKeepProbability : 1d;
     return new DirectedSynapsesContextImpl(matrixFactory, synapseInputDropoutKeepProbability);
+  }
+
+  @Override
+  public double getLayerInputDropoutKeepProbability() {
+    return layerInputDropoutKeepProbability;
+  }
+
+  @Override
+  public void setInputDropoutKeepProbability(double layerInputDropoutKeepProbability) {
+    this.layerInputDropoutKeepProbability = layerInputDropoutKeepProbability;
   }
 }

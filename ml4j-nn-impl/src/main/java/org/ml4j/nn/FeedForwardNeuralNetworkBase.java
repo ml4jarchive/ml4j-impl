@@ -216,7 +216,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       if (layerIndex >= context.getStartLayerIndex() && layerIndex <= endLayerIndex) {
 
         DirectedLayerActivation inFlightLayerActivations = 
-            layer.forwardPropagate(inFlightActivations, context.createLayerContext(layerIndex));
+            layer.forwardPropagate(inFlightActivations, context.getLayerContext(layerIndex));
         activations.add(inFlightLayerActivations);
         inFlightActivations = inFlightLayerActivations.getOutput();
       }

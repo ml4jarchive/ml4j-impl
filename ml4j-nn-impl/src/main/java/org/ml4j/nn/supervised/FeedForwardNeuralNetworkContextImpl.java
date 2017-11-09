@@ -50,7 +50,7 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   
   private Double trainingLearningRate;
   
-  private Map<Integer, Double> layerInputDropoutKeepProbabilities;
+  private Map<Integer, DirectedLayerContext> directedLayerContexts;
   
   /**
    * Construct a default AutoEncoderContext.
@@ -66,20 +66,24 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
       throw new IllegalArgumentException("Start layer index cannot be greater "
           + "than end layer index");
     }
-    this.layerInputDropoutKeepProbabilities = new HashMap<>();
+    this.directedLayerContexts = new HashMap<>();
   }
   
-  
-
   @Override
   public MatrixFactory getMatrixFactory() {
     return matrixFactory;
   }
 
   @Override
-  public DirectedLayerContext createLayerContext(int layerIndex) {
-    return new DirectedLayerContextImpl(matrixFactory,
-        getLayerInputDropoutKeepProbability(layerIndex));
+  public DirectedLayerContext getLayerContext(int layerIndex) {
+    
+    DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
+    if (layerContext == null) {
+      layerContext = new DirectedLayerContextImpl(matrixFactory);
+      directedLayerContexts.put(layerIndex, layerContext);
+    }
+    
+    return layerContext;
   }
 
   @Override
@@ -116,17 +120,5 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   @Override
   public void setTrainingLearningRate(double trainingLearningRate) {
     this.trainingLearningRate = trainingLearningRate;
-  }
-  
-  @Override
-  public double getLayerInputDropoutKeepProbability(int layerIndex) {
-    Double specifiedKeepProbability = layerInputDropoutKeepProbabilities.get(layerIndex);
-    return specifiedKeepProbability == null ? 1d : specifiedKeepProbability.doubleValue();
-  }
-  
-  @Override
-  public void setLayerInputDropoutKeepProbability(int layerIndex,
-      double inputDropoutKeepProbability) {
-    layerInputDropoutKeepProbabilities.put(layerIndex, inputDropoutKeepProbability);
   }
 }

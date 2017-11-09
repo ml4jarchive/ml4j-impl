@@ -74,7 +74,7 @@ public class ForwardPropagationImpl implements ForwardPropagation {
 
       DirectedLayerGradient gradient =
           activation.backPropagate(gradients, 
-              context.createLayerContext(layerIndex), outerLayer);
+              context.getLayerContext(layerIndex), outerLayer);
       gradientsRet.add(gradient);
       outerLayer = false;
       gradients = gradient.getSynapsesGradients()
