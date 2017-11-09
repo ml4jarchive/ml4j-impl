@@ -87,7 +87,21 @@ public class ForwardPropagationImpl implements ForwardPropagation {
     
     return new BackPropagationImpl(gradientsRet);
   }
-  
-  
-  
+
+  @Override
+  public double getAverageRegularisationCost(DirectedNeuralNetworkContext context) {
+    return getTotalRegularisationCost(context) / outputActivations.getActivations().getRows();
+  }
+
+  @Override
+  public double getTotalRegularisationCost(DirectedNeuralNetworkContext context) {
+    double totalRegularisationCost = 0d;
+    int layerIndex = 0;
+    for (DirectedLayerActivation activation : activations) {
+      totalRegularisationCost = totalRegularisationCost + activation.getTotalRegularisationCost(
+          context.getLayerContext(layerIndex++).getPrimaryAxonsRegularisationLambda());
+    }
+    return totalRegularisationCost;
+  }
+ 
 }

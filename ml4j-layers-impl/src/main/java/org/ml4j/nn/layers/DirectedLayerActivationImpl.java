@@ -67,10 +67,10 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
 
   @Override
   public DirectedLayerGradient backPropagate(NeuronsActivation activationGradient, 
-      DirectedLayerContext arg1,
+      DirectedLayerContext layerContext,
       boolean outerMostLayer) {
     
-    LOGGER.debug(arg1.toString() + ":" 
+    LOGGER.debug(layerContext.toString() + ":" 
           + "Back propagating through layer activation....");
     
     List<DirectedSynapsesActivation> reversedSynapseActivations =
@@ -82,9 +82,15 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     boolean outerMostSynapses = outerMostLayer;
     List<DirectedSynapsesGradient> acts = new ArrayList<>();
     for (DirectedSynapsesActivation activation : reversedSynapseActivations) {
-      DirectedSynapsesContext context = arg1.createSynapsesContext(index);
+      
+      double regularisationLambda = 0d;
+      if (activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
+        regularisationLambda = layerContext.getPrimaryAxonsRegularisationLambda();
+      }
+
+      DirectedSynapsesContext context = layerContext.createSynapsesContext(index);
       DirectedSynapsesGradient grad = 
-          activation.backPropagate(actGrad, context, outerMostSynapses);
+          activation.backPropagate(actGrad, context, outerMostSynapses, regularisationLambda);
       actGrad = grad.getOutput();
       outerMostSynapses = false;
       acts.add(grad);
@@ -92,9 +98,31 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     }
     return new DirectedLayerGradientImpl(acts);
   }
+  
 
   @Override
   public DirectedLayer<?, ?> getLayer() {
     return layer;
+  }
+
+  @Override
+  public double getAverageRegularistationCost(double primaryAxonsRegularisationLambda) {
+    return getTotalRegularisationCost(primaryAxonsRegularisationLambda) 
+        / outputActivation.getActivations().getRows();
+  }
+
+  @Override
+  public double getTotalRegularisationCost(double primaryAxonsRegularisationLambda) {
+    double totalRegularisationCost = 0d;
+    for (DirectedSynapsesActivation activation : synapseActivations) {
+      double regularisationLambda = 0d;
+      if (activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
+        regularisationLambda = primaryAxonsRegularisationLambda;
+      }
+      totalRegularisationCost =
+          totalRegularisationCost
+          + activation.getTotalRegularisationCost(regularisationLambda);
+    }
+    return totalRegularisationCost;
   }
 }

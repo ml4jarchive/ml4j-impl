@@ -41,6 +41,8 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   
   private double layerInputDropoutKeepProbability = 1;
   
+  private double primaryAxonsRegularisationLamdba = 0;
+  
   /**
    * Construct a new DirectedLayerContext.
    * 
@@ -59,7 +61,8 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   public DirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
     double synapseInputDropoutKeepProbability =
         synapsesIndex == 0 ? layerInputDropoutKeepProbability : 1d;
-    return new DirectedSynapsesContextImpl(matrixFactory, synapseInputDropoutKeepProbability);
+    return new DirectedSynapsesContextImpl(matrixFactory, 
+        synapseInputDropoutKeepProbability);
   }
 
   @Override
@@ -70,5 +73,15 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   @Override
   public void setInputDropoutKeepProbability(double layerInputDropoutKeepProbability) {
     this.layerInputDropoutKeepProbability = layerInputDropoutKeepProbability;
+  }
+
+  @Override
+  public double getPrimaryAxonsRegularisationLambda() {
+    return primaryAxonsRegularisationLamdba;
+  }
+
+  @Override
+  public void setPrimaryAxonsRegularisationLambda(double primaryAxonsRegularisationLamdba) {
+    this.primaryAxonsRegularisationLamdba = primaryAxonsRegularisationLamdba;
   }
 }
