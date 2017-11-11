@@ -63,7 +63,7 @@ public class MaxPoolingAxonsImpl
       throw new UnsupportedOperationException("Left neurons with bias not yet supported");
     }
     if (rightNeurons.hasBiasUnit()) {
-      throw new UnsupportedOperationException("Left neurons with bias not yet supported");
+      throw new UnsupportedOperationException("Right neurons with bias not yet supported");
     }
   }
 
