@@ -133,6 +133,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     }
     
     // Obtain the cost from the cost function
+    LOGGER.debug("Calculating total cost function cost");
     double totalCost = costFunction.getTotalCost(desiredOutpuActivations.getActivations(),
         forwardPropagation.getOutputs().getActivations());
     

@@ -95,7 +95,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
         synapses.getAxons().getRightNeurons().hasBiasUnit(),
         da.getFeatureOrientation());
 
-    LOGGER.debug(context.toString() + " Pushing data right to left through axons...");
+    LOGGER.debug("Pushing data right to left through axons...");
     NeuronsActivation inputGradient =
         synapses.getAxons().pushRightToLeft(dzN, axonsActivation, 
             context.createAxonsContext()).getOutput();
@@ -103,11 +103,17 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     Matrix totalTrainableAxonsGradient = null;
     
     if (synapses.getAxons() instanceof TrainableAxons) {
+     
+      
+      LOGGER.debug("Calculating Axons Gradients");
+
       totalTrainableAxonsGradient = 
           dz.mmul(this.inputActivation.getActivations());
       
       if (regularisationLamdba != 0) {
        
+        LOGGER.debug("Calculating total regularisation Gradients");
+   
         Matrix connectionWeightsCopy = synapses.getAxons().getDetachedConnectionWeights();
 
         Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
@@ -116,11 +122,6 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
         totalTrainableAxonsGradient = totalTrainableAxonsGradient
             .addi(connectionWeightsCopy.muli(regularisationLamdba));
         
-        if (synapses.getAxons().getLeftNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putRow(0, firstRow);
-        }
-
         if (synapses.getAxons().getLeftNeurons().hasBiasUnit()) {
 
           totalTrainableAxonsGradient.putRow(0, firstRow);
@@ -163,6 +164,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
 
   @Override
   public double getAverageRegularisationCost(double regularisationLambda) {
+    LOGGER.debug("Calculating average regularisation cost");
     return getTotalRegularisationCost(regularisationLambda) 
         / outputActivation.getActivations().getRows();
   }
@@ -172,6 +174,8 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   
     if (regularisationLambda != 0) {
 
+      LOGGER.debug("Calculating total regularisation cost");
+      
       Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
 
       int[] rows = new int[weightsWithBiases.getRows()
