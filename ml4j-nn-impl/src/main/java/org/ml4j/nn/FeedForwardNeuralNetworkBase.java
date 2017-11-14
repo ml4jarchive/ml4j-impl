@@ -77,6 +77,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     LOGGER.info("Training the FeedForwardNeuralNetwork for "
           + numberOfTrainingIterations + " iterations");
     
+    // Perform the addition of the bias once here for efficiency - without this logic the
+    // bias would be added on each iteration.
+    if (getFirstLayer().getSynapses().get(0).getAxons().getLeftNeurons().hasBiasUnit()
+        && !trainingDataActivations.isBiasUnitIncluded()) {
+      trainingDataActivations = trainingDataActivations.withBiasUnit(true, trainingContext);
+    }
+    
     for (int i = 0; i < numberOfTrainingIterations; i++) {
 
       CostAndGradients costAndGradients = getCostAndGradients(trainingDataActivations, 
@@ -90,7 +97,29 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   }
  
   protected CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
-      NeuronsActivation desiredOutpuActivations, C trainingContext) {
+      NeuronsActivation desiredOutputActivations, C trainingContext) {
+   
+    List<DirectedSynapses<?>> finalLayerSynapses = getFinalLayer().getSynapses();
+
+    DirectedSynapses<?> finalSynapses = finalLayerSynapses.get(finalLayerSynapses.size() - 1);
+
+    boolean expectBiasUnitForOutput = finalSynapses.getAxons().getRightNeurons().hasBiasUnit();
+
+    if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException("Expected desired output activations to be with bias");
+    } else if (!expectBiasUnitForOutput && desiredOutputActivations.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException("Expected desired output activations to be without bias");
+    } 
+    if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException("Expected desired output activations to be with bias");
+    } else if (!expectBiasUnitForOutput && desiredOutputActivations.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException("Expected desired output activations to be without bias");
+    } 
+    
+    // Desired output activations should be without bias.
+    if (desiredOutputActivations.isBiasUnitIncluded()) {
+      desiredOutputActivations = desiredOutputActivations.withBiasUnit(false, trainingContext);
+    }
     
     final CostFunction costFunction = getCostFunction();
     
@@ -104,7 +133,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     // same as the trainingDataActivations as this is an AutoEncoder), and the
     // activations resulting from the forward propagation
     Matrix deltasM = forwardPropagation.getOutputs().getActivations()
-        .sub(desiredOutpuActivations.getActivations());
+        .sub(desiredOutputActivations.getActivations());
     
     // The deltas we back propagate are in the transposed orientation to the inputs
     NeuronsActivation deltas = new NeuronsActivation(deltasM.transpose(),
@@ -134,7 +163,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
     // Obtain the cost from the cost function
     LOGGER.debug("Calculating total cost function cost");
-    double totalCost = costFunction.getTotalCost(desiredOutpuActivations.getActivations(),
+    double totalCost = costFunction.getTotalCost(desiredOutputActivations.getActivations(),
         forwardPropagation.getOutputs().getActivations());
     
     double totalRegularisationCost = forwardPropagation.getTotalRegularisationCost(trainingContext);

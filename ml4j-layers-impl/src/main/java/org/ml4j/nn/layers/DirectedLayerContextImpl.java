@@ -40,16 +40,19 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   private MatrixFactory matrixFactory;
   
   private double layerInputDropoutKeepProbability = 1;
+  private int layerIndex;
   
   private double primaryAxonsRegularisationLamdba = 0;
   
   /**
    * Construct a new DirectedLayerContext.
    * 
+   * @param layerIndex The index of the layer
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public DirectedLayerContextImpl(MatrixFactory matrixFactory) {
+  public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
+    this.layerIndex = layerIndex;
   }
  
   @Override
@@ -84,4 +87,9 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   public void setPrimaryAxonsRegularisationLambda(double primaryAxonsRegularisationLamdba) {
     this.primaryAxonsRegularisationLamdba = primaryAxonsRegularisationLamdba;
   }
+
+  @Override
+  public String toString() {
+    return "DirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
+  } 
 }

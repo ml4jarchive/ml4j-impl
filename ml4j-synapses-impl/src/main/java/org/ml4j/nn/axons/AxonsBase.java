@@ -388,7 +388,8 @@ public abstract class AxonsBase<L extends Neurons,
   protected void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection, boolean initialisation) {
     
-    if (adjustment.getRows() != connectionWeights.getRows()) {
+    if (adjustment.getRows() != connectionWeights.getRows() 
+        || adjustment.getColumns() != connectionWeights.getColumns()) {
       throw new IllegalArgumentException(
           "Connection weights adjustment matrix is of dimensions: " + adjustment.getRows() + ","
               + adjustment.getColumns() + " but connection weights matrix is of dimensions:"

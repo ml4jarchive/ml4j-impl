@@ -34,11 +34,6 @@ public class LinearActivationFunction implements DifferentiableActivationFunctio
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through LinearActivationFunction");
-    if (input.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
     return new NeuronsActivation(input.getActivations().dup(), input.isBiasUnitIncluded(),
         input.getFeatureOrientation());
   }
@@ -47,20 +42,19 @@ public class LinearActivationFunction implements DifferentiableActivationFunctio
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
     
-    if (outputActivation.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
-    
     LOGGER.debug("Performing linear gradient of NeuronsActivation");
-    
-    Matrix gradientMatrix = context.getMatrixFactory()
+   
+    Matrix gradient = context.getMatrixFactory()
         .createOnes(outputActivation.getActivations().getRows(), 
         outputActivation.getActivations().getColumns());
-    
-    return new NeuronsActivation(gradientMatrix,
-        outputActivation.isBiasUnitIncluded(), outputActivation.getFeatureOrientation());
-
+   
+    if (outputActivation.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException(
+          "Activation gradient of activations with bias unit not supported");
+    }
+    return new NeuronsActivation(
+        gradient,
+        outputActivation.isBiasUnitIncluded(), 
+        outputActivation.getFeatureOrientation());
   }
 }
