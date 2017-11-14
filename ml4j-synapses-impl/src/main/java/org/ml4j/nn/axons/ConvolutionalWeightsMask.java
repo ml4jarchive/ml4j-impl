@@ -3,12 +3,16 @@ package org.ml4j.nn.axons;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.neurons.Neurons3D;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConvolutionalWeightsMask implements ConnectionWeightsMask {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConvolutionalWeightsMask.class);
+  
   private Matrix connectionWeightsMask;
   private Map<Integer, int[]> unmaskedInputNeuronIndexesByOutputNeuronIndex;
 
@@ -58,6 +62,8 @@ public class ConvolutionalWeightsMask implements ConnectionWeightsMask {
   private Matrix createWeightsMask(MatrixFactory matrixFactory, Neurons3D leftNeurons,
       Neurons3D rightNeurons, int stride, boolean independentInputOutputChannels) {
 
+    LOGGER.debug("Creating convolutional weights mask");
+    
     Matrix thetasMask = matrixFactory.createZeros(leftNeurons.getNeuronCountExcludingBias(),
         rightNeurons.getNeuronCountExcludingBias());
     if (leftNeurons.hasBiasUnit()) {

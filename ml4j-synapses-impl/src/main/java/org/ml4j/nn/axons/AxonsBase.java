@@ -77,6 +77,7 @@ public abstract class AxonsBase<L extends Neurons,
     this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
     this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(), 
         rightNeurons.getNeuronCountIncludingBias());
+    validateConnectionWeightsAndConnectionWeightsMaskDimensions();
     adjustConnectionWeights(createDefaultInitialConnectionWeights(matrixFactory), 
         ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
@@ -94,6 +95,7 @@ public abstract class AxonsBase<L extends Neurons,
     this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
     this.connectionWeights = matrixFactory.createZeros(
         leftNeurons.getNeuronCountIncludingBias(), rightNeurons.getNeuronCountIncludingBias());
+    validateConnectionWeightsAndConnectionWeightsMaskDimensions();
     adjustConnectionWeights(connectionWeights, 
         ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
@@ -111,6 +113,24 @@ public abstract class AxonsBase<L extends Neurons,
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = connectionWeightsMask;
     this.connectionWeights = connectionWeights;
+    validateConnectionWeightsAndConnectionWeightsMaskDimensions();
+  }
+  
+  private void validateConnectionWeightsAndConnectionWeightsMaskDimensions() {
+    if (connectionWeightsMask != null) {
+      if (connectionWeightsMask.getWeightsMask().getRows() != connectionWeights.getRows()) {
+        throw new IllegalStateException("Connection weights mask row dimension of "
+            + connectionWeightsMask.getWeightsMask().getRows()
+            + " does not match the row dimension of the connection weights:"
+            + connectionWeights.getRows());
+      }
+      if (connectionWeightsMask.getWeightsMask().getColumns() != connectionWeights.getColumns()) {
+        throw new IllegalStateException("Connection weights mask column dimension of "
+            + connectionWeightsMask.getWeightsMask().getColumns()
+            + " does not match the column dimension of the connection weights:"
+            + connectionWeights.getColumns());
+      }
+    }
   }
 
   protected abstract ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory);
@@ -145,15 +165,32 @@ public abstract class AxonsBase<L extends Neurons,
     Matrix previousInputDropoutMask = previousRightToLeftActivation == null ? null
         : previousRightToLeftActivation.getInputDropoutMask();
     if (previousInputDropoutMask != null) {
+      LOGGER.debug("Transposing previous right to left input dropout mask");
       outputDropoutMask = previousInputDropoutMask.transpose();
+    }
+    
+    NeuronsActivation withBiasUnitIfApplicable = leftNeuronsActivation.withBiasUnit(
+        leftNeurons.hasBiasUnit(), axonsContext);
+    
+    if (withBiasUnitIfApplicable.getFeatureCountIncludingBias() != connectionWeights
+        .getRows()) {
+      throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+          + getLeftNeurons().getNeuronCountExcludingBias()
+          + " features excluding bias but references "
+          + withBiasUnitIfApplicable.getFeatureCountExcludingBias() + " features excluding bias");
     }
 
     Matrix inputMatrix = null;
+    
     if (inputDropoutMask != null) {
       double postDropoutScaling = getLeftInputPostDropoutScaling(axonsContext);
+      
       if (postDropoutScaling != 1) {
-        Matrix preScaling =  leftNeuronsActivation.withBiasUnit(
-            leftNeurons.hasBiasUnit(), axonsContext)
+        LOGGER.debug("Applying input dropout mask");
+
+        LOGGER.debug("Scaling post dropout left to right non-bias input");
+
+        Matrix preScaling =  withBiasUnitIfApplicable
             .getActivations().mul(inputDropoutMask);
        
         inputMatrix = preScaling.mul(postDropoutScaling);
@@ -168,20 +205,22 @@ public abstract class AxonsBase<L extends Neurons,
           inputMatrix.putRow(0,
               preScaling.getRow(0));
         }
+        
         outputMatrix = inputMatrix.mmul(connectionWeights);
       } else {
-        inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
+        inputMatrix = withBiasUnitIfApplicable
             .getActivations().mul(inputDropoutMask);
         outputMatrix = inputMatrix.mmul(connectionWeights);
       }
 
     } else {
-      inputMatrix = leftNeuronsActivation.withBiasUnit(leftNeurons.hasBiasUnit(), axonsContext)
-          .getActivations();
+      inputMatrix = withBiasUnitIfApplicable.getActivations();
+      
       outputMatrix = inputMatrix.mmul(connectionWeights);
     }
    
     if (outputDropoutMask != null) {
+      LOGGER.debug("Applying left to right output dropout mask");
       outputMatrix = outputMatrix.mul(outputDropoutMask);
     }
  
@@ -205,6 +244,8 @@ public abstract class AxonsBase<L extends Neurons,
       return null;
     } else {
 
+      LOGGER.debug("Creating left input dropout mask");
+      
       Matrix dropoutMask = axonsContext.getMatrixFactory().createZeros(
           leftNeuronsActivation.getActivations().getRows(),
           leftNeuronsActivation.getActivations().getColumns());
@@ -277,30 +318,59 @@ public abstract class AxonsBase<L extends Neurons,
     Matrix previousInputDropoutMask = previousLeftToRightActivation == null ? null
         : previousLeftToRightActivation.getInputDropoutMask();
     if (previousInputDropoutMask != null) {
+      LOGGER.debug("Transposing previous input dropout mask");
       outputDropoutMask = previousInputDropoutMask.transpose();
+    }
+    
+    NeuronsActivation withBiasUnitIfApplicable = 
+        rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext);
+    
+    if (withBiasUnitIfApplicable.getFeatureCountIncludingBias() != connectionWeights
+        .getColumns()) {
+      throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+          + getRightNeurons().getNeuronCountExcludingBias()
+          + " features excluding bias but references "
+          + withBiasUnitIfApplicable.getFeatureCountExcludingBias() + " features excluding bias");
     }
 
     Matrix inputMatrix = null;
     if (inputDropoutMask != null) {
       double postDropoutScaling = getRightInputPostDropoutScaling(axonsContext);
       if (postDropoutScaling != 1) {
-        inputMatrix = rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext)
-            .getActivations().mul(inputDropoutMask).mul(postDropoutScaling);
+        LOGGER.debug("Scaling post dropout right to left non-bias input");
+        
+        Matrix preScaling =  
+            
+            withBiasUnitIfApplicable.getActivations().mul(inputDropoutMask);
+      
+        inputMatrix = preScaling.mul(postDropoutScaling);
+        
+        if (rightNeuronsActivation.isBiasUnitIncluded() && rightNeuronsActivation
+            .getFeatureOrientation() 
+            == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
+          inputMatrix.putColumn(0,
+              preScaling.getColumn(0));
+        } else if (rightNeuronsActivation.isBiasUnitIncluded() && rightNeuronsActivation
+            .getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+          inputMatrix.putRow(0,
+              preScaling.getRow(0));
+        }
+        
         outputMatrix = connectionWeights
             .mmul(inputMatrix);
       } else {
-        inputMatrix = rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext)
+        inputMatrix = withBiasUnitIfApplicable
             .getActivations().mul(inputDropoutMask);
         outputMatrix = connectionWeights
             .mmul(inputMatrix);
       }
     } else {
-      inputMatrix = rightNeuronsActivation
-          .withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext).getActivations();
+      inputMatrix = withBiasUnitIfApplicable.getActivations();
       outputMatrix = connectionWeights.mmul(inputMatrix);
     }
     
     if (outputDropoutMask != null) {
+      LOGGER.debug("Applying right to left output dropout mask");
       outputMatrix = outputMatrix.mul(outputDropoutMask);
     }
     
@@ -311,18 +381,31 @@ public abstract class AxonsBase<L extends Neurons,
   
   @Override
   public Matrix getDetachedConnectionWeights() {
+    LOGGER.debug("Duplicating connetion weights");
     return connectionWeights.dup();
   }
   
   protected void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection, boolean initialisation) {
+    
+    if (adjustment.getRows() != connectionWeights.getRows() 
+        || adjustment.getColumns() != connectionWeights.getColumns()) {
+      throw new IllegalArgumentException(
+          "Connection weights adjustment matrix is of dimensions: " + adjustment.getRows() + ","
+              + adjustment.getColumns() + " but connection weights matrix is of dimensions:"
+              + connectionWeights.getRows() + "," + connectionWeights.getColumns());
+    }
+    
     if (connectionWeightsMask != null) {
+      LOGGER.debug("Applying connection weights mask to adjustment request");
       adjustment.muli(connectionWeightsMask.getWeightsMask());
     }
     applyAdditionalConnectionWeightAdjustmentConstraints(adjustment);
     if (adjustmentDirection == ConnectionWeightsAdjustmentDirection.ADDITION) {
+      LOGGER.debug("Adding adjustment to connection weights");
       connectionWeights.addi(adjustment);
     } else {
+      LOGGER.debug("Subtracting adjustment from connection weights");
       connectionWeights.subi(adjustment);
     }
   }

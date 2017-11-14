@@ -114,12 +114,15 @@ public class ConvolutionalAxonsImpl extends
 
   @Override
   public ConvolutionalAxons dup() {
+    LOGGER.debug("Duplicting ConvolutionalAxons");
     return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, connectionWeights.dup(),
         connectionWeightsMask);
   }
 
   @Override
   protected void applyAdditionalConnectionWeightAdjustmentConstraints(Matrix adjustmentRequest) {
+    
+    LOGGER.debug("Applying convolutional weight adjustment constraints");
     
     // For each output channel
     for (int outputChannel = 0; outputChannel < getRightNeurons().getDepth(); outputChannel++) {

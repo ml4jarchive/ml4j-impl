@@ -34,28 +34,25 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through SoftmaxActivationFunction");
-    if (input.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
-    Matrix sigmoidOfInputActivationsMatrix = NeuralNetUtils.softmax(input.getActivations());
-    return new NeuronsActivation(sigmoidOfInputActivationsMatrix, input.isBiasUnitIncluded(),
-        input.getFeatureOrientation());
+    Matrix softmaxOfInputActivationsMatrix = NeuralNetUtils
+        .softmax(input.withBiasUnit(false, context).getActivations());
+    return new NeuronsActivation(softmaxOfInputActivationsMatrix, false,
+        input.getFeatureOrientation()).withBiasUnit(input.isBiasUnitIncluded(), context);
   }
 
   @Override
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
-    if (outputActivation.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
     LOGGER.debug("Performing softmax gradient of NeuronsActivation");
+    Matrix gradient = NeuralNetUtils.softmaxGradient(outputActivation.withBiasUnit(false, 
+        context).getActivations());
+    if (outputActivation.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException(
+          "Activation gradient of activations with bias unit not supported");
+    }
     return new NeuronsActivation(
-        NeuralNetUtils.softmaxGradient(outputActivation.getActivations()),
-        outputActivation.isBiasUnitIncluded(), outputActivation.getFeatureOrientation());
-
+        gradient,
+        outputActivation.isBiasUnitIncluded(), 
+        outputActivation.getFeatureOrientation());
   }
 }

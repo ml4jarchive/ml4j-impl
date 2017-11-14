@@ -118,7 +118,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   @Override
   public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
       DirectedLayerContext directedLayerContext) {
-    LOGGER.debug("Forward propagating through layer");
+    LOGGER.debug(directedLayerContext.toString() + ":Forward propagating through layer");
     
     NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
     List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();

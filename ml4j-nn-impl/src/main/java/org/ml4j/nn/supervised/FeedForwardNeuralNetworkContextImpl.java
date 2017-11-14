@@ -79,7 +79,7 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
     
     DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
     if (layerContext == null) {
-      layerContext = new DirectedLayerContextImpl(matrixFactory);
+      layerContext = new DirectedLayerContextImpl(layerIndex, matrixFactory);
       directedLayerContexts.put(layerIndex, layerContext);
     }
     

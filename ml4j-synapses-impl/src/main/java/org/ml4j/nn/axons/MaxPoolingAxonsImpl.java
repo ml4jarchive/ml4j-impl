@@ -63,7 +63,7 @@ public class MaxPoolingAxonsImpl
       throw new UnsupportedOperationException("Left neurons with bias not yet supported");
     }
     if (rightNeurons.hasBiasUnit()) {
-      throw new UnsupportedOperationException("Left neurons with bias not yet supported");
+      throw new UnsupportedOperationException("Right neurons with bias not yet supported");
     }
   }
 
@@ -109,6 +109,9 @@ public class MaxPoolingAxonsImpl
 
   private Matrix createMaxPoolingDropoutMask(NeuronsActivation leftNeuronsActivation,
       MatrixFactory matrixFactory) {
+        
+    LOGGER.debug("Creating max pooling dropout mask");
+
     Matrix dropoutMask = matrixFactory.createZeros(leftNeuronsActivation.getActivations().getRows(),
         leftNeuronsActivation.getActivations().getColumns());
         
