@@ -70,9 +70,11 @@ public class DirectedSynapsesImpl implements DirectedSynapses<Axons<?, ?, ?>> {
   }
 
   @Override
-  public DirectedSynapsesActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
+  public DirectedSynapsesActivation forwardPropagate(DirectedSynapsesInput input,
       DirectedSynapsesContext synapsesContext) {
    
+    NeuronsActivation inputNeuronsActivation = input.getInput();
+    
     if (!inputNeuronsActivation.isBiasUnitIncluded() && axons.getLeftNeurons().hasBiasUnit()) {
       inputNeuronsActivation = inputNeuronsActivation.withBiasUnit(true, synapsesContext);
     }
