@@ -24,6 +24,8 @@ import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
 import org.ml4j.nn.synapses.DirectedSynapsesImpl;
+import org.ml4j.nn.synapses.DirectedSynapsesInput;
+import org.ml4j.nn.synapses.DirectedSynapsesInputImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,8 +126,9 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();
     int synapsesIndex = 0;
     for (DirectedSynapses<?> synapses : getSynapses()) {
+      DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation);
       DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
-          synapses.forwardPropagate(inFlightNeuronsActivation, 
+          synapses.forwardPropagate(input, 
               directedLayerContext.createSynapsesContext(synapsesIndex++));
       synapseActivations.add(inFlightNeuronsSynapseActivation);
       inFlightNeuronsActivation = inFlightNeuronsSynapseActivation.getOutput();
