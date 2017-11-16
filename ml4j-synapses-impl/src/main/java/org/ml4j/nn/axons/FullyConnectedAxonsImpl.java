@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FullyConnectedAxonsImpl 
-    extends TrainableAxonsBase<Neurons, Neurons, FullyConnectedAxons>
+    extends TrainableAxonsBase<Neurons, Neurons, FullyConnectedAxons, AxonsConfig>
     implements FullyConnectedAxons {
 
   /**
@@ -47,7 +47,7 @@ public class FullyConnectedAxonsImpl
    */
   public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
       MatrixFactory matrixFactory) {
-    super(leftNeurons, rightNeurons, matrixFactory);
+    super(leftNeurons, rightNeurons, matrixFactory, new AxonsConfig());
   }
   
   public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
@@ -57,7 +57,7 @@ public class FullyConnectedAxonsImpl
   
   protected FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 
         Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
-    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, new AxonsConfig());
   }
  
   @Override

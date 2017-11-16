@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @param <A> The type of these Axons
  */
 public abstract class AxonsBase<L extends Neurons, 
-    R extends Neurons, A extends Axons<L, R, A>> implements Axons<L, R, A> {
+    R extends Neurons, A extends Axons<L, R, A>, C extends AxonsConfig> implements Axons<L, R, A> {
 
   /**
    * Default serialization id.
@@ -47,6 +47,7 @@ public abstract class AxonsBase<L extends Neurons,
   protected L leftNeurons;
   protected R rightNeurons;
   protected Matrix connectionWeights;
+  protected C config;
   protected ConnectionWeightsMask connectionWeightsMask;
   
   /**
@@ -54,13 +55,15 @@ public abstract class AxonsBase<L extends Neurons,
    * 
    * @param leftNeurons The Neurons on the left hand side of these Axons
    * @param rightNeurons The Neurons on the right hand side of these Axons
-   * @param connectionWeights The connection weights mask
+   * @param connectionWeights The connection weights.
+   * @param connectionWeightsMask The connection weights mask.
+   * @param config The config for these Axons.
    */
   public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
-      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, C config) {
     this(leftNeurons, rightNeurons, matrixFactory
         .createZeros(leftNeurons.getNeuronCountIncludingBias(), 
-            rightNeurons.getNeuronCountIncludingBias()), connectionWeightsMask);
+            rightNeurons.getNeuronCountIncludingBias()), connectionWeightsMask, config);
     adjustConnectionWeights(connectionWeights, 
         ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
@@ -70,8 +73,11 @@ public abstract class AxonsBase<L extends Neurons,
    * 
    * @param leftNeurons The Neurons on the left hand side of these Axons
    * @param rightNeurons The Neurons on the right hand side of these Axons
+   * @param matrixFactory The matrix factory.
+   * @param config The config for these Axons.
    */
-  public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory) {
+  public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory, C config) {
+    this.config = config;
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
@@ -87,9 +93,12 @@ public abstract class AxonsBase<L extends Neurons,
    * 
    * @param leftNeurons The Neurons on the left hand side of these Axons
    * @param rightNeurons The Neurons on the right hand side of these Axons
+   * @param connectionWeights The connection weights.
+   * @param config The config for these Axons.
    */
   public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
-      Matrix connectionWeights) {
+      Matrix connectionWeights, C config) {
+    this.config = config;
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
@@ -106,9 +115,11 @@ public abstract class AxonsBase<L extends Neurons,
    * @param leftNeurons The Neurons on the left hand side of these Axons
    * @param rightNeurons The Neurons on the right hand side of these Axons
    * @param connectionWeights The connection weights Matrix
+   * @param connectionWeightsMask The connection weights mask, or null if no mask required.
    */
   protected AxonsBase(L leftNeurons, R rightNeurons,
-      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, C config) {
+    this.config = config;
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = connectionWeightsMask;
@@ -225,6 +236,8 @@ public abstract class AxonsBase<L extends Neurons,
     }
  
     return new AxonsActivationImpl(inputDropoutMask, 
+        new NeuronsActivation(inputMatrix, leftNeurons.hasBiasUnit(), 
+        leftNeuronsActivation.getFeatureOrientation()),
         new NeuronsActivation(outputMatrix, rightNeurons.hasBiasUnit(),
         leftNeuronsActivation.getFeatureOrientation(), true));
   }
@@ -374,7 +387,9 @@ public abstract class AxonsBase<L extends Neurons,
       outputMatrix = outputMatrix.mul(outputDropoutMask);
     }
     
-    return new AxonsActivationImpl(inputDropoutMask,
+    return new AxonsActivationImpl(inputDropoutMask, 
+        new NeuronsActivation(inputMatrix, rightNeurons.hasBiasUnit(), 
+        rightNeuronsActivation.getFeatureOrientation()),
         new NeuronsActivation(outputMatrix, leftNeurons.hasBiasUnit(),
             rightNeuronsActivation.getFeatureOrientation(), true));
   }
