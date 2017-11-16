@@ -33,6 +33,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesActivationImpl.class);
   
+  @SuppressWarnings("unused")
   private NeuronsActivation inputActivation;
   private AxonsActivation axonsActivation;
   private NeuronsActivation outputActivation;
@@ -122,7 +123,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
       LOGGER.debug("Calculating Axons Gradients");
 
       totalTrainableAxonsGradient = 
-          dz.mmul(this.inputActivation.getActivations());
+          dz.mmul(this.axonsActivation.getInput().getActivations());
       
       if (regularisationLamdba != 0) {
        

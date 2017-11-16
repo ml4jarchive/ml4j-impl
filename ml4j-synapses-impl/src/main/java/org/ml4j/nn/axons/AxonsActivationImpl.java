@@ -27,10 +27,18 @@ public class AxonsActivationImpl implements AxonsActivation {
 
   private Matrix inputDropoutMask;
   private NeuronsActivation outputActivations;
+  private NeuronsActivation postDropoutInput;
   
-  public AxonsActivationImpl(Matrix inputDropoutMask, NeuronsActivation outputActivations) {
+  /**
+   * @param inputDropoutMask Any input dropout mask
+   * @param postDropoutInput The post dropout input
+   * @param outputActivations The output.
+   */
+  public AxonsActivationImpl(Matrix inputDropoutMask, 
+      NeuronsActivation postDropoutInput, NeuronsActivation outputActivations) {
     this.outputActivations = outputActivations;
     this.inputDropoutMask = inputDropoutMask;
+    this.postDropoutInput = postDropoutInput;
   }
   
   @Override
@@ -41,5 +49,10 @@ public class AxonsActivationImpl implements AxonsActivation {
   @Override
   public Matrix getInputDropoutMask() {
     return inputDropoutMask;
+  }
+
+  @Override
+  public NeuronsActivation getInput() {
+    return postDropoutInput;
   }
 }

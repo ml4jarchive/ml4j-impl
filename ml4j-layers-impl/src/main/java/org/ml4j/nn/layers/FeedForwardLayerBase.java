@@ -80,9 +80,10 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   public NeuronsActivation getOptimalInputForOutputNeuron(int outputNeuronIndex,
       DirectedLayerContext directedLayerContext) {
     LOGGER.debug("Obtaining optimal input for output neuron with index:" + outputNeuronIndex);
-    int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
-    double[] maximisingInputFeatures = new double[countJ];
+    //int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
     Matrix weights = getPrimaryAxons().getDetachedConnectionWeights();
+    int countJ = weights.getRows() - (getPrimaryAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0);
+    double[] maximisingInputFeatures = new double[countJ];
     boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();
 
     for (int j = 0; j < countJ; j++) {

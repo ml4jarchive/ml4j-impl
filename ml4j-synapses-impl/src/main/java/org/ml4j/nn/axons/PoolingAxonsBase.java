@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class PoolingAxonsBase<A extends PoolingAxons<A>> 
-    extends AxonsBase<Neurons3D, Neurons3D, A> implements PoolingAxons<A> {
+    extends AxonsBase<Neurons3D, Neurons3D, A, Axons3DConfig> implements PoolingAxons<A> {
 
   /**
    * Default serialization id.
@@ -44,14 +44,27 @@ public abstract class PoolingAxonsBase<A extends PoolingAxons<A>>
    * @param rightNeurons The right Neurons
    * @param matrixFactory The MatrixFactory to use to initialise the weights.
    */
-  public PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons,
+  public PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons, 
       MatrixFactory matrixFactory) {
-    super(leftNeurons, rightNeurons, matrixFactory);
+    super(leftNeurons, rightNeurons, matrixFactory, 
+        new Axons3DConfig().withStride(getStride(leftNeurons, rightNeurons)));
   }
 
-  protected PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons, 
+  protected PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons,
         Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
-    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, 
+        new Axons3DConfig().withStride(getStride(leftNeurons, rightNeurons)));
+  }
+  
+  private static int getStride(Neurons3D leftNeurons, Neurons3D rightNeurons) {
+    int inputDim = leftNeurons.getWidth() * leftNeurons.getHeight();
+    int outputDim = rightNeurons.getWidth() * rightNeurons.getHeight();
+    
+    int scale = inputDim / outputDim;
+    
+    int stride = (int)(Math.sqrt(scale));
+    
+    return stride;
   }
 
   @Override
