@@ -14,8 +14,8 @@ import org.ml4j.nn.neurons.Neurons;
  * @param <A> The type of these Axons
  */
 public abstract class TrainableAxonsBase<L extends Neurons, 
-    R extends Neurons, A extends TrainableAxons<L, R, A>> 
-    extends AxonsBase<L, R, A> implements TrainableAxons<L, R, A> {
+    R extends Neurons, A extends TrainableAxons<L, R, A>, C extends AxonsConfig> 
+    extends AxonsBase<L, R, A, C> implements TrainableAxons<L, R, A> {
 
   /**
    * Default serialization id.
@@ -24,25 +24,25 @@ public abstract class TrainableAxonsBase<L extends Neurons,
   
   public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
       MatrixFactory matrixFactory, Matrix initialConnectionWeights, 
-          ConnectionWeightsMask connectionWeightsMask) {
+          ConnectionWeightsMask connectionWeightsMask, C config) {
     super(leftNeurons, rightNeurons, matrixFactory, 
-        initialConnectionWeights, connectionWeightsMask);
+        initialConnectionWeights, connectionWeightsMask, config);
   }
   
   public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
-      MatrixFactory matrixFactory, Matrix initialConnectionWeights) {
+      MatrixFactory matrixFactory, Matrix initialConnectionWeights, C config) {
     super(leftNeurons, rightNeurons, matrixFactory, 
-        initialConnectionWeights);
+        initialConnectionWeights, config);
   }
   
   public TrainableAxonsBase(L leftNeurons, R rightNeurons, 
-      MatrixFactory matrixFactory) {
-    super(leftNeurons, rightNeurons, matrixFactory);
+      MatrixFactory matrixFactory, C config) {
+    super(leftNeurons, rightNeurons, matrixFactory, config);
   }
   
   protected TrainableAxonsBase(L leftNeurons, R rightNeurons, 
-      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
-    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, C config) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, config);
   }
 
   @Override

@@ -33,6 +33,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesActivationImpl.class);
   
+  @SuppressWarnings("unused")
   private NeuronsActivation inputActivation;
   private AxonsActivation axonsActivation;
   private NeuronsActivation outputActivation;
@@ -67,47 +68,67 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   public DirectedSynapsesGradient backPropagate(NeuronsActivation da,
       DirectedSynapsesContext context, boolean outerMostSynapses, double regularisationLamdba) {
    
-    LOGGER.debug(context.toString() + " Back propagating through synapses activation....");
-   
-    if (synapses.getAxons().getRightNeurons().hasBiasUnit()
-        && !da.isBiasUnitIncluded()) {
-      LOGGER.debug("Adding zeros for biases to back propagated deltas");
-      da = da.withBiasUnit(true, context);
-      da.getActivations().putRow(0,
-          context.getMatrixFactory().createZeros(1, 
-              da.getActivations().getColumns()));
+    LOGGER.debug("Back propagating through synapses activation....");
+    
+    if (da.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException("Back propagated deltas must not contain bias unit");
+    }
+    
+    
+    if (synapses.getAxons().getRightNeurons().hasBiasUnit()) {
+      throw new IllegalStateException(
+          "Backpropagation through axons with a rhs bias unit not supported");
     }
     
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
     
+    Matrix activationGradient = synapses.getActivationFunction()
+        .activationGradient(axonsOutputActivation.withBiasUnit(false, context), context)
+        .getActivations();  
+  
     Matrix dz = outerMostSynapses ? da.getActivations()
-        : da.getActivations().mul(synapses.getActivationFunction()
-            .activationGradient(axonsOutputActivation, context).getActivations());
+        : da.getActivations().mul(activationGradient);
 
     if (da.getFeatureCountIncludingBias() != synapses.getAxons().getRightNeurons()
-        .getNeuronCountIncludingBias()) {
+        .getNeuronCountExcludingBias()) {
       throw new IllegalArgumentException("Expected feature count to be:"
-          + synapses.getAxons().getRightNeurons().getNeuronCountIncludingBias() + " but was:"
+          + synapses.getAxons().getRightNeurons().getNeuronCountExcludingBias() + " but was:"
           + da.getFeatureCountIncludingBias());
     }
     
+    // Does not contain output bias unit
     NeuronsActivation dzN = new NeuronsActivation(dz, 
-        synapses.getAxons().getRightNeurons().hasBiasUnit(),
+        false,
         da.getFeatureOrientation());
 
-    LOGGER.debug(context.toString() + " Pushing data right to left through axons...");
+    LOGGER.debug("Pushing data right to left through axons...");
+    
+    // Will contain bias unit if Axons have left  bias unit
     NeuronsActivation inputGradient =
         synapses.getAxons().pushRightToLeft(dzN, axonsActivation, 
             context.createAxonsContext()).getOutput();
-       
+    
+     
+    if (inputGradient.isBiasUnitIncluded()) {
+      LOGGER.debug("Removing biases from back propagated deltas");
+      inputGradient = new NeuronsActivation(inputGradient.getActivations(), 
+          inputGradient.isBiasUnitIncluded(),
+          inputGradient.getFeatureOrientation()).withBiasUnit(false, context);
+    }
+         
     Matrix totalTrainableAxonsGradient = null;
     
     if (synapses.getAxons() instanceof TrainableAxons) {
+     
+      LOGGER.debug("Calculating Axons Gradients");
+
       totalTrainableAxonsGradient = 
-          dz.mmul(this.inputActivation.getActivations());
+          dz.mmul(this.axonsActivation.getInput().getActivations());
       
       if (regularisationLamdba != 0) {
        
+        LOGGER.debug("Calculating total regularisation Gradients");
+   
         Matrix connectionWeightsCopy = synapses.getAxons().getDetachedConnectionWeights();
 
         Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
@@ -120,40 +141,15 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
 
           totalTrainableAxonsGradient.putRow(0, firstRow);
         }
-
-        if (synapses.getAxons().getLeftNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putRow(0, firstRow);
-        }
         if (synapses.getAxons().getRightNeurons().hasBiasUnit()) {
 
           totalTrainableAxonsGradient.putColumn(0, firstColumn);
         }
       }
     }
-   
-    if (inputGradient.isBiasUnitIncluded()) {
-      LOGGER.debug("Removing biases from back propagated deltas");
-      inputGradient = new NeuronsActivation(adjustDeltas(inputGradient.getActivations()), false,
-          inputGradient.getFeatureOrientation());
-    }
-    
+
     return new DirectedSynapsesGradientImpl(inputGradient, 
         totalTrainableAxonsGradient);
-  }
-  
-  private Matrix adjustDeltas(Matrix deltas) {
-    int[] cols = new int[deltas.getColumns()];
-    int[] rows = new int[deltas.getRows() - 1];
-    for (int j = 0; j < deltas.getColumns(); j++) {
-      cols[j] = j;
-    }
-    for (int j = 1; j < deltas.getRows(); j++) {
-      rows[j - 1] = j;
-    }
-    deltas = deltas.get(rows, cols);
-
-    return deltas;
   }
 
   @Override
@@ -163,6 +159,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
 
   @Override
   public double getAverageRegularisationCost(double regularisationLambda) {
+    LOGGER.debug("Calculating average regularisation cost");
     return getTotalRegularisationCost(regularisationLambda) 
         / outputActivation.getActivations().getRows();
   }
@@ -172,6 +169,8 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   
     if (regularisationLambda != 0) {
 
+      LOGGER.debug("Calculating total regularisation cost");
+      
       Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
 
       int[] rows = new int[weightsWithBiases.getRows()

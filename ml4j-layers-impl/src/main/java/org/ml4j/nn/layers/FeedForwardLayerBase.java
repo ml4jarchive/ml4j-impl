@@ -24,6 +24,8 @@ import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
 import org.ml4j.nn.synapses.DirectedSynapsesImpl;
+import org.ml4j.nn.synapses.DirectedSynapsesInput;
+import org.ml4j.nn.synapses.DirectedSynapsesInputImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,9 +80,10 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   public NeuronsActivation getOptimalInputForOutputNeuron(int outputNeuronIndex,
       DirectedLayerContext directedLayerContext) {
     LOGGER.debug("Obtaining optimal input for output neuron with index:" + outputNeuronIndex);
-    int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
-    double[] maximisingInputFeatures = new double[countJ];
+    //int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
     Matrix weights = getPrimaryAxons().getDetachedConnectionWeights();
+    int countJ = weights.getRows() - (getPrimaryAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0);
+    double[] maximisingInputFeatures = new double[countJ];
     boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();
 
     for (int j = 0; j < countJ; j++) {
@@ -118,14 +121,15 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   @Override
   public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
       DirectedLayerContext directedLayerContext) {
-    LOGGER.debug("Forward propagating through layer");
+    LOGGER.debug(directedLayerContext.toString() + ":Forward propagating through layer");
     
     NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
     List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();
     int synapsesIndex = 0;
     for (DirectedSynapses<?> synapses : getSynapses()) {
+      DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation);
       DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
-          synapses.forwardPropagate(inFlightNeuronsActivation, 
+          synapses.forwardPropagate(input, 
               directedLayerContext.createSynapsesContext(synapsesIndex++));
       synapseActivations.add(inFlightNeuronsSynapseActivation);
       inFlightNeuronsActivation = inFlightNeuronsSynapseActivation.getOutput();

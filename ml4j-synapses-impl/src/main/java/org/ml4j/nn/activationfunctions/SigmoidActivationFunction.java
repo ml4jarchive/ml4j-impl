@@ -34,30 +34,28 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through SigmoidActivationFunction");
-    if (input.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
-    Matrix sigmoidOfInputActivationsMatrix = input.getActivations().sigmoid();
-    return new NeuronsActivation(sigmoidOfInputActivationsMatrix, input.isBiasUnitIncluded(),
-        input.getFeatureOrientation());
+    Matrix sigmoidOfInputActivationsMatrix = 
+        input.withBiasUnit(false, context).getActivations().sigmoid();
+    return new NeuronsActivation(sigmoidOfInputActivationsMatrix, false,
+        input.getFeatureOrientation()).withBiasUnit(input.isBiasUnitIncluded(), context);
   }
 
   @Override
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
     
-    if (outputActivation.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
-    
     LOGGER.debug("Performing sigmoid gradient of NeuronsActivation");
+    if (outputActivation.isBiasUnitIncluded()) {
+      throw new IllegalArgumentException(
+          "Activation gradient of activations with bias unit not supported");
+    }
+    Matrix gradient = NeuralNetUtils.sigmoidGradient(outputActivation.withBiasUnit(false, 
+        context).getActivations());
+  
     return new NeuronsActivation(
-        NeuralNetUtils.sigmoidGradient(outputActivation.getActivations()),
-        outputActivation.isBiasUnitIncluded(), outputActivation.getFeatureOrientation());
+        gradient,
+        outputActivation.isBiasUnitIncluded(), 
+        outputActivation.getFeatureOrientation());
 
   }
 }

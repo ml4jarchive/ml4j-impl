@@ -30,38 +30,51 @@ import java.util.Map;
  * @author Michael Lavelle
  *
  */
-public class ConvolutionalAxonsImpl extends
-    TrainableAxonsBase<Neurons3D, Neurons3D, ConvolutionalAxons> implements ConvolutionalAxons {
+public class UnpaddedConvolutionalAxonsImpl extends
+    TrainableAxonsBase<Neurons3D, Neurons3D, ConvolutionalAxons, 
+    Axons3DConfig> implements ConvolutionalAxons {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConvolutionalAxonsImpl.class);
+  private static final Logger LOGGER = 
+      LoggerFactory.getLogger(UnpaddedConvolutionalAxonsImpl.class);
 
   private Map<Integer, WeightIndex[][]> sharedValueListsForOutputChannel;
   
   /**
    * @param leftNeurons The left Neurons
    * @param rightNeurons The right Neurons
+   * @param stride The stride
    * @param matrixFactory The MatrixFactory to use to initialise the weights.
    */
-  public ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
+  public UnpaddedConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, int stride, 
       MatrixFactory matrixFactory) {
-    super(leftNeurons, rightNeurons, matrixFactory);
+    super(leftNeurons, rightNeurons, matrixFactory, new Axons3DConfig().withStride(stride));
     validate();
   }
 
-  public ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
+  /**
+   * @param leftNeurons The left Neurons
+   * @param rightNeurons The right Neurons
+   * @param stride The stride
+   * @param matrixFactory The MatrixFactory to use to initialise the weights.
+   * @param connectionWeights The initial connection weights.
+   */
+  public UnpaddedConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons, int stride,
       MatrixFactory matrixFactory, Matrix connectionWeights) {
-    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights);
+    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights, 
+        new Axons3DConfig().withStride(stride));
     validate();
   }
 
-  protected ConvolutionalAxonsImpl(Neurons3D leftNeurons, Neurons3D rightNeurons,
+  protected UnpaddedConvolutionalAxonsImpl(Neurons3D leftNeurons, 
+      Neurons3D rightNeurons, int stride,
       Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
-    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask);
+    super(leftNeurons, rightNeurons, connectionWeights, 
+        connectionWeightsMask, new Axons3DConfig().withStride(stride));
     validate();
   }
   
@@ -114,13 +127,15 @@ public class ConvolutionalAxonsImpl extends
 
   @Override
   public ConvolutionalAxons dup() {
-    return new ConvolutionalAxonsImpl(leftNeurons, rightNeurons, connectionWeights.dup(),
+    LOGGER.debug("Duplicting ConvolutionalAxons");
+    return new UnpaddedConvolutionalAxonsImpl(leftNeurons, 
+        rightNeurons, getStride(), connectionWeights.dup(),
         connectionWeightsMask);
   }
 
   @Override
   protected void applyAdditionalConnectionWeightAdjustmentConstraints(Matrix adjustmentRequest) {
-    
+       
     // For each output channel
     for (int outputChannel = 0; outputChannel < getRightNeurons().getDepth(); outputChannel++) {
 
@@ -257,7 +272,7 @@ public class ConvolutionalAxonsImpl extends
   }
 
   private int getStride() {
-    return 1;
+    return config.getStride();
   }
   
   /**

@@ -20,7 +20,8 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.ConvolutionalAxons;
-import org.ml4j.nn.axons.ConvolutionalAxonsImpl;
+import org.ml4j.nn.axons.UnpaddedConvolutionalAxonsImpl;
+import org.ml4j.nn.axons.ZeroPaddedConvolutionalAxonsImpl;
 import org.ml4j.nn.neurons.Neurons3D;
 
 /**
@@ -45,29 +46,56 @@ public class ConvolutionalFeedForwardLayerImpl
   /**
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
+   * @param stride The stride.
+   * @param zeroPadding The amount of zero padding.
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    */
   public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
-      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
-    super(
-        new ConvolutionalAxonsImpl(inputNeurons, outputNeurons,
+      int stride, int zeroPadding, DifferentiableActivationFunction primaryActivationFunction,
+      MatrixFactory matrixFactory) {
+    super(zeroPadding == 0
+        ? new UnpaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, matrixFactory)
+        : new ZeroPaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, zeroPadding,
             matrixFactory),
         primaryActivationFunction);
   }
   
+  
   /**
+   * Constructor for use with stride of 1 and no padding.
+   * 
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    * @param connectionWeights The connectionWeights
    */
-  public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
+  public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, 
+      Neurons3D outputNeurons,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
       Matrix connectionWeights) {
-    super(
-        new ConvolutionalAxonsImpl(inputNeurons, outputNeurons,
+      this(inputNeurons, outputNeurons, 1, 0, primaryActivationFunction,
+          matrixFactory, connectionWeights);
+  }
+  
+  /**
+   * @param inputNeurons The input Neurons.
+   * @param outputNeurons The output Neurons
+   * @param stride The stride.
+   * @param zeroPadding The amount of zero padding.
+   * @param primaryActivationFunction The primary activation function.
+   * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param connectionWeights The connectionWeights
+   */
+  public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
+      int stride, int zeroPadding,
+      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
+      Matrix connectionWeights) {
+    super(zeroPadding == 0
+        ? new UnpaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, matrixFactory, 
+            connectionWeights)
+        : new ZeroPaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, zeroPadding,
             matrixFactory, connectionWeights),
         primaryActivationFunction);
   }
