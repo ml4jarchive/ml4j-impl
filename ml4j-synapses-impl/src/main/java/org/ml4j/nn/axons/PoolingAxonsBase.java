@@ -47,16 +47,21 @@ public abstract class PoolingAxonsBase<A extends PoolingAxons<A>>
   public PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons, 
       MatrixFactory matrixFactory) {
     super(leftNeurons, rightNeurons, matrixFactory, 
-        new Axons3DConfig().withStride(getStride(leftNeurons, rightNeurons)));
+        new Axons3DConfig().withStride(calculateStride(leftNeurons, rightNeurons)));
   }
 
   protected PoolingAxonsBase(Neurons3D leftNeurons, Neurons3D rightNeurons,
         Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, 
-        new Axons3DConfig().withStride(getStride(leftNeurons, rightNeurons)));
+        new Axons3DConfig().withStride(calculateStride(leftNeurons, rightNeurons)));
   }
   
-  private static int getStride(Neurons3D leftNeurons, Neurons3D rightNeurons) {
+  @Override
+  public int getStride() {
+    return config.getStride();
+  }
+  
+  private static int calculateStride(Neurons3D leftNeurons, Neurons3D rightNeurons) {
     int inputDim = leftNeurons.getWidth() * leftNeurons.getHeight();
     int outputDim = rightNeurons.getWidth() * rightNeurons.getHeight();
     

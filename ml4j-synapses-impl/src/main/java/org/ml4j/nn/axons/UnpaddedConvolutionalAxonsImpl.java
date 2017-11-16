@@ -271,10 +271,15 @@ public class UnpaddedConvolutionalAxonsImpl extends
         true);
   }
 
-  private int getStride() {
+  public int getStride() {
     return config.getStride();
   }
   
+  @Override
+  public int getZeroPadding() {
+    return 0;
+  }
+
   /**
    * 
    * @return Whether the bias (if present) is shared by each application of the filter over the

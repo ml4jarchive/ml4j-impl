@@ -106,9 +106,11 @@ public class ZeroPaddedConvolutionalAxonsImpl
 
   }
   
-  private int getStride() {
+  public int getStride() {
     return stride;
   }
+  
+  
   
   @Override
   public ConvolutionalAxons dup() {
@@ -235,5 +237,10 @@ public class ZeroPaddedConvolutionalAxonsImpl
     NeuronsActivation output = activated.getOutput();
     return new AxonsActivationImpl(inputDropoutMask, 
         activated.getInput(), unpad(output, arg2));
+  }
+
+  @Override
+  public int getZeroPadding() {
+    return zeroPadding;
   }
 }
