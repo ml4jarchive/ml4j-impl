@@ -36,25 +36,32 @@ public class AveragePoolingFeedForwardLayerImpl
    */
   private static final long serialVersionUID = 1L;
  
-  public AveragePoolingFeedForwardLayerImpl(AveragePoolingAxons primaryAxons) {
-    super(primaryAxons, new LinearActivationFunction());
+  /**
+   * @param primaryAxons The average pooling Axons.
+   * @param matrixFactory The matrix factory.
+   * @param withBatchNorm Whether to enable batch norm
+   */
+  public AveragePoolingFeedForwardLayerImpl(AveragePoolingAxons primaryAxons, 
+      MatrixFactory matrixFactory, boolean withBatchNorm) {
+    super(primaryAxons, new LinearActivationFunction(), matrixFactory, withBatchNorm);
   }
   
   /**
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
    * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param withBatchNorm Whether to enable batch norm
    */
   public AveragePoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
-      Neurons3D outputNeurons, MatrixFactory matrixFactory) {
+      Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean withBatchNorm) {
     super(
         new AveragePoolingAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory),
-        new LinearActivationFunction());
+        new LinearActivationFunction(), matrixFactory, withBatchNorm);
   }
 
   @Override
   public AveragePoolingFeedForwardLayer dup() {
-    return new AveragePoolingFeedForwardLayerImpl(primaryAxons.dup());
+    return new AveragePoolingFeedForwardLayerImpl(primaryAxons.dup(), matrixFactory, withBatchNorm);
   }
 }

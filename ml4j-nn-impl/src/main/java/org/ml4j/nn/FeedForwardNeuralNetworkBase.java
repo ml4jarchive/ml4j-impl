@@ -15,6 +15,7 @@
 package org.ml4j.nn;
 
 import org.ml4j.Matrix;
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
@@ -79,7 +80,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
     // Perform the addition of the bias once here for efficiency - without this logic the
     // bias would be added on each iteration.
-    if (getFirstLayer().getSynapses().get(0).getAxons().getLeftNeurons().hasBiasUnit()
+    if (getFirstLayer().getSynapses()
+        .get(0).getAxons().getLeftNeurons().hasBiasUnit()
         && !trainingDataActivations.isBiasUnitIncluded()) {
       trainingDataActivations = trainingDataActivations.withBiasUnit(true, trainingContext);
     }
@@ -99,7 +101,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   protected CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
       NeuronsActivation desiredOutputActivations, C trainingContext) {
    
-    List<DirectedSynapses<?>> finalLayerSynapses = getFinalLayer().getSynapses();
+    List<DirectedSynapses<?>> finalLayerSynapses = getFinalLayer()
+        .getSynapses();
 
     DirectedSynapses<?> finalSynapses = finalLayerSynapses.get(finalLayerSynapses.size() - 1);
 
@@ -121,7 +124,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       desiredOutputActivations = desiredOutputActivations.withBiasUnit(false, trainingContext);
     }
     
-    final CostFunction costFunction = getCostFunction();
+    final CostFunction costFunction = getCostFunction(trainingContext.getMatrixFactory());
     
     // Forward propagate the trainingDataActivations through the entire AutoEncoder
     ForwardPropagation forwardPropagation =
@@ -271,7 +274,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   /**
    * @return The default cost function for use by this Network.
    */
-  protected CostFunction getCostFunction() {
+  protected CostFunction getCostFunction(MatrixFactory matrixFactory) {
 
     List<DirectedSynapses<?>> synapseList = getFinalLayer().getSynapses();
     DirectedSynapses<?> finalSynapses = synapseList.get(synapseList.size() - 1);

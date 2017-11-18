@@ -23,14 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation of FullyConnectedAxons.
+ * Naive sparse-matrix implementation of ScaleAndShiftAxons.
  * 
  * @author Michael Lavelle
  *
  */
-public class FullyConnectedAxonsImpl 
-    extends TrainableAxonsBase<Neurons, Neurons, FullyConnectedAxons, AxonsConfig>
-    implements FullyConnectedAxons {
+public class ScaleAndShiftAxonsImpl 
+    extends TrainableAxonsBase<Neurons, Neurons, ScaleAndShiftAxons, ScaleAndShiftAxonsConfig>
+    implements ScaleAndShiftAxons {
 
   /**
    * Default serialization id.
@@ -38,31 +38,28 @@ public class FullyConnectedAxonsImpl
   private static final long serialVersionUID = 1L;
   
   private static final Logger LOGGER = LoggerFactory.getLogger(
-      FullyConnectedAxonsImpl.class);
+      ScaleAndShiftAxonsImpl.class);
+  
   
   /**
-   * @param leftNeurons The left Neurons
-   * @param rightNeurons The right Neurons
+   * @param neurons The neurons whose activations we want to scale and shift.
    * @param matrixFactory The MatrixFactory to use to initialise the weights.
+   * @param config The config for these Axons.
    */
-  public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
-      MatrixFactory matrixFactory) {
-    super(leftNeurons, rightNeurons, matrixFactory, new AxonsConfig());
+  public ScaleAndShiftAxonsImpl(Neurons neurons,
+      MatrixFactory matrixFactory, ScaleAndShiftAxonsConfig config) {
+    super(new Neurons(neurons.getNeuronCountExcludingBias(),true), neurons, matrixFactory, config);
   }
   
-  public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
-      MatrixFactory matrixFactory, Matrix connectionWeights) {
-    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights, new AxonsConfig());
-  }
-  
-  protected FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 
-        Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask) {
-    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, new AxonsConfig());
+  protected ScaleAndShiftAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 
+        Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, 
+        ScaleAndShiftAxonsConfig config) {
+    super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, config);
   }
  
   @Override
   protected ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory) {
-    return null;
+    return new ScaleAndShiftWeightsMask(matrixFactory, leftNeurons, rightNeurons);
   }
 
   /**
@@ -77,28 +74,36 @@ public class FullyConnectedAxonsImpl
    
     LOGGER.debug("Initialising FullyConnectedAxon weights...");
     
-    Matrix weights = matrixFactory.createRandn(leftNeurons.getNeuronCountIncludingBias(),
+    Matrix weights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
         rightNeurons.getNeuronCountIncludingBias());
-
-    double scalingFactor = 
-        Math.sqrt(2 / ((double)leftNeurons.getNeuronCountIncludingBias()));
     
-    Matrix initialWeights =  weights.mul(scalingFactor);
     if (getLeftNeurons().hasBiasUnit()) {
-      
-      initialWeights.putRow(0, matrixFactory.createZeros(1, initialWeights.getColumns()));
-      
+      weights.putRow(0, config.getShiftRowVector());
     }
     if (getRightNeurons().hasBiasUnit()) {
-      initialWeights.putColumn(0, matrixFactory.createZeros(initialWeights.getRows(),1));
+      weights.putColumn(0, matrixFactory.createZeros(weights.getRows(),1));
+    }
+    for (int i = 0; i < config.getScaleRowVector().getColumns(); i++) {
+      int col = i + (getRightNeurons().hasBiasUnit() ? 1 : 0);
+      weights.put(i + 1, col, config.getScaleRowVector().get(0, i));
     }
     
-    return initialWeights;
+    return weights;
   }
 
   @Override
-  public FullyConnectedAxons dup() {
-    return new FullyConnectedAxonsImpl(leftNeurons, rightNeurons, 
-        connectionWeights.dup(), connectionWeightsMask);
+  public ScaleAndShiftAxons dup() {
+    return new ScaleAndShiftAxonsImpl(leftNeurons, rightNeurons, 
+        connectionWeights.dup(), connectionWeightsMask, config);
+  }
+
+  @Override
+  public Matrix getScaleRowVector() {
+    return config.getScaleRowVector();
+  }
+
+  @Override
+  public Matrix getShiftRowVector() {
+    return config.getShiftRowVector();
   }
 }

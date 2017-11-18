@@ -36,21 +36,29 @@ public class MaxPoolingFeedForwardLayerImpl
    */
   private static final long serialVersionUID = 1L;
  
-  public MaxPoolingFeedForwardLayerImpl(MaxPoolingAxons primaryAxons) {
-    super(primaryAxons, new LinearActivationFunction());
+  /**
+   * @param primaryAxons The max pooling axons
+   * @param matrixFactory The matrix factory.
+   * @param withBatchNorm Whether to enable batch norm.
+   */
+  public MaxPoolingFeedForwardLayerImpl(MaxPoolingAxons primaryAxons, MatrixFactory matrixFactory, 
+      boolean withBatchNorm) {
+    super(primaryAxons, new LinearActivationFunction(), matrixFactory, withBatchNorm);
   }
   
   /**
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
    * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param withBatchNorm Whether to enable batch norm.
    */
   public MaxPoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
-      Neurons3D outputNeurons, MatrixFactory matrixFactory) {
+      Neurons3D outputNeurons, MatrixFactory matrixFactory, 
+      boolean withBatchNorm) {
     super(
         new MaxPoolingAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory, false),
-        new LinearActivationFunction());
+        new LinearActivationFunction(), matrixFactory, withBatchNorm);
   }
   
   /**
@@ -59,17 +67,19 @@ public class MaxPoolingFeedForwardLayerImpl
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    * @param scaleOutputs Whether to scale outputs up by a factor equal to the reduction factor due
    *        to only outputting max-elements.
+   * @param withBatchNorm Whether to enable batch norm.
    */
   public MaxPoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
-      Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean scaleOutputs) {
+      Neurons3D outputNeurons, MatrixFactory matrixFactory, 
+      boolean scaleOutputs, boolean withBatchNorm) {
     super(
         new MaxPoolingAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory, scaleOutputs),
-        new LinearActivationFunction());
+        new LinearActivationFunction(), matrixFactory, withBatchNorm);
   }
 
   @Override
   public MaxPoolingFeedForwardLayer dup() {
-    return new MaxPoolingFeedForwardLayerImpl(primaryAxons.dup());
+    return new MaxPoolingFeedForwardLayerImpl(primaryAxons.dup(), matrixFactory, withBatchNorm);
   }
 }
