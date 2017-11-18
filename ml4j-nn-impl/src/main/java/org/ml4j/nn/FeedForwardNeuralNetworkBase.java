@@ -73,10 +73,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   protected void train(NeuronsActivation trainingDataActivations, 
       NeuronsActivation trainingLabelActivations, C trainingContext) {
 
-    final int numberOfTrainingIterations = trainingContext.getTrainingIterations();
-    
+    final int numberOfEpochs = trainingContext.getTrainingEpochs();
+        
     LOGGER.info("Training the FeedForwardNeuralNetwork for "
-          + numberOfTrainingIterations + " iterations");
+          + numberOfEpochs + " epochs");
     
     // Perform the addition of the bias once here for efficiency - without this logic the
     // bias would be added on each iteration.
@@ -86,15 +86,59 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       trainingDataActivations = trainingDataActivations.withBiasUnit(true, trainingContext);
     }
     
-    for (int i = 0; i < numberOfTrainingIterations; i++) {
+    CostAndGradients costAndGradients = null;
+    
+    for (int i = 0; i < numberOfEpochs; i++) {
+      
+      if (trainingContext.getTrainingMiniBatchSize() == null) {
+        costAndGradients = getCostAndGradients(trainingDataActivations, 
+            trainingLabelActivations, trainingContext);
+        
+        LOGGER.info("Epoch:" + i + " Cost:" + costAndGradients.getAverageCost());
+        
+        adjustConnectionWeights(trainingContext, 
+            costAndGradients.getAverageTrainableAxonsGradients());
+      } else {
+        int miniBatchSize = trainingContext.getTrainingMiniBatchSize();
+        int numberOfTrainingElements = trainingDataActivations.getActivations().getRows();
+        int numberOfBatches = (numberOfTrainingElements - 1) / miniBatchSize + 1;
+        for (int batchIndex = 0; batchIndex < numberOfBatches; batchIndex++) {
+          int startRowIndex = batchIndex * miniBatchSize;
+          int endRowIndex =
+              Math.min(startRowIndex + miniBatchSize - 1, numberOfTrainingElements - 1);
+          int[] rowIndexes = new int[endRowIndex - startRowIndex + 1];
+          for (int r = startRowIndex; r <= endRowIndex; r++) {
+            rowIndexes[r - startRowIndex] = r;
+          }
 
-      CostAndGradients costAndGradients = getCostAndGradients(trainingDataActivations, 
-          trainingLabelActivations, trainingContext);
-      
-      LOGGER.info("Iteration:" + i + " Cost:" + costAndGradients.getAverageCost());
-      
-      adjustConnectionWeights(trainingContext, 
-          costAndGradients.getAverageTrainableAxonsGradients());
+          Matrix dataBatch = trainingDataActivations.getActivations().getRows(rowIndexes);
+          Matrix labelBatch = trainingLabelActivations.getActivations().getRows(rowIndexes);
+         
+          NeuronsActivation batchDataActivations =
+              new NeuronsActivation(dataBatch, trainingDataActivations.isBiasUnitIncluded(),
+                  trainingDataActivations.getFeatureOrientation());
+
+          NeuronsActivation batchLabelActivations =
+              new NeuronsActivation(labelBatch, trainingLabelActivations.isBiasUnitIncluded(),
+                  trainingLabelActivations.getFeatureOrientation());
+
+          costAndGradients = getCostAndGradients(batchDataActivations, 
+              batchLabelActivations, trainingContext);
+          
+          LOGGER.trace("Epoch:" + i + " batch " + batchIndex 
+              + " Cost:" + costAndGradients.getAverageCost());
+          
+          adjustConnectionWeights(trainingContext, 
+              costAndGradients.getAverageTrainableAxonsGradients());
+          
+          batchIndex++;
+          
+        }
+        
+        LOGGER.info("Epoch:" + i + " Cost:" + costAndGradients.getAverageCost());
+
+      }
+   
     }
   }
  
