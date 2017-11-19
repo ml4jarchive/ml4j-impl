@@ -43,16 +43,8 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
-    LOGGER.debug("Performing softmax gradient of NeuronsActivation");
-    Matrix gradient = NeuralNetUtils.softmaxGradient(outputActivation.withBiasUnit(false, 
-        context).getActivations());
-    if (outputActivation.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException(
-          "Activation gradient of activations with bias unit not supported");
-    }
-    return new NeuronsActivation(
-        gradient,
-        outputActivation.isBiasUnitIncluded(), 
-        outputActivation.getFeatureOrientation());
+    throw new UnsupportedOperationException("Standalone activation gradient of "
+        + "softmax not supported - gradient calculation is performed in combination with a "
+        + "specified cost function at the outer layer");
   }
 }

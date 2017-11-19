@@ -36,18 +36,6 @@ public class NeuralNetUtils {
     result = sig.subi(sig.mul(sig));
     return result;
   }
-  
-  /**
-   * Returns a matrix that has the first derivative of the softmax function applied to each element
-   * of given input matrix. 
-   */
-  public static Matrix softmaxGradient(Matrix x1) {
-    Matrix result = x1;
-    Matrix sa = softmax(result);
-    result = sa.subi(sa.mul(sa));
-
-    return result;
-  }
 
   /**
    * Returns a matrix that has the softmax function applied to each element of given input matrix.

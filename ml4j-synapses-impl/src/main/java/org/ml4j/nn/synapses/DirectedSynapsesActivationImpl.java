@@ -82,13 +82,18 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
     
-    Matrix activationGradient = synapses.getActivationFunction()
-        .activationGradient(axonsOutputActivation.withBiasUnit(false, context), context)
-        .getActivations();  
-  
-    Matrix dz = outerMostSynapses ? da.getActivations()
-        : da.getActivations().mul(activationGradient);
+    Matrix dz = null;
+    
+    if (outerMostSynapses) {
+      dz = da.getActivations();
+    } else {
+      Matrix activationGradient = synapses.getActivationFunction()
+          .activationGradient(axonsOutputActivation.withBiasUnit(false, context), context)
+          .getActivations();
 
+      dz = da.getActivations().mul(activationGradient);
+    }
+  
     if (da.getFeatureCountIncludingBias() != synapses.getAxons().getRightNeurons()
         .getNeuronCountExcludingBias()) {
       throw new IllegalArgumentException("Expected feature count to be:"
