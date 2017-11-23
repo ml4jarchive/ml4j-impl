@@ -37,9 +37,16 @@ public class FullyConnectedFeedForwardLayerImpl
    */
   private static final long serialVersionUID = 1L;
  
+  /**
+   * @param primaryAxons The primary Axons
+   * @param activationFunction The primary activation function.
+   * @param matrixFactory The matrix factory.
+   * @param withBatchNorm Whether to enable batch norm.
+   */
   public FullyConnectedFeedForwardLayerImpl(FullyConnectedAxons primaryAxons,
-      DifferentiableActivationFunction activationFunction) {
-    super(primaryAxons, activationFunction);
+      DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, 
+      boolean withBatchNorm) {
+    super(primaryAxons, activationFunction, matrixFactory, withBatchNorm);
   }
   
   /**
@@ -47,13 +54,15 @@ public class FullyConnectedFeedForwardLayerImpl
    * @param outputNeurons The output Neurons
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param withBatchNorm Whether to enable batch norm.
    */
   public FullyConnectedFeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons,
-      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory) {
+      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory, 
+      boolean withBatchNorm) {
     super(
         new FullyConnectedAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory),
-        primaryActivationFunction);
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
   
   /**
@@ -62,18 +71,20 @@ public class FullyConnectedFeedForwardLayerImpl
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    * @param connectionWeights The connection weights
+   * @param withBatchNorm Whether to enable batch norm.
    */
   public FullyConnectedFeedForwardLayerImpl(Neurons inputNeurons, Neurons outputNeurons,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-      Matrix connectionWeights) {
+      Matrix connectionWeights, boolean withBatchNorm) {
     super(
         new FullyConnectedAxonsImpl(inputNeurons, outputNeurons,
             matrixFactory, connectionWeights),
-        primaryActivationFunction);
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 
   @Override
   public FullyConnectedFeedForwardLayer dup() {
-    return new FullyConnectedFeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
+    return new FullyConnectedFeedForwardLayerImpl(primaryAxons.dup(), 
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 }

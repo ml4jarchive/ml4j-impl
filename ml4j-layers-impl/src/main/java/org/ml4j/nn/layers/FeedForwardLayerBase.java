@@ -17,8 +17,10 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.Matrix;
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.synapses.DirectedSynapses;
@@ -54,11 +56,24 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   protected A primaryAxons;
   
   protected DifferentiableActivationFunction primaryActivationFunction;
+  
+  protected MatrixFactory matrixFactory;
+  
+  protected boolean withBatchNorm;
  
+  /**
+   * @param primaryAxons The primary Axons
+   * @param activationFunction The primary activation function
+   * @param matrixFactory The matrix factory
+   * @param withBatchNorm Whether to enable batch norm.
+   */
   protected FeedForwardLayerBase(A primaryAxons, 
-      DifferentiableActivationFunction activationFunction) {
+      DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, 
+      boolean withBatchNorm) {
     this.primaryAxons = primaryAxons;
     this.primaryActivationFunction = activationFunction;
+    this.matrixFactory = matrixFactory;
+    this.withBatchNorm = withBatchNorm;
   }
 
   @Override
@@ -126,7 +141,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
     List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();
     int synapsesIndex = 0;
-    for (DirectedSynapses<?> synapses : getSynapses()) {
+    for (DirectedSynapses<?, ?> synapses : getSynapses()) {
       DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation);
       DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
           synapses.forwardPropagate(input, 
@@ -140,9 +155,14 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   }
 
   @Override
-  public List<DirectedSynapses<?>> getSynapses() {
-    List<DirectedSynapses<?>> synapses = new ArrayList<>();
-    synapses.add(new DirectedSynapsesImpl(getPrimaryAxons(), getPrimaryActivationFunction()));
+  public List<DirectedSynapses<?, ?>> getSynapses() {
+    List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
+    if (withBatchNorm) {
+      throw new UnsupportedOperationException("Batch norm not yet implemented");
+    } else {
+      synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons(), getPrimaryActivationFunction()));
+    }
     return synapses;
   }
 }

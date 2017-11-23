@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.layers;
 
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 
@@ -34,12 +35,14 @@ public class FeedForwardLayerImpl extends FeedForwardLayerBase<Axons<?, ?, ?>,
   private static final long serialVersionUID = 1L;
 
   protected FeedForwardLayerImpl(Axons<?, ?, ?> primaryAxons,
-      DifferentiableActivationFunction activationFunction) {
-    super(primaryAxons, activationFunction);
+      DifferentiableActivationFunction activationFunction, 
+      MatrixFactory matrixFactory, boolean withBatchNorm) {
+    super(primaryAxons, activationFunction, matrixFactory, withBatchNorm);
   }
 
   @Override
   public FeedForwardLayerImpl dup() {
-    return new FeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
+    return new FeedForwardLayerImpl(primaryAxons.dup(), 
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 }

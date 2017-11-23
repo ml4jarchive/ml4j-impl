@@ -52,7 +52,7 @@ public class FullyConnectedAxonsImpl
   
   public FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
       MatrixFactory matrixFactory, Matrix connectionWeights) {
-    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights, null);
+    super(leftNeurons, rightNeurons, matrixFactory, connectionWeights, new AxonsConfig());
   }
   
   protected FullyConnectedAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 

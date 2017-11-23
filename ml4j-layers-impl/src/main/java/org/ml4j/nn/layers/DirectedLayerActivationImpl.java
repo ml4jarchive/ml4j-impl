@@ -84,13 +84,18 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     for (DirectedSynapsesActivation activation : reversedSynapseActivations) {
       
       double regularisationLambda = 0d;
-      if (activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
+      
+      if (activation.getSynapses().getAxons() != null 
+          && activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
         regularisationLambda = layerContext.getPrimaryAxonsRegularisationLambda();
       }
 
       DirectedSynapsesContext context = layerContext.createSynapsesContext(index);
+      
       DirectedSynapsesGradient grad = 
-          activation.backPropagate(actGrad, context, outerMostSynapses, regularisationLambda);
+          activation.getSynapses().backPropagate(activation, actGrad, 
+              context, outerMostSynapses, regularisationLambda);
+     
       actGrad = grad.getOutput();
       outerMostSynapses = false;
       acts.add(grad);
@@ -116,7 +121,8 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     double totalRegularisationCost = 0d;
     for (DirectedSynapsesActivation activation : synapseActivations) {
       double regularisationLambda = 0d;
-      if (activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
+      if (activation.getSynapses().getAxons() != null 
+          && activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
         regularisationLambda = primaryAxonsRegularisationLambda;
       }
       totalRegularisationCost =
