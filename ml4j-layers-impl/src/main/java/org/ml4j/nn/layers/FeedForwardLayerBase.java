@@ -19,11 +19,13 @@ package org.ml4j.nn.layers;
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.synapses.ActivationFunctionOnlyDirectedSynapsesImpl;
+import org.ml4j.nn.synapses.AxonsOnlyDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
-import org.ml4j.nn.synapses.DirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapsesInput;
 import org.ml4j.nn.synapses.DirectedSynapsesInputImpl;
 import org.slf4j.Logger;
@@ -126,7 +128,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     NeuronsActivation inFlightNeuronsActivation = inputNeuronsActivation;
     List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();
     int synapsesIndex = 0;
-    for (DirectedSynapses<?> synapses : getSynapses()) {
+    for (DirectedSynapses<?, ?> synapses : getSynapses()) {
       DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation);
       DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
           synapses.forwardPropagate(input, 
@@ -140,9 +142,12 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   }
 
   @Override
-  public List<DirectedSynapses<?>> getSynapses() {
-    List<DirectedSynapses<?>> synapses = new ArrayList<>();
-    synapses.add(new DirectedSynapsesImpl(getPrimaryAxons(), getPrimaryActivationFunction()));
+  public List<DirectedSynapses<?, ?>> getSynapses() {
+    List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
+    synapses.add(new AxonsOnlyDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
+    synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
+        getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
+        getPrimaryActivationFunction()));
     return synapses;
   }
 }
