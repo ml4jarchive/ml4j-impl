@@ -20,14 +20,9 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
-import org.ml4j.nn.axons.ScaleAndShiftAxonsImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
-import org.ml4j.nn.synapses.ActivationFunctionOnlyDirectedSynapsesImpl;
-import org.ml4j.nn.synapses.AxonsOnlyDirectedSynapsesImpl;
-import org.ml4j.nn.synapses.BatchNormDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
 import org.ml4j.nn.synapses.DirectedSynapsesImpl;
@@ -162,32 +157,11 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   @Override
   public List<DirectedSynapses<?, ?>> getSynapses() {
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
-    if (!withBatchNorm) {
-      // synapses.add(
-      // new DirectedSynapsesImpl<Neurons, Neurons>(
-      // getPrimaryAxons(), getPrimaryActivationFunction()));
-      synapses.add(new AxonsOnlyDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
-      synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
-          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
-          getPrimaryActivationFunction()));
+    if (withBatchNorm) {
+      throw new UnsupportedOperationException("Batch norm not yet implemented");
     } else {
-      Matrix initialGamma = matrixFactory.createOnes(1, 
-          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
-      Matrix initialBeta = matrixFactory.createZeros(1, 
-          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
-      ScaleAndShiftAxonsConfig config = 
-          new ScaleAndShiftAxonsConfig(initialGamma, initialBeta);
-      
-      synapses.add(new AxonsOnlyDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
-      
-      synapses.add(new BatchNormDirectedSynapsesImpl<Neurons, Neurons>(
-          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(), 
-          new ScaleAndShiftAxonsImpl(getPrimaryAxons().getRightNeurons(), matrixFactory, config)));
-
-      synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
-          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
-          getPrimaryActivationFunction()));
-      
+      synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons(), getPrimaryActivationFunction()));
     }
     return synapses;
   }
