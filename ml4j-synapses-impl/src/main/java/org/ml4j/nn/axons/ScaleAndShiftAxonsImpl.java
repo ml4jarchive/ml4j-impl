@@ -40,7 +40,6 @@ public class ScaleAndShiftAxonsImpl
   private static final Logger LOGGER = LoggerFactory.getLogger(
       ScaleAndShiftAxonsImpl.class);
   
-  
   /**
    * @param neurons The neurons whose activations we want to scale and shift.
    * @param matrixFactory The MatrixFactory to use to initialise the weights.
@@ -99,11 +98,13 @@ public class ScaleAndShiftAxonsImpl
 
   @Override
   public Matrix getScaleRowVector() {
-    return config.getScaleRowVector();
+    // TODO
+    return null;
   }
 
   @Override
   public Matrix getShiftRowVector() {
-    return config.getShiftRowVector();
+    // TODO
+    return null;
   }
 }

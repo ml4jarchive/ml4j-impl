@@ -18,7 +18,6 @@ package org.ml4j.nn.synapses;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsActivation;
-import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +32,10 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesActivationImpl.class);
   
-  @SuppressWarnings("unused")
   private NeuronsActivation inputActivation;
   private AxonsActivation axonsActivation;
   private NeuronsActivation outputActivation;
-  private DirectedSynapses<?> synapses;
+  private DirectedSynapses<?, ?> synapses;
   
   /**
    * Construct a new default DirectedSynapsesActivation
@@ -50,7 +48,7 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
    * @param outputActivation The output NeuronsActivation of the DirectedSynapses
    *        following a forward propagation.
    */
-  public DirectedSynapsesActivationImpl(DirectedSynapses<?> synapses, 
+  public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses, 
       NeuronsActivation inputActivation, 
       AxonsActivation axonsActivation, NeuronsActivation outputActivation) {
     this.inputActivation = inputActivation;
@@ -64,101 +62,10 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     return outputActivation;
   }
 
-  @Override
-  public DirectedSynapsesGradient backPropagate(NeuronsActivation da,
-      DirectedSynapsesContext context, boolean outerMostSynapses, double regularisationLamdba) {
-   
-    LOGGER.debug("Back propagating through synapses activation....");
-    
-    if (da.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Back propagated deltas must not contain bias unit");
-    }
-    
-    
-    if (synapses.getAxons().getRightNeurons().hasBiasUnit()) {
-      throw new IllegalStateException(
-          "Backpropagation through axons with a rhs bias unit not supported");
-    }
-    
-    NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
-    
-    Matrix dz = null;
-    
-    if (outerMostSynapses) {
-      dz = da.getActivations();
-    } else {
-      Matrix activationGradient = synapses.getActivationFunction()
-          .activationGradient(axonsOutputActivation.withBiasUnit(false, context), context)
-          .getActivations();
-
-      dz = da.getActivations().mul(activationGradient);
-    }
-  
-    if (da.getFeatureCountIncludingBias() != synapses.getAxons().getRightNeurons()
-        .getNeuronCountExcludingBias()) {
-      throw new IllegalArgumentException("Expected feature count to be:"
-          + synapses.getAxons().getRightNeurons().getNeuronCountExcludingBias() + " but was:"
-          + da.getFeatureCountIncludingBias());
-    }
-    
-    // Does not contain output bias unit
-    NeuronsActivation dzN = new NeuronsActivation(dz, 
-        false,
-        da.getFeatureOrientation());
-
-    LOGGER.debug("Pushing data right to left through axons...");
-    
-    // Will contain bias unit if Axons have left  bias unit
-    NeuronsActivation inputGradient =
-        synapses.getAxons().pushRightToLeft(dzN, axonsActivation, 
-            context.createAxonsContext()).getOutput();
-    
-     
-    if (inputGradient.isBiasUnitIncluded()) {
-      LOGGER.debug("Removing biases from back propagated deltas");
-      inputGradient = new NeuronsActivation(inputGradient.getActivations(), 
-          inputGradient.isBiasUnitIncluded(),
-          inputGradient.getFeatureOrientation()).withBiasUnit(false, context);
-    }
-         
-    Matrix totalTrainableAxonsGradient = null;
-    
-    if (synapses.getAxons() instanceof TrainableAxons) {
-     
-      LOGGER.debug("Calculating Axons Gradients");
-
-      totalTrainableAxonsGradient = 
-          dz.mmul(this.axonsActivation.getInput().getActivations());
-      
-      if (regularisationLamdba != 0) {
-       
-        LOGGER.debug("Calculating total regularisation Gradients");
-   
-        Matrix connectionWeightsCopy = synapses.getAxons().getDetachedConnectionWeights();
-
-        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
-        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
-
-        totalTrainableAxonsGradient = totalTrainableAxonsGradient
-            .addi(connectionWeightsCopy.muli(regularisationLamdba));
-        
-        if (synapses.getAxons().getLeftNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putRow(0, firstRow);
-        }
-        if (synapses.getAxons().getRightNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putColumn(0, firstColumn);
-        }
-      }
-    }
-
-    return new DirectedSynapsesGradientImpl(inputGradient, 
-        totalTrainableAxonsGradient);
-  }
+ 
 
   @Override
-  public DirectedSynapses<?> getSynapses() {
+  public DirectedSynapses<?, ?> getSynapses() {
     return synapses;
   }
 
@@ -172,21 +79,21 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
   @Override
   public double getTotalRegularisationCost(double regularisationLambda) {
   
-    if (regularisationLambda != 0) {
+    if (regularisationLambda != 0 && synapses.getAxons() != null) {
 
       LOGGER.debug("Calculating total regularisation cost");
       
       Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
 
       int[] rows = new int[weightsWithBiases.getRows()
-          - (this.getSynapses().getAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
+          - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
       int[] cols = new int[weightsWithBiases.getColumns()
-          - (this.getSynapses().getAxons().getRightNeurons().hasBiasUnit() ? 1 : 0)];
+          - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)];
       for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
-        cols[j - (this.getSynapses().getAxons().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
+        cols[j - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
       }
       for (int j = 1; j < weightsWithBiases.getRows(); j++) {
-        rows[j - (this.getSynapses().getAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
+        rows[j - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
       }
 
       Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
@@ -196,5 +103,15 @@ public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivatio
     } else {
       return 0;
     }
+  }
+
+  @Override
+  public AxonsActivation getAxonsActivation() {
+    return axonsActivation;
+  }
+
+  @Override
+  public NeuronsActivation getInput() {
+    return inputActivation;
   }
 }

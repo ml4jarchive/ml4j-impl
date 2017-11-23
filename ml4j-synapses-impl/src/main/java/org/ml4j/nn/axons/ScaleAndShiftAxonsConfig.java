@@ -31,32 +31,32 @@ public class ScaleAndShiftAxonsConfig extends AxonsConfig {
    */
   private static final long serialVersionUID = 1L;
   
-  private Matrix scaleRowVector;
-  private Matrix shiftRowVector;
+  private Matrix initialScaleRowVector;
+  private Matrix initialShiftRowVector;
   
   /**
    * Configure scale and shift axons.
    * 
-   * @param scaleRowVector A row vector consisting of the scalings for each output neuron.
-   * @param shiftRowVector A row vector consisting of the shifts for each output neuron.
+   * @param initialScaleRowVector A row vector consisting of the scalings for each output neuron.
+   * @param initialShiftRowVector A row vector consisting of the shifts for each output neuron.
    */
-  public ScaleAndShiftAxonsConfig(Matrix scaleRowVector, Matrix shiftRowVector) {
+  public ScaleAndShiftAxonsConfig(Matrix initialScaleRowVector, Matrix initialShiftRowVector) {
     super();
-    this.scaleRowVector = scaleRowVector;
-    this.shiftRowVector = shiftRowVector;
+    this.initialScaleRowVector = initialScaleRowVector;
+    this.initialShiftRowVector = initialShiftRowVector;
   }
 
   /**
    * @return A row vector consisting of the scalings for each output neuron.
    */
   public Matrix getScaleRowVector() {
-    return scaleRowVector;
+    return initialScaleRowVector;
   }
 
   /**
    * @return A row vector consisting of the shifts for each output neuron.
    */
   public Matrix getShiftRowVector() {
-    return shiftRowVector;
+    return initialShiftRowVector;
   }
 }

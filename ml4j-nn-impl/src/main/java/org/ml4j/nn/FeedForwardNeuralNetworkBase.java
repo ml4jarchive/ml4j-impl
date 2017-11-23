@@ -20,6 +20,7 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
 import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
+import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CostFunction;
@@ -80,8 +81,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
     // Perform the addition of the bias once here for efficiency - without this logic the
     // bias would be added on each iteration.
-    if (getFirstLayer().getSynapses()
-        .get(0).getAxons().getLeftNeurons().hasBiasUnit()
+    if (getFirstLayer().getSynapses().get(0).getLeftNeurons().hasBiasUnit()
         && !trainingDataActivations.isBiasUnitIncluded()) {
       trainingDataActivations = trainingDataActivations.withBiasUnit(true, trainingContext);
     }
@@ -145,12 +145,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   protected CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
       NeuronsActivation desiredOutputActivations, C trainingContext) {
    
-    List<DirectedSynapses<?>> finalLayerSynapses = getFinalLayer()
-        .getSynapses();
+    List<DirectedSynapses<?, ?>> finalLayerSynapses = getFinalLayer().getSynapses();
 
-    DirectedSynapses<?> finalSynapses = finalLayerSynapses.get(finalLayerSynapses.size() - 1);
+    DirectedSynapses<?, ?> finalSynapses = finalLayerSynapses.get(finalLayerSynapses.size() - 1);
 
-    boolean expectBiasUnitForOutput = finalSynapses.getAxons().getRightNeurons().hasBiasUnit();
+    boolean expectBiasUnitForOutput = finalSynapses.getRightNeurons().hasBiasUnit();
 
     if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
       throw new IllegalArgumentException("Expected desired output activations to be with bias");
@@ -232,10 +231,12 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
 
       FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
-      for (DirectedSynapses<?> synapses : layer.getSynapses()) {
-        if (synapses.getAxons() instanceof TrainableAxons) {
-          TrainableAxons<?, ?, ?> axons = (TrainableAxons<?, ?, ?>) synapses.getAxons();
-          trainableAxonsList.add(axons);
+      for (DirectedSynapses<?, ?> synapses : layer.getSynapses()) {
+        Axons<?, ? , ?> axons = synapses.getAxons();
+        if (axons != null && axons instanceof TrainableAxons) {
+          TrainableAxons<?, ?, ?> trainableAxons = 
+              (TrainableAxons<?, ?, ?>) axons;
+          trainableAxonsList.add(trainableAxons);
         }
       }
     }
@@ -320,9 +321,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
    */
   protected CostFunction getCostFunction(MatrixFactory matrixFactory) {
 
-    List<DirectedSynapses<?>> synapseList = getFinalLayer().getSynapses();
-    DirectedSynapses<?> finalSynapses = synapseList.get(synapseList.size() - 1);
+    List<DirectedSynapses<?, ?>> synapseList = getFinalLayer().getSynapses();
+    DirectedSynapses<?, ?> finalSynapses = synapseList.get(synapseList.size() - 1);
     DifferentiableActivationFunction activationFunction = finalSynapses.getActivationFunction();
+    if (activationFunction == null) {
+      throw new UnsupportedOperationException(
+          "Default cost function not yet defined for null activation function");
+    }
     if (activationFunction instanceof SigmoidActivationFunction) {
       LOGGER.debug("Defaulting to use CrossEntropyCostFunction");
       return new CrossEntropyCostFunction();

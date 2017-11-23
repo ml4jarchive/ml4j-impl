@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> 
+public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons> 
     implements DirectedSynapses<L, R> {
 
   /**
@@ -40,40 +40,38 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   private static final long serialVersionUID = 1L;
   
   private static final Logger LOGGER = 
-      LoggerFactory.getLogger(DirectedSynapsesImpl.class);
+      LoggerFactory.getLogger(AxonsOnlyDirectedSynapsesImpl.class);
   
   private Axons<? extends L, ? extends R, ?> axons;
-  private DifferentiableActivationFunction activationFunction;
   
   /**
    * Create a new implementation of DirectedSynapses.
    * 
    * @param axons The Axons within these synapses
-   * @param activationFunction The activation function within these synapses
    */
-  public DirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
-      DifferentiableActivationFunction activationFunction) {
+  public AxonsOnlyDirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons) {
     super();
     this.axons = axons;
-    this.activationFunction = activationFunction;
   }
 
+  /*
   @Override
   public Axons<? extends L, ? extends R, ?> getAxons() {
     return axons;
   }
+  */
 
   @Override
   public DirectedSynapses<L, R> dup() {
-    return new DirectedSynapsesImpl<L, R>(axons.dup(), activationFunction);
+    return new AxonsOnlyDirectedSynapsesImpl<L, R>(axons.dup());
   }
 
-
+  /**.
   @Override
   public DifferentiableActivationFunction getActivationFunction() {
     return activationFunction;
   }
-
+  **/
 
   @Override
   public DirectedSynapsesActivation forwardPropagate(DirectedSynapsesInput input,
@@ -92,11 +90,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
     
-    NeuronsActivation outputNeuronsActivation = 
-        activationFunction.activate(axonsOutputActivation, synapsesContext);
-    
     return new DirectedSynapsesActivationImpl(this, 
-        inputNeuronsActivation, axonsActivation, outputNeuronsActivation);
+        inputNeuronsActivation, axonsActivation, axonsOutputActivation);
   
   }
   
@@ -116,24 +111,12 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
           "Backpropagation through axons with a rhs bias unit not supported");
     }
     
-    if (activation.getAxonsActivation() == null) {
-      throw new IllegalStateException(
-          "The synapses activation is expected to contain an AxonsActivation");
-    }
-    
-    NeuronsActivation axonsOutputActivation = activation.getAxonsActivation().getOutput();
+    //NeuronsActivation axonsOutputActivation = activation.getAxonsActivation().getOutput();
     
     Matrix dz = null;
     
-    if (outerMostSynapses) {
-      dz = da.getActivations();
-    } else {
-      Matrix activationGradient = activationFunction
-          .activationGradient(axonsOutputActivation.withBiasUnit(false, context), context)
-          .getActivations();
-
-      dz = da.getActivations().mul(activationGradient);
-    }
+    dz = da.getActivations();
+ 
   
     if (da.getFeatureCountIncludingBias() != axons.getRightNeurons()
         .getNeuronCountExcludingBias()) {
@@ -208,5 +191,16 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     return axons.getRightNeurons();
   }
 
+  @Override
+  public DifferentiableActivationFunction getActivationFunction() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
+  @Override
+  public Axons<?, ?, ?> getAxons() {
+    return axons;
+  }
+  
+  
 }
