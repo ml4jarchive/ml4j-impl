@@ -123,14 +123,15 @@ public class BatchNormDirectedSynapsesImpl
     Matrix gammaRow = context.getMatrixFactory().createMatrix(1, 
         this.getRightNeurons().getNeuronCountExcludingBias());
     for (int i = 0; i < dgamma.getLength(); i++) {
-      gammaRow.put(0, i, weights.get(i + 1, i));
+      gammaRow.put(0, i, weights.get(i + (getLeftNeurons().hasBiasUnit() ? 1 : 0), i));
     }
     Matrix gamma = context.getMatrixFactory().createMatrix(num, gammaRow.getColumns());
     for (int i = 0; i < num ; i++) {
       gamma.putRow(i, gammaRow);
     }
     
-    Matrix dx = gamma.mul(istd).div(num).mul(dout.mul(num).sub(xhat.mul(dgammab)).sub(dbetab));
+    Matrix dx = gamma.mul(istd).div(num).mul(dout.mul(num).sub(xhat.mul(dgammab))
+        .sub(dbetab));
     
     NeuronsActivation dxn = new NeuronsActivation(dx.transpose(), false, 
         outerGradient.getFeatureOrientation());
