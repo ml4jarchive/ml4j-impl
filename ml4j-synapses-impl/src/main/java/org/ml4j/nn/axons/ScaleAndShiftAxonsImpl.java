@@ -39,21 +39,44 @@ public class ScaleAndShiftAxonsImpl
   
   private static final Logger LOGGER = LoggerFactory.getLogger(
       ScaleAndShiftAxonsImpl.class);
-  
+    
   /**
-   * @param neurons The neurons whose activations we want to scale and shift.
+   * @param leftNeurons The left hand neurons whose activations we want to scale and shift.
+   * @param rightNeurons The right hand target neurons..
    * @param matrixFactory The MatrixFactory to use to initialise the weights.
    * @param config The config for these Axons.
    */
-  public ScaleAndShiftAxonsImpl(Neurons neurons,
+  public ScaleAndShiftAxonsImpl(Neurons leftNeurons, Neurons rightNeurons,
       MatrixFactory matrixFactory, ScaleAndShiftAxonsConfig config) {
-    super(new Neurons(neurons.getNeuronCountExcludingBias(),true), neurons, matrixFactory, config);
+    super(new Neurons(leftNeurons.getNeuronCountExcludingBias(),true), 
+        rightNeurons, matrixFactory, config);
+    if (!leftNeurons.hasBiasUnit()) {
+      throw new IllegalArgumentException(
+          "Left neurons must contain " + "a bias unit for ScaleAndShiftAxons");
+    }
+    if (rightNeurons.hasBiasUnit()) {
+      throw new IllegalArgumentException("Right neurons should not contain bias unit");
+    }
+    if (leftNeurons.getNeuronCountExcludingBias() != rightNeurons.getNeuronCountExcludingBias()) {
+      throw new IllegalArgumentException("Left neurons and right neurons are not compatible sizes");
+    }
   }
+  
   
   protected ScaleAndShiftAxonsImpl(Neurons leftNeurons, Neurons rightNeurons, 
         Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, 
         ScaleAndShiftAxonsConfig config) {
     super(leftNeurons, rightNeurons, connectionWeights, connectionWeightsMask, config);
+    if (leftNeurons.getNeuronCountExcludingBias() != rightNeurons.getNeuronCountExcludingBias()) {
+      throw new IllegalArgumentException("Left neurons and right neurons are not compatible sizes");
+    }
+    if (!leftNeurons.hasBiasUnit()) {
+      throw new IllegalArgumentException(
+          "Left neurons must contain " + "a bias unit for ScaleAndShiftAxons");
+    }
+    if (rightNeurons.hasBiasUnit()) {
+      throw new IllegalArgumentException("Right neurons should not contain bias unit");
+    }
   }
  
   @Override
@@ -74,19 +97,16 @@ public class ScaleAndShiftAxonsImpl
     LOGGER.debug("Initialising FullyConnectedAxon weights...");
     
     Matrix weights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
-        rightNeurons.getNeuronCountIncludingBias());
+        rightNeurons.getNeuronCountExcludingBias());
     
     if (getLeftNeurons().hasBiasUnit()) {
       weights.putRow(0, config.getShiftRowVector());
     }
-    if (getRightNeurons().hasBiasUnit()) {
-      weights.putColumn(0, matrixFactory.createZeros(weights.getRows(),1));
-    }
+  
     for (int i = 0; i < config.getScaleRowVector().getColumns(); i++) {
-      int col = i + (getRightNeurons().hasBiasUnit() ? 1 : 0);
-      weights.put(i + 1, col, config.getScaleRowVector().get(0, i));
+      weights.put(i + 1, i, config.getScaleRowVector().get(0, i));
     }
-    
+ 
     return weights;
   }
 
@@ -98,11 +118,11 @@ public class ScaleAndShiftAxonsImpl
 
   @Override
   public Matrix getScaleRowVector() {
-    throw new UnsupportedOperationException("Not yet implemented");
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 
   @Override
   public Matrix getShiftRowVector() {
-    throw new UnsupportedOperationException("Not yet implemented");
+    return connectionWeights.getRow(0);
   }
 }

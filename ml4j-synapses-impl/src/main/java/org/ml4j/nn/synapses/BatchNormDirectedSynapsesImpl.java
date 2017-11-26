@@ -6,8 +6,6 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
-import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
-import org.ml4j.nn.axons.ScaleAndShiftAxonsImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -92,9 +90,11 @@ public class BatchNormDirectedSynapsesImpl
       dgammab.putRow(i, dgamma);
     }
     
+    Matrix dbeta = dout.transpose().rowSums().transpose();
+    
     Matrix dbetab = context.getMatrixFactory().createMatrix(xhat.getRows(), xhat.getColumns());
     for (int i = 0; i < xhat.getRows(); i++) {
-      dbetab.putRow(i, dbetab);
+      dbetab.putRow(i, dbeta);
     }
     
     int num = xhat.getRows();
@@ -118,13 +118,8 @@ public class BatchNormDirectedSynapsesImpl
       }
     }
     
-    Matrix weights = scaleAndShiftAxons.getDetachedConnectionWeights();
-
-    Matrix gammaRow = context.getMatrixFactory().createMatrix(1, 
-        this.getRightNeurons().getNeuronCountExcludingBias());
-    for (int i = 0; i < dgamma.getLength(); i++) {
-      gammaRow.put(0, i, weights.get(i + (getLeftNeurons().hasBiasUnit() ? 1 : 0), i));
-    }
+    Matrix gammaRow = scaleAndShiftAxons.getScaleRowVector();
+    
     Matrix gamma = context.getMatrixFactory().createMatrix(num, gammaRow.getColumns());
     for (int i = 0; i < num ; i++) {
       gamma.putRow(i, gammaRow);
@@ -136,14 +131,9 @@ public class BatchNormDirectedSynapsesImpl
     NeuronsActivation dxn = new NeuronsActivation(dx.transpose(), false, 
         outerGradient.getFeatureOrientation());
     
-    Matrix dbeta = dout.transpose().rowSums().transpose();
-
-    
-    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(dgamma, dbeta);
-    
-    Matrix axonsGradient = 
-        new ScaleAndShiftAxonsImpl(leftNeurons, 
-            context.getMatrixFactory(), config).getDetachedConnectionWeights();
+    Matrix axonsGradient = context.getMatrixFactory().createMatrix(2, dgamma.getColumns());
+    axonsGradient.putRow(0, dgamma);
+    axonsGradient.putRow(1, dbeta);
 
     return new DirectedSynapsesGradientImpl(dxn, axonsGradient.transpose());
 

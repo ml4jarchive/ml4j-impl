@@ -20,8 +20,8 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.ScaleAndShiftAxonsAlternateImpl;
 import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
-import org.ml4j.nn.axons.ScaleAndShiftAxonsImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -175,7 +175,11 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
       
       synapses.add(new BatchNormDirectedSynapsesImpl<Neurons, Neurons>(
           getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(), 
-          new ScaleAndShiftAxonsImpl(getPrimaryAxons().getRightNeurons(), matrixFactory, config)));
+          new ScaleAndShiftAxonsAlternateImpl(
+              new Neurons(getPrimaryAxons()
+                  .getRightNeurons().getNeuronCountExcludingBias(), true), 
+              getPrimaryAxons().getRightNeurons(), 
+              matrixFactory, config)));
 
       synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
           getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
