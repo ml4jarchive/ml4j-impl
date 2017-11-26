@@ -20,9 +20,14 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.ScaleAndShiftAxonsAlternateImpl;
+import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.synapses.ActivationFunctionOnlyDirectedSynapsesImpl;
+import org.ml4j.nn.synapses.AxonsOnlyDirectedSynapsesImpl;
+import org.ml4j.nn.synapses.BatchNormDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
 import org.ml4j.nn.synapses.DirectedSynapsesImpl;
@@ -60,6 +65,8 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   protected MatrixFactory matrixFactory;
   
   protected boolean withBatchNorm;
+  
+  protected DirectedSynapses<?, ?> batchNormSynapses;
  
   /**
    * @param primaryAxons The primary Axons
@@ -74,6 +81,21 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     this.primaryActivationFunction = activationFunction;
     this.matrixFactory = matrixFactory;
     this.withBatchNorm = withBatchNorm;
+    if (withBatchNorm) {
+      
+      Matrix initialGamma = matrixFactory.createOnes(1, 
+          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
+      Matrix initialBeta = matrixFactory.createZeros(1, 
+          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
+      ScaleAndShiftAxonsConfig config = 
+          new ScaleAndShiftAxonsConfig(initialGamma, initialBeta);
+      
+      this.batchNormSynapses = new BatchNormDirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
+          new ScaleAndShiftAxonsAlternateImpl(
+              new Neurons(getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias(), true),
+              getPrimaryAxons().getRightNeurons(), matrixFactory, config));
+    }
   }
 
   @Override
@@ -158,7 +180,15 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   public List<DirectedSynapses<?, ?>> getSynapses() {
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
     if (withBatchNorm) {
-      throw new UnsupportedOperationException("Batch norm not yet implemented");
+ 
+      synapses.add(new AxonsOnlyDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
+      
+      synapses.add(batchNormSynapses);
+
+      synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
+          getPrimaryActivationFunction()));
+      
     } else {
       synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(
           getPrimaryAxons(), getPrimaryActivationFunction()));
