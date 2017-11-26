@@ -65,6 +65,8 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   protected MatrixFactory matrixFactory;
   
   protected boolean withBatchNorm;
+  
+  protected DirectedSynapses<?, ?> batchNormSynapses;
  
   /**
    * @param primaryAxons The primary Axons
@@ -79,6 +81,21 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     this.primaryActivationFunction = activationFunction;
     this.matrixFactory = matrixFactory;
     this.withBatchNorm = withBatchNorm;
+    if (withBatchNorm) {
+      
+      Matrix initialGamma = matrixFactory.createOnes(1, 
+          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
+      Matrix initialBeta = matrixFactory.createZeros(1, 
+          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
+      ScaleAndShiftAxonsConfig config = 
+          new ScaleAndShiftAxonsConfig(initialGamma, initialBeta);
+      
+      this.batchNormSynapses = new BatchNormDirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
+          new ScaleAndShiftAxonsAlternateImpl(
+              new Neurons(getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias(), true),
+              getPrimaryAxons().getRightNeurons(), matrixFactory, config));
+    }
   }
 
   @Override
@@ -163,23 +180,10 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   public List<DirectedSynapses<?, ?>> getSynapses() {
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
     if (withBatchNorm) {
-      
-      Matrix initialGamma = matrixFactory.createOnes(1, 
-          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
-      Matrix initialBeta = matrixFactory.createZeros(1, 
-          getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias());
-      ScaleAndShiftAxonsConfig config = 
-          new ScaleAndShiftAxonsConfig(initialGamma, initialBeta);
-      
+ 
       synapses.add(new AxonsOnlyDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
       
-      synapses.add(new BatchNormDirectedSynapsesImpl<Neurons, Neurons>(
-          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(), 
-          new ScaleAndShiftAxonsAlternateImpl(
-              new Neurons(getPrimaryAxons()
-                  .getRightNeurons().getNeuronCountExcludingBias(), true), 
-              getPrimaryAxons().getRightNeurons(), 
-              matrixFactory, config)));
+      synapses.add(batchNormSynapses);
 
       synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
           getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
