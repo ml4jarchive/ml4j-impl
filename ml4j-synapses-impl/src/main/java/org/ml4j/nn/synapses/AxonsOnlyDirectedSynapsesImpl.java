@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation of DirectedSynapses.
+ * Default implementation of DirectedSynapses that contain only Axons, with no ActivationFunction.
  * 
  * @author Michael Lavelle
  */
@@ -45,7 +45,7 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   private Axons<? extends L, ? extends R, ?> axons;
   
   /**
-   * Create a new implementation of DirectedSynapses.
+   * Create a new implementation of Axons-only DirectedSynapses.
    * 
    * @param axons The Axons within these synapses
    */
@@ -54,31 +54,16 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     this.axons = axons;
   }
 
-  /*
-  @Override
-  public Axons<? extends L, ? extends R, ?> getAxons() {
-    return axons;
-  }
-  */
-
   @Override
   public DirectedSynapses<L, R> dup() {
     return new AxonsOnlyDirectedSynapsesImpl<L, R>(axons.dup());
   }
-
-  /**.
-  @Override
-  public DifferentiableActivationFunction getActivationFunction() {
-    return activationFunction;
-  }
-  **/
 
   @Override
   public DirectedSynapsesActivation forwardPropagate(DirectedSynapsesInput input,
       DirectedSynapsesContext synapsesContext) {
    
     NeuronsActivation inputNeuronsActivation = input.getInput();
-    
 
     LOGGER.debug("Forward propagating through DirectedSynapses");
     AxonsActivation axonsActivation = 
@@ -104,14 +89,11 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
       throw new IllegalStateException(
           "Backpropagation through axons with a rhs bias unit not supported");
     }
-    
-    //NeuronsActivation axonsOutputActivation = activation.getAxonsActivation().getOutput();
-    
+        
     Matrix dz = null;
     
     dz = da.getActivations();
  
-  
     if (da.getFeatureCount() != axons.getRightNeurons()
         .getNeuronCountExcludingBias()) {
       throw new IllegalArgumentException("Expected feature count to be:"
@@ -119,13 +101,11 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
           + da.getFeatureCount());
     }
     
-    // Does not contain output bias unit
     NeuronsActivation dzN = new NeuronsActivation(dz,
         da.getFeatureOrientation());
 
     LOGGER.debug("Pushing data right to left through axons...");
     
-    // Will contain bias unit if Axons have left  bias unit
     NeuronsActivation inputGradient =
         axons.pushRightToLeft(dzN, activation.getAxonsActivation(), 
             context.createAxonsContext()).getOutput();
@@ -179,7 +159,6 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public DifferentiableActivationFunction getActivationFunction() {
-    // TODO Auto-generated method stub
     return null;
   }
 
@@ -187,6 +166,4 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   public Axons<?, ?, ?> getAxons() {
     return axons;
   }
-  
-  
 }
