@@ -34,10 +34,11 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through SigmoidActivationFunction");
+
     Matrix sigmoidOfInputActivationsMatrix = 
-        input.withBiasUnit(false, context).getActivations().sigmoid();
-    return new NeuronsActivation(sigmoidOfInputActivationsMatrix, false,
-        input.getFeatureOrientation()).withBiasUnit(input.isBiasUnitIncluded(), context);
+        input.getActivations().sigmoid();
+    return new NeuronsActivation(sigmoidOfInputActivationsMatrix,
+        input.getFeatureOrientation());
   }
 
   @Override
@@ -45,16 +46,11 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
       NeuronsActivationContext context) {
     
     LOGGER.debug("Performing sigmoid gradient of NeuronsActivation");
-    if (outputActivation.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException(
-          "Activation gradient of activations with bias unit not supported");
-    }
-    Matrix gradient = NeuralNetUtils.sigmoidGradient(outputActivation.withBiasUnit(false, 
-        context).getActivations());
+   
+    Matrix gradient = NeuralNetUtils.sigmoidGradient(outputActivation.getActivations());
   
     return new NeuronsActivation(
-        gradient,
-        outputActivation.isBiasUnitIncluded(), 
+        gradient, 
         outputActivation.getFeatureOrientation());
 
   }
