@@ -38,14 +38,10 @@ public class ReluActivationFunction implements DifferentiableActivationFunction 
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through ReluActivationFunction");
-    if (input.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
+   
     
     NeuronsActivation output = 
-        new NeuronsActivation(input.getActivations().dup(), input.isBiasUnitIncluded(),
+        new NeuronsActivation(input.getActivations().dup(),
         input.getFeatureOrientation());
     for (int r = 0; r < output.getActivations().getRows(); r++) {
       for (int c = 0; c < output.getActivations().getColumns(); c++) {
@@ -60,21 +56,15 @@ public class ReluActivationFunction implements DifferentiableActivationFunction 
   @Override
   public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
       NeuronsActivationContext context) {
-    
-    if (outputActivation.isBiasUnitIncluded()) {
-      throw new UnsupportedOperationException(
-          "Activations passing through activation function should not include a bias unit"
-          + " as this has not yet been implemented");
-    }
-    
+   
     LOGGER.debug("Performing relu gradient of NeuronsActivation");
     
     Matrix gradientMatrix = context.getMatrixFactory()
         .createOnes(outputActivation.getActivations().getRows(), 
         outputActivation.getActivations().getColumns());
     
-    NeuronsActivation output = new NeuronsActivation(gradientMatrix,
-        outputActivation.isBiasUnitIncluded(), outputActivation.getFeatureOrientation());
+    NeuronsActivation output = new NeuronsActivation(gradientMatrix, 
+        outputActivation.getFeatureOrientation());
     
     for (int r = 0; r < output.getActivations().getRows(); r++) {
       for (int c = 0; c < output.getActivations().getColumns(); c++) {

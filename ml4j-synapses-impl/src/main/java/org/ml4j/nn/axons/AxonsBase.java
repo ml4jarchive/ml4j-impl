@@ -1,17 +1,15 @@
 /*
  * Copyright 2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package org.ml4j.nn.axons;
@@ -21,6 +19,7 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationWithPossibleBiasUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,23 +32,23 @@ import org.slf4j.LoggerFactory;
  * @param <R> The type of Neurons on the right hand side of these Axons
  * @param <A> The type of these Axons
  */
-public abstract class AxonsBase<L extends Neurons, 
-    R extends Neurons, A extends Axons<L, R, A>, C extends AxonsConfig> implements Axons<L, R, A> {
+public abstract class AxonsBase<L extends Neurons, R extends Neurons, 
+    A extends Axons<L, R, A>, C extends AxonsConfig>
+    implements Axons<L, R, A> {
 
   /**
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(
-      AxonsBase.class);
-  
+  private static final Logger LOGGER = LoggerFactory.getLogger(AxonsBase.class);
+
   protected L leftNeurons;
   protected R rightNeurons;
   protected Matrix connectionWeights;
   protected C config;
   protected ConnectionWeightsMask connectionWeightsMask;
-  
+
   /**
    * Construct a new Axons instance.
    * 
@@ -61,13 +60,13 @@ public abstract class AxonsBase<L extends Neurons,
    */
   public AxonsBase(L leftNeurons, R rightNeurons, MatrixFactory matrixFactory,
       Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, C config) {
-    this(leftNeurons, rightNeurons, matrixFactory
-        .createZeros(leftNeurons.getNeuronCountIncludingBias(), 
-            rightNeurons.getNeuronCountIncludingBias()), connectionWeightsMask, config);
-    adjustConnectionWeights(connectionWeights, 
-        ConnectionWeightsAdjustmentDirection.ADDITION, true);
+    this(leftNeurons, rightNeurons,
+        matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
+            rightNeurons.getNeuronCountIncludingBias()),
+        connectionWeightsMask, config);
+    adjustConnectionWeights(connectionWeights, ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
-  
+
   /**
    * Construct a new AxonsBase instance.
    * 
@@ -81,13 +80,13 @@ public abstract class AxonsBase<L extends Neurons,
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
-    this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(), 
+    this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
         rightNeurons.getNeuronCountIncludingBias());
     validateConnectionWeightsAndConnectionWeightsMaskDimensions();
-    adjustConnectionWeights(createDefaultInitialConnectionWeights(matrixFactory), 
+    adjustConnectionWeights(createDefaultInitialConnectionWeights(matrixFactory),
         ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
-  
+
   /**
    * Construct a new AxonsBase instance.
    * 
@@ -102,13 +101,12 @@ public abstract class AxonsBase<L extends Neurons,
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
     this.connectionWeightsMask = createConnectionWeightsMask(matrixFactory);
-    this.connectionWeights = matrixFactory.createZeros(
-        leftNeurons.getNeuronCountIncludingBias(), rightNeurons.getNeuronCountIncludingBias());
+    this.connectionWeights = matrixFactory.createZeros(leftNeurons.getNeuronCountIncludingBias(),
+        rightNeurons.getNeuronCountIncludingBias());
     validateConnectionWeightsAndConnectionWeightsMaskDimensions();
-    adjustConnectionWeights(connectionWeights, 
-        ConnectionWeightsAdjustmentDirection.ADDITION, true);
+    adjustConnectionWeights(connectionWeights, ConnectionWeightsAdjustmentDirection.ADDITION, true);
   }
-  
+
   /**
    * Construct a new Axons instance.
    * 
@@ -117,8 +115,8 @@ public abstract class AxonsBase<L extends Neurons,
    * @param connectionWeights The connection weights Matrix
    * @param connectionWeightsMask The connection weights mask, or null if no mask required.
    */
-  protected AxonsBase(L leftNeurons, R rightNeurons,
-      Matrix connectionWeights, ConnectionWeightsMask connectionWeightsMask, C config) {
+  protected AxonsBase(L leftNeurons, R rightNeurons, Matrix connectionWeights,
+      ConnectionWeightsMask connectionWeightsMask, C config) {
     this.config = config;
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
@@ -126,7 +124,7 @@ public abstract class AxonsBase<L extends Neurons,
     this.connectionWeights = connectionWeights;
     validateConnectionWeightsAndConnectionWeightsMaskDimensions();
   }
-  
+
   private void validateConnectionWeightsAndConnectionWeightsMaskDimensions() {
     if (connectionWeightsMask != null) {
       if (connectionWeightsMask.getWeightsMask().getRows() != connectionWeights.getRows()) {
@@ -146,8 +144,7 @@ public abstract class AxonsBase<L extends Neurons,
 
   protected abstract ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory);
 
-  protected abstract 
-      Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory);
+  protected abstract Matrix createDefaultInitialConnectionWeights(MatrixFactory matrixFactory);
 
   @Override
   public L getLeftNeurons() {
@@ -158,21 +155,36 @@ public abstract class AxonsBase<L extends Neurons,
   public R getRightNeurons() {
     return rightNeurons;
   }
+  
+  private Matrix getActivationsWithPossibleBias(Matrix inputMatrix, 
+      NeuronsActivationFeatureOrientation orientation, AxonsContext axonsContext, 
+      boolean sourceWithBias, boolean targetWithBias, boolean resetTargetBias) {
+   
+    NeuronsActivationWithPossibleBiasUnit withBiasUnitIfApplicable =
+        new NeuronsActivationWithPossibleBiasUnit(inputMatrix,
+            sourceWithBias, orientation, 
+            resetTargetBias).withBiasUnit(targetWithBias, axonsContext);
+    
+    inputMatrix = withBiasUnitIfApplicable.getActivationsWithBias();
+    
+    return inputMatrix;
+  }
 
   @Override
   public AxonsActivation pushLeftToRight(NeuronsActivation leftNeuronsActivation,
       AxonsActivation previousRightToLeftActivation, AxonsContext axonsContext) {
+    
     LOGGER.debug("Pushing left to right through Axons");
-    if (leftNeuronsActivation.getFeatureOrientation()
-            != NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
+    if (leftNeuronsActivation
+        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
       throw new IllegalArgumentException("Only neurons actiavation with COLUMNS_SPAN_FEATURE_SET "
           + "orientation supported currently");
     }
     Matrix outputMatrix = null;
     Matrix outputDropoutMask = null;
-    
+
     Matrix inputDropoutMask = createLeftInputDropoutMask(leftNeuronsActivation, axonsContext);
-    
+
     Matrix previousInputDropoutMask = previousRightToLeftActivation == null ? null
         : previousRightToLeftActivation.getInputDropoutMask();
     if (previousInputDropoutMask != null) {
@@ -180,68 +192,82 @@ public abstract class AxonsBase<L extends Neurons,
       outputDropoutMask = previousInputDropoutMask.transpose();
     }
     
-    NeuronsActivation withBiasUnitIfApplicable = leftNeuronsActivation.withBiasUnit(
-        leftNeurons.hasBiasUnit(), axonsContext);
-    
-    if (withBiasUnitIfApplicable.getFeatureCountIncludingBias() != connectionWeights
-        .getRows()) {
-      throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
-          + getLeftNeurons().getNeuronCountExcludingBias()
-          + " features excluding bias but references "
-          + withBiasUnitIfApplicable.getFeatureCountExcludingBias() + " features excluding bias");
-    }
-
     Matrix inputMatrix = null;
-    
+
     if (inputDropoutMask != null) {
       double postDropoutScaling = getLeftInputPostDropoutScaling(axonsContext);
-      
+
       if (postDropoutScaling != 1) {
         LOGGER.debug("Applying input dropout mask");
 
         LOGGER.debug("Scaling post dropout left to right non-bias input");
 
-        Matrix preScaling =  withBiasUnitIfApplicable
-            .getActivations().mul(inputDropoutMask);
-       
+        Matrix preScaling = leftNeuronsActivation.getActivations().mul(inputDropoutMask);
+
         inputMatrix = preScaling.mul(postDropoutScaling);
         
-        if (leftNeuronsActivation.isBiasUnitIncluded() && leftNeuronsActivation
-            .getFeatureOrientation() 
-            == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-          inputMatrix.putColumn(0,
-              preScaling.getColumn(0));
-        } else if (leftNeuronsActivation.isBiasUnitIncluded() && leftNeuronsActivation
-            .getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-          inputMatrix.putRow(0,
-              preScaling.getRow(0));
-        }
-        
+        inputMatrix = getActivationsWithPossibleBias(inputMatrix, 
+            leftNeuronsActivation.getFeatureOrientation(), axonsContext, 
+            false, leftNeurons.hasBiasUnit(), false);
+
         outputMatrix = inputMatrix.mmul(connectionWeights);
       } else {
-        inputMatrix = withBiasUnitIfApplicable
-            .getActivations().mul(inputDropoutMask);
+        inputMatrix = leftNeuronsActivation.getActivations().mul(inputDropoutMask);
+
+        inputMatrix = getActivationsWithPossibleBias(inputMatrix, 
+            leftNeuronsActivation.getFeatureOrientation(), axonsContext, false, 
+            leftNeurons.hasBiasUnit(), false);
+
+        if (inputMatrix.getColumns() != connectionWeights
+            .getRows()) {
+          throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+              + getLeftNeurons().getNeuronCountIncludingBias()
+              + " features including bias but references "
+              + inputMatrix.getColumns()
+              + " features including bias");
+        }
+       
         outputMatrix = inputMatrix.mmul(connectionWeights);
       }
 
     } else {
-      inputMatrix = withBiasUnitIfApplicable.getActivations();
+      
+      inputMatrix = getActivationsWithPossibleBias(leftNeuronsActivation.getActivations(), 
+          leftNeuronsActivation.getFeatureOrientation(), 
+          axonsContext, false, leftNeurons.hasBiasUnit(), false);
+     
+      if (inputMatrix.getColumns() != connectionWeights
+          .getRows()) {
+        throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+            + getLeftNeurons().getNeuronCountExcludingBias()
+            + " features including bias but references "
+            + inputMatrix.getColumns()
+            + " features including bias");
+      }
       
       outputMatrix = inputMatrix.mmul(connectionWeights);
     }
-   
+  
+    outputMatrix = 
+        getActivationsWithPossibleBias(outputMatrix, 
+        leftNeuronsActivation.getFeatureOrientation(), 
+        axonsContext, rightNeurons.hasBiasUnit(), false, rightNeurons.hasBiasUnit());
+
     if (outputDropoutMask != null) {
       LOGGER.debug("Applying left to right output dropout mask");
       outputMatrix = outputMatrix.mul(outputDropoutMask);
     }
- 
-    return new AxonsActivationImpl(inputDropoutMask, 
-        new NeuronsActivation(inputMatrix, leftNeurons.hasBiasUnit(), 
-        leftNeuronsActivation.getFeatureOrientation()),
-        new NeuronsActivation(outputMatrix, rightNeurons.hasBiasUnit(),
-        leftNeuronsActivation.getFeatureOrientation(), true));
+       
+    NeuronsActivation outputActivation =
+        new NeuronsActivation(outputMatrix, 
+            leftNeuronsActivation.getFeatureOrientation());
+
+    return new AxonsActivationImpl(inputDropoutMask,
+        new NeuronsActivationWithPossibleBiasUnit(inputMatrix, leftNeurons.hasBiasUnit(),
+            leftNeuronsActivation.getFeatureOrientation(), false),
+        outputActivation);
   }
-  
+
   /**
    * Return the dropout mask for left hand side input.
    * 
@@ -258,14 +284,13 @@ public abstract class AxonsBase<L extends Neurons,
     } else {
 
       LOGGER.debug("Creating left input dropout mask");
-      
+
       Matrix dropoutMask = axonsContext.getMatrixFactory().createZeros(
           leftNeuronsActivation.getActivations().getRows(),
           leftNeuronsActivation.getActivations().getColumns());
-      int startRow = leftNeuronsActivation.isBiasUnitIncluded() ? 1 : 0;
       for (int i = 0; i < dropoutMask.getRows(); i++) {
         for (int j = 0; j < dropoutMask.getColumns(); j++) {
-          if ((i < startRow) || (Math.random() < leftHandInputDropoutKeepProbability)) {
+          if (Math.random() < leftHandInputDropoutKeepProbability) {
             dropoutMask.put(i, j, 1);
           }
         }
@@ -274,7 +299,7 @@ public abstract class AxonsBase<L extends Neurons,
 
     }
   }
-  
+
   /**
    * Return the scaling required due to left-hand side input dropout.
    * 
@@ -282,8 +307,7 @@ public abstract class AxonsBase<L extends Neurons,
    * @return The post dropout input scaling factor.
    */
   protected double getLeftInputPostDropoutScaling(AxonsContext axonsContext) {
-    double dropoutKeepProbability = 
-        axonsContext.getLeftHandInputDropoutKeepProbability();
+    double dropoutKeepProbability = axonsContext.getLeftHandInputDropoutKeepProbability();
     if (dropoutKeepProbability == 0) {
       throw new IllegalArgumentException("Dropout keep probability cannot be set to 0");
     }
@@ -291,8 +315,8 @@ public abstract class AxonsBase<L extends Neurons,
   }
 
   /**
-   * Return the scaling required due to right-hand side input dropout.
-   * This is not yet supported, so we return 1.
+   * Return the scaling required due to right-hand side input dropout. This is not yet supported, so
+   * we return 1.
    * 
    * @param axonsContext The axons context.
    * @return The post dropout input scaling factor.
@@ -302,8 +326,8 @@ public abstract class AxonsBase<L extends Neurons,
   }
 
   /**
-   * Return the dropout mask for right hand side input.
-   * This is not yet supported, so we return null.
+   * Return the dropout mask for right hand side input. This is not yet supported, so we return
+   * null.
    * 
    * @param axonsContext The axons context
    * @return The input dropout mask applied at the right hand side of these Axons
@@ -316,18 +340,19 @@ public abstract class AxonsBase<L extends Neurons,
   @Override
   public AxonsActivation pushRightToLeft(NeuronsActivation rightNeuronsActivation,
       AxonsActivation previousLeftToRightActivation, AxonsContext axonsContext) {
+   
     LOGGER.debug("Pushing right to left through Axons:");
-    if (rightNeuronsActivation.getFeatureOrientation()
-            != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+    if (rightNeuronsActivation
+        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
       throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
           + "orientation supported currently");
     }
-    
+
     Matrix outputMatrix = null;
     Matrix outputDropoutMask = null;
-    
+
     Matrix inputDropoutMask = createRightInputDropoutMask(rightNeuronsActivation, axonsContext);
-    
+
     Matrix previousInputDropoutMask = previousLeftToRightActivation == null ? null
         : previousLeftToRightActivation.getInputDropoutMask();
     if (previousInputDropoutMask != null) {
@@ -335,82 +360,109 @@ public abstract class AxonsBase<L extends Neurons,
       outputDropoutMask = previousInputDropoutMask.transpose();
     }
     
-    NeuronsActivation withBiasUnitIfApplicable = 
-        rightNeuronsActivation.withBiasUnit(rightNeurons.hasBiasUnit(), axonsContext);
-    
-    if (withBiasUnitIfApplicable.getFeatureCountIncludingBias() != connectionWeights
-        .getColumns()) {
-      throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
-          + getRightNeurons().getNeuronCountExcludingBias()
-          + " features excluding bias but references "
-          + withBiasUnitIfApplicable.getFeatureCountExcludingBias() + " features excluding bias");
-    }
-
     Matrix inputMatrix = null;
     if (inputDropoutMask != null) {
       double postDropoutScaling = getRightInputPostDropoutScaling(axonsContext);
       if (postDropoutScaling != 1) {
         LOGGER.debug("Scaling post dropout right to left non-bias input");
+
+        Matrix preScaling = rightNeuronsActivation
+            .getActivations().mul(inputDropoutMask);
         
-        Matrix preScaling =  
-            
-            withBiasUnitIfApplicable.getActivations().mul(inputDropoutMask);
-      
         inputMatrix = preScaling.mul(postDropoutScaling);
         
-        if (rightNeuronsActivation.isBiasUnitIncluded() && rightNeuronsActivation
-            .getFeatureOrientation() 
-            == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-          inputMatrix.putColumn(0,
-              preScaling.getColumn(0));
-        } else if (rightNeuronsActivation.isBiasUnitIncluded() && rightNeuronsActivation
-            .getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-          inputMatrix.putRow(0,
-              preScaling.getRow(0));
+        inputMatrix = getActivationsWithPossibleBias(inputMatrix, 
+            rightNeuronsActivation.getFeatureOrientation(), 
+            axonsContext, false, rightNeurons.hasBiasUnit(), false);
+
+        if (inputMatrix.getRows() != connectionWeights
+            .getColumns()) {
+          throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+              + getRightNeurons().getNeuronCountIncludingBias()
+              + " features including bias but references "
+              + inputMatrix.getRows()
+              + " features including bias");
         }
         
-        outputMatrix = connectionWeights
-            .mmul(inputMatrix);
+        outputMatrix = connectionWeights.mmul(inputMatrix);
       } else {
-        inputMatrix = withBiasUnitIfApplicable
-            .getActivations().mul(inputDropoutMask);
-        outputMatrix = connectionWeights
-            .mmul(inputMatrix);
+        
+        
+        inputMatrix = rightNeuronsActivation.getActivations()
+            .mul(inputDropoutMask);
+        
+        inputMatrix = getActivationsWithPossibleBias(inputMatrix, 
+            rightNeuronsActivation.getFeatureOrientation(), 
+            axonsContext, false, rightNeurons.hasBiasUnit(), false);
+        
+        if (inputMatrix.getRows() != connectionWeights
+            .getColumns()) {
+          throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+              + getRightNeurons().getNeuronCountIncludingBias()
+              + " features including bias but references "
+              + inputMatrix.getRows()
+              + " features including bias");
+        }
+                
+        outputMatrix = connectionWeights.mmul(inputMatrix);
       }
     } else {
-      inputMatrix = withBiasUnitIfApplicable.getActivations();
+    
+      inputMatrix = getActivationsWithPossibleBias(
+          rightNeuronsActivation.getActivations(), 
+          rightNeuronsActivation.getFeatureOrientation(), 
+          axonsContext, false, rightNeurons.hasBiasUnit(), false);
+     
+      if (inputMatrix.getRows() != connectionWeights
+          .getColumns()) {
+        throw new IllegalArgumentException("Expected NeuronsActivation should consist of "
+            + getRightNeurons().getNeuronCountIncludingBias()
+            + " features including bias but references "
+            + inputMatrix.getRows()
+            + " features including bias");
+      }
+           
       outputMatrix = connectionWeights.mmul(inputMatrix);
     }
+   
+    outputMatrix = 
+        getActivationsWithPossibleBias(outputMatrix, 
+        rightNeuronsActivation.getFeatureOrientation(), 
+        axonsContext, leftNeurons.hasBiasUnit(), false, leftNeurons.hasBiasUnit());
     
     if (outputDropoutMask != null) {
       LOGGER.debug("Applying right to left output dropout mask");
       outputMatrix = outputMatrix.mul(outputDropoutMask);
     }
-    
-    return new AxonsActivationImpl(inputDropoutMask, 
-        new NeuronsActivation(inputMatrix, rightNeurons.hasBiasUnit(), 
-        rightNeuronsActivation.getFeatureOrientation()),
-        new NeuronsActivation(outputMatrix, leftNeurons.hasBiasUnit(),
-            rightNeuronsActivation.getFeatureOrientation(), true));
+        
+    NeuronsActivation outputActivation =
+        new NeuronsActivation(outputMatrix,
+            rightNeuronsActivation.getFeatureOrientation());
+
+    return new AxonsActivationImpl(inputDropoutMask,
+        new NeuronsActivationWithPossibleBiasUnit(inputMatrix, 
+            rightNeurons.hasBiasUnit(),
+            rightNeuronsActivation.getFeatureOrientation(), false),
+        outputActivation);
   }
-  
+
   @Override
   public Matrix getDetachedConnectionWeights() {
     LOGGER.debug("Duplicating connetion weights");
     return connectionWeights.dup();
   }
-  
+
   protected void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection, boolean initialisation) {
-    
-    if (adjustment.getRows() != connectionWeights.getRows() 
+
+    if (adjustment.getRows() != connectionWeights.getRows()
         || adjustment.getColumns() != connectionWeights.getColumns()) {
       throw new IllegalArgumentException(
           "Connection weights adjustment matrix is of dimensions: " + adjustment.getRows() + ","
               + adjustment.getColumns() + " but connection weights matrix is of dimensions:"
               + connectionWeights.getRows() + "," + connectionWeights.getColumns());
     }
-    
+
     if (connectionWeightsMask != null) {
       LOGGER.debug("Applying connection weights mask to adjustment request");
       adjustment.muli(connectionWeightsMask.getWeightsMask());

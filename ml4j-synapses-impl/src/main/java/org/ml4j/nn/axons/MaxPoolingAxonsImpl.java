@@ -112,7 +112,8 @@ public class MaxPoolingAxonsImpl
         
     LOGGER.debug("Creating max pooling dropout mask");
 
-    Matrix dropoutMask = matrixFactory.createZeros(leftNeuronsActivation.getActivations().getRows(),
+    Matrix dropoutMask = matrixFactory.createZeros(leftNeuronsActivation
+        .getActivations().getRows(),
         leftNeuronsActivation.getActivations().getColumns());
         
     for (int outputNeuronIndex = 0; outputNeuronIndex < connectionWeightsMask.getWeightsMask()

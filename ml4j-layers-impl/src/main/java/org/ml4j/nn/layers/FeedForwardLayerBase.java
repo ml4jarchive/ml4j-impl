@@ -142,7 +142,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     return new NeuronsActivation(
         directedLayerContext.getMatrixFactory()
             .createMatrix(new double[][] {maximisingInputFeatures}),
-        false, NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+         NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
   }
   
   private double getWij(int indI, int indJ, Matrix weights, boolean hasBiasUnit) {

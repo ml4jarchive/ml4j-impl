@@ -144,7 +144,7 @@ public class ZeroPaddedConvolutionalAxonsImpl
   @Override
   public AxonsActivation pushLeftToRight(NeuronsActivation arg0, AxonsActivation arg1,
       AxonsContext arg2) {
-    
+   
     return unpaddedConvolutionalAxonsImpl
         .pushLeftToRight(pad(arg0, arg2), arg1, arg2);
   }
@@ -159,7 +159,8 @@ public class ZeroPaddedConvolutionalAxonsImpl
     int paddingTotalFetureCountWithoutBias =
         paddedChannelFeatureCountWithoutBias * getLeftNeurons().getDepth();
     Matrix paddedWithoutBias = context.getMatrixFactory()
-        .createZeros(input.getActivations().getRows(), paddingTotalFetureCountWithoutBias);
+        .createZeros(input.getActivations().getRows(), 
+            paddingTotalFetureCountWithoutBias);
     for (int inputChannel = 0; inputChannel < getLeftNeurons().getDepth(); inputChannel++) {
       for (int w = 0; w < getLeftNeurons().getWidth() + 2 * zeroPadding; w++) {
         for (int h = 0; h < getLeftNeurons().getHeight() + 2 * zeroPadding; h++) {
@@ -169,26 +170,28 @@ public class ZeroPaddedConvolutionalAxonsImpl
             int paddedWithoutBiasFeatureIndex = inputChannel * paddedChannelFeatureCountWithoutBias
                 + (h * (getLeftNeurons().getWidth() + 2 * zeroPadding)) + w;
 
-            int unpaddedWithBiasFeatureIndex = (input.isBiasUnitIncluded() ? 1 : 0)
-                + unpaddedChannelFeatureCountWithoutBias * inputChannel
+            int unpaddedWithoutBiasFeatureIndex = 
+                unpaddedChannelFeatureCountWithoutBias * inputChannel
                 + (h - zeroPadding) * getLeftNeurons().getWidth() + (w - zeroPadding);
 
             paddedWithoutBias.putColumn(paddedWithoutBiasFeatureIndex,
-                input.getActivations().getColumn(unpaddedWithBiasFeatureIndex));
+                input.getActivations().getColumn(unpaddedWithoutBiasFeatureIndex));
           }
         }
       }
     }
 
     LOGGER.debug("Padded from " + input.getActivations().getColumns() 
-        + " to " + (paddedWithoutBias.getColumns() + (input.isBiasUnitIncluded() ? 1 : 0)));
+        + " to " + (paddedWithoutBias.getColumns()));
 
     return new NeuronsActivation(
-        paddedWithoutBias, false,
-        input.getFeatureOrientation()).withBiasUnit(input.isBiasUnitIncluded(), context);
+        paddedWithoutBias,
+        input.getFeatureOrientation());
   }
   
   private NeuronsActivation unpad(NeuronsActivation input, AxonsContext context) {
+    
+  
     int paddedChannelFeatureCountWithoutBias = (getLeftNeurons().getWidth() + 2 * zeroPadding)
         * (getLeftNeurons().getHeight() + 2 * zeroPadding);
 
@@ -196,37 +199,38 @@ public class ZeroPaddedConvolutionalAxonsImpl
         (getLeftNeurons().getWidth()) * (getLeftNeurons().getHeight());
 
     Matrix unpaddedWithoutBias = context.getMatrixFactory()
-        .createZeros(unpaddedChannelFeatureCountWithoutBias, input.getActivations().getColumns());
+        .createZeros(unpaddedChannelFeatureCountWithoutBias, 
+            input.getActivations().getColumns());
     for (int inputChannel = 0; inputChannel < getLeftNeurons().getDepth(); inputChannel++) {
       for (int w = 0; w < getLeftNeurons().getWidth() + 2 * zeroPadding; w++) {
         for (int h = 0; h < getLeftNeurons().getHeight() + 2 * zeroPadding; h++) {
           if (w >= zeroPadding && w < (getLeftNeurons().getWidth() + zeroPadding)
               && h >= zeroPadding && h < (getLeftNeurons().getHeight() + zeroPadding)) {
 
-            int paddedWithBiasFeatureIndex = (input.isBiasUnitIncluded() ? 1 : 0) 
-                + inputChannel * paddedChannelFeatureCountWithoutBias
+            int paddedWithoutBiasFeatureIndex =  
+                 inputChannel * paddedChannelFeatureCountWithoutBias
                 + (h * (getLeftNeurons().getWidth() + 2 * zeroPadding)) + w;
 
             int unpaddedWithoutBiasFeatureIndex = 
                 + unpaddedChannelFeatureCountWithoutBias * inputChannel
                 + (h - zeroPadding) * getLeftNeurons().getWidth() + (w - zeroPadding);
 
-            LOGGER.debug(inputChannel + ":" + w + ":" + h);
-            LOGGER.debug(unpaddedWithoutBiasFeatureIndex + ":" + paddedWithBiasFeatureIndex);
+            //LOGGER.debug(inputChannel + ":" + w + ":" + h);
+            //LOGGER.debug(unpaddedWithoutBiasFeatureIndex + ":" + paddedWithoutBiasFeatureIndex);
 
             unpaddedWithoutBias.putRow(unpaddedWithoutBiasFeatureIndex,
-                input.getActivations().getRow(paddedWithBiasFeatureIndex));
+                input.getActivations().getRow(paddedWithoutBiasFeatureIndex));
           }
         }
       }
     }
 
-    LOGGER.debug("Unpadded from " + input.getActivations().getColumns() 
-        + " to " + (unpaddedWithoutBias.getColumns() + (input.isBiasUnitIncluded() ? 1 : 0)));
+    LOGGER.debug("Unpadded from " + input.getActivations().getColumns() + " to "
+        + (unpaddedWithoutBias.getColumns()));
 
     return new NeuronsActivation(
-        unpaddedWithoutBias, false,
-        input.getFeatureOrientation()).withBiasUnit(input.isBiasUnitIncluded(), context);
+        unpaddedWithoutBias,
+        input.getFeatureOrientation());
   }
 
   @Override
@@ -236,7 +240,7 @@ public class ZeroPaddedConvolutionalAxonsImpl
     Matrix inputDropoutMask = activated.getInputDropoutMask();
     NeuronsActivation output = activated.getOutput();
     return new AxonsActivationImpl(inputDropoutMask, 
-        activated.getInput(), unpad(output, arg2));
+        activated.getPostDropoutInputWithPossibleBias(), unpad(output, arg2));
   }
 
   @Override
