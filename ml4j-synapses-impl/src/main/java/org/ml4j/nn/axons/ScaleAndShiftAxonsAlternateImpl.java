@@ -20,6 +20,7 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationWithPossibleBiasUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,29 +114,29 @@ public class ScaleAndShiftAxonsAlternateImpl
   @Override
   public AxonsActivation pushLeftToRight(NeuronsActivation leftNeuronsActivation,
       AxonsActivation previousRightToLeftActivation, AxonsContext axonsContext) {
-    
-    NeuronsActivation inputActivation = 
-        leftNeuronsActivation.withBiasUnit(false, axonsContext);
+   
+    NeuronsActivationWithPossibleBiasUnit inputActivation = 
+        new NeuronsActivationWithPossibleBiasUnit(leftNeuronsActivation.getActivations(),
+            false, leftNeuronsActivation.getFeatureOrientation(), false);
     
     Matrix scaleRowVector = getScaleRowVector();
     Matrix shiftRowVector = getShiftRowVector();
 
     Matrix scaleMatrix = axonsContext.getMatrixFactory().createMatrix(
-        inputActivation.getActivations().getRows(), scaleRowVector.getColumns());
+        inputActivation.getActivationsWithoutBias().getRows(), scaleRowVector.getColumns());
     Matrix shiftMatrix = axonsContext.getMatrixFactory().createMatrix(
-        inputActivation.getActivations().getRows(), shiftRowVector.getColumns());
+        inputActivation.getActivationsWithoutBias().getRows(), shiftRowVector.getColumns());
     for (int i = 0; i < scaleMatrix.getRows(); i++) {
       scaleMatrix.putRow(i, scaleRowVector);
     }
     for (int i = 0; i < shiftMatrix.getRows(); i++) {
       shiftMatrix.putRow(i, shiftRowVector);
     }
-    Matrix result = inputActivation.getActivations().mul(scaleMatrix).add(shiftMatrix);
-    
-    NeuronsActivation output = new NeuronsActivation(result, false, 
+    Matrix result = inputActivation.getActivationsWithoutBias().mul(scaleMatrix).add(shiftMatrix);
+        
+    NeuronsActivation output = new NeuronsActivation(result, 
         inputActivation.getFeatureOrientation());
      
-    
     
     return new AxonsActivationImpl(null, inputActivation, output);
   }
@@ -158,16 +159,24 @@ public class ScaleAndShiftAxonsAlternateImpl
       
     }
      
+    
     Matrix nonBiasInputs = dout.mul(scaleMatrix);
-    Matrix biasInputs = dout.rowSums();
-    Matrix result = biasInputs.appendHorizontally(nonBiasInputs);
+    //Matrix biasInputs = dout.rowSums();
+    //Matrix result = biasInputs.appendHorizontally(nonBiasInputs);
     
-    NeuronsActivation output = new NeuronsActivation(result.transpose(), true, 
-        rightNeuronsActivation.getFeatureOrientation(), true);
+    NeuronsActivation output = 
+        new NeuronsActivation(nonBiasInputs.transpose(), 
+        rightNeuronsActivation.getFeatureOrientation());
+   
     
+    NeuronsActivationWithPossibleBiasUnit inputActivation = 
+        new NeuronsActivationWithPossibleBiasUnit(rightNeuronsActivation.getActivations(),
+            false, rightNeuronsActivation.getFeatureOrientation(), false);
+   
     Matrix inputDropoutMask = null;
     return new AxonsActivationImpl(inputDropoutMask, 
-        rightNeuronsActivation,
+        inputActivation.withBiasUnit(true, 
+            axonsContext),
         output);
 
   }

@@ -62,13 +62,11 @@ public abstract class ScaleAndShiftAxonsTestBase {
     ScaleAndShiftAxons axons = createAxons(leftNeurons, rightNeurons, config);
 
     Matrix inputMatrix = matrixFactory.createRand(100, featureCount);
-    inputMatrix = matrixFactory.createOnes(inputMatrix.getRows(), 1)
-        .appendHorizontally(inputMatrix);
-
-    Assert.assertEquals(featureCount + 1, inputMatrix.getColumns());
+ 
+    Assert.assertEquals(featureCount, inputMatrix.getColumns());
     Assert.assertEquals(100, inputMatrix.getRows());
 
-    NeuronsActivation input = new NeuronsActivation(inputMatrix, true,
+    NeuronsActivation input = new NeuronsActivation(inputMatrix,
         NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
     AxonsContext context = new AxonsContextImpl(matrixFactory, 1);
     AxonsActivation axonsActivation = axons.pushLeftToRight(input, null, context);
@@ -77,7 +75,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
 
     Assert.assertEquals(inputMatrix.getRows(), outputMatrix.getRows());
 
-    Assert.assertEquals(inputMatrix.getColumns() - 1, outputMatrix.getColumns());
+    Assert.assertEquals(inputMatrix.getColumns(), outputMatrix.getColumns());
 
     for (int r = 0; r < outputMatrix.getRows(); r++) {
       for (int c = 0; c < outputMatrix.getColumns(); c++) {
@@ -85,7 +83,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
         double scale = scaleRowVector.get(0, c);
         double shift = shiftRowVector.get(0, c);
 
-        Assert.assertEquals(inputMatrix.get(r, c + 1) * scale + shift, outputMatrix.get(r, c),
+        Assert.assertEquals(inputMatrix.get(r, c) * scale + shift, outputMatrix.get(r, c),
             0.00000000001);
       }
     }
@@ -123,7 +121,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
     Assert.assertEquals(featureCount, inputMatrix.getRows());
     Assert.assertEquals(100, inputMatrix.getColumns());
 
-    NeuronsActivation input = new NeuronsActivation(inputMatrix, false,
+    NeuronsActivation input = new NeuronsActivation(inputMatrix,
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
     AxonsContext context = new AxonsContextImpl(matrixFactory, 1);
     AxonsActivation axonsActivation = axons.pushRightToLeft(input, null, context);
@@ -134,20 +132,16 @@ public abstract class ScaleAndShiftAxonsTestBase {
         axonsActivation.getOutput().getFeatureOrientation());
 
 
-    Assert.assertEquals(inputMatrix.getRows() + 1, outputMatrix.getRows());
+    Assert.assertEquals(inputMatrix.getRows(), outputMatrix.getRows());
 
     Assert.assertEquals(inputMatrix.getColumns(), outputMatrix.getColumns());
 
-    // Output row 0
-    for (int c = 0; c < inputMatrix.getColumns(); c++)  {
-      double val = 1;
-      Assert.assertEquals(val, outputMatrix.get(0, c), 0.00000000001);
-    }
-    for (int r = 1; r < inputMatrix.getRows(); r++) {
+   
+    for (int r = 0; r < inputMatrix.getRows(); r++) {
       for (int c = 0; c < inputMatrix.getColumns(); c++) {
 
-        double scale = scaleRowVector.get(0, r - 1);
-        Assert.assertEquals(inputMatrix.get(r - 1, c) * scale, outputMatrix.get(r, c),
+        double scale = scaleRowVector.get(0, r);
+        Assert.assertEquals(inputMatrix.get(r, c) * scale, outputMatrix.get(r, c),
             0.00000000001);
       }
     }

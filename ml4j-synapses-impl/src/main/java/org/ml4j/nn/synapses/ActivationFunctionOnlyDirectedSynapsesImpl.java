@@ -5,6 +5,8 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ActivationFunctionOnlyDirectedSynapsesImpl
       <L extends Neurons, R extends Neurons> implements DirectedSynapses<L, R> {
@@ -13,6 +15,11 @@ public class ActivationFunctionOnlyDirectedSynapsesImpl
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
+  
+  
+  private static final Logger LOGGER = 
+      LoggerFactory.getLogger(ActivationFunctionOnlyDirectedSynapsesImpl.class);
+  
   private L leftNeurons;
   private R rightNeurons;
   private DifferentiableActivationFunction activationFunction;
@@ -41,12 +48,8 @@ public class ActivationFunctionOnlyDirectedSynapsesImpl
       NeuronsActivation da, DirectedSynapsesContext context, 
       boolean outerMostSynapses, double arg4) {
     
-    //LOGGER.debug("Back propagating through synapses activation....");
-    
-    if (da.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Back propagated deltas must not contain bias unit");
-    }
-    
+    LOGGER.debug("Back propagating through synapses activation....");
+   
     if (rightNeurons.hasBiasUnit()) {
       throw new IllegalStateException(
           "Backpropagation through axons with a rhs bias unit not supported");
@@ -65,29 +68,26 @@ public class ActivationFunctionOnlyDirectedSynapsesImpl
       dz = da.getActivations();
     } else {
       Matrix activationGradient = activationFunction
-          .activationGradient(activationFunctionInput.withBiasUnit(false, context), context)
+          .activationGradient(activationFunctionInput, context)
           .getActivations();
 
       dz = da.getActivations().mul(activationGradient);
     }
   
-    if (da.getFeatureCountIncludingBias() != rightNeurons
+    if (da.getFeatureCount() != rightNeurons
         .getNeuronCountExcludingBias()) {
       throw new IllegalArgumentException("Expected feature count to be:"
           + rightNeurons.getNeuronCountExcludingBias() + " but was:"
-          + da.getFeatureCountIncludingBias());
+          + da.getFeatureCount());
     }
     
     // Does not contain output bias unit
-    NeuronsActivation dzN = new NeuronsActivation(dz, 
-        false,
+    NeuronsActivation dzN = new NeuronsActivation(dz,
         da.getFeatureOrientation());
 
  
     return new DirectedSynapsesGradientImpl(dzN, 
-        null);
-    
-    
+        null);  
   }
 
   @Override
@@ -95,19 +95,18 @@ public class ActivationFunctionOnlyDirectedSynapsesImpl
       DirectedSynapsesContext synapsesContext) {
   
     NeuronsActivation inputNeuronsActivation = input.getInput();
-    
-    if (!inputNeuronsActivation.isBiasUnitIncluded() && leftNeurons.hasBiasUnit()) {
-      inputNeuronsActivation = inputNeuronsActivation.withBiasUnit(false, synapsesContext);
-    }
-   
-    //LOGGER.debug("Forward propagating through DirectedSynapses");
-
+ 
+    LOGGER.debug("Forward propagating through DirectedSynapses");
     
     NeuronsActivation activationInput = inputNeuronsActivation;
     
+    if (rightNeurons.hasBiasUnit()) {
+      throw new IllegalStateException("Right neurons with bias not supported");
+    }
+    
     NeuronsActivation outputNeuronsActivation = 
         activationFunction.activate(activationInput, 
-            synapsesContext).withBiasUnit(rightNeurons.hasBiasUnit(), synapsesContext);
+            synapsesContext);
     
     return new DirectedSynapsesActivationImpl(this, 
         inputNeuronsActivation, null, outputNeuronsActivation);

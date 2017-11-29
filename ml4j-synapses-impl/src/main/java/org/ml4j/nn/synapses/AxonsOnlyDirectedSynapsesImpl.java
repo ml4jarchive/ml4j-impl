@@ -79,10 +79,7 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
    
     NeuronsActivation inputNeuronsActivation = input.getInput();
     
-    if (!inputNeuronsActivation.isBiasUnitIncluded() && axons.getLeftNeurons().hasBiasUnit()) {
-      inputNeuronsActivation = inputNeuronsActivation.withBiasUnit(true, synapsesContext);
-    }
-   
+
     LOGGER.debug("Forward propagating through DirectedSynapses");
     AxonsActivation axonsActivation = 
         axons.pushLeftToRight(inputNeuronsActivation, null, 
@@ -102,10 +99,7 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
    
     LOGGER.debug("Back propagating through synapses activation....");
     
-    if (da.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Back propagated deltas must not contain bias unit");
-    }
-    
+   
     if (axons.getRightNeurons().hasBiasUnit()) {
       throw new IllegalStateException(
           "Backpropagation through axons with a rhs bias unit not supported");
@@ -118,16 +112,15 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     dz = da.getActivations();
  
   
-    if (da.getFeatureCountIncludingBias() != axons.getRightNeurons()
+    if (da.getFeatureCount() != axons.getRightNeurons()
         .getNeuronCountExcludingBias()) {
       throw new IllegalArgumentException("Expected feature count to be:"
           + axons.getRightNeurons().getNeuronCountExcludingBias() + " but was:"
-          + da.getFeatureCountIncludingBias());
+          + da.getFeatureCount());
     }
     
     // Does not contain output bias unit
-    NeuronsActivation dzN = new NeuronsActivation(dz, 
-        false,
+    NeuronsActivation dzN = new NeuronsActivation(dz,
         da.getFeatureOrientation());
 
     LOGGER.debug("Pushing data right to left through axons...");
@@ -136,14 +129,6 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     NeuronsActivation inputGradient =
         axons.pushRightToLeft(dzN, activation.getAxonsActivation(), 
             context.createAxonsContext()).getOutput();
-    
-     
-    if (inputGradient.isBiasUnitIncluded()) {
-      LOGGER.debug("Removing biases from back propagated deltas");
-      inputGradient = new NeuronsActivation(inputGradient.getActivations(), 
-          inputGradient.isBiasUnitIncluded(),
-          inputGradient.getFeatureOrientation()).withBiasUnit(false, context);
-    }
          
     Matrix totalTrainableAxonsGradient = null;
     
@@ -152,7 +137,8 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
       LOGGER.debug("Calculating Axons Gradients");
 
       totalTrainableAxonsGradient = 
-          dz.mmul(activation.getAxonsActivation().getInput().getActivations());
+          dz.mmul(activation.getAxonsActivation()
+              .getPostDropoutInputWithPossibleBias().getActivationsWithBias());
       
       if (regularisationLamdba != 0) {
        
