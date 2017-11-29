@@ -79,13 +79,6 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     LOGGER.info("Training the FeedForwardNeuralNetwork for "
           + numberOfEpochs + " epochs");
     
-    // Perform the addition of the bias once here for efficiency - without this logic the
-    // bias would be added on each iteration.
-    if (getFirstLayer().getSynapses().get(0).getLeftNeurons().hasBiasUnit()
-        && !trainingDataActivations.isBiasUnitIncluded()) {
-      trainingDataActivations = trainingDataActivations.withBiasUnit(true, trainingContext);
-    }
-    
     CostAndGradients costAndGradients = null;
     
     for (int i = 0; i < numberOfEpochs; i++) {
@@ -115,11 +108,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
           Matrix labelBatch = trainingLabelActivations.getActivations().getRows(rowIndexes);
          
           NeuronsActivation batchDataActivations =
-              new NeuronsActivation(dataBatch, trainingDataActivations.isBiasUnitIncluded(),
+              new NeuronsActivation(dataBatch,
                   trainingDataActivations.getFeatureOrientation());
 
           NeuronsActivation batchLabelActivations =
-              new NeuronsActivation(labelBatch, trainingLabelActivations.isBiasUnitIncluded(),
+              new NeuronsActivation(labelBatch,
                   trainingLabelActivations.getFeatureOrientation());
 
           costAndGradients = getCostAndGradients(batchDataActivations, 
@@ -144,29 +137,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
  
   protected CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
       NeuronsActivation desiredOutputActivations, C trainingContext) {
-   
-    List<DirectedSynapses<?, ?>> finalLayerSynapses = getFinalLayer().getSynapses();
-
-    DirectedSynapses<?, ?> finalSynapses = finalLayerSynapses.get(finalLayerSynapses.size() - 1);
-
-    boolean expectBiasUnitForOutput = finalSynapses.getRightNeurons().hasBiasUnit();
-
-    if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be with bias");
-    } else if (!expectBiasUnitForOutput && desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be without bias");
-    } 
-    if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be with bias");
-    } else if (!expectBiasUnitForOutput && desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be without bias");
-    } 
-    
-    // Desired output activations should be without bias.
-    if (desiredOutputActivations.isBiasUnitIncluded()) {
-      desiredOutputActivations = desiredOutputActivations.withBiasUnit(false, trainingContext);
-    }
-    
+       
     final CostFunction costFunction = getCostFunction(trainingContext.getMatrixFactory());
     
     // Forward propagate the trainingDataActivations through the entire AutoEncoder
@@ -183,7 +154,6 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
     // The deltas we back propagate are in the transposed orientation to the inputs
     NeuronsActivation deltas = new NeuronsActivation(deltasM.transpose(),
-        forwardPropagation.getOutputs().isBiasUnitIncluded(),
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
    
     // Back propagate the deltas through the nework
@@ -206,10 +176,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
         }
       }
     }
-    
+
     // Obtain the cost from the cost function
     LOGGER.debug("Calculating total cost function cost");
-    double totalCost = costFunction.getTotalCost(desiredOutputActivations.getActivations(),
+    double totalCost = costFunction.getTotalCost(
+        desiredOutputActivations.getActivations(),
         forwardPropagation.getOutputs().getActivations());
     
     double totalRegularisationCost = forwardPropagation.getTotalRegularisationCost(trainingContext);

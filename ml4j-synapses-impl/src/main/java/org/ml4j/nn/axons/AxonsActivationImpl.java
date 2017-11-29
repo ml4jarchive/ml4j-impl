@@ -16,6 +16,7 @@ package org.ml4j.nn.axons;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationWithPossibleBiasUnit;
 
 /**
  * Encapsulates the artifacts produced when pushing NeuronsActivations
@@ -27,7 +28,7 @@ public class AxonsActivationImpl implements AxonsActivation {
 
   private Matrix inputDropoutMask;
   private NeuronsActivation outputActivations;
-  private NeuronsActivation postDropoutInput;
+  private NeuronsActivationWithPossibleBiasUnit postDropoutInput;
   
   /**
    * @param inputDropoutMask Any input dropout mask
@@ -35,7 +36,7 @@ public class AxonsActivationImpl implements AxonsActivation {
    * @param outputActivations The output.
    */
   public AxonsActivationImpl(Matrix inputDropoutMask, 
-      NeuronsActivation postDropoutInput, NeuronsActivation outputActivations) {
+      NeuronsActivationWithPossibleBiasUnit postDropoutInput, NeuronsActivation outputActivations) {
     this.outputActivations = outputActivations;
     this.inputDropoutMask = inputDropoutMask;
     this.postDropoutInput = postDropoutInput;
@@ -52,7 +53,7 @@ public class AxonsActivationImpl implements AxonsActivation {
   }
 
   @Override
-  public NeuronsActivation getInput() {
+  public NeuronsActivationWithPossibleBiasUnit getPostDropoutInputWithPossibleBias() {
     return postDropoutInput;
   }
 }
