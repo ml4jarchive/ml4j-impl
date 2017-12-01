@@ -38,9 +38,16 @@ public class ConvolutionalFeedForwardLayerImpl
    */
   private static final long serialVersionUID = 1L;
  
+  /**
+   * @param primaryAxons The primary Axons.
+   * @param activationFunction The primary activation function.
+   * @param matrixFactory The matrix factory.
+   * @param withBatchNorm Whether to enable batch norm for this Layer.
+   */
   public ConvolutionalFeedForwardLayerImpl(ConvolutionalAxons primaryAxons,
-      DifferentiableActivationFunction activationFunction) {
-    super(primaryAxons, activationFunction);
+      DifferentiableActivationFunction activationFunction, 
+      MatrixFactory matrixFactory, boolean withBatchNorm) {
+    super(primaryAxons, activationFunction, matrixFactory, withBatchNorm);
   }
   
   /**
@@ -50,15 +57,16 @@ public class ConvolutionalFeedForwardLayerImpl
    * @param zeroPadding The amount of zero padding.
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
+   * @param withBatchNorm Whether to enable batch norm for this Layer.
    */
   public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
       int stride, int zeroPadding, DifferentiableActivationFunction primaryActivationFunction,
-      MatrixFactory matrixFactory) {
+      MatrixFactory matrixFactory, boolean withBatchNorm) {
     super(zeroPadding == 0
         ? new UnpaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, matrixFactory)
         : new ZeroPaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, zeroPadding,
             matrixFactory),
-        primaryActivationFunction);
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
   
   
@@ -70,13 +78,14 @@ public class ConvolutionalFeedForwardLayerImpl
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    * @param connectionWeights The connectionWeights
+   * @param withBatchNorm Whether to enable batch norm for this Layer.
    */
   public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, 
       Neurons3D outputNeurons,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-      Matrix connectionWeights) {
+      Matrix connectionWeights, boolean withBatchNorm) {
       this(inputNeurons, outputNeurons, 1, 0, primaryActivationFunction,
-          matrixFactory, connectionWeights);
+          matrixFactory, connectionWeights, withBatchNorm);
   }
   
   /**
@@ -87,21 +96,23 @@ public class ConvolutionalFeedForwardLayerImpl
    * @param primaryActivationFunction The primary activation function.
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    * @param connectionWeights The connectionWeights
+   * @param withBatchNorm Whether to enable batch norm for this Layer.
    */
   public ConvolutionalFeedForwardLayerImpl(Neurons3D inputNeurons, Neurons3D outputNeurons,
       int stride, int zeroPadding,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-      Matrix connectionWeights) {
+      Matrix connectionWeights,boolean withBatchNorm ) {
     super(zeroPadding == 0
         ? new UnpaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, matrixFactory, 
             connectionWeights)
         : new ZeroPaddedConvolutionalAxonsImpl(inputNeurons, outputNeurons, stride, zeroPadding,
             matrixFactory, connectionWeights),
-        primaryActivationFunction);
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 
   @Override
   public ConvolutionalFeedForwardLayer dup() {
-    return new ConvolutionalFeedForwardLayerImpl(primaryAxons.dup(), primaryActivationFunction);
+    return new ConvolutionalFeedForwardLayerImpl(primaryAxons.dup(), 
+        primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 }

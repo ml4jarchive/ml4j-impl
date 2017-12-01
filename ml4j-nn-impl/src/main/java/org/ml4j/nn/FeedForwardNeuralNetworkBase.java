@@ -15,10 +15,12 @@
 package org.ml4j.nn;
 
 import org.ml4j.Matrix;
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
 import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
+import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CostFunction;
@@ -72,56 +74,71 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   protected void train(NeuronsActivation trainingDataActivations, 
       NeuronsActivation trainingLabelActivations, C trainingContext) {
 
-    final int numberOfTrainingIterations = trainingContext.getTrainingIterations();
-    
+    final int numberOfEpochs = trainingContext.getTrainingEpochs();
+        
     LOGGER.info("Training the FeedForwardNeuralNetwork for "
-          + numberOfTrainingIterations + " iterations");
+          + numberOfEpochs + " epochs");
     
-    // Perform the addition of the bias once here for efficiency - without this logic the
-    // bias would be added on each iteration.
-    if (getFirstLayer().getSynapses().get(0).getAxons().getLeftNeurons().hasBiasUnit()
-        && !trainingDataActivations.isBiasUnitIncluded()) {
-      trainingDataActivations = trainingDataActivations.withBiasUnit(true, trainingContext);
-    }
+    CostAndGradients costAndGradients = null;
     
-    for (int i = 0; i < numberOfTrainingIterations; i++) {
+    for (int i = 0; i < numberOfEpochs; i++) {
+      
+      if (trainingContext.getTrainingMiniBatchSize() == null) {
+        costAndGradients = getCostAndGradients(trainingDataActivations, 
+            trainingLabelActivations, trainingContext);
+        
+        LOGGER.info("Epoch:" + i + " Cost:" + costAndGradients.getAverageCost());
+        
+        adjustConnectionWeights(trainingContext, 
+            costAndGradients.getAverageTrainableAxonsGradients());
+      } else {
+        int miniBatchSize = trainingContext.getTrainingMiniBatchSize();
+        int numberOfTrainingElements = trainingDataActivations.getActivations().getRows();
+        int numberOfBatches = (numberOfTrainingElements - 1) / miniBatchSize + 1;
+        for (int batchIndex = 0; batchIndex < numberOfBatches; batchIndex++) {
+          int startRowIndex = batchIndex * miniBatchSize;
+          int endRowIndex =
+              Math.min(startRowIndex + miniBatchSize - 1, numberOfTrainingElements - 1);
+          int[] rowIndexes = new int[endRowIndex - startRowIndex + 1];
+          for (int r = startRowIndex; r <= endRowIndex; r++) {
+            rowIndexes[r - startRowIndex] = r;
+          }
 
-      CostAndGradients costAndGradients = getCostAndGradients(trainingDataActivations, 
-          trainingLabelActivations, trainingContext);
-      
-      LOGGER.info("Iteration:" + i + " Cost:" + costAndGradients.getAverageCost());
-      
-      adjustConnectionWeights(trainingContext, 
-          costAndGradients.getAverageTrainableAxonsGradients());
+          Matrix dataBatch = trainingDataActivations.getActivations().getRows(rowIndexes);
+          Matrix labelBatch = trainingLabelActivations.getActivations().getRows(rowIndexes);
+         
+          NeuronsActivation batchDataActivations =
+              new NeuronsActivation(dataBatch,
+                  trainingDataActivations.getFeatureOrientation());
+
+          NeuronsActivation batchLabelActivations =
+              new NeuronsActivation(labelBatch,
+                  trainingLabelActivations.getFeatureOrientation());
+
+          costAndGradients = getCostAndGradients(batchDataActivations, 
+              batchLabelActivations, trainingContext);
+          
+          LOGGER.trace("Epoch:" + i + " batch " + batchIndex 
+              + " Cost:" + costAndGradients.getAverageCost());
+          
+          adjustConnectionWeights(trainingContext, 
+              costAndGradients.getAverageTrainableAxonsGradients());
+          
+          batchIndex++;
+          
+        }
+        
+        LOGGER.info("Epoch:" + i + " Cost:" + costAndGradients.getAverageCost());
+
+      }
+   
     }
   }
  
   protected CostAndGradients getCostAndGradients(NeuronsActivation inputActivations,
       NeuronsActivation desiredOutputActivations, C trainingContext) {
-   
-    List<DirectedSynapses<?>> finalLayerSynapses = getFinalLayer().getSynapses();
-
-    DirectedSynapses<?> finalSynapses = finalLayerSynapses.get(finalLayerSynapses.size() - 1);
-
-    boolean expectBiasUnitForOutput = finalSynapses.getAxons().getRightNeurons().hasBiasUnit();
-
-    if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be with bias");
-    } else if (!expectBiasUnitForOutput && desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be without bias");
-    } 
-    if (expectBiasUnitForOutput && !desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be with bias");
-    } else if (!expectBiasUnitForOutput && desiredOutputActivations.isBiasUnitIncluded()) {
-      throw new IllegalArgumentException("Expected desired output activations to be without bias");
-    } 
-    
-    // Desired output activations should be without bias.
-    if (desiredOutputActivations.isBiasUnitIncluded()) {
-      desiredOutputActivations = desiredOutputActivations.withBiasUnit(false, trainingContext);
-    }
-    
-    final CostFunction costFunction = getCostFunction();
+       
+    final CostFunction costFunction = getCostFunction(trainingContext.getMatrixFactory());
     
     // Forward propagate the trainingDataActivations through the entire AutoEncoder
     ForwardPropagation forwardPropagation =
@@ -137,7 +154,6 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
     // The deltas we back propagate are in the transposed orientation to the inputs
     NeuronsActivation deltas = new NeuronsActivation(deltasM.transpose(),
-        forwardPropagation.getOutputs().isBiasUnitIncluded(),
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
    
     // Back propagate the deltas through the nework
@@ -160,10 +176,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
         }
       }
     }
-    
+
     // Obtain the cost from the cost function
     LOGGER.debug("Calculating total cost function cost");
-    double totalCost = costFunction.getTotalCost(desiredOutputActivations.getActivations(),
+    double totalCost = costFunction.getTotalCost(
+        desiredOutputActivations.getActivations(),
         forwardPropagation.getOutputs().getActivations());
     
     double totalRegularisationCost = forwardPropagation.getTotalRegularisationCost(trainingContext);
@@ -185,10 +202,12 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
 
       FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
-      for (DirectedSynapses<?> synapses : layer.getSynapses()) {
-        if (synapses.getAxons() instanceof TrainableAxons) {
-          TrainableAxons<?, ?, ?> axons = (TrainableAxons<?, ?, ?>) synapses.getAxons();
-          trainableAxonsList.add(axons);
+      for (DirectedSynapses<?, ?> synapses : layer.getSynapses()) {
+        Axons<?, ? , ?> axons = synapses.getAxons();
+        if (axons != null && axons instanceof TrainableAxons) {
+          TrainableAxons<?, ?, ?> trainableAxons = 
+              (TrainableAxons<?, ?, ?>) axons;
+          trainableAxonsList.add(trainableAxons);
         }
       }
     }
@@ -271,11 +290,15 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   /**
    * @return The default cost function for use by this Network.
    */
-  protected CostFunction getCostFunction() {
+  protected CostFunction getCostFunction(MatrixFactory matrixFactory) {
 
-    List<DirectedSynapses<?>> synapseList = getFinalLayer().getSynapses();
-    DirectedSynapses<?> finalSynapses = synapseList.get(synapseList.size() - 1);
+    List<DirectedSynapses<?, ?>> synapseList = getFinalLayer().getSynapses();
+    DirectedSynapses<?, ?> finalSynapses = synapseList.get(synapseList.size() - 1);
     DifferentiableActivationFunction activationFunction = finalSynapses.getActivationFunction();
+    if (activationFunction == null) {
+      throw new UnsupportedOperationException(
+          "Default cost function not yet defined for null activation function");
+    }
     if (activationFunction instanceof SigmoidActivationFunction) {
       LOGGER.debug("Defaulting to use CrossEntropyCostFunction");
       return new CrossEntropyCostFunction();

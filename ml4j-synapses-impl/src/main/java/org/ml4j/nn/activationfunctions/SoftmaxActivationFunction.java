@@ -34,10 +34,11 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
   @Override
   public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
     LOGGER.debug("Activating through SoftmaxActivationFunction");
+   
     Matrix softmaxOfInputActivationsMatrix = NeuralNetUtils
-        .softmax(input.withBiasUnit(false, context).getActivations());
-    return new NeuronsActivation(softmaxOfInputActivationsMatrix, false,
-        input.getFeatureOrientation()).withBiasUnit(input.isBiasUnitIncluded(), context);
+        .softmax(input.getActivations());
+    return new NeuronsActivation(softmaxOfInputActivationsMatrix,
+        input.getFeatureOrientation());
   }
 
   @Override

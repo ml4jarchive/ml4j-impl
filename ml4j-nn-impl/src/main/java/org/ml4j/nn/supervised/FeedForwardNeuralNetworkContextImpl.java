@@ -46,9 +46,11 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   
   private Integer endLayerIndex;
  
-  private Integer trainingIterations;
+  private Integer trainingEpochs;
   
   private Double trainingLearningRate;
+  
+  private Integer trainingMiniBatchSize;
   
   private Map<Integer, DirectedLayerContext> directedLayerContexts;
   
@@ -97,11 +99,11 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   }
 
   @Override
-  public int getTrainingIterations() {
-    if (trainingIterations == null) {
-      throw new IllegalStateException("Number of training iterations not set on context");
+  public int getTrainingEpochs() {
+    if (trainingEpochs == null) {
+      throw new IllegalStateException("Number of training epochs not set on context");
     }
-    return trainingIterations.intValue();
+    return trainingEpochs.intValue();
   }
 
   @Override
@@ -113,12 +115,22 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   }
 
   @Override
-  public void setTrainingIterations(int trainingIterations) {
-    this.trainingIterations = trainingIterations;
+  public void setTrainingEpochs(int trainingEpochs) {
+    this.trainingEpochs = trainingEpochs;
   }
 
   @Override
   public void setTrainingLearningRate(double trainingLearningRate) {
     this.trainingLearningRate = trainingLearningRate;
+  }
+
+  @Override
+  public Integer getTrainingMiniBatchSize() {
+    return trainingMiniBatchSize;
+  }
+
+  @Override
+  public void setTrainingMiniBatchSize(Integer trainingMiniBatchSize) {
+    this.trainingMiniBatchSize = trainingMiniBatchSize;
   }
 }
