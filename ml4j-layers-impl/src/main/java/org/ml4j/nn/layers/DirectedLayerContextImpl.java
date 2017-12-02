@@ -43,6 +43,7 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   private int layerIndex;
   
   private double primaryAxonsRegularisationLamdba = 0;
+  private boolean withFreezeOut;
   
   /**
    * Construct a new DirectedLayerContext.
@@ -65,7 +66,7 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
     double synapseInputDropoutKeepProbability =
         synapsesIndex == 0 ? layerInputDropoutKeepProbability : 1d;
     return new DirectedSynapsesContextImpl(matrixFactory, 
-        synapseInputDropoutKeepProbability);
+        synapseInputDropoutKeepProbability, withFreezeOut);
   }
 
   @Override
@@ -86,6 +87,14 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   @Override
   public void setPrimaryAxonsRegularisationLambda(double primaryAxonsRegularisationLamdba) {
     this.primaryAxonsRegularisationLamdba = primaryAxonsRegularisationLamdba;
+  }
+  
+  public boolean isWithFreezeOut() {
+    return withFreezeOut;
+  }
+
+  public void setWithFreezeOut(boolean withFreezeOut) {
+    this.withFreezeOut = withFreezeOut;
   }
 
   @Override

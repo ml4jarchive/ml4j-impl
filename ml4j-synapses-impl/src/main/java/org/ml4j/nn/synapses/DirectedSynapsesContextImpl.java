@@ -38,6 +38,7 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    */
   private MatrixFactory matrixFactory;
   private double inputDropoutKeepProbability;
+  private boolean withFreezeOut;
   
   /**
    * Construct a new default DirectedSynapsesContext.
@@ -46,9 +47,10 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    * @param inputDropoutKeepProbability The input dropout keep probability.
    */
   public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, 
-      double inputDropoutKeepProbability) {
+      double inputDropoutKeepProbability, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
     this.inputDropoutKeepProbability = inputDropoutKeepProbability;
+    this.withFreezeOut = withFreezeOut;
   }
  
   @Override
@@ -58,6 +60,7 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
 
   @Override
   public AxonsContext createAxonsContext() {
-    return new AxonsContextImpl(matrixFactory, inputDropoutKeepProbability);
+    return new AxonsContextImpl(matrixFactory, 
+        inputDropoutKeepProbability, withFreezeOut);
   }
 }
