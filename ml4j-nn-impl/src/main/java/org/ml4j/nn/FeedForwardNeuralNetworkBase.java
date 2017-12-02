@@ -28,11 +28,13 @@ import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.MultiClassCrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.SumSquaredErrorCostFunction;
 import org.ml4j.nn.layers.DirectedLayerActivation;
+import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.synapses.DirectedSynapses;
+import org.ml4j.nn.synapses.DirectedSynapsesContext;
 import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,19 +198,23 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
   }
   
-  private List<TrainableAxons<?, ?, ?>> getTrainableAxonsList() {
+  private List<TrainableAxons<?, ?, ?>> getTrainableAxonsList(C context) {
     
     List<TrainableAxons<?, ?, ?>> trainableAxonsList = new ArrayList<>();
     for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
-
+      DirectedLayerContext layerContext = context.getLayerContext(layerIndex);
       FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
+      int synapsesIndex = 0;
       for (DirectedSynapses<?, ?> synapses : layer.getSynapses()) {
+        DirectedSynapsesContext synapsesContext = 
+            layerContext.createSynapsesContext(synapsesIndex);
         Axons<?, ? , ?> axons = synapses.getAxons();
-        if (axons != null && axons instanceof TrainableAxons) {
+        if (axons != null && axons.isTrainable(synapsesContext.createAxonsContext())) {
           TrainableAxons<?, ?, ?> trainableAxons = 
               (TrainableAxons<?, ?, ?>) axons;
           trainableAxonsList.add(trainableAxons);
         }
+        synapsesIndex++;
       }
     }
     return trainableAxonsList;
@@ -218,7 +224,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   private void adjustConnectionWeights(C trainingContext, List<Matrix> trainableAxonsGradients) {
     double learningRate = trainingContext.getTrainingLearningRate();
     
-    List<TrainableAxons<?, ?, ?>> trainableAxonsList = getTrainableAxonsList();
+    List<TrainableAxons<?, ?, ?>> trainableAxonsList = getTrainableAxonsList(trainingContext);
     
     for (int axonsIndex = 0; axonsIndex < trainableAxonsGradients.size(); axonsIndex++) {
       TrainableAxons<?, ?, ?> trainableAxons = trainableAxonsList.get(axonsIndex);

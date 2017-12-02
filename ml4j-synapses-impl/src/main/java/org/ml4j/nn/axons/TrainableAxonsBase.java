@@ -50,4 +50,11 @@ public abstract class TrainableAxonsBase<L extends Neurons,
       ConnectionWeightsAdjustmentDirection adjustmentDirection) {
     super.adjustConnectionWeights(adjustment, adjustmentDirection, false);
   }
+
+  @Override
+  public boolean isTrainable(AxonsContext context) {
+    return !context.isWithFreezeOut();
+  }
+  
+  
 }
