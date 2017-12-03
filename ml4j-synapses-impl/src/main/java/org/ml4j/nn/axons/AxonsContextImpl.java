@@ -37,6 +37,8 @@ public class AxonsContextImpl implements AxonsContext {
   
   private double leftHandDropoutKeepProbability;
   
+  private boolean withFreezeOut;
+  
   /**
    * Construct a new AxonsContext.
    * 
@@ -45,9 +47,10 @@ public class AxonsContextImpl implements AxonsContext {
    *        these Axons.
    */
   public AxonsContextImpl(MatrixFactory matrixFactory, 
-      double leftHandDropoutKeepProbability) {
+      double leftHandDropoutKeepProbability, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
     this.leftHandDropoutKeepProbability = leftHandDropoutKeepProbability;
+    this.withFreezeOut = withFreezeOut;
   }
 
   @Override
@@ -60,4 +63,8 @@ public class AxonsContextImpl implements AxonsContext {
     return leftHandDropoutKeepProbability;
   }
 
+  @Override
+  public boolean isWithFreezeOut() {
+    return withFreezeOut;
+  }
 }

@@ -29,6 +29,11 @@ import org.slf4j.LoggerFactory;
  */
 public class SoftmaxActivationFunction implements DifferentiableActivationFunction {
 
+  /**
+   * Default serialization id.
+   */
+  private static final long serialVersionUID = 1L;
+  
   private static final Logger LOGGER = LoggerFactory.getLogger(SoftmaxActivationFunction.class);
 
   @Override

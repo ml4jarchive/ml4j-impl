@@ -153,4 +153,9 @@ public class MaxPoolingAxonsImpl
       return 1d;
     }
   }
+
+  @Override
+  public boolean isTrainable(AxonsContext context) {
+    return false;
+  }
 }

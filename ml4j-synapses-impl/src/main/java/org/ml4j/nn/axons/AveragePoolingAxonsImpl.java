@@ -93,4 +93,9 @@ public class AveragePoolingAxonsImpl
     return new AveragePoolingAxonsImpl(leftNeurons, rightNeurons, 
         connectionWeights, connectionWeightsMask);
   }
+  
+  @Override
+  public boolean isTrainable(AxonsContext context) {
+    return false;
+  }
 }

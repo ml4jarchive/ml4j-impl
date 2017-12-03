@@ -20,7 +20,6 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
-import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
@@ -112,7 +111,7 @@ public class AxonsOnlyDirectedSynapsesImpl<L extends Neurons, R extends Neurons>
          
     Matrix totalTrainableAxonsGradient = null;
     
-    if (axons instanceof TrainableAxons) {
+    if (axons.isTrainable(context.createAxonsContext())) {
      
       LOGGER.debug("Calculating Axons Gradients");
 
