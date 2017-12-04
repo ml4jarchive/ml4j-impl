@@ -222,9 +222,19 @@ public class MatrixImpl implements Matrix {
   public Matrix div(double arg0) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
+  
+  @Override
+  public Matrix div(Matrix other) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
 
   @Override
   public Matrix divi(double arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+  
+  @Override
+  public Matrix divi(Matrix other) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 

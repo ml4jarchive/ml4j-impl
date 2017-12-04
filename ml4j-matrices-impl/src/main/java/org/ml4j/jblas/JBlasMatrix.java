@@ -92,12 +92,23 @@ public class JBlasMatrix implements Matrix {
 
   @Override
   public Matrix div(double value) {
-    return createJBlasMatrix(matrix.add(value));
+    return createJBlasMatrix(matrix.div(value));
+  }
+  
+  @Override
+  public Matrix div(Matrix other) {
+    return createJBlasMatrix(matrix.div(createJBlasDoubleMatrix(other)));
   }
 
   @Override
   public Matrix divi(double value) {
     matrix.divi(value);
+    return this;
+  }
+  
+  @Override
+  public Matrix divi(Matrix other) {
+    matrix.divi(createJBlasDoubleMatrix(other));
     return this;
   }
 
