@@ -26,6 +26,11 @@ import org.ml4j.MatrixFactory;
  */
 public class MatrixFactoryImpl implements MatrixFactory {
 
+  /**
+   * Default serialization id.
+   */
+  private static final long serialVersionUID = 1L;
+
   @Override
   public Matrix createOnes(int rows, int columns) {
     double[][] data = new double[rows][columns];
