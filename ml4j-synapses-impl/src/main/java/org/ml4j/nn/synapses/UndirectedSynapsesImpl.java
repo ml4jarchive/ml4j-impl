@@ -51,7 +51,6 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
    */
   public UndirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
       ActivationFunction leftActivationFunction, ActivationFunction rightActivationFunction) {
-    super();
     this.axons = axons;
     this.leftActivationFunction = leftActivationFunction;
     this.rightActivationFunction = rightActivationFunction;
@@ -82,6 +81,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public UndirectedSynapsesActivation pushLeftToRight(UndirectedSynapsesInput input,
+      UndirectedSynapsesActivation previousRightToLeftActivation, 
       UndirectedSynapsesContext synapsesContext) {
 
     NeuronsActivation inputNeuronsActivation = input.getInput();
@@ -101,13 +101,14 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public UndirectedSynapsesActivation pushRightToLeft(UndirectedSynapsesInput input,
+      UndirectedSynapsesActivation previousLeftToRightActivation,
       UndirectedSynapsesContext synapsesContext) {
 
     NeuronsActivation inputNeuronsActivation = input.getInput();
 
     LOGGER.debug("Pushing right to left through UndirectedSynapses");
     AxonsActivation axonsActivation =
-        axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.createAxonsContext());
+        axons.pushRightToLeft(inputNeuronsActivation, null, synapsesContext.createAxonsContext());
 
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
 
