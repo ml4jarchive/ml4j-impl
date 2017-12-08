@@ -118,7 +118,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
     LOGGER.info("Training the RestrictedBoltzmannMachine for " + numberOfEpochs + " epochs");
 
     NeuronsActivation data = null;
-    NeuronsActivation reconstructions = null;
+    NeuronsActivation lastReconstructions = null;
 
     for (int i = 0; i < numberOfEpochs; i++) {
 
@@ -126,34 +126,10 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
 
         data = trainingActivations;
 
-        // Push the visible data to the hidden neurons
-
-        RestrictedBoltzmannLayerActivation hiddenNeuronsDataActivation = getFirstLayer()
-            .activateHiddenNeuronsFromVisibleNeuronsData(data, trainingContext.getLayerContext(0));
-
-        // Push a hidden neuron sample to the visible neurons to get a reconstruction
-
-        RestrictedBoltzmannLayerActivation visibleNeuronsReconstructionLayerActivation =
-            getFirstLayer().activateVisibleNeuronsFromHiddenNeuronsSample(
-                hiddenNeuronsDataActivation, trainingContext.getLayerContext(0));
-
-        reconstructions =
-            visibleNeuronsReconstructionLayerActivation.getVisibleActivationProbablities();
-
-        RestrictedBoltzmannLayerActivation contrastiveDivergenceActivation =
-            getFirstLayer().activateHiddenNeuronsFromVisibleNeuronsReconstruction(
-                visibleNeuronsReconstructionLayerActivation, trainingContext.getLayerContext(0));
-
-        // Calculate the statistics and the weight adjustment
-        Matrix adjustment = getWeightsAdjustment(hiddenNeuronsDataActivation,
-            visibleNeuronsReconstructionLayerActivation, contrastiveDivergenceActivation,
-            trainingContext);
-
-        getFirstLayer().getPrimaryAxons().adjustConnectionWeights(adjustment,
-            ConnectionWeightsAdjustmentDirection.ADDITION);
+        lastReconstructions = trainOnBatch(data, trainingContext);
 
         LOGGER.info("Epoch:" + (i + 1) + " Average Reconstruction Error:"
-            + getAverageReconstructionError(trainingActivations, reconstructions));
+            + getAverageReconstructionError(trainingActivations, lastReconstructions));
 
       } else {
         int miniBatchSize = trainingContext.getTrainingMiniBatchSize();
@@ -174,46 +150,85 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
               new NeuronsActivation(dataBatch, trainingActivations.getFeatureOrientation());
           data = batchDataActivations;
 
-          // Push the visible data to the hidden neurons
-
-          RestrictedBoltzmannLayerActivation hiddenNeuronsDataActivation =
-              getFirstLayer().activateHiddenNeuronsFromVisibleNeuronsData(data,
-                  trainingContext.getLayerContext(0));
-
-          // Push a hidden neuron sample to the visible neurons to get a reconstruction
-
-          RestrictedBoltzmannLayerActivation visibleNeuronsReconstructionLayerActivation =
-              getFirstLayer().activateVisibleNeuronsFromHiddenNeuronsSample(
-                  hiddenNeuronsDataActivation, trainingContext.getLayerContext(0));
-
-          reconstructions =
-              visibleNeuronsReconstructionLayerActivation.getVisibleActivationProbablities();
-
-          RestrictedBoltzmannLayerActivation contrastiveDivergenceActivation =
-              getFirstLayer().activateHiddenNeuronsFromVisibleNeuronsReconstruction(
-                  visibleNeuronsReconstructionLayerActivation, trainingContext.getLayerContext(0));
-
-          // Calculate the statistics and the weight adjustment
-          Matrix adjustment = getWeightsAdjustment(hiddenNeuronsDataActivation,
-              visibleNeuronsReconstructionLayerActivation, contrastiveDivergenceActivation,
-              trainingContext);
-
-          getFirstLayer().getPrimaryAxons().adjustConnectionWeights(adjustment,
-              ConnectionWeightsAdjustmentDirection.ADDITION);
+          lastReconstructions = trainOnBatch(data, trainingContext);
 
           LOGGER.trace("Epoch:" + i + " batch " + batchIndex + " Average Reconstruction Error:"
-              + getAverageReconstructionError(batchDataActivations, reconstructions));
-
-          getFirstLayer().getPrimaryAxons().adjustConnectionWeights(adjustment,
-              ConnectionWeightsAdjustmentDirection.ADDITION);
+              + getAverageReconstructionError(batchDataActivations, lastReconstructions));
 
           batchIndex++;
 
         }
         LOGGER.info("Epoch:" + i + " Average Reconstruction Error:"
-            + getAverageReconstructionError(data, reconstructions));
+            + getAverageReconstructionError(data, lastReconstructions));
       }
     }
+  }
+
+
+  private NeuronsActivation trainOnBatch(NeuronsActivation data,
+      RestrictedBoltzmannMachineContext trainingContext) {
+
+    NeuronsActivation visibleActivations = data;
+
+    RestrictedBoltzmannSamplingActivation samplingActivation =
+        performGibbsSampling(data, 1, trainingContext);
+
+    RestrictedBoltzmannLayerActivation firstHiddenNeuronsDataActivation =
+        samplingActivation.getFirstHiddenNeuronsActivation();
+    RestrictedBoltzmannLayerActivation firstVisibleNeuronsReconstructionLayerActivation =
+        samplingActivation.getFirstVisibleNeuronsReconstructionLayerActivation();
+
+    RestrictedBoltzmannLayerActivation lastVisibleNeuronsReconstructionLayerActivation =
+        samplingActivation.getLastVisibleNeuronsReconstructionLayerActivation();
+
+    // Perform up to 1 gibbs sampling steps
+    for (int c = 0; c < 1; c++) {
+
+      // Push the visible data to the hidden neurons
+
+      RestrictedBoltzmannLayerActivation hiddenNeuronsDataActivation =
+          getFirstLayer().activateHiddenNeuronsFromVisibleNeuronsData(visibleActivations,
+              trainingContext.getLayerContext(0));
+
+      if (firstHiddenNeuronsDataActivation == null) {
+        firstHiddenNeuronsDataActivation = hiddenNeuronsDataActivation;
+      }
+
+      // Push a hidden neuron sample to the visible neurons to get a reconstruction
+
+      RestrictedBoltzmannLayerActivation visibleNeuronsReconstructionLayerActivation =
+          getFirstLayer().activateVisibleNeuronsFromHiddenNeuronsSample(
+              firstHiddenNeuronsDataActivation, trainingContext.getLayerContext(0));
+
+      lastVisibleNeuronsReconstructionLayerActivation = visibleNeuronsReconstructionLayerActivation;
+
+      if (firstVisibleNeuronsReconstructionLayerActivation == null) {
+        firstVisibleNeuronsReconstructionLayerActivation =
+            visibleNeuronsReconstructionLayerActivation;
+      }
+
+      visibleActivations =
+          visibleNeuronsReconstructionLayerActivation.getVisibleActivationProbablities();
+
+    }
+
+    NeuronsActivation lastReconstructions =
+        lastVisibleNeuronsReconstructionLayerActivation.getVisibleActivationProbablities();
+
+    RestrictedBoltzmannLayerActivation contrastiveDivergenceActivation =
+        getFirstLayer().activateHiddenNeuronsFromVisibleNeuronsReconstruction(
+            lastVisibleNeuronsReconstructionLayerActivation, trainingContext.getLayerContext(0));
+
+    // Calculate the statistics and the weight adjustment
+    Matrix adjustment = getWeightsAdjustment(firstHiddenNeuronsDataActivation,
+        firstVisibleNeuronsReconstructionLayerActivation, contrastiveDivergenceActivation,
+        trainingContext);
+
+    getFirstLayer().getPrimaryAxons().adjustConnectionWeights(adjustment,
+        ConnectionWeightsAdjustmentDirection.ADDITION);
+
+    return lastReconstructions;
+
   }
 
   private Matrix getWeightsAdjustment(
@@ -277,14 +292,14 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
 
     if (visibleNeuronsActivation
         .getFeatureOrientation() != NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-      throw new IllegalArgumentException("Visible neurons activation must be columns span feature"
-          + " set");
+      throw new IllegalArgumentException(
+          "Visible neurons activation must be columns span feature" + " set");
     }
-    
+
     if (hiddenNeuronsActivation
         .getFeatureOrientation() != NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-      throw new IllegalArgumentException("Hidden neurons activation must be columns span feature"
-          + " set");
+      throw new IllegalArgumentException(
+          "Hidden neurons activation must be columns span feature" + " set");
     }
 
     return getAveragePairwiseRowProducts(visibleNeuronsActivation.getActivations(),
@@ -321,5 +336,53 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
       NeuronsActivation reconstructions) {
     Matrix diff = data.getActivations().sub(reconstructions.getActivations());
     return diff.mul(diff).sum() / data.getActivations().getRows();
+  }
+
+  @Override
+  public RestrictedBoltzmannSamplingActivation performGibbsSampling(
+      NeuronsActivation initialVisibleActivations, int cdn,
+      RestrictedBoltzmannMachineContext context) {
+
+    RestrictedBoltzmannLayerActivation lastVisibleNeuronsReconstructionLayerActivation = null;
+    RestrictedBoltzmannLayerActivation firstHiddenNeuronsDataActivation = null;
+    RestrictedBoltzmannLayerActivation firstVisibleNeuronsReconstructionLayerActivation = null;
+
+    NeuronsActivation visibleActivations = initialVisibleActivations;
+
+    // Perform up to 1 gibbs sampling steps
+    for (int c = 0; c < cdn; c++) {
+
+      // Push the visible data to the hidden neurons
+
+      RestrictedBoltzmannLayerActivation hiddenNeuronsDataActivation =
+          getFirstLayer().activateHiddenNeuronsFromVisibleNeuronsData(visibleActivations,
+              context.getLayerContext(0));
+
+      if (firstHiddenNeuronsDataActivation == null) {
+        firstHiddenNeuronsDataActivation = hiddenNeuronsDataActivation;
+      }
+
+      // Push a hidden neuron sample to the visible neurons to get a reconstruction
+
+      RestrictedBoltzmannLayerActivation visibleNeuronsReconstructionLayerActivation =
+          getFirstLayer().activateVisibleNeuronsFromHiddenNeuronsSample(
+              firstHiddenNeuronsDataActivation, context.getLayerContext(0));
+
+      lastVisibleNeuronsReconstructionLayerActivation = visibleNeuronsReconstructionLayerActivation;
+
+      if (firstVisibleNeuronsReconstructionLayerActivation == null) {
+        firstVisibleNeuronsReconstructionLayerActivation =
+            visibleNeuronsReconstructionLayerActivation;
+      }
+
+      visibleActivations =
+          visibleNeuronsReconstructionLayerActivation.getVisibleActivationProbablities();
+
+    }
+
+    return new RestrictedBoltzmannSamplingActivationImpl(firstHiddenNeuronsDataActivation,
+        firstVisibleNeuronsReconstructionLayerActivation,
+        lastVisibleNeuronsReconstructionLayerActivation);
+
   }
 }

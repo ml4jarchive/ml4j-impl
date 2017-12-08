@@ -210,6 +210,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
   public RestrictedBoltzmannLayerActivation activateVisibleNeuronsFromHiddenNeuronsSample(
       RestrictedBoltzmannLayerActivation previousVisibleToHiddenNeuronsActivation,
       UndirectedLayerContext layerContext) {
+    
     NeuronsActivation sample = previousVisibleToHiddenNeuronsActivation
         .getHiddenActivationBinarySample(layerContext.getMatrixFactory());
     
