@@ -253,7 +253,7 @@ public class JBlasMatrix implements Matrix {
 
   @Override
   public Matrix subi(Matrix other) {
-    matrix.sub(createJBlasDoubleMatrix(other));
+    matrix.subi(createJBlasDoubleMatrix(other));
     return this;
   }
 
@@ -301,7 +301,7 @@ public class JBlasMatrix implements Matrix {
 
   @Override
   public Matrix expi() {
-    MatrixFunctions.expi(matrix);
+    this.matrix = MatrixFunctions.expi(matrix);
     return this;
   }
 
@@ -325,7 +325,7 @@ public class JBlasMatrix implements Matrix {
 
   @Override
   public Matrix logi() {
-    MatrixFunctions.logi(matrix);
+    this.matrix = MatrixFunctions.logi(matrix);
     return this;
   }
 
@@ -338,14 +338,14 @@ public class JBlasMatrix implements Matrix {
 
   @Override
   public Matrix powi(int value) {
-    MatrixFunctions.powi(matrix, value);
+    this.matrix = MatrixFunctions.powi(matrix, value);
     return this;
   }
 
   @Override
   public Matrix sigmoid() {
-    DoubleMatrix result = matrix.mul(-1);
-    MatrixFunctions.expi(matrix);
+    DoubleMatrix result = matrix;
+    result = MatrixFunctions.expi(result.mul(-1));
     result = result.add(1);
     result = MatrixFunctions.powi(result, -1);
     return this.createJBlasMatrix(result);
