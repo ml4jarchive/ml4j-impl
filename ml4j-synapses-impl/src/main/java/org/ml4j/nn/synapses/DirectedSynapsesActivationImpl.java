@@ -1,23 +1,24 @@
 /*
  * Copyright 2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package org.ml4j.nn.synapses;
 
 import org.ml4j.Matrix;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
+import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,91 +28,156 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public class DirectedSynapsesActivationImpl implements DirectedSynapsesActivation {
+public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBase {
 
-  private static final Logger LOGGER = 
+  private static final Logger LOGGER =
       LoggerFactory.getLogger(DirectedSynapsesActivationImpl.class);
-  
-  private NeuronsActivation inputActivation;
-  private AxonsActivation axonsActivation;
-  private NeuronsActivation outputActivation;
-  private DirectedSynapses<?, ?> synapses;
-  
+
   /**
-   * Construct a new default DirectedSynapsesActivation
    * 
-   * @param synapses The DirectedSynapses
-   * @param inputActivation The input NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation
-   * @param axonsActivation The axons NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation    
-   * @param outputActivation The output NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation.
+   * @param synapses The synapses.
+   * @param inputActivation The input activation.
+   * @param axonsActivation The axons activation.
+   * @param activationFunctionActivation The activation function activation.
+   * @param outputActivation The output activation.
    */
-  public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses, 
-      NeuronsActivation inputActivation, 
-      AxonsActivation axonsActivation, NeuronsActivation outputActivation) {
-    this.inputActivation = inputActivation;
-    this.outputActivation = outputActivation;
-    this.synapses = synapses;
-    this.axonsActivation = axonsActivation;
-  }
-  
-  @Override
-  public NeuronsActivation getOutput() {
-    return outputActivation;
+  public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses,
+      NeuronsActivation inputActivation, AxonsActivation axonsActivation,
+      DifferentiableActivationFunctionActivation activationFunctionActivation,
+      NeuronsActivation outputActivation) {
+    super(synapses, inputActivation, axonsActivation, activationFunctionActivation,
+        outputActivation);
   }
 
- 
 
   @Override
-  public DirectedSynapses<?, ?> getSynapses() {
-    return synapses;
-  }
+  public DirectedSynapsesGradient backPropagate(DirectedSynapsesGradient da,
+      DirectedSynapsesContext context, double regularisationLamdba) {
 
-  @Override
-  public double getAverageRegularisationCost(double regularisationLambda) {
-    LOGGER.debug("Calculating average regularisation cost");
-    return getTotalRegularisationCost(regularisationLambda) 
-        / outputActivation.getActivations().getRows();
-  }
+    Axons<?, ?, ?> axons = synapses.getAxons();
 
-  @Override
-  public double getTotalRegularisationCost(double regularisationLambda) {
-  
-    if (regularisationLambda != 0 && synapses.getAxons() != null) {
+    LOGGER.debug("Back propagating through synapses activation....");
 
-      LOGGER.debug("Calculating total regularisation cost");
-      
-      Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
-
-      int[] rows = new int[weightsWithBiases.getRows()
-          - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
-      int[] cols = new int[weightsWithBiases.getColumns()
-          - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)];
-      for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
-        cols[j - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
-      }
-      for (int j = 1; j < weightsWithBiases.getRows(); j++) {
-        rows[j - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
-      }
-
-      Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
-
-      double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
-      return ((regularisationLambda) * regularisationMatrix) / 2;
-    } else {
-      return 0;
+    if (axons.getRightNeurons().hasBiasUnit()) {
+      throw new IllegalStateException(
+          "Backpropagation through axons with a rhs bias unit not supported");
     }
-  }
 
-  @Override
-  public AxonsActivation getAxonsActivation() {
-    return axonsActivation;
-  }
+    if (axonsActivation == null) {
+      throw new IllegalStateException(
+          "The synapses activation is expected to contain an AxonsActivation");
+    }
+    
+    NeuronsActivation dz = 
+        activationFunctionActivation.backPropagate(da, context).getOutput();
+    
+    LOGGER.debug("Pushing data right to left through axons...");
 
-  @Override
-  public NeuronsActivation getInput() {
-    return inputActivation;
+    // Will contain bias unit if Axons have left bias unit
+    NeuronsActivation inputGradient =
+        axons.pushRightToLeft(dz, axonsActivation, context.createAxonsContext()).getOutput();
+
+
+    Matrix totalTrainableAxonsGradient = null;
+
+    if (axons.isTrainable(context.createAxonsContext())) {
+
+      LOGGER.debug("Calculating Axons Gradients");
+
+      totalTrainableAxonsGradient =
+          dz.getActivations()
+          .mmul(axonsActivation
+              .getPostDropoutInputWithPossibleBias().getActivationsWithBias());
+
+      if (regularisationLamdba != 0) {
+
+        LOGGER.debug("Calculating total regularisation Gradients");
+
+        Matrix connectionWeightsCopy = axons.getDetachedConnectionWeights();
+
+        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
+        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
+
+        totalTrainableAxonsGradient =
+            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(regularisationLamdba));
+
+        if (axons.getLeftNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putRow(0, firstRow);
+        }
+        if (axons.getRightNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putColumn(0, firstColumn);
+        }
+      }
+    }
+
+    return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradient);
   }
+  
+  @Override
+  public DirectedSynapsesGradient backPropagate(CostFunctionGradient da,
+      DirectedSynapsesContext context, double regularisationLamdba) {
+
+    Axons<?, ?, ?> axons = synapses.getAxons();
+
+    LOGGER.debug("Back propagating through synapses activation....");
+
+    if (axons.getRightNeurons().hasBiasUnit()) {
+      throw new IllegalStateException(
+          "Backpropagation through axons with a rhs bias unit not supported");
+    }
+
+    if (axonsActivation == null) {
+      throw new IllegalStateException(
+          "The synapses activation is expected to contain an AxonsActivation");
+    }
+   
+    NeuronsActivation dz = 
+        activationFunctionActivation.backPropagate(da, context).getOutput();
+    
+    LOGGER.debug("Pushing data right to left through axons...");
+
+    // Will contain bias unit if Axons have left bias unit
+    NeuronsActivation inputGradient =
+        axons.pushRightToLeft(dz, axonsActivation, context.createAxonsContext()).getOutput();
+    
+    Matrix totalTrainableAxonsGradient = null;
+
+    if (axons.isTrainable(context.createAxonsContext())) {
+
+      LOGGER.debug("Calculating Axons Gradients");
+
+      totalTrainableAxonsGradient =
+          dz.getActivations()
+          .mmul(axonsActivation
+              .getPostDropoutInputWithPossibleBias().getActivationsWithBias());
+
+      if (regularisationLamdba != 0) {
+
+        LOGGER.debug("Calculating total regularisation Gradients");
+
+        Matrix connectionWeightsCopy = axons.getDetachedConnectionWeights();
+
+        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
+        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
+
+        totalTrainableAxonsGradient =
+            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(regularisationLamdba));
+
+        if (axons.getLeftNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putRow(0, firstRow);
+        }
+        if (axons.getRightNeurons().hasBiasUnit()) {
+
+          totalTrainableAxonsGradient.putColumn(0, firstColumn);
+        }
+      }
+    }
+
+    return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradient);
+  }
+  
+ 
 }

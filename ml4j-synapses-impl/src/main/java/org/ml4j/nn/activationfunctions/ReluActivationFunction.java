@@ -40,7 +40,8 @@ public class ReluActivationFunction implements DifferentiableActivationFunction 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReluActivationFunction.class);
 
   @Override
-  public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
+  public DifferentiableActivationFunctionActivation activate(NeuronsActivation input, 
+      NeuronsActivationContext context) {
     LOGGER.debug("Activating through ReluActivationFunction");
    
     
@@ -50,31 +51,32 @@ public class ReluActivationFunction implements DifferentiableActivationFunction 
     for (int r = 0; r < output.getActivations().getRows(); r++) {
       for (int c = 0; c < output.getActivations().getColumns(); c++) {
         if (input.getActivations().get(r, c) <= 0) {
-          input.getActivations().put(r, c, 0);
+          output.getActivations().put(r, c, 0);
         }
       }
     }
-    return output;
+    return new DifferentiableActivationFunctionActivationImpl(this, input, output);
   }
 
   @Override
-  public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
+  public NeuronsActivation activationGradient(
+      DifferentiableActivationFunctionActivation outputActivation,
       NeuronsActivationContext context) {
    
     LOGGER.debug("Performing relu gradient of NeuronsActivation");
     
     Matrix gradientMatrix = context.getMatrixFactory()
-        .createOnes(outputActivation.getActivations().getRows(), 
-        outputActivation.getActivations().getColumns());
+        .createOnes(outputActivation.getInput().getActivations().getRows(), 
+        outputActivation.getInput().getActivations().getColumns());
     
     NeuronsActivation output = new NeuronsActivation(gradientMatrix, 
-        outputActivation.getFeatureOrientation());
+        outputActivation.getInput().getFeatureOrientation());
     
     for (int r = 0; r < output.getActivations().getRows(); r++) {
       for (int c = 0; c < output.getActivations().getColumns(); c++) {
 
-        if (outputActivation.getActivations().get(r, c) <= 0) {
-          outputActivation.getActivations().put(r, c, 0);
+        if (outputActivation.getInput().getActivations().get(r, c) <= 0) {
+          output.getActivations().put(r, c, 0);
         }
       }
     }
