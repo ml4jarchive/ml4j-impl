@@ -16,8 +16,8 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.neurons.Neurons;
@@ -87,99 +87,15 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
     
-    NeuronsActivation outputNeuronsActivation = 
+    DifferentiableActivationFunctionActivation activationFunctionActivation = 
         activationFunction.activate(axonsOutputActivation, synapsesContext);
     
+    NeuronsActivation outputNeuronsActivation = activationFunctionActivation.getOutput();
+    
     return new DirectedSynapsesActivationImpl(this, 
-        inputNeuronsActivation, axonsActivation, outputNeuronsActivation);
+        inputNeuronsActivation, axonsActivation,activationFunctionActivation,
+        outputNeuronsActivation);
   
-  }
-  
-  @Override
-  public DirectedSynapsesGradient backPropagate(DirectedSynapsesActivation activation,
-      NeuronsActivation da,
-      DirectedSynapsesContext context, boolean outerMostSynapses, double regularisationLamdba) {
-   
-    LOGGER.debug("Back propagating through synapses activation....");
-  
-    if (axons.getRightNeurons().hasBiasUnit()) {
-      throw new IllegalStateException(
-          "Backpropagation through axons with a rhs bias unit not supported");
-    }
-
-    if (activation.getAxonsActivation() == null) {
-      throw new IllegalStateException(
-          "The synapses activation is expected to contain an AxonsActivation");
-    }
-    
-    NeuronsActivation axonsOutputActivation = activation.getAxonsActivation().getOutput();
-  
-    
-    Matrix dz = null;
-    
-    if (outerMostSynapses) {
-      dz = da.getActivations();
-    } else {
-      Matrix activationGradient = activationFunction
-          .activationGradient(axonsOutputActivation, context)
-          .getActivations();
-      dz = da.getActivations().mul(activationGradient);
-    }
-  
-    if (da.getFeatureCount() != axons.getRightNeurons()
-        .getNeuronCountExcludingBias()) {
-      throw new IllegalArgumentException("Expected feature count to be:"
-          + axons.getRightNeurons().getNeuronCountExcludingBias() + " but was:"
-          + da.getFeatureCount());
-    }
-    
-    // Does not contain output bias unit
-    NeuronsActivation dzN = new NeuronsActivation(dz,
-        da.getFeatureOrientation());
-
-    LOGGER.debug("Pushing data right to left through axons...");
-    
-    // Will contain bias unit if Axons have left  bias unit
-    NeuronsActivation inputGradient =
-        axons.pushRightToLeft(dzN, activation.getAxonsActivation(), 
-            context.createAxonsContext()).getOutput();
-    
-         
-    Matrix totalTrainableAxonsGradient = null;
-    
-    if (axons.isTrainable(context.createAxonsContext())) {
-     
-      LOGGER.debug("Calculating Axons Gradients");
-
-      totalTrainableAxonsGradient = 
-          dz.mmul(activation.getAxonsActivation()
-              .getPostDropoutInputWithPossibleBias().getActivationsWithBias());
-      
-      if (regularisationLamdba != 0) {
-       
-        LOGGER.debug("Calculating total regularisation Gradients");
-   
-        Matrix connectionWeightsCopy = axons.getDetachedConnectionWeights();
-
-        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
-        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
-
-        totalTrainableAxonsGradient = totalTrainableAxonsGradient
-            .addi(connectionWeightsCopy.muli(regularisationLamdba));
-        
-        if (axons.getLeftNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putRow(0, firstRow);
-        }
-        if (axons.getRightNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putColumn(0, firstColumn);
-        }
-      }
-    }
-
-    return new DirectedSynapsesGradientImpl(inputGradient, 
-        totalTrainableAxonsGradient);
   }
 
   @Override
@@ -191,6 +107,4 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   public R getRightNeurons() {
     return axons.getRightNeurons();
   }
-
-
 }
