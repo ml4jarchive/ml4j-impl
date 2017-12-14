@@ -19,6 +19,7 @@ package org.ml4j.nn;
 import org.ml4j.nn.BackPropagation;
 import org.ml4j.nn.DirectedNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -59,26 +60,30 @@ public class ForwardPropagationImpl implements ForwardPropagation {
   }
 
   @Override
-  public BackPropagation backPropagate(NeuronsActivation neuronActivationGradients, 
+  public BackPropagation backPropagate(CostFunctionGradient neuronActivationGradients, 
       DirectedNeuralNetworkContext context) {
     
     List<DirectedLayerActivation> reversedActivations = new ArrayList<>();
     reversedActivations.addAll(activations);
-    NeuronsActivation gradients = neuronActivationGradients;
+  
+    DirectedLayerGradient gradients = null;
     List<DirectedLayerGradient> gradientsRet = new ArrayList<>();
     Collections.reverse(reversedActivations);
     int layerIndex = reversedActivations.size() - 1;
-    boolean outerLayer = true;
     
     for (DirectedLayerActivation activation : reversedActivations) {
 
-      DirectedLayerGradient gradient =
-          activation.backPropagate(gradients, 
-              context.getLayerContext(layerIndex), outerLayer);
+      DirectedLayerGradient gradient = null;
+      if (gradients == null) {
+        gradient = activation.backPropagate(neuronActivationGradients,
+            context.getLayerContext(layerIndex));
+      } else {
+        gradient =
+            activation.backPropagate(gradients, context.getLayerContext(layerIndex));
+      }
+      
       gradientsRet.add(gradient);
-      outerLayer = false;
-      gradients = gradient.getSynapsesGradients()
-          .get(gradient.getSynapsesGradients().size() - 1).getOutput();
+      gradients = gradient;
       layerIndex--;
     }
     

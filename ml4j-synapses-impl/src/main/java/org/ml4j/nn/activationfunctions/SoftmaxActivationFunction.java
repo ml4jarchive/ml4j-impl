@@ -37,17 +37,20 @@ public class SoftmaxActivationFunction implements DifferentiableActivationFuncti
   private static final Logger LOGGER = LoggerFactory.getLogger(SoftmaxActivationFunction.class);
 
   @Override
-  public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
+  public DifferentiableActivationFunctionActivation activate(NeuronsActivation input, 
+      NeuronsActivationContext context) {
     LOGGER.debug("Activating through SoftmaxActivationFunction");
    
     Matrix softmaxOfInputActivationsMatrix = NeuralNetUtils
         .softmax(input.getActivations());
-    return new NeuronsActivation(softmaxOfInputActivationsMatrix,
-        input.getFeatureOrientation());
+    return new DifferentiableActivationFunctionActivationImpl(this, input, 
+        new NeuronsActivation(softmaxOfInputActivationsMatrix,
+        input.getFeatureOrientation()));
   }
 
   @Override
-  public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
+  public NeuronsActivation activationGradient(DifferentiableActivationFunctionActivation 
+      outputActivation,
       NeuronsActivationContext context) {
     throw new UnsupportedOperationException("Standalone activation gradient of "
         + "softmax not supported - gradient calculation is performed in combination with a "

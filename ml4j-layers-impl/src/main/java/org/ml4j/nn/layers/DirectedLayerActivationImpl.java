@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.layers;
 
+import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.layers.DirectedLayer;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerContext;
@@ -66,9 +67,8 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
   }
 
   @Override
-  public DirectedLayerGradient backPropagate(NeuronsActivation activationGradient, 
-      DirectedLayerContext layerContext,
-      boolean outerMostLayer) {
+  public DirectedLayerGradient backPropagate(DirectedLayerGradient activationGradient, 
+      DirectedLayerContext layerContext) {
     
     LOGGER.debug(layerContext.toString() + ":" 
           + "Back propagating through layer activation....");
@@ -77,9 +77,14 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
         new ArrayList<DirectedSynapsesActivation>();
     reversedSynapseActivations.addAll(synapseActivations);
     Collections.reverse(reversedSynapseActivations);
-    NeuronsActivation actGrad = activationGradient;
+    
+    List<DirectedSynapsesGradient> outerSynapsesGradients 
+        = activationGradient.getSynapsesGradients();
+    
+    DirectedSynapsesGradient actGrad = outerSynapsesGradients
+        .get(outerSynapsesGradients.size() - 1);
+    NeuronsActivation finalGrad = null;
     int index = reversedSynapseActivations.size() - 1;
-    boolean outerMostSynapses = outerMostLayer;
     List<DirectedSynapsesGradient> acts = new ArrayList<>();
     for (DirectedSynapsesActivation activation : reversedSynapseActivations) {
       
@@ -92,18 +97,64 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
 
       DirectedSynapsesContext context = layerContext.createSynapsesContext(index);
       
+      
+      
       DirectedSynapsesGradient grad = 
-          activation.getSynapses().backPropagate(activation, actGrad, 
-              context, outerMostSynapses, regularisationLambda);
+          activation.backPropagate(actGrad, 
+              context, regularisationLambda);
      
-      actGrad = grad.getOutput();
-      outerMostSynapses = false;
+      actGrad = grad;
+      finalGrad = grad.getOutput();
       acts.add(grad);
       index--;
     }
-    return new DirectedLayerGradientImpl(acts);
+    return new DirectedLayerGradientImpl(finalGrad, acts);
   }
   
+  @Override
+  public DirectedLayerGradient backPropagate(CostFunctionGradient activationGradient, 
+      DirectedLayerContext layerContext) {
+    
+    LOGGER.debug(layerContext.toString() + ":" 
+          + "Back propagating through layer activation....");
+    
+    List<DirectedSynapsesActivation> reversedSynapseActivations =
+        new ArrayList<DirectedSynapsesActivation>();
+    reversedSynapseActivations.addAll(synapseActivations);
+    Collections.reverse(reversedSynapseActivations);
+    
+    DirectedSynapsesGradient actGrad = null;
+    NeuronsActivation finalGrad = null;
+    int index = reversedSynapseActivations.size() - 1;
+    List<DirectedSynapsesGradient> acts = new ArrayList<>();
+    for (DirectedSynapsesActivation activation : reversedSynapseActivations) {
+      
+      double regularisationLambda = 0d;
+      
+      if (activation.getSynapses().getAxons() != null 
+          && activation.getSynapses().getAxons() == layer.getPrimaryAxons()) {
+        regularisationLambda = layerContext.getPrimaryAxonsRegularisationLambda();
+      }
+
+      DirectedSynapsesContext context = layerContext.createSynapsesContext(index);
+      
+      DirectedSynapsesGradient grad = null;
+
+      if (actGrad == null) {
+        grad = activation.backPropagate(activationGradient, context, regularisationLambda);
+      } else {
+
+        grad = activation.backPropagate(actGrad, context, regularisationLambda);
+      }
+     
+      actGrad = grad;
+      finalGrad = grad.getOutput();
+      acts.add(grad);
+      index--;
+    }
+    return new DirectedLayerGradientImpl(finalGrad, acts);
+  }
+
 
   @Override
   public DirectedLayer<?, ?> getLayer() {

@@ -17,6 +17,7 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.nn.layers.DirectedLayerGradient;
+import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 
 import java.util.List;
@@ -29,9 +30,12 @@ import java.util.List;
 public class DirectedLayerGradientImpl implements DirectedLayerGradient {
 
   private List<DirectedSynapsesGradient> directedSynapsesGradients;
+  private NeuronsActivation output;
 
-  public DirectedLayerGradientImpl(List<DirectedSynapsesGradient> directedSynapsesGradients) {
+  public DirectedLayerGradientImpl(NeuronsActivation output, 
+      List<DirectedSynapsesGradient> directedSynapsesGradients) {
     this.directedSynapsesGradients = directedSynapsesGradients;
+    this.output = output;
   }
 
   @Override
@@ -43,5 +47,10 @@ public class DirectedLayerGradientImpl implements DirectedLayerGradient {
   public String toString() {
     return "DirectedLayerGradientImpl [directedSynapsesGradients=" 
         + directedSynapsesGradients + "]";
+  }
+
+  @Override
+  public NeuronsActivation getOutput() {
+    return output;
   }
 }

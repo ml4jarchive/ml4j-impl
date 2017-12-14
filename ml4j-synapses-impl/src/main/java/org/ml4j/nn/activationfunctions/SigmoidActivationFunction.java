@@ -37,26 +37,30 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
   private static final Logger LOGGER = LoggerFactory.getLogger(SigmoidActivationFunction.class);
 
   @Override
-  public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
+  public DifferentiableActivationFunctionActivation activate(NeuronsActivation input, 
+      NeuronsActivationContext context) {
     LOGGER.debug("Activating through SigmoidActivationFunction");
 
     Matrix sigmoidOfInputActivationsMatrix = 
         input.getActivations().sigmoid();
-    return new NeuronsActivation(sigmoidOfInputActivationsMatrix,
-        input.getFeatureOrientation());
+    return new DifferentiableActivationFunctionActivationImpl(this, input, 
+        new NeuronsActivation(sigmoidOfInputActivationsMatrix,
+        input.getFeatureOrientation()));
   }
 
   @Override
-  public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
+  public NeuronsActivation activationGradient(DifferentiableActivationFunctionActivation 
+      outputActivation,
       NeuronsActivationContext context) {
     
     LOGGER.debug("Performing sigmoid gradient of NeuronsActivation");
    
-    Matrix gradient = NeuralNetUtils.sigmoidGradient(outputActivation.getActivations());
+    Matrix gradient = NeuralNetUtils.sigmoidGradient(
+        outputActivation.getInput().getActivations());
   
     return new NeuronsActivation(
         gradient, 
-        outputActivation.getFeatureOrientation());
+        outputActivation.getInput().getFeatureOrientation());
 
   }
 }
