@@ -38,8 +38,8 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   private static final Logger LOGGER = LoggerFactory.getLogger(UndirectedSynapsesImpl.class);
 
   private Axons<? extends L, ? extends R, ?> axons;
-  private ActivationFunction leftActivationFunction;
-  private ActivationFunction rightActivationFunction;
+  private ActivationFunction<?, ?> leftActivationFunction;
+  private ActivationFunction<?, ?> rightActivationFunction;
 
 
   /**
@@ -50,7 +50,8 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
    * @param rightActivationFunction The activation function on the right hand side of these synapses
    */
   public UndirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
-      ActivationFunction leftActivationFunction, ActivationFunction rightActivationFunction) {
+      ActivationFunction<?, ?> leftActivationFunction, 
+      ActivationFunction<?, ?> rightActivationFunction) {
     this.axons = axons;
     this.leftActivationFunction = leftActivationFunction;
     this.rightActivationFunction = rightActivationFunction;
@@ -69,12 +70,12 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
 
   @Override
-  public ActivationFunction getLeftActivationFunction() {
+  public ActivationFunction<?, ?> getLeftActivationFunction() {
     return leftActivationFunction;
   }
 
   @Override
-  public ActivationFunction getRightActivationFunction() {
+  public ActivationFunction<?, ?> getRightActivationFunction() {
     return leftActivationFunction;
   }
 
@@ -93,7 +94,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
 
     NeuronsActivation outputNeuronsActivation =
-        rightActivationFunction.activate(axonsOutputActivation, synapsesContext);
+        rightActivationFunction.activate(axonsOutputActivation, synapsesContext).getOutput();
 
     return new UndirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivation,
         outputNeuronsActivation);
@@ -113,7 +114,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
 
     NeuronsActivation outputNeuronsActivation =
-        leftActivationFunction.activate(axonsOutputActivation, synapsesContext);
+        leftActivationFunction.activate(axonsOutputActivation, synapsesContext).getOutput();
 
     return new UndirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivation,
         outputNeuronsActivation);
