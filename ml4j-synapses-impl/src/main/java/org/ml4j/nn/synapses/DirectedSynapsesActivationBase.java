@@ -67,8 +67,6 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
     return outputActivation;
   }
 
- 
-
   @Override
   public DirectedSynapses<?, ?> getSynapses() {
     return synapses;

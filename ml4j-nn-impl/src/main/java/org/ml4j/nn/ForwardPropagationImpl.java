@@ -108,5 +108,10 @@ public class ForwardPropagationImpl implements ForwardPropagation {
     }
     return totalRegularisationCost;
   }
+  
+  @Override
+  public List<DirectedLayerActivation> getLayerActivations() {
+    return activations;
+  }
  
 }
