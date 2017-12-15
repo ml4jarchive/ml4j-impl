@@ -19,14 +19,13 @@ package org.ml4j.nn.layers;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ScaleAndShiftAxonsAlternateImpl;
 import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
-import org.ml4j.nn.synapses.ActivationFunctionOnlyDirectedSynapsesImpl;
-import org.ml4j.nn.synapses.AxonsOnlyDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.BatchNormDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
@@ -94,7 +93,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
           getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
           new ScaleAndShiftAxonsAlternateImpl(
               new Neurons(getPrimaryAxons().getRightNeurons().getNeuronCountExcludingBias(), true),
-              getPrimaryAxons().getRightNeurons(), matrixFactory, config));
+              getPrimaryAxons().getRightNeurons(), matrixFactory, config), activationFunction);
     }
   }
 
@@ -181,13 +180,10 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
     if (withBatchNorm) {
  
-      synapses.add(new AxonsOnlyDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
+      synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons(), 
+          new LinearActivationFunction()));
       
       synapses.add(batchNormSynapses);
-
-      synapses.add(new ActivationFunctionOnlyDirectedSynapsesImpl<Neurons, Neurons>(
-          getPrimaryAxons().getRightNeurons(), getPrimaryAxons().getRightNeurons(),
-          getPrimaryActivationFunction()));
       
     } else {
       synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(

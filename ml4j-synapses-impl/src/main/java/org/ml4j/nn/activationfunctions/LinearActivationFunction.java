@@ -37,25 +37,28 @@ public class LinearActivationFunction implements DifferentiableActivationFunctio
   private static final Logger LOGGER = LoggerFactory.getLogger(LinearActivationFunction.class);
 
   @Override
-  public NeuronsActivation activate(NeuronsActivation input, NeuronsActivationContext context) {
+  public DifferentiableActivationFunctionActivation activate(NeuronsActivation input, 
+      NeuronsActivationContext context) {
     LOGGER.debug("Activating through LinearActivationFunction");
     
-    return new NeuronsActivation(input.getActivations().dup(),
-        input.getFeatureOrientation());
+    return new DifferentiableActivationFunctionActivationImpl(this, input, 
+        new NeuronsActivation(input.getActivations().dup(),
+        input.getFeatureOrientation()));
   }
 
   @Override
-  public NeuronsActivation activationGradient(NeuronsActivation outputActivation,
+  public NeuronsActivation activationGradient(DifferentiableActivationFunctionActivation 
+      outputActivation,
       NeuronsActivationContext context) {
     
     LOGGER.debug("Performing linear gradient of NeuronsActivation");
    
     Matrix gradient = context.getMatrixFactory()
-        .createOnes(outputActivation.getActivations().getRows(), 
-        outputActivation.getActivations().getColumns());
+        .createOnes(outputActivation.getInput().getActivations().getRows(), 
+        outputActivation.getInput().getActivations().getColumns());
    
     return new NeuronsActivation(
         gradient, 
-        outputActivation.getFeatureOrientation());
+        outputActivation.getInput().getFeatureOrientation());
   }
 }
