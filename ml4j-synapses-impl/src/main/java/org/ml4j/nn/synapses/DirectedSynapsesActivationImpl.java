@@ -18,6 +18,7 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
+import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
@@ -52,77 +53,33 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
   @Override
   public DirectedSynapsesGradient backPropagate(DirectedSynapsesGradient da,
-      DirectedSynapsesContext context, double regularisationLamdba) {
-
-    Axons<?, ?, ?> axons = synapses.getAxons();
+      DirectedSynapsesContext context, double regularisationLambda) {
 
     LOGGER.debug("Back propagating through synapses activation....");
 
-    if (axons.getRightNeurons().hasBiasUnit()) {
-      throw new IllegalStateException(
-          "Backpropagation through axons with a rhs bias unit not supported");
-    }
-
-    if (axonsActivation == null) {
-      throw new IllegalStateException(
-          "The synapses activation is expected to contain an AxonsActivation");
-    }
+    validateAxonsAndAxonsActivation();
     
-    NeuronsActivation dz = 
-        activationFunctionActivation.backPropagate(da, context).getOutput();
-    
-    LOGGER.debug("Pushing data right to left through axons...");
+    NeuronsActivation dz = activationFunctionActivation.backPropagate(da, context).getOutput();
 
-    // Will contain bias unit if Axons have left bias unit
-    NeuronsActivation inputGradient =
-        axons.pushRightToLeft(dz, axonsActivation, context.createAxonsContext()).getOutput();
-
-
-    Matrix totalTrainableAxonsGradient = null;
-
-    if (axons.isTrainable(context.createAxonsContext())) {
-
-      LOGGER.debug("Calculating Axons Gradients");
-
-      totalTrainableAxonsGradient =
-          dz.getActivations()
-          .mmul(axonsActivation
-              .getPostDropoutInputWithPossibleBias().getActivationsWithBias());
-
-      if (regularisationLamdba != 0) {
-
-        LOGGER.debug("Calculating total regularisation Gradients");
-
-        Matrix connectionWeightsCopy = axons.getDetachedConnectionWeights();
-
-        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
-        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
-
-        totalTrainableAxonsGradient =
-            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(regularisationLamdba));
-
-        if (axons.getLeftNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putRow(0, firstRow);
-        }
-        if (axons.getRightNeurons().hasBiasUnit()) {
-
-          totalTrainableAxonsGradient.putColumn(0, firstColumn);
-        }
-      }
-    }
-
-    return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradient);
+    return backPropagateThroughAxons(dz, context.createAxonsContext(), regularisationLambda);
   }
-  
+
   @Override
   public DirectedSynapsesGradient backPropagate(CostFunctionGradient da,
-      DirectedSynapsesContext context, double regularisationLamdba) {
-
-    Axons<?, ?, ?> axons = synapses.getAxons();
+      DirectedSynapsesContext context, double regularisationLambda) {
 
     LOGGER.debug("Back propagating through synapses activation....");
 
+    validateAxonsAndAxonsActivation();
+
+    NeuronsActivation dz = activationFunctionActivation.backPropagate(da, context).getOutput();
+
+    return backPropagateThroughAxons(dz, context.createAxonsContext(), regularisationLambda);
+  }
+  
+  private void validateAxonsAndAxonsActivation() {
+    
+    Axons<?, ?, ?> axons = synapses.getAxons();
     if (axons.getRightNeurons().hasBiasUnit()) {
       throw new IllegalStateException(
           "Backpropagation through axons with a rhs bias unit not supported");
@@ -132,28 +89,29 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
       throw new IllegalStateException(
           "The synapses activation is expected to contain an AxonsActivation");
     }
-   
-    NeuronsActivation dz = 
-        activationFunctionActivation.backPropagate(da, context).getOutput();
-    
+  }
+
+  private DirectedSynapsesGradient backPropagateThroughAxons(NeuronsActivation dz,
+      AxonsContext axonsContext, double regularisationLambda) {
+
     LOGGER.debug("Pushing data right to left through axons...");
+
+    Axons<?, ?, ?> axons = synapses.getAxons();
 
     // Will contain bias unit if Axons have left bias unit
     NeuronsActivation inputGradient =
-        axons.pushRightToLeft(dz, axonsActivation, context.createAxonsContext()).getOutput();
-    
+        axons.pushRightToLeft(dz, axonsActivation, axonsContext).getOutput();
+
     Matrix totalTrainableAxonsGradient = null;
 
-    if (axons.isTrainable(context.createAxonsContext())) {
+    if (axons.isTrainable(axonsContext)) {
 
       LOGGER.debug("Calculating Axons Gradients");
 
-      totalTrainableAxonsGradient =
-          dz.getActivations()
-          .mmul(axonsActivation
-              .getPostDropoutInputWithPossibleBias().getActivationsWithBias());
+      totalTrainableAxonsGradient = dz.getActivations()
+          .mmul(axonsActivation.getPostDropoutInputWithPossibleBias().getActivationsWithBias());
 
-      if (regularisationLamdba != 0) {
+      if (regularisationLambda != 0) {
 
         LOGGER.debug("Calculating total regularisation Gradients");
 
@@ -163,7 +121,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
         Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
 
         totalTrainableAxonsGradient =
-            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(regularisationLamdba));
+            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(regularisationLambda));
 
         if (axons.getLeftNeurons().hasBiasUnit()) {
 
@@ -178,6 +136,4 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
     return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradient);
   }
-  
- 
 }
