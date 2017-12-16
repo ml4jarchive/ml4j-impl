@@ -19,6 +19,7 @@ package org.ml4j.nn.synapses;
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.AxonsActivation;
+import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,16 +74,18 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
   }
 
   @Override
-  public double getAverageRegularisationCost(double regularisationLambda) {
+  public double getAverageRegularisationCost(DirectedSynapsesContext synapsesContext) {
     LOGGER.debug("Calculating average regularisation cost");
-    return getTotalRegularisationCost(regularisationLambda) 
+    return getTotalRegularisationCost(synapsesContext) 
         / outputActivation.getActivations().getRows();
   }
 
   @Override
-  public double getTotalRegularisationCost(double regularisationLambda) {
+  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
   
-    if (regularisationLambda != 0 && synapses.getAxons() != null) {
+    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
+    
+    if (axonsContext.getRegularisationLambda() != 0 && synapses.getAxons() != null) {
 
       LOGGER.debug("Calculating total regularisation cost");
       
@@ -102,7 +105,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
       Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
 
       double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
-      return ((regularisationLambda) * regularisationMatrix) / 2;
+      return ((axonsContext.getRegularisationLambda()) * regularisationMatrix) / 2;
     } else {
       return 0;
     }

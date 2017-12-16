@@ -20,6 +20,9 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Simple default implementation of DirectedSynapsesContext.
  * 
@@ -37,20 +40,19 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    * The MatrixFactory we configure for this context.
    */
   private MatrixFactory matrixFactory;
-  private double inputDropoutKeepProbability;
   private boolean withFreezeOut;
+  private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
   
   /**
    * Construct a new default DirectedSynapsesContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
-   * @param inputDropoutKeepProbability The input dropout keep probability.
+   * @param withFreezeOut Whether to freeze out these Synapses.
    */
-  public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, 
-      double inputDropoutKeepProbability, boolean withFreezeOut) {
+  public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
-    this.inputDropoutKeepProbability = inputDropoutKeepProbability;
     this.withFreezeOut = withFreezeOut;
+    this.axonsContextsByAxonsIndex = new HashMap<>();
   }
  
   @Override
@@ -59,8 +61,27 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
   }
 
   @Override
-  public AxonsContext createAxonsContext() {
-    return new AxonsContextImpl(matrixFactory, 
-        inputDropoutKeepProbability, withFreezeOut);
+  public AxonsContext getAxonsContext(int axonsIndex) {
+    
+    AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
+    if (axonsContext == null) {
+      axonsContext = new AxonsContextImpl(matrixFactory,  withFreezeOut);
+      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+    }
+    if (axonsContext.isWithFreezeOut() != withFreezeOut) {
+      axonsContext.setWithFreezeOut(withFreezeOut);
+      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+    }
+    return axonsContext;
+  }
+
+  @Override
+  public boolean isWithFreezeOut() {
+    return withFreezeOut;
+  }
+
+  @Override
+  public void setWithFreezeOut(boolean withFreezeOut) {
+    this.withFreezeOut = withFreezeOut;
   }
 }

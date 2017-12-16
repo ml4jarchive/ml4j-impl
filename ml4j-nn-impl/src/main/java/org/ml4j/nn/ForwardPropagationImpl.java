@@ -104,7 +104,7 @@ public class ForwardPropagationImpl implements ForwardPropagation {
     int layerIndex = 0;
     for (DirectedLayerActivation activation : activations) {
       totalRegularisationCost = totalRegularisationCost + activation.getTotalRegularisationCost(
-          context.getLayerContext(layerIndex++).getPrimaryAxonsRegularisationLambda());
+          context.getLayerContext(layerIndex++));
     }
     return totalRegularisationCost;
   }
