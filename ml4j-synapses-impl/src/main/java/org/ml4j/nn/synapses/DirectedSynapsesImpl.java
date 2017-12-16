@@ -16,10 +16,15 @@
 
 package org.ml4j.nn.synapses;
 
+import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
+import org.ml4j.nn.graph.DirectedDipoleGraph;
+import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
+import org.ml4j.nn.graph.DirectedPath;
+import org.ml4j.nn.graph.DirectedPathImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
@@ -41,32 +46,69 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesImpl.class);
   
-  private Axons<? extends L, ? extends R, ?> axons;
+  private Axons<? extends L, ? extends R, ?> primaryAxons;
   private DifferentiableActivationFunction activationFunction;
+  private DirectedDipoleGraph<Axons<?, ?, ?>> axonsGraph;
   
   /**
    * Create a new implementation of DirectedSynapses.
    * 
-   * @param axons The Axons within these synapses
+   * @param primaryAxons The primary Axons within these synapses
+   * @param axonsGraph The axons graph within these Synapses.
    * @param activationFunction The activation function within these synapses
    */
-  public DirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
+  protected DirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> primaryAxons, 
+      DirectedDipoleGraph<Axons<?, ?, ?>> axonsGraph, 
       DifferentiableActivationFunction activationFunction) {
     super();
-    this.axons = axons;
+    this.primaryAxons = primaryAxons;
     this.activationFunction = activationFunction;
+    this.axonsGraph = axonsGraph;
+  }
+  
+  /**
+   * Create a new implementation of DirectedSynapses.
+   * 
+   * @param primaryAxons The primary Axons within these synapses
+   * @param activationFunction The activation function within these synapses
+   */
+  public DirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> primaryAxons, 
+      DifferentiableActivationFunction activationFunction) {
+      this(primaryAxons, new DirectedDipoleGraphImpl<Axons<?, ? ,?>>(primaryAxons), 
+          activationFunction);
   }
 
   @Override
-  public Axons<? extends L, ? extends R, ?> getAxons() {
-    return axons;
+  public Axons<? extends L, ? extends R, ?> getPrimaryAxons() {
+    return primaryAxons;
+  }
+  
+  /**
+   * @return The Axons graph within these DirectedSynapses.
+   */
+  public DirectedDipoleGraph<Axons<?, ?, ?>> getAxonsGraph() {
+    return new DirectedDipoleGraphImpl<Axons<?, ?, ?>>(primaryAxons);
   }
 
   @Override
   public DirectedSynapses<L, R> dup() {
-    return new DirectedSynapsesImpl<L, R>(axons.dup(), activationFunction);
+    return new DirectedSynapsesImpl<L, R>(primaryAxons.dup(), cloneAxonsGraph() , 
+        activationFunction);
   }
+  
+  private DirectedDipoleGraph<Axons<?, ?, ?>> cloneAxonsGraph() {
 
+    DirectedDipoleGraph<Axons<?, ?, ?>> dup = new DirectedDipoleGraphImpl<Axons<?, ?, ?>>();
+    for (DirectedPath<Axons<?, ?, ?>> directedPath : axonsGraph.getParallelPaths()) {
+      DirectedPath<Axons<?, ?, ?>> dupPath = new DirectedPathImpl<Axons<?, ?, ?>>();
+      for (Axons<?, ?, ?> axons : directedPath.getEdges()) {
+        Axons<?, ?, ?> dupAxons = axons.dup();
+        dupPath.addEdge(dupAxons);
+      }
+      dup.addParallelPath(dupPath);
+    }
+    return dup;
+  }
 
   @Override
   public DifferentiableActivationFunction getActivationFunction() {
@@ -77,34 +119,72 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   @Override
   public DirectedSynapsesActivation forwardPropagate(DirectedSynapsesInput input,
       DirectedSynapsesContext synapsesContext) {
-   
-    NeuronsActivation inputNeuronsActivation = input.getInput();
-   
+
     LOGGER.debug("Forward propagating through DirectedSynapses");
-    AxonsActivation axonsActivation = 
-        axons.pushLeftToRight(inputNeuronsActivation, null, 
-            synapsesContext.getAxonsContext(0));
+
+    NeuronsActivation inputNeuronsActivation = input.getInput();
+
+    Matrix totalAxonsOutputMatrix = null;
     
-    NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
+    NeuronsActivation axonsOutputActivation = null;
+
+    DirectedDipoleGraph<AxonsActivation> axonsActivationGraph =
+        new DirectedDipoleGraphImpl<AxonsActivation>();
+
+    for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath : this.getAxonsGraph().getParallelPaths()) {
+
+      DirectedPath<AxonsActivation> axonsActivationPath = new DirectedPathImpl<AxonsActivation>();
+
+      for (Axons<?, ?, ?> axons : parallelAxonsPath.getEdges()) {
+
+        AxonsActivation axonsActivation =
+            axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0));
+
+        axonsActivationPath.addEdge(axonsActivation);
+        axonsOutputActivation = axonsActivation.getOutput();
+        inputNeuronsActivation = axonsOutputActivation;
+       
+      }
+      if (totalAxonsOutputMatrix == null) {
+        totalAxonsOutputMatrix = inputNeuronsActivation.getActivations();
+      } else {
+        
+        Matrix axonsPathOutputActivationMatrix = axonsOutputActivation.getActivations();
+        
+        if (axonsPathOutputActivationMatrix.getRows() != totalAxonsOutputMatrix.getRows()) {
+          throw new IllegalStateException(
+              "Final axons activation in each parallel path must be the "
+              + "same dimensions");
+        }
+        if (axonsPathOutputActivationMatrix.getColumns() 
+            != totalAxonsOutputMatrix.getColumns()) {
+          throw new IllegalStateException(
+              "Final axons activation in each parallel path must be the " + "same dimensions");
+        }
+        
+        totalAxonsOutputMatrix =
+            totalAxonsOutputMatrix.add(axonsPathOutputActivationMatrix);
+      }
+      axonsActivationGraph.addParallelPath(axonsActivationPath);
+    }
     
-    DifferentiableActivationFunctionActivation activationFunctionActivation = 
+    DifferentiableActivationFunctionActivation activationFunctionActivation =
         activationFunction.activate(axonsOutputActivation, synapsesContext);
-    
+
     NeuronsActivation outputNeuronsActivation = activationFunctionActivation.getOutput();
-    
-    return new DirectedSynapsesActivationImpl(this, 
-        inputNeuronsActivation, axonsActivation,activationFunctionActivation,
-        outputNeuronsActivation);
-  
+
+    return new DirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivationGraph,
+        activationFunctionActivation, outputNeuronsActivation);
+
   }
 
   @Override
   public L getLeftNeurons() {
-    return axons.getLeftNeurons();
+    return primaryAxons.getLeftNeurons();
   }
 
   @Override
   public R getRightNeurons() {
-    return axons.getRightNeurons();
+    return primaryAxons.getRightNeurons();
   }
 }

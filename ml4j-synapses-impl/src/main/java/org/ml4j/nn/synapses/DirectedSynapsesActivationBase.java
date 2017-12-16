@@ -18,8 +18,11 @@ package org.ml4j.nn.synapses;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.graph.DirectedDipoleGraph;
+import org.ml4j.nn.graph.DirectedPath;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +38,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
       LoggerFactory.getLogger(DirectedSynapsesActivationBase.class);
   
   protected NeuronsActivation inputActivation;
-  protected AxonsActivation axonsActivation;
+  protected DirectedDipoleGraph<AxonsActivation> axonsActivationGraph;
   protected DifferentiableActivationFunctionActivation activationFunctionActivation;
   protected NeuronsActivation outputActivation;
   protected DirectedSynapses<?, ?> synapses;
@@ -46,20 +49,20 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
    * @param synapses The DirectedSynapses
    * @param inputActivation The input NeuronsActivation of the DirectedSynapses
    *        following a forward propagation
-   * @param axonsActivation The axons NeuronsActivation of the DirectedSynapses
+   * @param axonsActivationGraph The axons NeuronsActivation graph of the DirectedSynapses
    *        following a forward propagation    
    * @param outputActivation The output NeuronsActivation of the DirectedSynapses
    *        following a forward propagation.
    */
   public DirectedSynapsesActivationBase(DirectedSynapses<?, ?> synapses, 
       NeuronsActivation inputActivation, 
-      AxonsActivation axonsActivation, 
+      DirectedDipoleGraph<AxonsActivation> axonsActivationGraph, 
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
     this.inputActivation = inputActivation;
     this.outputActivation = outputActivation;
     this.synapses = synapses;
-    this.axonsActivation = axonsActivation;
+    this.axonsActivationGraph = axonsActivationGraph;
     this.activationFunctionActivation = activationFunctionActivation;
   }
   
@@ -83,37 +86,51 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
   @Override
   public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
   
-    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
-    
-    if (axonsContext.getRegularisationLambda() != 0 && synapses.getAxons() != null) {
+    double totalRegularisationCost = 0d;
+    for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath  : 
+          synapses.getAxonsGraph().getParallelPaths()) {
+        
+      int axonsIndex = 0;
+      for (Axons<?, ?, ?> axons : parallelAxonsPath.getEdges()) {
+        AxonsContext axonsContext = synapsesContext.getAxonsContext(axonsIndex);
 
-      LOGGER.debug("Calculating total regularisation cost");
+        if (axonsContext.getRegularisationLambda() != 0) {
+
+          LOGGER.debug("Calculating total regularisation cost");
+          
+          Matrix weightsWithBiases = axons.getDetachedConnectionWeights();
+
+          int[] rows = new int[weightsWithBiases.getRows()
+              - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
+          int[] cols = new int[weightsWithBiases.getColumns()
+              - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)];
+          for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
+            cols[j - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
+          }
+          for (int j = 1; j < weightsWithBiases.getRows(); j++) {
+            rows[j - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
+          }
+
+          Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
+
+          double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
+          totalRegularisationCost = 
+              totalRegularisationCost 
+              + ((axonsContext.getRegularisationLambda()) * regularisationMatrix) / 2;
+        }
+        
+        
+        axonsIndex++;
+      }
       
-      Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
-
-      int[] rows = new int[weightsWithBiases.getRows()
-          - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
-      int[] cols = new int[weightsWithBiases.getColumns()
-          - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)];
-      for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
-        cols[j - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
-      }
-      for (int j = 1; j < weightsWithBiases.getRows(); j++) {
-        rows[j - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
-      }
-
-      Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
-
-      double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
-      return ((axonsContext.getRegularisationLambda()) * regularisationMatrix) / 2;
-    } else {
-      return 0;
+      
     }
+    return totalRegularisationCost;
   }
 
   @Override
-  public AxonsActivation getAxonsActivation() {
-    return axonsActivation;
+  public DirectedDipoleGraph<AxonsActivation> getAxonsActivationGraph() {
+    return axonsActivationGraph;
   }
 
   @Override

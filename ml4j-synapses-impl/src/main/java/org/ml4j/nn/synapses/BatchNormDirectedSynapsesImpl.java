@@ -3,6 +3,8 @@ package org.ml4j.nn.synapses;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
+import org.ml4j.nn.graph.DirectedDipoleGraph;
+import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.neurons.Neurons;
 
 /**
@@ -65,11 +67,16 @@ public class BatchNormDirectedSynapsesImpl
 
   @Override
   public DifferentiableActivationFunction getActivationFunction() {
-    return null;
+    return activationFunction;
   }
 
   @Override
-  public Axons<?, ?, ?> getAxons() {
+  public Axons<?, ?, ?> getPrimaryAxons() {
     return scaleAndShiftAxons;
+  }
+
+  @Override
+  public DirectedDipoleGraph<Axons<?, ?, ?>> getAxonsGraph() {
+    return new DirectedDipoleGraphImpl<Axons<?, ? ,?>>(scaleAndShiftAxons);
   }
 }

@@ -29,17 +29,19 @@ public class AxonsActivationImpl implements AxonsActivation {
   private Matrix inputDropoutMask;
   private NeuronsActivation outputActivations;
   private NeuronsActivationWithPossibleBiasUnit postDropoutInput;
+  private Axons<?, ?, ?> axons;
   
   /**
    * @param inputDropoutMask Any input dropout mask
    * @param postDropoutInput The post dropout input
    * @param outputActivations The output.
    */
-  public AxonsActivationImpl(Matrix inputDropoutMask, 
+  public AxonsActivationImpl(Axons<?, ?, ?> axons, Matrix inputDropoutMask, 
       NeuronsActivationWithPossibleBiasUnit postDropoutInput, NeuronsActivation outputActivations) {
     this.outputActivations = outputActivations;
     this.inputDropoutMask = inputDropoutMask;
     this.postDropoutInput = postDropoutInput;
+    this.axons = axons;
   }
   
   @Override
@@ -55,5 +57,10 @@ public class AxonsActivationImpl implements AxonsActivation {
   @Override
   public NeuronsActivationWithPossibleBiasUnit getPostDropoutInputWithPossibleBias() {
     return postDropoutInput;
+  }
+
+  @Override
+  public Axons<?, ?, ?> getAxons() {
+    return axons;
   }
 }

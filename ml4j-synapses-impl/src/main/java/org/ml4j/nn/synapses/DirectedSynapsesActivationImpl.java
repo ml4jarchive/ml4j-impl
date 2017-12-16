@@ -20,9 +20,15 @@ import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
+import org.ml4j.nn.graph.DirectedDipoleGraph;
+import org.ml4j.nn.graph.DirectedPath;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Default implementation of DirectedSynapsesActivation.
@@ -43,7 +49,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
    * @param outputActivation The output activation.
    */
   public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses,
-      NeuronsActivation inputActivation, AxonsActivation axonsActivation,
+      NeuronsActivation inputActivation, DirectedDipoleGraph<AxonsActivation> axonsActivation,
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
     super(synapses, inputActivation, axonsActivation, activationFunctionActivation,
@@ -78,17 +84,29 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
   }
   
   private void validateAxonsAndAxonsActivation() {
-    
-    Axons<?, ?, ?> axons = synapses.getAxons();
-    if (axons.getRightNeurons().hasBiasUnit()) {
+
+    if (synapses.getRightNeurons().hasBiasUnit()) {
       throw new IllegalStateException(
           "Backpropagation through axons with a rhs bias unit not supported");
     }
 
-    if (axonsActivation == null) {
+    if (axonsActivationGraph == null || axonsActivationGraph.getParallelPaths().isEmpty()) {
       throw new IllegalStateException(
-          "The synapses activation is expected to contain an AxonsActivation");
+          "The synapses activation is expected to contain an AxonsActivation path");
+    } else {
+
+      boolean allEmpty = true;
+      for (DirectedPath<AxonsActivation> parallelPath : axonsActivationGraph.getParallelPaths()) {
+        if (parallelPath != null && !parallelPath.getEdges().isEmpty()) {
+          allEmpty = false;
+        }
+      }
+      if (allEmpty) {
+        throw new IllegalStateException(
+            "The synapses activation is expected to contain an AxonsActivation");
+      }
     }
+      
   }
 
   private DirectedSynapsesGradient backPropagateThroughAxons(NeuronsActivation dz,
@@ -96,21 +114,55 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
     LOGGER.debug("Pushing data right to left through axons...");
 
-    Axons<?, ?, ?> axons = synapses.getAxons();
+    List<Matrix> totalTrainableAxonsGradients = new ArrayList<>();
+
+    NeuronsActivation inputGradient = null;
     
-    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
+    for (DirectedPath<AxonsActivation> parallelAxonsPath : axonsActivationGraph
+        .getParallelPaths()) {
 
-    // Will contain bias unit if Axons have left bias unit
-    NeuronsActivation inputGradient =
-        axons.pushRightToLeft(dz, axonsActivation, axonsContext).getOutput();
+      NeuronsActivation gradientToBackPropagate = dz;
 
+      int axonsIndex = parallelAxonsPath.getEdges().size() - 1;
+
+      List<AxonsActivation> reversedAxonsActivations = new ArrayList<AxonsActivation>();
+      reversedAxonsActivations.addAll(parallelAxonsPath.getEdges());
+      Collections.reverse(reversedAxonsActivations);
+
+      for (AxonsActivation axonsActivation : reversedAxonsActivations) {
+
+        AxonsContext axonsContext = synapsesContext.getAxonsContext(axonsIndex);
+
+        // Will contain bias unit if Axons have left bias unit
+        inputGradient = axonsActivation.getAxons()
+            .pushRightToLeft(gradientToBackPropagate, axonsActivation, axonsContext).getOutput();
+
+        Matrix totalTrainableAxonsGradient =
+            getTrainableAxonsGradient(axonsActivation, axonsContext, dz);
+        if (totalTrainableAxonsGradient != null) {
+          totalTrainableAxonsGradients.add(totalTrainableAxonsGradient);
+        }
+
+        gradientToBackPropagate = inputGradient;
+
+        axonsIndex--;
+      }
+    }
+    
+    return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradients);
+  }
+  
+  private Matrix getTrainableAxonsGradient(AxonsActivation axonsActivation, 
+      AxonsContext axonsContext, 
+      NeuronsActivation gradientToBackPropagate) {
+    Axons<?, ?, ?> axons = axonsActivation.getAxons();
     Matrix totalTrainableAxonsGradient = null;
 
     if (axons.isTrainable(axonsContext)) {
 
       LOGGER.debug("Calculating Axons Gradients");
 
-      totalTrainableAxonsGradient = dz.getActivations()
+      totalTrainableAxonsGradient = gradientToBackPropagate.getActivations()
           .mmul(axonsActivation.getPostDropoutInputWithPossibleBias().getActivationsWithBias());
 
       if (axonsContext.getRegularisationLambda() != 0) {
@@ -136,7 +188,6 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
         }
       }
     }
-
-    return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradient);
+    return totalTrainableAxonsGradient;
   }
 }

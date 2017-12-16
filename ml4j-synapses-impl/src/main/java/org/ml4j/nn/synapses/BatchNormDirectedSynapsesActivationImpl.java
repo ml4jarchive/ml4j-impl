@@ -7,12 +7,16 @@ import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
+import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationWithPossibleBiasUnit;
+
+import java.util.Arrays;
 
 public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesActivationBase {
   
   private ScaleAndShiftAxons scaleAndShiftAxons;
+  private AxonsActivation axonsActivation;
   
   /**
    * @param synapses The synapses.
@@ -27,9 +31,11 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
       NeuronsActivation inputActivation, AxonsActivation axonsActivation,
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
-    super(synapses, inputActivation, axonsActivation, 
+    super(synapses, inputActivation, 
+        new DirectedDipoleGraphImpl<AxonsActivation>(axonsActivation), 
         activationFunctionActivation, outputActivation);
     this.scaleAndShiftAxons = scaleAndShiftAxons;
+    this.axonsActivation = axonsActivation;
   }
 
   @Override
@@ -37,7 +43,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
       DirectedSynapsesContext context) {
  
     NeuronsActivationWithPossibleBiasUnit xhatn1 =
-        getAxonsActivation().getPostDropoutInputWithPossibleBias()
+        axonsActivation.getPostDropoutInputWithPossibleBias()
         .withBiasUnit(false, context);
     
     NeuronsActivation xhatn = new NeuronsActivation(xhatn1.getActivations(), 
@@ -125,7 +131,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(0, dgamma);
     axonsGradient.putRow(1, dbeta);
 
-    return new DirectedSynapsesGradientImpl(dxn, axonsGradient.transpose());
+    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(axonsGradient.transpose()));
   }
   
   
@@ -140,7 +146,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     }
 
     NeuronsActivationWithPossibleBiasUnit xhatn1 =
-        getAxonsActivation().getPostDropoutInputWithPossibleBias()
+        axonsActivation.getPostDropoutInputWithPossibleBias()
         .withBiasUnit(false, context);
     
     NeuronsActivation xhatn = new NeuronsActivation(xhatn1.getActivations(), 
@@ -237,7 +243,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(1, dbeta);
     
 
-    return new DirectedSynapsesGradientImpl(dxn, axonsGradient.transpose());
+    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(axonsGradient.transpose()));
   }
   
   /**

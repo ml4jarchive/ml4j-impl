@@ -29,6 +29,7 @@ import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.DeltaRuleCostFunctionGradientImpl;
 import org.ml4j.nn.costfunctions.MultiClassCrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.SumSquaredErrorCostFunction;
+import org.ml4j.nn.graph.DirectedPath;
 import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.DirectedLayerGradient;
@@ -163,11 +164,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
     for (DirectedLayerGradient gradient : reversed) {
       for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
-        
-        Matrix totalTrainableAxonsGradient = synapsesGradient.getTotalTrainableAxonsGradient();
-        
-        if (totalTrainableAxonsGradient != null) {
-          totalTrainableAxonsGradients.add(totalTrainableAxonsGradient);
+
+        List<Matrix> synapsesTotalTrainableAxonsGradients =
+            synapsesGradient.getTotalTrainableAxonsGradients();
+
+        if (synapsesTotalTrainableAxonsGradients != null
+            && !synapsesTotalTrainableAxonsGradients.isEmpty()) {
+          totalTrainableAxonsGradients.addAll(synapsesTotalTrainableAxonsGradients);
         }
       }
     }
@@ -201,11 +204,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       for (DirectedSynapses<?, ?> synapses : layer.getSynapses()) {
         DirectedSynapsesContext synapsesContext = 
             layerContext.getSynapsesContext(synapsesIndex);
-        Axons<?, ? , ?> axons = synapses.getAxons();
-        if (axons != null && axons.isTrainable(synapsesContext.getAxonsContext(0))) {
-          TrainableAxons<?, ?, ?> trainableAxons = 
-              (TrainableAxons<?, ?, ?>) axons;
-          trainableAxonsList.add(trainableAxons);
+        for (DirectedPath<Axons<?, ?, ?>> axonsPath : synapses.getAxonsGraph().getParallelPaths()) {
+          for (Axons<?, ?, ?> axons : axonsPath.getEdges()) {
+            if (axons != null && axons.isTrainable(synapsesContext.getAxonsContext(0))) {
+              TrainableAxons<?, ?, ?> trainableAxons = (TrainableAxons<?, ?, ?>) axons;
+              trainableAxonsList.add(trainableAxons);
+            }
+          }
         }
         synapsesIndex++;
       }
