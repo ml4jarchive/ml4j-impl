@@ -87,12 +87,13 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
   public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
   
     double totalRegularisationCost = 0d;
+    int pathIndex = 0;
     for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath  : 
           synapses.getAxonsGraph().getParallelPaths()) {
         
       int axonsIndex = 0;
       for (Axons<?, ?, ?> axons : parallelAxonsPath.getEdges()) {
-        AxonsContext axonsContext = synapsesContext.getAxonsContext(axonsIndex);
+        AxonsContext axonsContext = synapsesContext.getAxonsContext(pathIndex, axonsIndex);
 
         if (axonsContext.getRegularisationLambda() != 0) {
 
@@ -122,7 +123,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
         
         axonsIndex++;
       }
-      
+      pathIndex++;
       
     }
     return totalRegularisationCost;

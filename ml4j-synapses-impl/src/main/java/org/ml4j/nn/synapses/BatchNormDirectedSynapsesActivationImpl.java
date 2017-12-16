@@ -139,7 +139,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
   public DirectedSynapsesGradient backPropagate(CostFunctionGradient outerGradient,
       DirectedSynapsesContext context) {
  
-    AxonsContext axonsContext = context.getAxonsContext(0);
+    AxonsContext axonsContext = context.getAxonsContext(0, 0);
     if (axonsContext.getLeftHandInputDropoutKeepProbability() != 1d) {
       throw new UnsupportedOperationException(
           "Reguarlisation of batch norm synapses not yet supported");
@@ -309,7 +309,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
 
   @Override
   public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
-    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
+    AxonsContext axonsContext = synapsesContext.getAxonsContext(0, 0);
     if (axonsContext.getLeftHandInputDropoutKeepProbability() != 1d) {
       throw new UnsupportedOperationException(
           "Reguarlisation of batch norm synapses not yet supported");

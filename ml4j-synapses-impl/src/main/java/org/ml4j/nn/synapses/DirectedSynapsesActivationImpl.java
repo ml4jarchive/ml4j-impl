@@ -117,7 +117,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
     List<Matrix> totalTrainableAxonsGradients = new ArrayList<>();
 
     NeuronsActivation inputGradient = null;
-    
+    int pathIndex = 0;
     for (DirectedPath<AxonsActivation> parallelAxonsPath : axonsActivationGraph
         .getParallelPaths()) {
 
@@ -128,10 +128,10 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
       List<AxonsActivation> reversedAxonsActivations = new ArrayList<AxonsActivation>();
       reversedAxonsActivations.addAll(parallelAxonsPath.getEdges());
       Collections.reverse(reversedAxonsActivations);
-
+      
       for (AxonsActivation axonsActivation : reversedAxonsActivations) {
 
-        AxonsContext axonsContext = synapsesContext.getAxonsContext(axonsIndex);
+        AxonsContext axonsContext = synapsesContext.getAxonsContext(pathIndex, axonsIndex);
 
         // Will contain bias unit if Axons have left bias unit
         inputGradient = axonsActivation.getAxons()
@@ -145,8 +145,9 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
         gradientToBackPropagate = inputGradient;
 
-        axonsIndex--;
+        axonsIndex++;
       }
+      pathIndex--;
     }
     
     return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradients);

@@ -131,19 +131,24 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     DirectedDipoleGraph<AxonsActivation> axonsActivationGraph =
         new DirectedDipoleGraphImpl<AxonsActivation>();
 
+    int pathIndex = 0;
+    
     for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath : this.getAxonsGraph().getParallelPaths()) {
 
       DirectedPath<AxonsActivation> axonsActivationPath = new DirectedPathImpl<AxonsActivation>();
 
+      int axonsIndex = 0;
+      
       for (Axons<?, ?, ?> axons : parallelAxonsPath.getEdges()) {
 
         AxonsActivation axonsActivation =
-            axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0));
+            axons.pushLeftToRight(inputNeuronsActivation, null, 
+                synapsesContext.getAxonsContext(pathIndex, axonsIndex));
 
         axonsActivationPath.addEdge(axonsActivation);
         axonsOutputActivation = axonsActivation.getOutput();
         inputNeuronsActivation = axonsOutputActivation;
-       
+        axonsIndex++;
       }
       if (totalAxonsOutputMatrix == null) {
         totalAxonsOutputMatrix = inputNeuronsActivation.getActivations();
@@ -166,6 +171,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
             totalAxonsOutputMatrix.add(axonsPathOutputActivationMatrix);
       }
       axonsActivationGraph.addParallelPath(axonsActivationPath);
+      pathIndex++;
     }
     
     DifferentiableActivationFunctionActivation activationFunctionActivation =
