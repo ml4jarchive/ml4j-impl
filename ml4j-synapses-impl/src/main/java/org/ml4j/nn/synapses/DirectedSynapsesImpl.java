@@ -174,8 +174,11 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
       pathIndex++;
     }
     
+    NeuronsActivation totalAxonsOutputActivation = new NeuronsActivation(totalAxonsOutputMatrix, 
+        axonsOutputActivation.getFeatureOrientation());
+    
     DifferentiableActivationFunctionActivation activationFunctionActivation =
-        activationFunction.activate(axonsOutputActivation, synapsesContext);
+        activationFunction.activate(totalAxonsOutputActivation, synapsesContext);
 
     NeuronsActivation outputNeuronsActivation = activationFunctionActivation.getOutput();
 
