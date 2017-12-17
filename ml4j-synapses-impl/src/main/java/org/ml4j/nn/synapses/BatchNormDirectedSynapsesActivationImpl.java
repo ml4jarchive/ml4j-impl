@@ -5,6 +5,7 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
@@ -28,7 +29,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
    */
   public BatchNormDirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses, 
       ScaleAndShiftAxons scaleAndShiftAxons, 
-      NeuronsActivation inputActivation, AxonsActivation axonsActivation,
+      DirectedSynapsesInput inputActivation, AxonsActivation axonsActivation,
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
     super(synapses, inputActivation, 
@@ -99,7 +100,12 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
 
     int num = xhat.getRows();
 
-    NeuronsActivation input = getInput();
+    if (getInput().getResidualInput() != null) {
+      throw new IllegalArgumentException(
+          "Residual " + "input not supported for batch norm synapses");
+    }
+    
+    NeuronsActivation input = getInput().getInput();
 
     Matrix meanMatrix = getMeanMatrix(input, context.getMatrixFactory());
 
@@ -131,7 +137,8 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(0, dgamma);
     axonsGradient.putRow(1, dbeta);
 
-    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(axonsGradient.transpose()));
+    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(
+        new AxonsGradient(scaleAndShiftAxons, axonsGradient.transpose())), null);
   }
   
   
@@ -207,7 +214,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
 
     int num = xhat.getRows();
 
-    NeuronsActivation input = getInput();
+    NeuronsActivation input = getInput().getInput();
 
     Matrix meanMatrix = getMeanMatrix(input, context.getMatrixFactory());
 
@@ -243,7 +250,8 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(1, dbeta);
     
 
-    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(axonsGradient.transpose()));
+    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(
+        new AxonsGradient(scaleAndShiftAxons, axonsGradient.transpose())), null);
   }
   
   /**

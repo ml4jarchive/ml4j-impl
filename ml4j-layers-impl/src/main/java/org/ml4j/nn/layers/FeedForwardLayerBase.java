@@ -163,7 +163,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     List<DirectedSynapsesActivation> synapseActivations = new ArrayList<>();
     int synapsesIndex = 0;
     for (DirectedSynapses<?, ?> synapses : getSynapses()) {
-      DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation);
+      DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation, null);
       DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
           synapses.forwardPropagate(input, 
               directedLayerContext.getSynapsesContext(synapsesIndex++));

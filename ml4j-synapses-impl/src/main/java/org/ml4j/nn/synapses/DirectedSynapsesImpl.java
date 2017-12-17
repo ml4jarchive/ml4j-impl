@@ -96,7 +96,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
         activationFunction);
   }
   
-  private DirectedDipoleGraph<Axons<?, ?, ?>> cloneAxonsGraph() {
+  protected DirectedDipoleGraph<Axons<?, ?, ?>> cloneAxonsGraph() {
 
     DirectedDipoleGraph<Axons<?, ?, ?>> dup = new DirectedDipoleGraphImpl<Axons<?, ?, ?>>();
     for (DirectedPath<Axons<?, ?, ?>> directedPath : axonsGraph.getParallelPaths()) {
@@ -122,7 +122,6 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     LOGGER.debug("Forward propagating through DirectedSynapses");
 
-    NeuronsActivation inputNeuronsActivation = input.getInput();
 
     Matrix totalAxonsOutputMatrix = null;
     
@@ -133,8 +132,12 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     int pathIndex = 0;
     
-    for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath : this.getAxonsGraph().getParallelPaths()) {
+    NeuronsActivation inputNeuronsActivation = null;
+    
+    for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath : getAxonsGraph().getParallelPaths()) {
 
+      inputNeuronsActivation = getInputNeuronsActivationForPathIndex(input, pathIndex);
+      
       DirectedPath<AxonsActivation> axonsActivationPath = new DirectedPathImpl<AxonsActivation>();
 
       int axonsIndex = 0;
@@ -182,9 +185,18 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     NeuronsActivation outputNeuronsActivation = activationFunctionActivation.getOutput();
 
-    return new DirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivationGraph,
+    return new DirectedSynapsesActivationImpl(this, input, axonsActivationGraph,
         activationFunctionActivation, outputNeuronsActivation);
 
+  }
+  
+  protected NeuronsActivation getInputNeuronsActivationForPathIndex(
+      DirectedSynapsesInput synapsesInput, int pathIndex) {
+    if (pathIndex != 0) {
+      throw new IllegalArgumentException("Path index:" + pathIndex + " not valid for "
+          + "DirectedSynapsesImpl - custom classes can override this behaviour");
+    }
+    return synapsesInput.getInput();
   }
 
   @Override

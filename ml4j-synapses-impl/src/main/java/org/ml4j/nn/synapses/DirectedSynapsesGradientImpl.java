@@ -16,7 +16,7 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.Matrix;
+import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 import java.util.ArrayList;
@@ -29,25 +29,34 @@ import java.util.List;
  */
 public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
 
-  private List<Matrix> axonsGradients;
+  private List<AxonsGradient> axonsGradients;
   private NeuronsActivation output;
+  private NeuronsActivation residualOutput;
 
-  public DirectedSynapsesGradientImpl(NeuronsActivation output, List<Matrix> axonsGradients) {
+  /**
+   * @param output The output gradient
+   * @param axonsGradients The axons gradients
+   * @param residualOutput The residual output gradient.
+   */
+  public DirectedSynapsesGradientImpl(NeuronsActivation output, List<AxonsGradient> axonsGradients, 
+      NeuronsActivation residualOutput) {
     this.axonsGradients = axonsGradients;
     this.output = output;
+    this.residualOutput = residualOutput;
   }
 
   @Override
-  public List<Matrix> getTotalTrainableAxonsGradients() {
+  public List<AxonsGradient> getTotalTrainableAxonsGradients() {
     return axonsGradients;
   }
   
   @Override
-  public List<Matrix> getAverageTrainableAxonsGradients() {
+  public List<AxonsGradient> getAverageTrainableAxonsGradients() {
     
-    List<Matrix> averageGradients = new ArrayList<>();
-    for (Matrix axonsGradient : axonsGradients) {
-      averageGradients.add(axonsGradient.div(axonsGradient.getColumns()));
+    List<AxonsGradient> averageGradients = new ArrayList<>();
+    for (AxonsGradient axonsGradient : axonsGradients) {
+      averageGradients.add(new AxonsGradient(axonsGradient.getAxons(), 
+          axonsGradient.getGradient().div(axonsGradient.getGradient().getColumns())));
     }
     return averageGradients;
   }
@@ -60,5 +69,10 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
   @Override
   public String toString() {
     return "DirectedSynapsesGradientImpl";
+  }
+
+  @Override
+  public NeuronsActivation getResidualOutput() {
+    return residualOutput;
   }
 }

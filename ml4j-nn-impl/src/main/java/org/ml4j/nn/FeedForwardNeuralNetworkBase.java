@@ -20,7 +20,7 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
 import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
-import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CostFunction;
@@ -29,14 +29,11 @@ import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.DeltaRuleCostFunctionGradientImpl;
 import org.ml4j.nn.costfunctions.MultiClassCrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.SumSquaredErrorCostFunction;
-import org.ml4j.nn.graph.DirectedPath;
 import org.ml4j.nn.layers.DirectedLayerActivation;
-import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.synapses.DirectedSynapses;
-import org.ml4j.nn.synapses.DirectedSynapsesContext;
 import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,7 +154,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
     // Obtain the gradients of each set of Axons we wish to train - for this example it is
     // all the Axons
-    List<Matrix> totalTrainableAxonsGradients = new ArrayList<>();
+    List<AxonsGradient> totalTrainableAxonsGradients = new ArrayList<>();
     List<DirectedLayerGradient> reversed = new ArrayList<>();
     reversed.addAll(backPropagation.getDirectedLayerGradients());
     Collections.reverse(reversed);
@@ -165,7 +162,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     for (DirectedLayerGradient gradient : reversed) {
       for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
 
-        List<Matrix> synapsesTotalTrainableAxonsGradients =
+        List<AxonsGradient> synapsesTotalTrainableAxonsGradients =
             synapsesGradient.getTotalTrainableAxonsGradients();
 
         if (synapsesTotalTrainableAxonsGradients != null
@@ -193,51 +190,24 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
           totalTrainableAxonsGradients, numberOfTrainingExamples);
     
   }
-  
-  private List<TrainableAxons<?, ?, ?>> getTrainableAxonsList(C context) {
-    
-    List<TrainableAxons<?, ?, ?>> trainableAxonsList = new ArrayList<>();
-    for (int layerIndex = 0; layerIndex < getNumberOfLayers(); layerIndex++) {
-      DirectedLayerContext layerContext = context.getLayerContext(layerIndex);
-      FeedForwardLayer<?, ?> layer = getLayer(layerIndex);
-      int synapsesIndex = 0;
-      for (DirectedSynapses<?, ?> synapses : layer.getSynapses()) {
-        DirectedSynapsesContext synapsesContext = 
-            layerContext.getSynapsesContext(synapsesIndex);
-        int pathIndex = 0;
-        for (DirectedPath<Axons<?, ?, ?>> axonsPath : synapses.getAxonsGraph().getParallelPaths()) {
-          int axonsIndex = 0;
-          for (Axons<?, ?, ?> axons : axonsPath.getEdges()) {
-            if (axons != null && axons.isTrainable(
-                synapsesContext.getAxonsContext(pathIndex, axonsIndex))) {
-              TrainableAxons<?, ?, ?> trainableAxons = (TrainableAxons<?, ?, ?>) axons;
-              trainableAxonsList.add(trainableAxons);
-            }
-            axonsIndex++;
-          }
-          pathIndex++;
-        }
-        synapsesIndex++;
-      }
-    }
-    return trainableAxonsList;
-    
-  }
-  
-  private void adjustConnectionWeights(C trainingContext, List<Matrix> trainableAxonsGradients) {
+ 
+  private void adjustConnectionWeights(C trainingContext,
+      List<AxonsGradient> trainableAxonsGradients) {
     double learningRate = trainingContext.getTrainingLearningRate();
-    
-    List<TrainableAxons<?, ?, ?>> trainableAxonsList = getTrainableAxonsList(trainingContext);
-    
+
+    // List<TrainableAxons<?, ?, ?>> trainableAxonsList = getTrainableAxonsList(trainingContext);
+
     for (int axonsIndex = 0; axonsIndex < trainableAxonsGradients.size(); axonsIndex++) {
-      TrainableAxons<?, ?, ?> trainableAxons = trainableAxonsList.get(axonsIndex);
+      AxonsGradient axonsGrad1 = trainableAxonsGradients.get(axonsIndex);
+
+      TrainableAxons<?, ?, ?> trainableAxons = axonsGrad1.getAxons();
       // Transpose the axon gradients into matrices that correspond to the orientation of the
       // connection weights ( COLUMNS_SPAN_FEATURE_SET )
-      Matrix axonsGrad = trainableAxonsGradients.get(axonsIndex).transpose();
+      Matrix axonsGrad = axonsGrad1.getGradient().transpose();
 
       // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
       // gradient matrices
-      trainableAxons.adjustConnectionWeights(axonsGrad.mul(learningRate), 
+      trainableAxons.adjustConnectionWeights(axonsGrad.mul(learningRate),
           ConnectionWeightsAdjustmentDirection.SUBTRACTION);
     }
   }
