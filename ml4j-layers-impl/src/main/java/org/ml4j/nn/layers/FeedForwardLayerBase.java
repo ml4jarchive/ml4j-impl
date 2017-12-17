@@ -166,7 +166,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
       DirectedSynapsesInput input = new DirectedSynapsesInputImpl(inFlightNeuronsActivation);
       DirectedSynapsesActivation inFlightNeuronsSynapseActivation = 
           synapses.forwardPropagate(input, 
-              directedLayerContext.createSynapsesContext(synapsesIndex++));
+              directedLayerContext.getSynapsesContext(synapsesIndex++));
       synapseActivations.add(inFlightNeuronsSynapseActivation);
       inFlightNeuronsActivation = inFlightNeuronsSynapseActivation.getOutput();
     }

@@ -34,22 +34,22 @@ public class AxonsContextImpl implements AxonsContext {
    * The MatrixFactory we configure for this context.
    */
   private MatrixFactory matrixFactory;
-  
-  private double leftHandDropoutKeepProbability;
-  
+    
   private boolean withFreezeOut;
+  
+  private double regularisationLambda;
+  
+  private double leftHandInputDropoutKeepProbability;
   
   /**
    * Construct a new AxonsContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
-   * @param leftHandDropoutKeepProbability The dropout keep-probability on the left hand side of
-   *        these Axons.
+   * @param withFreezeOut Whether to freeze out these Axons.
    */
-  public AxonsContextImpl(MatrixFactory matrixFactory, 
-      double leftHandDropoutKeepProbability, boolean withFreezeOut) {
+  public AxonsContextImpl(MatrixFactory matrixFactory, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
-    this.leftHandDropoutKeepProbability = leftHandDropoutKeepProbability;
+    this.leftHandInputDropoutKeepProbability = 1d;
     this.withFreezeOut = withFreezeOut;
   }
 
@@ -60,11 +60,31 @@ public class AxonsContextImpl implements AxonsContext {
 
   @Override
   public double getLeftHandInputDropoutKeepProbability() {
-    return leftHandDropoutKeepProbability;
+    return leftHandInputDropoutKeepProbability;
   }
 
   @Override
   public boolean isWithFreezeOut() {
     return withFreezeOut;
+  }
+
+  @Override
+  public void setWithFreezeOut(boolean withFreezeOut) {
+    this.withFreezeOut = withFreezeOut;
+  }
+
+  @Override
+  public double getRegularisationLambda() {
+    return regularisationLambda;
+  }
+
+  @Override
+  public void setLeftHandInputDropoutKeepProbability(double leftHandInputDropoutKeepProbability) {
+    this.leftHandInputDropoutKeepProbability = leftHandInputDropoutKeepProbability;
+  }
+
+  @Override
+  public void setRegularisationLambda(double regularisationLambda) {
+    this.regularisationLambda = regularisationLambda;
   }
 }
