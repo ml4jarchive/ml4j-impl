@@ -17,7 +17,6 @@ package org.ml4j.nn.activationfunctions;
 import org.ml4j.Matrix;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
-import org.ml4j.nn.util.NeuralNetUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,17 +49,25 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
 
   @Override
   public NeuronsActivation activationGradient(DifferentiableActivationFunctionActivation 
-      outputActivation,
+      activationFunctionActivation,
       NeuronsActivationContext context) {
     
     LOGGER.debug("Performing sigmoid gradient of NeuronsActivation");
-   
-    Matrix gradient = NeuralNetUtils.sigmoidGradient(
-        outputActivation.getInput().getActivations());
   
+    Matrix activationInput = activationFunctionActivation.getInput().getActivations();
+    Matrix sigmoidOfActivationInput = null;
+    if (activationFunctionActivation instanceof SigmoidActivationFunction) {
+      sigmoidOfActivationInput = activationFunctionActivation.getOutput().getActivations();
+    } else {
+      sigmoidOfActivationInput = activationInput.sigmoid();
+    }
+ 
+    Matrix gradientAtActivationInput = 
+        sigmoidOfActivationInput.subi(sigmoidOfActivationInput.mul(sigmoidOfActivationInput));
+   
     return new NeuronsActivation(
-        gradient, 
-        outputActivation.getInput().getFeatureOrientation());
+        gradientAtActivationInput, 
+        activationFunctionActivation.getInput().getFeatureOrientation());
 
   }
 }
