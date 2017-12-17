@@ -68,7 +68,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
 
     NeuronsActivation input = new NeuronsActivation(inputMatrix,
         NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
-    AxonsContext context = new AxonsContextImpl(matrixFactory, 1, false);
+    AxonsContext context = new AxonsContextImpl(matrixFactory, false);
     AxonsActivation axonsActivation = axons.pushLeftToRight(input, null, context);
 
     Matrix outputMatrix = axonsActivation.getOutput().getActivations();
@@ -123,7 +123,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
 
     NeuronsActivation input = new NeuronsActivation(inputMatrix,
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
-    AxonsContext context = new AxonsContextImpl(matrixFactory, 1, false);
+    AxonsContext context = new AxonsContextImpl(matrixFactory, false);
     AxonsActivation axonsActivation = axons.pushRightToLeft(input, null, context);
 
     Matrix outputMatrix = axonsActivation.getOutput().getActivations();
