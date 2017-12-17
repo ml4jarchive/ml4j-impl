@@ -200,9 +200,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       int synapsesIndex = 0;
       for (DirectedSynapses<?, ?> synapses : layer.getSynapses()) {
         DirectedSynapsesContext synapsesContext = 
-            layerContext.createSynapsesContext(synapsesIndex);
+            layerContext.getSynapsesContext(synapsesIndex);
         Axons<?, ? , ?> axons = synapses.getAxons();
-        if (axons != null && axons.isTrainable(synapsesContext.createAxonsContext())) {
+        if (axons != null && axons.isTrainable(synapsesContext.getAxonsContext(0))) {
           TrainableAxons<?, ?, ?> trainableAxons = 
               (TrainableAxons<?, ?, ?>) axons;
           trainableAxonsList.add(trainableAxons);

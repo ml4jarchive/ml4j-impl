@@ -83,7 +83,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
     LOGGER.debug("Forward propagating through DirectedSynapses");
     AxonsActivation axonsActivation = 
         axons.pushLeftToRight(inputNeuronsActivation, null, 
-            synapsesContext.createAxonsContext());
+            synapsesContext.getAxonsContext(0));
     
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
     

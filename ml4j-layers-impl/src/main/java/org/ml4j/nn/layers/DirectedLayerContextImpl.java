@@ -21,6 +21,9 @@ import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.synapses.DirectedSynapsesContext;
 import org.ml4j.nn.synapses.DirectedSynapsesContextImpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Simple default implementation of DirectedLayerContext.
  * 
@@ -39,11 +42,10 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
    */
   private MatrixFactory matrixFactory;
   
-  private double layerInputDropoutKeepProbability = 1;
   private int layerIndex;
   
-  private double primaryAxonsRegularisationLamdba = 0;
   private boolean withFreezeOut;
+  private Map<Integer, DirectedSynapsesContext> synapsesContextsBySynapsesIndex;
   
   /**
    * Construct a new DirectedLayerContext.
@@ -54,6 +56,7 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory) {
     this.matrixFactory = matrixFactory;
     this.layerIndex = layerIndex;
+    this.synapsesContextsBySynapsesIndex = new HashMap<>();
   }
  
   @Override
@@ -62,31 +65,19 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   }
 
   @Override
-  public DirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
-    double synapseInputDropoutKeepProbability =
-        synapsesIndex == 0 ? layerInputDropoutKeepProbability : 1d;
-    return new DirectedSynapsesContextImpl(matrixFactory, 
-        synapseInputDropoutKeepProbability, withFreezeOut);
-  }
+  public DirectedSynapsesContext getSynapsesContext(int synapsesIndex) {
 
-  @Override
-  public double getLayerInputDropoutKeepProbability() {
-    return layerInputDropoutKeepProbability;
-  }
+    DirectedSynapsesContext synapsesContext = synapsesContextsBySynapsesIndex.get(synapsesIndex);
+    if (synapsesContext == null) {
+      synapsesContext = new DirectedSynapsesContextImpl(matrixFactory, withFreezeOut);
 
-  @Override
-  public void setInputDropoutKeepProbability(double layerInputDropoutKeepProbability) {
-    this.layerInputDropoutKeepProbability = layerInputDropoutKeepProbability;
-  }
+    }
+    if (synapsesContext.isWithFreezeOut() != withFreezeOut) {
+      synapsesContext.setWithFreezeOut(withFreezeOut);
+      synapsesContextsBySynapsesIndex.put(synapsesIndex, synapsesContext);
+    }
 
-  @Override
-  public double getPrimaryAxonsRegularisationLambda() {
-    return primaryAxonsRegularisationLamdba;
-  }
-
-  @Override
-  public void setPrimaryAxonsRegularisationLambda(double primaryAxonsRegularisationLamdba) {
-    this.primaryAxonsRegularisationLamdba = primaryAxonsRegularisationLamdba;
+    return synapsesContext;
   }
   
   public boolean isWithFreezeOut() {

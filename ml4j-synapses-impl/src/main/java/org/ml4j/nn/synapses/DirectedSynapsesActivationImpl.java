@@ -53,7 +53,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
   @Override
   public DirectedSynapsesGradient backPropagate(DirectedSynapsesGradient da,
-      DirectedSynapsesContext context, double regularisationLambda) {
+      DirectedSynapsesContext context) {
 
     LOGGER.debug("Back propagating through synapses activation....");
 
@@ -61,12 +61,12 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
     
     NeuronsActivation dz = activationFunctionActivation.backPropagate(da, context).getOutput();
 
-    return backPropagateThroughAxons(dz, context.createAxonsContext(), regularisationLambda);
+    return backPropagateThroughAxons(dz, context);
   }
 
   @Override
   public DirectedSynapsesGradient backPropagate(CostFunctionGradient da,
-      DirectedSynapsesContext context, double regularisationLambda) {
+      DirectedSynapsesContext context) {
 
     LOGGER.debug("Back propagating through synapses activation....");
 
@@ -74,7 +74,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
     NeuronsActivation dz = activationFunctionActivation.backPropagate(da, context).getOutput();
 
-    return backPropagateThroughAxons(dz, context.createAxonsContext(), regularisationLambda);
+    return backPropagateThroughAxons(dz, context);
   }
   
   private void validateAxonsAndAxonsActivation() {
@@ -92,11 +92,13 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
   }
 
   private DirectedSynapsesGradient backPropagateThroughAxons(NeuronsActivation dz,
-      AxonsContext axonsContext, double regularisationLambda) {
+      SynapsesContext synapsesContext) {
 
     LOGGER.debug("Pushing data right to left through axons...");
 
     Axons<?, ?, ?> axons = synapses.getAxons();
+    
+    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
 
     // Will contain bias unit if Axons have left bias unit
     NeuronsActivation inputGradient =
@@ -111,7 +113,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
       totalTrainableAxonsGradient = dz.getActivations()
           .mmul(axonsActivation.getPostDropoutInputWithPossibleBias().getActivationsWithBias());
 
-      if (regularisationLambda != 0) {
+      if (axonsContext.getRegularisationLambda() != 0) {
 
         LOGGER.debug("Calculating total regularisation Gradients");
 
@@ -121,7 +123,8 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
         Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
 
         totalTrainableAxonsGradient =
-            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(regularisationLambda));
+            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(
+                axonsContext.getRegularisationLambda()));
 
         if (axons.getLeftNeurons().hasBiasUnit()) {
 
