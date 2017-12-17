@@ -53,7 +53,8 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    * @param hiddenActivationFunction The hidden ActivationFunction
    */
   public RestrictedBoltzmannLayerImpl(FullyConnectedAxons axons,
-      ActivationFunction visibleActivationFunction, ActivationFunction hiddenActivationFunction) {
+      ActivationFunction<?, ?> visibleActivationFunction, 
+      ActivationFunction<?, ?> hiddenActivationFunction) {
     this.axons = axons;
     this.synapses = new UndirectedSynapsesImpl<Neurons, Neurons>(axons, visibleActivationFunction,
         hiddenActivationFunction);
@@ -67,7 +68,8 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    * @param matrixFactory The MatrixFactory.
    */
   public RestrictedBoltzmannLayerImpl(Neurons visibleNeurons, Neurons hiddenNeurons,
-      ActivationFunction visibleActivationFunction, ActivationFunction hiddenActivationFunction,
+      ActivationFunction<? ,?> visibleActivationFunction, 
+      ActivationFunction<?, ?> hiddenActivationFunction,
       MatrixFactory matrixFactory) {
     this.axons = new FullyConnectedAxonsImpl(visibleNeurons, hiddenNeurons, matrixFactory);
     this.synapses = new UndirectedSynapsesImpl<Neurons, Neurons>(axons, visibleActivationFunction,
@@ -83,7 +85,8 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    * @param initialWeights The initial weights.
    */
   public RestrictedBoltzmannLayerImpl(Neurons visibleNeurons, Neurons hiddenNeurons,
-      ActivationFunction visibleActivationFunction, ActivationFunction hiddenActivationFunction,
+      ActivationFunction<?, ?> visibleActivationFunction, 
+      ActivationFunction<?, ?> hiddenActivationFunction,
       MatrixFactory matrixFactory, Matrix initialWeights) {
     this.axons =
         new FullyConnectedAxonsImpl(visibleNeurons, hiddenNeurons, matrixFactory, initialWeights);

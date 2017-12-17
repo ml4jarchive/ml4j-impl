@@ -89,7 +89,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     LOGGER.debug("Pushing left to right through UndirectedSynapses");
     AxonsActivation axonsActivation =
-        axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.createAxonsContext());
+        axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0));
 
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
 
@@ -109,7 +109,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     LOGGER.debug("Pushing right to left through UndirectedSynapses");
     AxonsActivation axonsActivation =
-        axons.pushRightToLeft(inputNeuronsActivation, null, synapsesContext.createAxonsContext());
+        axons.pushRightToLeft(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0));
 
     NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
 

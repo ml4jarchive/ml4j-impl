@@ -55,7 +55,8 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
    * @param hiddenActivationFunction The hidden ActivationFunction
    */
   public RestrictedBoltzmannMachineImpl(FullyConnectedAxons axons,
-      ActivationFunction visibleActivationFunction, ActivationFunction hiddenActivationFunction) {
+      ActivationFunction<?, ?> visibleActivationFunction, 
+      ActivationFunction<?, ?> hiddenActivationFunction) {
     this.restrictedBoltzmannLayer = new RestrictedBoltzmannLayerImpl(axons,
         visibleActivationFunction, hiddenActivationFunction);
   }
@@ -68,7 +69,8 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
    * @param matrixFactory The MatrixFactory.
    */
   public RestrictedBoltzmannMachineImpl(Neurons visibleNeurons, Neurons hiddenNeurons,
-      ActivationFunction visibleActivationFunction, ActivationFunction hiddenActivationFunction,
+      ActivationFunction<?, ?> visibleActivationFunction, 
+      ActivationFunction<?, ?> hiddenActivationFunction,
       MatrixFactory matrixFactory) {
     this.restrictedBoltzmannLayer = new RestrictedBoltzmannLayerImpl(visibleNeurons, hiddenNeurons,
         visibleActivationFunction, hiddenActivationFunction, matrixFactory);

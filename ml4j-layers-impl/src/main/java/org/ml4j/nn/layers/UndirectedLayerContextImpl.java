@@ -55,7 +55,7 @@ public class UndirectedLayerContextImpl implements UndirectedLayerContext {
   @Override
   public UndirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
     return new UndirectedSynapsesContextImpl(matrixFactory, 
-        1d, withFreezeOut);
+        withFreezeOut);
   }
 
   @Override
