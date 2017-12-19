@@ -8,7 +8,7 @@ import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 
 public class DifferentiableActivationFunctionActivationImpl
     implements DifferentiableActivationFunctionActivation {
-
+  
   private NeuronsActivation input;
   private NeuronsActivation output;
   private DifferentiableActivationFunction activationFunction;
@@ -43,7 +43,8 @@ public class DifferentiableActivationFunctionActivationImpl
     Matrix dz = null;
 
     Matrix activationGradient =
-        activationFunction.activationGradient(this, context).getActivations();
+        activationFunction.activationGradient(this, context).getActivations().transpose();
+
     dz = da.getOutput().getActivations().mul(activationGradient);
 
     return new ActivationFunctionGradientImpl((new NeuronsActivation(dz, 
