@@ -54,11 +54,12 @@ public class SigmoidActivationFunction implements DifferentiableActivationFuncti
     
     LOGGER.debug("Performing sigmoid gradient of NeuronsActivation");
   
-    Matrix activationInput = activationFunctionActivation.getInput().getActivations();
     Matrix sigmoidOfActivationInput = null;
     if (activationFunctionActivation instanceof SigmoidActivationFunction) {
-      sigmoidOfActivationInput = activationFunctionActivation.getOutput().getActivations();
+      sigmoidOfActivationInput = activationFunctionActivation.getOutput()
+          .getActivations();
     } else {
+      Matrix activationInput = activationFunctionActivation.getInput().getActivations();
       sigmoidOfActivationInput = activationInput.sigmoid();
     }
  
