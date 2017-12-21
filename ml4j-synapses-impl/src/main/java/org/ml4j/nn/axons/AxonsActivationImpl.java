@@ -26,6 +26,7 @@ import org.ml4j.nn.neurons.NeuronsActivationWithPossibleBiasUnit;
  */
 public class AxonsActivationImpl implements AxonsActivation {
 
+  private Axons<?, ?, ?> axons;
   private Matrix inputDropoutMask;
   private NeuronsActivation outputActivations;
   private NeuronsActivationWithPossibleBiasUnit postDropoutInput;
@@ -35,11 +36,12 @@ public class AxonsActivationImpl implements AxonsActivation {
    * @param postDropoutInput The post dropout input
    * @param outputActivations The output.
    */
-  public AxonsActivationImpl(Matrix inputDropoutMask, 
+  public AxonsActivationImpl(Axons<?, ?, ?> axons, Matrix inputDropoutMask, 
       NeuronsActivationWithPossibleBiasUnit postDropoutInput, NeuronsActivation outputActivations) {
     this.outputActivations = outputActivations;
     this.inputDropoutMask = inputDropoutMask;
     this.postDropoutInput = postDropoutInput;
+    this.axons = axons;
   }
   
   @Override
@@ -55,5 +57,9 @@ public class AxonsActivationImpl implements AxonsActivation {
   @Override
   public NeuronsActivationWithPossibleBiasUnit getPostDropoutInputWithPossibleBias() {
     return postDropoutInput;
+  }
+
+  public Axons<?, ?, ?> getAxons() {
+    return axons;
   }
 }
