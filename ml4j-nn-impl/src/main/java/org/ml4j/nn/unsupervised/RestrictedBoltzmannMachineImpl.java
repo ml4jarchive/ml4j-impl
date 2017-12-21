@@ -387,4 +387,34 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
         lastVisibleNeuronsReconstructionLayerActivation);
 
   }
+
+  @Override
+  public AutoEncoder createAutoEncoder() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  @Override
+  public NeuronsActivation decodeToBinary(NeuronsActivation hiddenUnitActivatons,
+      RestrictedBoltzmannMachineContext context) {
+    return restrictedBoltzmannLayer
+        .activateVisibleNeuronsFromHiddenNeurons(hiddenUnitActivatons, context.getLayerContext(0))
+        .getVisibleActivationBinarySample(context.getMatrixFactory());
+  }
+
+  @Override
+  public NeuronsActivation decodeToProbabilities(NeuronsActivation hiddenUnitActivatons,
+      RestrictedBoltzmannMachineContext context) {
+    return restrictedBoltzmannLayer
+        .activateVisibleNeuronsFromHiddenNeurons(hiddenUnitActivatons, context.getLayerContext(0))
+        .getVisibleActivationProbablities();
+  }
+
+  @Override
+  public NeuronsActivation encodeToBinary(NeuronsActivation visibleUnitActivations,
+      RestrictedBoltzmannMachineContext context) {
+    return restrictedBoltzmannLayer
+        .activateHiddenNeuronsFromVisibleNeuronsData(
+            visibleUnitActivations, context.getLayerContext(0))
+        .getHiddenActivationBinarySample(context.getMatrixFactory());
+  }
 }
