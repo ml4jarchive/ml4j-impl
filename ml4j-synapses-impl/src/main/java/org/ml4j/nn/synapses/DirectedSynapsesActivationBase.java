@@ -34,7 +34,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesActivationBase.class);
   
-  protected NeuronsActivation inputActivation;
+  protected DirectedSynapsesInput inputActivation;
   protected AxonsActivation axonsActivation;
   protected DifferentiableActivationFunctionActivation activationFunctionActivation;
   protected NeuronsActivation outputActivation;
@@ -52,7 +52,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
    *        following a forward propagation.
    */
   public DirectedSynapsesActivationBase(DirectedSynapses<?, ?> synapses, 
-      NeuronsActivation inputActivation, 
+      DirectedSynapsesInput inputActivation, 
       AxonsActivation axonsActivation, 
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
@@ -117,7 +117,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
   }
 
   @Override
-  public NeuronsActivation getInput() {
+  public DirectedSynapsesInput getInput() {
     return inputActivation;
   }
   
