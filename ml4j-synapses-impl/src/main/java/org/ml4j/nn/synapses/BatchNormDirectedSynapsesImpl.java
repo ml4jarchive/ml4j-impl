@@ -1,5 +1,6 @@
 package org.ml4j.nn.synapses;
 
+import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
@@ -16,7 +17,7 @@ import org.ml4j.nn.neurons.Neurons;
  * @param <R> The Neurons on the right hand side of these batch-norm DirectedSynapses.
  */
 public class BatchNormDirectedSynapsesImpl
-      <L extends Neurons, R extends Neurons> implements DirectedSynapses<L, R> {
+      <L extends Neurons, R extends Neurons> implements BatchNormDirectedSynapses<L, R> {
 
   /**
    * Default serialization id.
@@ -71,12 +72,37 @@ public class BatchNormDirectedSynapsesImpl
   }
 
   @Override
-  public Axons<?, ?, ?> getPrimaryAxons() {
-    return scaleAndShiftAxons;
+  public double getBetaForExponentiallyWeightedAverages() {
+    throw new UnsupportedOperationException("Not implemented yet");    
+  }
+
+  @Override
+  public Matrix getExponentiallyWeightedAverageInputFeatureMeans() {
+    throw new UnsupportedOperationException("Not implemented yet");    
+  }
+
+  @Override
+  public Matrix getExponentiallyWeightedAverageInputFeatureVariances() {
+    throw new UnsupportedOperationException("Not implemented yet");    
+  }
+
+  @Override
+  public void setExponentiallyWeightedAverageInputFeatureMeans(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");    
+  }
+
+  @Override
+  public void setExponentiallyWeightedAverageInputFeatureVariances(Matrix arg0) {
+    throw new UnsupportedOperationException("Not implemented yet");    
   }
 
   @Override
   public DirectedDipoleGraph<Axons<?, ?, ?>> getAxonsGraph() {
-    return new DirectedDipoleGraphImpl<Axons<?, ? ,?>>(scaleAndShiftAxons);
+    return new DirectedDipoleGraphImpl<Axons<?, ?, ?>>(scaleAndShiftAxons);
+  }
+
+  @Override
+  public Axons<?, ?, ?> getPrimaryAxons() {
+    return scaleAndShiftAxons;
   }
 }

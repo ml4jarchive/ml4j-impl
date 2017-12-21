@@ -26,6 +26,7 @@ import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.synapses.BatchNormDirectedSynapses;
 import org.ml4j.nn.synapses.BatchNormDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
@@ -65,7 +66,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   
   protected boolean withBatchNorm;
   
-  protected DirectedSynapses<?, ?> batchNormSynapses;
+  protected BatchNormDirectedSynapses<?, ?> batchNormSynapses;
  
   /**
    * @param primaryAxons The primary Axons
