@@ -16,7 +16,8 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.Matrix;
+import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.axons.AxonsGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 import java.util.ArrayList;
@@ -29,25 +30,27 @@ import java.util.List;
  */
 public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
 
-  private List<Matrix> axonsGradients;
+  private List<AxonsGradient> axonsGradients;
   private NeuronsActivation output;
 
-  public DirectedSynapsesGradientImpl(NeuronsActivation output, List<Matrix> axonsGradients) {
+  public DirectedSynapsesGradientImpl(NeuronsActivation output, 
+      List<AxonsGradient> axonsGradients) {
     this.axonsGradients = axonsGradients;
     this.output = output;
   }
 
   @Override
-  public List<Matrix> getTotalTrainableAxonsGradients() {
+  public List<AxonsGradient> getTotalTrainableAxonsGradients() {
     return axonsGradients;
   }
   
   @Override
-  public List<Matrix> getAverageTrainableAxonsGradients() {
+  public List<AxonsGradient> getAverageTrainableAxonsGradients() {
     
-    List<Matrix> averageGradients = new ArrayList<>();
-    for (Matrix axonsGradient : axonsGradients) {
-      averageGradients.add(axonsGradient.div(axonsGradient.getColumns()));
+    List<AxonsGradient> averageGradients = new ArrayList<>();
+    for (AxonsGradient axonsGradient : axonsGradients) {
+      averageGradients.add(new AxonsGradientImpl(axonsGradient.getAxons(), 
+          axonsGradient.getGradient().div(axonsGradient.getGradient().getColumns())));
     }
     return averageGradients;
   }

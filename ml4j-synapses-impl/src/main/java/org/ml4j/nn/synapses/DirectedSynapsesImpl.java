@@ -182,7 +182,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     NeuronsActivation outputNeuronsActivation = activationFunctionActivation.getOutput();
 
-    return new DirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivationGraph,
+    return new DirectedSynapsesActivationImpl(this, input, axonsActivationGraph,
         activationFunctionActivation, outputNeuronsActivation);
 
   }
