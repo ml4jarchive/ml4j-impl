@@ -5,7 +5,7 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.axons.AxonsGradientImpl;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
@@ -138,7 +138,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(1, dbeta);
 
     return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(
-        new AxonsGradient(scaleAndShiftAxons, axonsGradient.transpose())), null);
+        new AxonsGradientImpl(scaleAndShiftAxons, axonsGradient.transpose())), null);
   }
   
   
@@ -251,7 +251,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     
 
     return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(
-        new AxonsGradient(scaleAndShiftAxons, axonsGradient.transpose())), null);
+        new AxonsGradientImpl(scaleAndShiftAxons, axonsGradient.transpose())), null);
   }
   
   /**

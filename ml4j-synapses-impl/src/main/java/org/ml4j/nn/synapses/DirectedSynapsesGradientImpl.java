@@ -17,6 +17,7 @@
 package org.ml4j.nn.synapses;
 
 import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.axons.AxonsGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
    * @param residualOutput The residual output gradient.
    */
   public DirectedSynapsesGradientImpl(NeuronsActivation output, List<AxonsGradient> axonsGradients, 
-      NeuronsActivation residualOutput) {
+      NeuronsActivation residualOutput) { 
     this.axonsGradients = axonsGradients;
     this.output = output;
     this.residualOutput = residualOutput;
@@ -55,7 +56,7 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
     
     List<AxonsGradient> averageGradients = new ArrayList<>();
     for (AxonsGradient axonsGradient : axonsGradients) {
-      averageGradients.add(new AxonsGradient(axonsGradient.getAxons(), 
+      averageGradients.add(new AxonsGradientImpl(axonsGradient.getAxons(), 
           axonsGradient.getGradient().div(axonsGradient.getGradient().getColumns())));
     }
     return averageGradients;
