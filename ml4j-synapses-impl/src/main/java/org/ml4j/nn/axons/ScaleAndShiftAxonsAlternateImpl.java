@@ -138,7 +138,7 @@ public class ScaleAndShiftAxonsAlternateImpl
         inputActivation.getFeatureOrientation());
      
     
-    return new AxonsActivationImpl(null, inputActivation, output);
+    return new AxonsActivationImpl(this, null, inputActivation, output);
   }
 
   @Override
@@ -174,7 +174,7 @@ public class ScaleAndShiftAxonsAlternateImpl
             false, rightNeuronsActivation.getFeatureOrientation(), false);
    
     Matrix inputDropoutMask = null;
-    return new AxonsActivationImpl(inputDropoutMask, 
+    return new AxonsActivationImpl(this, inputDropoutMask, 
         inputActivation.withBiasUnit(true, 
             axonsContext),
         output);
