@@ -19,6 +19,9 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivatio
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.axons.AxonsGradientImpl;
+import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
@@ -43,7 +46,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
    * @param outputActivation The output activation.
    */
   public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses,
-      NeuronsActivation inputActivation, AxonsActivation axonsActivation,
+      DirectedSynapsesInput inputActivation, AxonsActivation axonsActivation,
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
     super(synapses, inputActivation, axonsActivation, activationFunctionActivation,
@@ -104,13 +107,14 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
     NeuronsActivation inputGradient =
         axons.pushRightToLeft(dz, axonsActivation, axonsContext).getOutput();
 
-    Matrix totalTrainableAxonsGradient = null;
+    Matrix totalTrainableAxonsGradientMatrix = null;
+    AxonsGradient totalTrainableAxonsGradient = null;
 
-    if (axons.isTrainable(axonsContext)) {
+    if (axons instanceof TrainableAxons<?, ?, ?> && axons.isTrainable(axonsContext)) {
 
       LOGGER.debug("Calculating Axons Gradients");
 
-      totalTrainableAxonsGradient = dz.getActivations()
+      totalTrainableAxonsGradientMatrix = dz.getActivations()
           .mmul(axonsActivation.getPostDropoutInputWithPossibleBias().getActivationsWithBias());
 
       if (axonsContext.getRegularisationLambda() != 0) {
@@ -119,24 +123,27 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
         Matrix connectionWeightsCopy = axons.getDetachedConnectionWeights();
 
-        Matrix firstRow = totalTrainableAxonsGradient.getRow(0);
-        Matrix firstColumn = totalTrainableAxonsGradient.getColumn(0);
+        Matrix firstRow = totalTrainableAxonsGradientMatrix.getRow(0);
+        Matrix firstColumn = totalTrainableAxonsGradientMatrix.getColumn(0);
 
-        totalTrainableAxonsGradient =
-            totalTrainableAxonsGradient.addi(connectionWeightsCopy.muli(
+        totalTrainableAxonsGradientMatrix =
+            totalTrainableAxonsGradientMatrix.addi(connectionWeightsCopy.muli(
                 axonsContext.getRegularisationLambda()));
 
         if (axons.getLeftNeurons().hasBiasUnit()) {
 
-          totalTrainableAxonsGradient.putRow(0, firstRow);
+          totalTrainableAxonsGradientMatrix.putRow(0, firstRow);
         }
         if (axons.getRightNeurons().hasBiasUnit()) {
 
-          totalTrainableAxonsGradient.putColumn(0, firstColumn);
+          totalTrainableAxonsGradientMatrix.putColumn(0, firstColumn);
         }
       }
+      totalTrainableAxonsGradient = new AxonsGradientImpl((TrainableAxons<?, ?, ?>) axons, 
+          totalTrainableAxonsGradientMatrix);
     }
 
-    return new DirectedSynapsesGradientImpl(inputGradient, totalTrainableAxonsGradient);
+    return new DirectedSynapsesGradientImpl(inputGradient, 
+        totalTrainableAxonsGradient);
   }
 }

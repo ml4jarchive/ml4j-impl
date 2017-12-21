@@ -161,4 +161,9 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     }
     return totalRegularisationCost;
   }
+
+  @Override
+  public List<DirectedSynapsesActivation> getSynapsesActivations() {
+    return synapseActivations;
+  }
 }
