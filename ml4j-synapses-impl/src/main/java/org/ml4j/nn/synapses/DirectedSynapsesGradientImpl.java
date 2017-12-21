@@ -16,7 +16,8 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.Matrix;
+import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.axons.AxonsGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
@@ -26,22 +27,25 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  */
 public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
 
-  private Matrix axonsGradient;
+  private AxonsGradient axonsGradient;
   private NeuronsActivation output;
 
-  public DirectedSynapsesGradientImpl(NeuronsActivation output, Matrix axonsGradient) {
+  public DirectedSynapsesGradientImpl(NeuronsActivation output, AxonsGradient axonsGradient) {
     this.axonsGradient = axonsGradient;
     this.output = output;
   }
 
   @Override
-  public Matrix getTotalTrainableAxonsGradient() {
+  public AxonsGradient getTotalTrainableAxonsGradient() {
     return axonsGradient;
   }
   
   @Override
-  public Matrix getAverageTrainableAxonsGradient() {
-    return axonsGradient == null ? null : axonsGradient.div(axonsGradient.getColumns());
+  public AxonsGradient getAverageTrainableAxonsGradient() {
+    return axonsGradient == null ? null : 
+      new AxonsGradientImpl(axonsGradient.getAxons(), 
+          axonsGradient.getGradient()
+          .div(axonsGradient.getGradient().getColumns()));
   }
 
   @Override
@@ -51,7 +55,8 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
 
   @Override
   public String toString() {
-    return "DirectedSynapsesGradientImpl [axonsGradient=" + axonsGradient.getRows() + ":"
-        + axonsGradient.getColumns() + "]";
+    return "DirectedSynapsesGradientImpl [axonsGradient=" 
+          + axonsGradient.getGradient().getRows() + ":"
+        + axonsGradient.getGradient().getColumns() + "]";
   }
 }
