@@ -262,7 +262,7 @@ public abstract class AxonsBase<L extends Neurons, R extends Neurons,
         new NeuronsActivation(outputMatrix, 
             leftNeuronsActivation.getFeatureOrientation());
 
-    return new AxonsActivationImpl(inputDropoutMask,
+    return new AxonsActivationImpl(this, inputDropoutMask,
         new NeuronsActivationWithPossibleBiasUnit(inputMatrix, leftNeurons.hasBiasUnit(),
             leftNeuronsActivation.getFeatureOrientation(), false),
         outputActivation);
@@ -439,7 +439,7 @@ public abstract class AxonsBase<L extends Neurons, R extends Neurons,
         new NeuronsActivation(outputMatrix,
             rightNeuronsActivation.getFeatureOrientation());
 
-    return new AxonsActivationImpl(inputDropoutMask,
+    return new AxonsActivationImpl(this, inputDropoutMask,
         new NeuronsActivationWithPossibleBiasUnit(inputMatrix, 
             rightNeurons.hasBiasUnit(),
             rightNeuronsActivation.getFeatureOrientation(), false),

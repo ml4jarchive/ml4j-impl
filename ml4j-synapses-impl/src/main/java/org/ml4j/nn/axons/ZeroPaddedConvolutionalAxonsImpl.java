@@ -239,7 +239,7 @@ public class ZeroPaddedConvolutionalAxonsImpl
     AxonsActivation activated =  unpaddedConvolutionalAxonsImpl.pushRightToLeft(arg0, arg1, arg2);
     Matrix inputDropoutMask = activated.getInputDropoutMask();
     NeuronsActivation output = activated.getOutput();
-    return new AxonsActivationImpl(inputDropoutMask, 
+    return new AxonsActivationImpl(this, inputDropoutMask, 
         activated.getPostDropoutInputWithPossibleBias(), unpad(output, arg2));
   }
 
