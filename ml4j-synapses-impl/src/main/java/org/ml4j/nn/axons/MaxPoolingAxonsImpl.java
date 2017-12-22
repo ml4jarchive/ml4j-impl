@@ -141,14 +141,14 @@ public class MaxPoolingAxonsImpl
   protected double getLeftInputPostDropoutScaling(AxonsContext axonsContext) {
 
     int outputDim =
-        (int) Math.sqrt(this.getRightNeurons().getNeuronCountIncludingBias()
+        (int) (this.getRightNeurons().getNeuronCountIncludingBias()
             / this.getRightNeurons().getDepth());
-    int inputDim = (int) Math.sqrt(
+    int inputDim = (int) (
         this.getLeftNeurons().getNeuronCountIncludingBias() / getLeftNeurons().getDepth());
     
     double scaleDown = inputDim / outputDim;
     if (scaleOutputs) {
-      return scaleDown *  scaleDown;
+      return scaleDown;
     } else {
       return 1d;
     }
