@@ -1,25 +1,27 @@
 /*
  * Copyright 2017 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package org.ml4j.nn.supervised;
 
 import org.ml4j.MatrixFactory;
+import org.ml4j.nn.BackPropagationListener;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
+import org.ml4j.nn.ForwardPropagationListener;
 import org.ml4j.nn.layers.DirectedLayerContext;
 import org.ml4j.nn.layers.DirectedLayerContextImpl;
+import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
+import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,34 +45,44 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   private MatrixFactory matrixFactory;
 
   private int startLayerIndex;
-  
+
   private Integer endLayerIndex;
- 
+
   private Integer trainingEpochs;
-  
+
   private Double trainingLearningRate;
-  
+
   private Integer trainingMiniBatchSize;
-  
+
+  private Integer lastTrainingEpochIndex;
+
   private Map<Integer, DirectedLayerContext> directedLayerContexts;
-  
+
+  private GradientDescentOptimisationStrategy gradientDescentOptimisationStrategy;
+
+  private TrainingLearningRateAdjustmentStrategy trainingLearningRateAdjustmentStrategy;
+
+  private ForwardPropagationListener forwardPropagationListener;
+
+  private BackPropagationListener backPropagationListener;
+
   /**
    * Construct a default AutoEncoderContext.
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, 
-      int startLayerIndex, Integer endLayerIndex) {
+  public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
+      Integer endLayerIndex) {
     this.matrixFactory = matrixFactory;
     this.startLayerIndex = startLayerIndex;
     this.endLayerIndex = endLayerIndex;
     if (endLayerIndex != null && startLayerIndex > endLayerIndex) {
-      throw new IllegalArgumentException("Start layer index cannot be greater "
-          + "than end layer index");
+      throw new IllegalArgumentException(
+          "Start layer index cannot be greater " + "than end layer index");
     }
     this.directedLayerContexts = new HashMap<>();
   }
-  
+
   @Override
   public MatrixFactory getMatrixFactory() {
     return matrixFactory;
@@ -78,13 +90,13 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
 
   @Override
   public DirectedLayerContext getLayerContext(int layerIndex) {
-    
+
     DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
     if (layerContext == null) {
       layerContext = new DirectedLayerContextImpl(layerIndex, matrixFactory);
       directedLayerContexts.put(layerIndex, layerContext);
     }
-    
+
     return layerContext;
   }
 
@@ -132,5 +144,58 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   @Override
   public void setTrainingMiniBatchSize(Integer trainingMiniBatchSize) {
     this.trainingMiniBatchSize = trainingMiniBatchSize;
+  }
+
+  @Override
+  public GradientDescentOptimisationStrategy getGradientDescentOptimisationStrategy() {
+    return gradientDescentOptimisationStrategy;
+  }
+
+  @Override
+  public void setGradientDescentOptimisationStrategy(
+      GradientDescentOptimisationStrategy gradientDescentOptimisationStrategy) {
+    this.gradientDescentOptimisationStrategy = gradientDescentOptimisationStrategy;
+  }
+
+  @Override
+  public Integer getLastTrainingEpochIndex() {
+    return lastTrainingEpochIndex;
+  }
+
+  @Override
+  public TrainingLearningRateAdjustmentStrategy getTrainingLearningRateAdjustmentStrategy() {
+    return trainingLearningRateAdjustmentStrategy;
+  }
+
+  @Override
+  public void setTrainingLearningRateAdjustmentStrategy(
+      TrainingLearningRateAdjustmentStrategy trainingLearningRateAdjustmentStrategy) {
+    this.trainingLearningRateAdjustmentStrategy = trainingLearningRateAdjustmentStrategy;
+  }
+
+  @Override
+  public void setLastTrainingEpochIndex(Integer lastTrainingEpochIndex) {
+    this.lastTrainingEpochIndex = lastTrainingEpochIndex;
+  }
+
+  @Override
+  public BackPropagationListener getBackPropagationListener() {
+    return backPropagationListener;
+  }
+
+  @Override
+  public ForwardPropagationListener getForwardPropagationListener() {
+    return forwardPropagationListener;
+  }
+
+  @Override
+  public void setBackPropagationListener(BackPropagationListener backPropagationListener) {
+    this.backPropagationListener = backPropagationListener;
+
+  }
+
+  @Override
+  public void setForwardPropagationListener(ForwardPropagationListener forwardPropagationListener) {
+    this.forwardPropagationListener = forwardPropagationListener;
   }
 }

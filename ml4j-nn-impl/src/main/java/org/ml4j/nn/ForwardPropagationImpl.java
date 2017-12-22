@@ -89,8 +89,11 @@ public class ForwardPropagationImpl implements ForwardPropagation {
     
     Collections.reverse(gradientsRet);
 
-    
-    return new BackPropagationImpl(gradientsRet);
+    BackPropagation backPropagation =  new BackPropagationImpl(gradientsRet);
+    if (context.getBackPropagationListener() != null) {
+      context.getBackPropagationListener().onBackPropagation(backPropagation);
+    }
+    return backPropagation;
   }
 
   @Override
