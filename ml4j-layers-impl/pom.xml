@@ -4,7 +4,7 @@
 	<groupId>org.ml4j</groupId>
 	<artifactId>ml4j-layers-impl</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>ml4j-layers-impl</name>
 	<properties>
 	</properties>

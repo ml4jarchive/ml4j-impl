@@ -4,7 +4,7 @@
 	<groupId>org.ml4j</groupId>
 	<artifactId>ml4j-matrices-impl</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>ml4j-matrices-impl</name>
 	<properties>
 	</properties>
