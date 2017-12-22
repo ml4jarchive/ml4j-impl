@@ -115,4 +115,25 @@ public class ConvolutionalFeedForwardLayerImpl
     return new ConvolutionalFeedForwardLayerImpl(primaryAxons.dup(), 
         primaryActivationFunction, matrixFactory, withBatchNorm);
   }
+
+  @Override
+  public int getFilterHeight() {
+    return getPrimaryAxons().getFilterHeight();
+  }
+
+  @Override
+  public int getFilterWidth() {
+    return getPrimaryAxons().getFilterWidth();
+  }
+
+  @Override
+  public int getStride() {
+    return getPrimaryAxons().getStride();
+
+  }
+
+  @Override
+  public int getZeroPadding() {
+    return getPrimaryAxons().getZeroPadding();
+  }
 }

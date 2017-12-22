@@ -33,6 +33,8 @@ import org.ml4j.nn.layers.DirectedLayerActivation;
 import org.ml4j.nn.layers.DirectedLayerGradient;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
+import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesGradient;
 import org.slf4j.Logger;
@@ -57,6 +59,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
   
   private List<FeedForwardLayer<?, ?>> layers;
   
+  private C lastEpochTrainingContext;
+    
   /**
    * Default serialization id.
    */
@@ -82,8 +86,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     CostAndGradientsImpl costAndGradients = null;
 
     int iterationIndex = 0;
+    
+    int epochStartIndex = (lastEpochTrainingContext == null
+        || lastEpochTrainingContext.getLastTrainingEpochIndex() == null) ? 0
+            : (lastEpochTrainingContext.getLastTrainingEpochIndex() + 1);
 
-    for (int epochIndex = 0; epochIndex < numberOfEpochs; epochIndex++) {
+    for (int epochIndex = epochStartIndex; 
+        epochIndex < epochStartIndex + numberOfEpochs; epochIndex++) {
 
       if (trainingContext.getTrainingMiniBatchSize() == null) {
         costAndGradients =
@@ -129,11 +138,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
               costAndGradients.getAverageTrainableAxonsGradients(), epochIndex, batchIndex,
               iterationIndex);
           iterationIndex++;
-
-          batchIndex++;
         }
 
         LOGGER.info("Epoch:" + epochIndex + " Cost:" + costAndGradients.getAverageCost());
+        lastEpochTrainingContext = trainingContext;
       }
     }
   }
@@ -193,21 +201,51 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     
   }
   
+  protected double getTrainingLearningRate(C trainingContext, int epochIndex, int batchIndex,
+      int iterationIndex) {
+    
+    TrainingLearningRateAdjustmentStrategy adjustmentStrategy =
+        trainingContext.getTrainingLearningRateAdjustmentStrategy();
 
-  private void adjustConnectionWeights(C trainingContext, 
-      List<AxonsGradient> trainableAxonsGradients, 
+    if (adjustmentStrategy != null) {
+      return adjustmentStrategy.getTrainingLearningRate(trainingContext, 
+           epochIndex, batchIndex, iterationIndex);
+    }
+
+    return trainingContext.getTrainingLearningRate();
+  }
+
+  protected Matrix getAdjustedAxonsGradient(Matrix axonsGradient, int axonsIndex, C trainingContext,
       int epochIndex, int batchIndex, int iterationIndex) {
-    double learningRate = trainingContext.getTrainingLearningRate();
-       
+
+    GradientDescentOptimisationStrategy optimisationStrategy =
+        trainingContext.getGradientDescentOptimisationStrategy();
+
+    if (optimisationStrategy != null) {
+      return optimisationStrategy.getAdjustedAxonsGradient(axonsGradient, axonsIndex,
+          trainingContext, epochIndex, batchIndex, iterationIndex);
+    }
+    return axonsGradient;
+  }
+  
+  private void adjustConnectionWeights(C trainingContext,
+      List<AxonsGradient> trainableAxonsGradients, int epochIndex, int batchIndex,
+      int iterationIndex) {
+    int axonsIndex = 0;
     for (AxonsGradient axonsGradient : trainableAxonsGradients) {
       TrainableAxons<?, ?, ?> trainableAxons = axonsGradient.getAxons();
       // Transpose the axon gradients into matrices that correspond to the orientation of the
       // connection weights ( COLUMNS_SPAN_FEATURE_SET )
       Matrix axonsGrad = axonsGradient.getGradient().transpose();
+      Matrix adjustedAxonsGradient = getAdjustedAxonsGradient(axonsGrad, axonsIndex,
+          trainingContext, epochIndex, batchIndex, iterationIndex);
       // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
       // gradient matrices
-      trainableAxons.adjustConnectionWeights(axonsGrad.mul(learningRate), 
+      trainableAxons.adjustConnectionWeights(
+          adjustedAxonsGradient.mul(
+              getTrainingLearningRate(trainingContext, epochIndex, batchIndex, iterationIndex)),
           ConnectionWeightsAdjustmentDirection.SUBTRACTION);
+      axonsIndex++;
     }
   }
 
@@ -262,7 +300,12 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       layerIndex++;
     }
     
-    return new ForwardPropagationImpl(activations, inFlightActivations);
+    ForwardPropagation forwardPropagation 
+        = new ForwardPropagationImpl(activations, inFlightActivations);
+    if (context.getForwardPropagationListener() != null) {
+      context.getForwardPropagationListener().onForwardPropagation(forwardPropagation);
+    }
+    return forwardPropagation;
   }
   
   /**
@@ -291,4 +334,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
           "Default cost function not yet defined for:" + activationFunction.getClass());
     }
   }
+
+  @Override
+  public C getLastEpochTrainingContext() {
+    return lastEpochTrainingContext;
+  }
+ 
 }
