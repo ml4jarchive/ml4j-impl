@@ -61,7 +61,7 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
   }
 
   @Override
-  public AxonsContext getAxonsContext(int axonsIndex) {
+  public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
     
     AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
     if (axonsContext == null) {
