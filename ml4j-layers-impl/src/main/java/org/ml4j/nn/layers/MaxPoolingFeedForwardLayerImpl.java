@@ -82,4 +82,20 @@ public class MaxPoolingFeedForwardLayerImpl
   public MaxPoolingFeedForwardLayer dup() {
     return new MaxPoolingFeedForwardLayerImpl(primaryAxons.dup(), matrixFactory, withBatchNorm);
   }
+  
+  @Override
+  public int getFilterHeight() {
+    return getPrimaryAxons().getFilterHeight();
+  }
+
+  @Override
+  public int getFilterWidth() {
+    return getPrimaryAxons().getFilterWidth();
+  }
+
+  @Override
+  public int getStride() {
+    return getPrimaryAxons().getStride();
+
+  }
 }

@@ -64,4 +64,19 @@ public class AveragePoolingFeedForwardLayerImpl
   public AveragePoolingFeedForwardLayer dup() {
     return new AveragePoolingFeedForwardLayerImpl(primaryAxons.dup(), matrixFactory, withBatchNorm);
   }
+  
+  @Override
+  public int getFilterHeight() {
+    return getPrimaryAxons().getFilterHeight();
+  }
+
+  @Override
+  public int getFilterWidth() {
+    return getPrimaryAxons().getFilterWidth();
+  }
+
+  @Override
+  public int getStride() {
+    return getPrimaryAxons().getStride();
+  }
 }
