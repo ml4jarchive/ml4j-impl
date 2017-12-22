@@ -252,4 +252,26 @@ public class ZeroPaddedConvolutionalAxonsImpl
   public boolean isTrainable(AxonsContext context) {
     return unpaddedConvolutionalAxonsImpl.isTrainable(context);
   }
+
+  @Override
+  public int getFilterHeight() {
+    int inputHeight = leftNeurons.getHeight() + 2 * zeroPadding;
+    int outputHeight = getRightNeurons().getHeight();
+
+    int filterHeight = inputHeight + (1 - outputHeight) * (getStride());
+
+    return filterHeight;
+  }
+
+  @Override
+  public int getFilterWidth() {
+    int inputWidth = leftNeurons.getWidth() + 2 * zeroPadding;
+    int outputWidth = getRightNeurons().getWidth();
+
+    int filterWidth = inputWidth + (1 - outputWidth) * (getStride());
+    
+    return filterWidth;
+  }
+  
+  
 }

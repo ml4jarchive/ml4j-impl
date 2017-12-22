@@ -71,6 +71,17 @@ public abstract class PoolingAxonsBase<A extends PoolingAxons<A>>
     
     return stride;
   }
+  
+ 
+  @Override
+  public int getFilterHeight() {
+    return rightNeurons.getHeight() / leftNeurons.getHeight();
+  }
+
+  @Override
+  public int getFilterWidth() {
+    return rightNeurons.getWidth() / leftNeurons.getWidth();
+  }
 
   @Override
   protected ConnectionWeightsMask createConnectionWeightsMask(MatrixFactory matrixFactory) {

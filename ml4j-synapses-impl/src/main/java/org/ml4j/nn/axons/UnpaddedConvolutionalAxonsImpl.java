@@ -81,7 +81,7 @@ public class UnpaddedConvolutionalAxonsImpl extends
   private void validate() {
     int inputWidth = getLeftNeurons().getWidth();
     int outputWidth = getRightNeurons().getWidth();
-
+ 
     int filterWidth = inputWidth + (1 - outputWidth) * (getStride());
     if (filterWidth  <= 0) {
       throw new IllegalStateException("Filter width must be greater than 0");
@@ -90,6 +90,22 @@ public class UnpaddedConvolutionalAxonsImpl extends
         (int) (((double) (inputWidth - filterWidth)) / ((double) getStride())) + 1;
 
     if (validOutputWidth != outputWidth) {
+      throw new IllegalStateException("Invalid configuration");
+    }
+    
+    int inputHeight = getLeftNeurons().getHeight();
+    int outputHeight = getRightNeurons().getHeight();
+    int filterHeight = inputHeight + (1 - outputWidth) * (getStride());
+    if (filterWidth  <= 0) {
+      throw new IllegalStateException("Filter width must be greater than 0");
+    }
+    int validOutputHeight =
+        (int) (((double) (inputHeight - filterHeight)) / ((double) getStride())) + 1;
+
+    if (validOutputWidth != outputWidth) {
+      throw new IllegalStateException("Invalid configuration");
+    }
+    if (validOutputHeight != outputHeight) {
       throw new IllegalStateException("Invalid configuration");
     }
   }
@@ -112,7 +128,6 @@ public class UnpaddedConvolutionalAxonsImpl extends
 
     double scalingFactor = Math.sqrt(2d / ((double) leftNeurons.getNeuronCountIncludingBias()));
 
-   
     Matrix initialWeights =  weights.mul(scalingFactor);
     if (getLeftNeurons().hasBiasUnit()) {
       
@@ -318,4 +333,25 @@ public class UnpaddedConvolutionalAxonsImpl extends
       return row + "-" + column;
     }
   }
+
+  @Override
+  public int getFilterHeight() {
+    int inputHeight = getLeftNeurons().getHeight();
+    int outputHeight = getRightNeurons().getHeight();
+ 
+    int filterHeight = inputHeight + (1 - outputHeight) * (getStride());
+    
+    return filterHeight;
+  }
+
+  @Override
+  public int getFilterWidth() {
+    int inputWidth = getLeftNeurons().getWidth();
+    int outputWidth = getRightNeurons().getWidth();
+ 
+    int filterWidth = inputWidth + (1 - outputWidth) * (getStride());
+    
+    return filterWidth;
+  }
+
 }
