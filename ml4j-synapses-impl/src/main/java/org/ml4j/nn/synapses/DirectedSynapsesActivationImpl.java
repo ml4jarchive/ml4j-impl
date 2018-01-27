@@ -191,10 +191,13 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 
           totalTrainableAxonsGradientMatrix.putColumn(0, firstColumn);
         }
-        totalTrainableAxonsGradient = new AxonsGradientImpl((TrainableAxons<?, ?, ?>) axons, 
-            totalTrainableAxonsGradientMatrix);
       }
     }
+    if (totalTrainableAxonsGradientMatrix != null) {
+      totalTrainableAxonsGradient = new AxonsGradientImpl((TrainableAxons<?, ?, ?>) axons, 
+          totalTrainableAxonsGradientMatrix);
+    }
+    
     return totalTrainableAxonsGradient;
   }
 }
