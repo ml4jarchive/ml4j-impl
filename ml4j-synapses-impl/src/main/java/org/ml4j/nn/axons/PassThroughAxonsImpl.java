@@ -26,12 +26,18 @@ public class PassThroughAxonsImpl implements Axons<Neurons, Neurons, PassThrough
   public PassThroughAxonsImpl(Neurons leftNeurons, Neurons rightNeurons) {
     this.leftNeurons = leftNeurons;
     this.rightNeurons = rightNeurons;
-    if (leftNeurons.getNeuronCountIncludingBias() != rightNeurons.getNeuronCountIncludingBias()) {
-      throw new IllegalArgumentException("Left neuron and right neurons counts must be the same");
+    
+    if (leftNeurons.getNeuronCountExcludingBias() != rightNeurons.getNeuronCountExcludingBias()) {
+      throw new IllegalArgumentException("Left neuron and right neurons counts must be the same"
+          + leftNeurons.getNeuronCountIncludingBias() + ":"
+          + rightNeurons.getNeuronCountIncludingBias());
     }
     if (leftNeurons.hasBiasUnit() != rightNeurons.hasBiasUnit()) {
       throw new IllegalArgumentException(
           "Left neuron and right neurons bias unit presence must be the same");
+    }
+    if (leftNeurons.hasBiasUnit()) {
+      throw new IllegalArgumentException("Left neurons with bias unit not supported");
     }
   }
 

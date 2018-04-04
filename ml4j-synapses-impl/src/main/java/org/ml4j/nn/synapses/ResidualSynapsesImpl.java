@@ -4,6 +4,7 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.FullyConnectedAxonsImpl;
+import org.ml4j.nn.axons.PassThroughAxonsImpl;
 import org.ml4j.nn.graph.DirectedDipoleGraph;
 import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.graph.DirectedPath;
@@ -30,11 +31,14 @@ public class ResidualSynapsesImpl<L extends Neurons, R extends Neurons>
       MatrixFactory matrixFactory) {
     super(primaryAxons, activationFunction);
     this.residualActivationSource = residualActivationSource;
-    // TODO
-    this.residualAxons = new FullyConnectedAxonsImpl(residualActivationSource,
-        primaryAxons.getRightNeurons(), matrixFactory);
-    // this.residualAxons = new PassThroughAxonsImpl(primaryAxons.getLeftNeurons(),
-    // primaryAxons.getRightNeurons());
+    if (residualActivationSource.getNeuronCountExcludingBias() 
+        == primaryAxons.getRightNeurons().getNeuronCountExcludingBias()) { 
+      this.residualAxons = new PassThroughAxonsImpl(residualActivationSource,
+          primaryAxons.getRightNeurons());
+    } else {
+      this.residualAxons = new FullyConnectedAxonsImpl(residualActivationSource,
+      primaryAxons.getRightNeurons(), matrixFactory);
+    }   
   }
 
   protected ResidualSynapsesImpl(Axons<? extends L, ? extends R, ?> primaryAxons,

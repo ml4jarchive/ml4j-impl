@@ -157,18 +157,17 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
           totalInputGradientMatrix = inputGradient.getActivations();
         } else {
           if (residualSynapsesInput != null && pathIndex == 1) {
-            totalInputGradientMatrix = totalInputGradientMatrix.add(inputGradient.getActivations());
-          } else {
             totalResidualGradient = inputGradient;
+          } else {
+            totalInputGradientMatrix = totalInputGradientMatrix.add(inputGradient.getActivations());
           }
         }
 
-
         gradientToBackPropagate = inputGradient;
 
-        axonsIndex++;
+        axonsIndex--;
       }
-      pathIndex--;
+      pathIndex++;
     }
 
     NeuronsActivation totalInputGradient =

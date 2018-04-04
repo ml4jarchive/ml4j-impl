@@ -100,14 +100,14 @@ public class ResidualBlockLayerImpl<A extends TrainableAxons<?, ?, A>,
   @Override
   public List<DirectedSynapses<?, ?>> getSynapses() {
 
-
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<DirectedSynapses<?, ?>>();
     synapses.addAll(layer1.getSynapses());
     DirectedSynapses<?, ?> firstSynapsesOfSecondLayer = layer2.getSynapses().get(0);
     List<DirectedSynapses<?, ?>> remainingSynapses =
         layer2.getSynapses().subList(1, layer2.getSynapses().size());
     synapses.add(new ResidualSynapsesImpl<Neurons, Neurons>(
-        firstSynapsesOfSecondLayer.getPrimaryAxons(), layer1.getPrimaryAxons().getLeftNeurons(),
+        firstSynapsesOfSecondLayer.getPrimaryAxons(), 
+        new Neurons(layer1.getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias(), false),
         firstSynapsesOfSecondLayer.getActivationFunction(), matrixFactory));
     synapses.addAll(remainingSynapses);
     return synapses;
