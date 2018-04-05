@@ -46,9 +46,9 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   private static final Logger LOGGER = 
       LoggerFactory.getLogger(DirectedSynapsesImpl.class);
   
-  private Axons<? extends L, ? extends R, ?> primaryAxons;
+  protected Axons<? extends L, ? extends R, ?> primaryAxons;
   private DifferentiableActivationFunction activationFunction;
-  private DirectedDipoleGraph<Axons<?, ?, ?>> axonsGraph;
+  protected DirectedDipoleGraph<Axons<?, ?, ?>> axonsGraph;
   
   /**
    * Create a new implementation of DirectedSynapses.
@@ -92,17 +92,23 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public DirectedSynapses<L, R> dup() {
-    return new DirectedSynapsesImpl<L, R>(primaryAxons.dup(), cloneAxonsGraph() , 
+    Axons<? extends L, ? extends R, ?> primaryAxonsDup = primaryAxons.dup();
+    return new DirectedSynapsesImpl<L, R>(primaryAxonsDup, cloneAxonsGraph(primaryAxonsDup) , 
         activationFunction);
   }
   
-  protected DirectedDipoleGraph<Axons<?, ?, ?>> cloneAxonsGraph() {
+  protected DirectedDipoleGraph<Axons<?, ?, ?>> cloneAxonsGraph(Axons<?, ?, ?> primaryAxonsDup) {
 
     DirectedDipoleGraph<Axons<?, ?, ?>> dup = new DirectedDipoleGraphImpl<Axons<?, ?, ?>>();
     for (DirectedPath<Axons<?, ?, ?>> directedPath : axonsGraph.getParallelPaths()) {
       DirectedPath<Axons<?, ?, ?>> dupPath = new DirectedPathImpl<Axons<?, ?, ?>>();
       for (Axons<?, ?, ?> axons : directedPath.getEdges()) {
-        Axons<?, ?, ?> dupAxons = axons.dup();
+        Axons<? ,? ,?> dupAxons = null;
+        if (axons == primaryAxons) {
+          dupAxons = primaryAxonsDup;
+        } else {
+          dupAxons = axons.dup();
+        }
         dupPath.addEdge(dupAxons);
       }
       dup.addParallelPath(dupPath);

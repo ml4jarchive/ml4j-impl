@@ -3,8 +3,6 @@ package org.ml4j.nn.synapses;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.axons.FullyConnectedAxonsImpl;
-import org.ml4j.nn.axons.PassThroughAxonsImpl;
 import org.ml4j.nn.graph.DirectedDipoleGraph;
 import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.graph.DirectedPath;
@@ -26,19 +24,13 @@ public class ResidualSynapsesImpl<L extends Neurons, R extends Neurons>
    * @param primaryAxons The primary axons.
    * @param activationFunction The activation function.
    */
-  public ResidualSynapsesImpl(Axons<? extends L, ? extends R, ?> primaryAxons,
+  public ResidualSynapsesImpl(Axons<? extends L, ? extends R, ?> primaryAxons, 
+      Axons<?, ?, ?> residualAxons,
       Neurons residualActivationSource, DifferentiableActivationFunction activationFunction,
       MatrixFactory matrixFactory) {
     super(primaryAxons, activationFunction);
     this.residualActivationSource = residualActivationSource;
-    if (residualActivationSource.getNeuronCountExcludingBias() 
-        == primaryAxons.getRightNeurons().getNeuronCountExcludingBias()) { 
-      this.residualAxons = new PassThroughAxonsImpl(residualActivationSource,
-          primaryAxons.getRightNeurons());
-    } else {
-      this.residualAxons = new FullyConnectedAxonsImpl(residualActivationSource,
-      primaryAxons.getRightNeurons(), matrixFactory);
-    }   
+    this.residualAxons = residualAxons;
   }
 
   protected ResidualSynapsesImpl(Axons<? extends L, ? extends R, ?> primaryAxons,
@@ -71,7 +63,32 @@ public class ResidualSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public DirectedSynapses<L, R> dup() {
-    return new ResidualSynapsesImpl<L, R>(getPrimaryAxons().dup(), residualActivationSource,
-        cloneAxonsGraph(), getActivationFunction(), residualAxons.dup());
+    Axons<? extends L, ? extends R, ?> primaryAxonsDup = getPrimaryAxons().dup();
+    Axons<?, ?, ?> residualAxonsDup = residualAxons.dup();
+    return new ResidualSynapsesImpl<L, R>(primaryAxonsDup, residualActivationSource,
+        cloneAxonsGraph(primaryAxonsDup, residualAxonsDup), 
+        getActivationFunction(), residualAxonsDup);
+  }
+  
+  protected DirectedDipoleGraph<Axons<?, ?, ?>> cloneAxonsGraph(Axons<?, ?, ?> primaryAxonsDup, 
+      Axons<?, ?, ?> residualAxonsDup) {
+
+    DirectedDipoleGraph<Axons<?, ?, ?>> dup = new DirectedDipoleGraphImpl<Axons<?, ?, ?>>();
+    for (DirectedPath<Axons<?, ?, ?>> directedPath : axonsGraph.getParallelPaths()) {
+      DirectedPath<Axons<?, ?, ?>> dupPath = new DirectedPathImpl<Axons<?, ?, ?>>();
+      for (Axons<?, ?, ?> axons : directedPath.getEdges()) {
+        Axons<? ,? ,?> dupAxons = null;
+        if (axons == primaryAxons) {
+          dupAxons = primaryAxonsDup;
+        } else if (axons == residualAxons) {
+          dupAxons = residualAxonsDup;
+        } else {
+          dupAxons = axons.dup();
+        }
+        dupPath.addEdge(dupAxons);
+      }
+      dup.addParallelPath(dupPath);
+    }
+    return dup;
   }
 }

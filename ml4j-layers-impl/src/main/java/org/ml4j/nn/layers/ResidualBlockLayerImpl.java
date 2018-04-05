@@ -2,6 +2,9 @@ package org.ml4j.nn.layers;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.FullyConnectedAxonsImpl;
+import org.ml4j.nn.axons.PassThroughAxonsImpl;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -26,6 +29,7 @@ public class ResidualBlockLayerImpl<A extends TrainableAxons<?, ?, A>,
   private L layer1;
   private L layer2;
   private MatrixFactory matrixFactory;
+  private Axons<?, ?, ?> residualAxons;
 
   /**
    * @param layer1 The first Layer in this Residual Block.
@@ -36,6 +40,36 @@ public class ResidualBlockLayerImpl<A extends TrainableAxons<?, ?, A>,
     this.layer1 = layer1;
     this.layer2 = layer2;
     this.matrixFactory = matrixFactory;
+    
+    Neurons residualActivationSource = 
+        new Neurons(layer1.getSynapses().get(0).getLeftNeurons()
+            .getNeuronCountExcludingBias(), false);
+    DirectedSynapses<?, ?> firstSynapsesOfSecondLayer = layer2.getSynapses().get(0);
+
+    Axons<?, ?, ?> residualSynapsesPrimaryAxons = firstSynapsesOfSecondLayer.getPrimaryAxons();
+    
+    if (residualActivationSource.getNeuronCountExcludingBias() 
+        == residualSynapsesPrimaryAxons.getRightNeurons().getNeuronCountExcludingBias()) { 
+      residualAxons = new PassThroughAxonsImpl(residualActivationSource,
+          residualSynapsesPrimaryAxons.getRightNeurons());
+    } else {
+      residualAxons = new FullyConnectedAxonsImpl(residualActivationSource,
+          residualSynapsesPrimaryAxons.getRightNeurons(), matrixFactory);
+    }   
+  }
+  
+  /**
+   * @param layer1 The first Layer in this Residual Block.
+   * @param layer2 The second Layer in this Residual Block.
+   * @param matrixFactory The MatrixFactory.
+   * @param residualAxons The residualAxons.
+   */
+  protected ResidualBlockLayerImpl(L layer1, L layer2, MatrixFactory matrixFactory, 
+      Axons<?, ?, ?> residualAxons) {
+    this.layer1 = layer1;
+    this.layer2 = layer2;
+    this.matrixFactory = matrixFactory;
+    this.residualAxons = residualAxons;
   }
 
   @Override
@@ -102,12 +136,18 @@ public class ResidualBlockLayerImpl<A extends TrainableAxons<?, ?, A>,
 
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<DirectedSynapses<?, ?>>();
     synapses.addAll(layer1.getSynapses());
-    DirectedSynapses<?, ?> firstSynapsesOfSecondLayer = layer2.getSynapses().get(0);
     List<DirectedSynapses<?, ?>> remainingSynapses =
         layer2.getSynapses().subList(1, layer2.getSynapses().size());
-    synapses.add(new ResidualSynapsesImpl<Neurons, Neurons>(
-        firstSynapsesOfSecondLayer.getPrimaryAxons(), 
-        new Neurons(layer1.getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias(), false),
+    
+    Neurons residualActivationSource = 
+        new Neurons(layer1.getSynapses().get(0).getLeftNeurons()
+            .getNeuronCountExcludingBias(), false);
+    DirectedSynapses<?, ?> firstSynapsesOfSecondLayer = layer2.getSynapses().get(0);
+
+    Axons<?, ?, ?> residualSynapsesPrimaryAxons = firstSynapsesOfSecondLayer.getPrimaryAxons();
+   
+    synapses.add(new ResidualSynapsesImpl<Neurons, Neurons>(residualSynapsesPrimaryAxons , 
+        residualAxons, residualActivationSource,
         firstSynapsesOfSecondLayer.getActivationFunction(), matrixFactory));
     synapses.addAll(remainingSynapses);
     return synapses;
@@ -115,6 +155,7 @@ public class ResidualBlockLayerImpl<A extends TrainableAxons<?, ?, A>,
 
   @Override
   public ResidualBlockLayerImpl<A, L> dup() {
-    return new ResidualBlockLayerImpl<A, L>(layer1.dup(), layer2.dup(), matrixFactory);
+    return new ResidualBlockLayerImpl<A, L>(layer1.dup(), layer2.dup(), matrixFactory, 
+        residualAxons.dup());
   }
 }

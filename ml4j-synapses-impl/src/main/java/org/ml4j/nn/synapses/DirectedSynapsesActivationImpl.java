@@ -125,13 +125,13 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
     List<AxonsGradient> totalTrainableAxonsGradients = new ArrayList<>();
 
     NeuronsActivation inputGradient = null;
-    Matrix totalInputGradientMatrix = null;
     NeuronsActivation totalResidualGradient = null;
 
     int pathIndex = 0;
+    List<Matrix> pathInputGradientMatrices = new ArrayList<>();
     for (DirectedPath<AxonsActivation> parallelAxonsPath : axonsActivationGraph
         .getParallelPaths()) {
-
+      
       NeuronsActivation gradientToBackPropagate = dz;
 
       int axonsIndex = parallelAxonsPath.getEdges().size() - 1;
@@ -149,30 +149,32 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
             .pushRightToLeft(gradientToBackPropagate, axonsActivation, axonsContext).getOutput();
 
         AxonsGradient totalTrainableAxonsGradient =
-            getTrainableAxonsGradient(axonsActivation, axonsContext, dz);
+            getTrainableAxonsGradient(axonsActivation, axonsContext, gradientToBackPropagate);
         if (totalTrainableAxonsGradient != null) {
           totalTrainableAxonsGradients.add(totalTrainableAxonsGradient);
-        }
-        if (totalInputGradientMatrix == null) {
-          totalInputGradientMatrix = inputGradient.getActivations();
-        } else {
-          if (residualSynapsesInput != null && pathIndex == 1) {
-            totalResidualGradient = inputGradient;
-          } else {
-            totalInputGradientMatrix = totalInputGradientMatrix.add(inputGradient.getActivations());
-          }
         }
 
         gradientToBackPropagate = inputGradient;
 
         axonsIndex--;
       }
+      pathInputGradientMatrices.add(inputGradient.getActivations());
       pathIndex++;
+    }
+    
+    Matrix totalInputGradientMatrix = pathInputGradientMatrices.get(0);
+    if (pathInputGradientMatrices.size() == 2 && residualSynapsesInput != null ) {
+      totalResidualGradient = 
+          new NeuronsActivation(pathInputGradientMatrices.get(1), 
+              inputGradient.getFeatureOrientation());
+    } else {
+      for (int i = 1; i < pathInputGradientMatrices.size(); i++) {
+        totalInputGradientMatrix = totalInputGradientMatrix.add(pathInputGradientMatrices.get(i));
+      }
     }
 
     NeuronsActivation totalInputGradient =
         new NeuronsActivation(totalInputGradientMatrix, inputGradient.getFeatureOrientation());
-
 
     return new DirectedSynapsesGradientImpl(totalInputGradient, totalTrainableAxonsGradients,
         totalResidualGradient);
