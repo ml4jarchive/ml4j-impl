@@ -19,18 +19,18 @@ package org.ml4j.nn.layers;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.LinearActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ScaleAndShiftAxonsAlternateImpl;
 import org.ml4j.nn.axons.ScaleAndShiftAxonsConfig;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.synapses.ActivationFunctionDirectedSynapsesImpl;
+import org.ml4j.nn.synapses.AxonsDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.BatchNormDirectedSynapses;
 import org.ml4j.nn.synapses.BatchNormDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
-import org.ml4j.nn.synapses.DirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapsesInput;
 import org.ml4j.nn.synapses.DirectedSynapsesInputImpl;
 import org.slf4j.Logger;
@@ -181,14 +181,16 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
     List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
     if (withBatchNorm) {
  
-      synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons(), 
-          new LinearActivationFunction()));
+      synapses.add(new AxonsDirectedSynapsesImpl<Neurons, Neurons>(getPrimaryAxons()));
       
       synapses.add(batchNormSynapses);
       
     } else {
-      synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(
-          getPrimaryAxons(), getPrimaryActivationFunction()));
+      synapses.add(new AxonsDirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons()));
+      synapses.add(new ActivationFunctionDirectedSynapsesImpl<Neurons, Neurons>(
+          getPrimaryAxons().getLeftNeurons(), 
+          getPrimaryAxons().getRightNeurons() ,getPrimaryActivationFunction()));
     }
     return synapses;
   }
