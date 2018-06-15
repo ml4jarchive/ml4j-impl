@@ -15,7 +15,6 @@
 package org.ml4j.nn.synapses;
 
 import org.ml4j.Matrix;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
 import org.ml4j.nn.axons.AxonsContext;
@@ -34,14 +33,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Default implementation of DirectedSynapsesActivation.
+ * Implementation of DirectedSynapsesActivation generated
+ * by Synapses containing only Axons.
  * 
  * @author Michael Lavelle
  */
-public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBase {
+public class AxonsDirectedSynapsesActivationImpl extends DirectedSynapsesActivationBase {
 
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(DirectedSynapsesActivationImpl.class);
+      LoggerFactory.getLogger(AxonsDirectedSynapsesActivationImpl.class);
 
   /**
    * 
@@ -51,11 +51,10 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
    * @param activationFunctionActivation The activation function activation.
    * @param outputActivation The output activation.
    */
-  public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses,
+  public AxonsDirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses,
       DirectedSynapsesInput inputActivation, DirectedDipoleGraph<AxonsActivation> axonsActivation,
-      DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
-    super(synapses, inputActivation, axonsActivation, activationFunctionActivation,
+    super(synapses, inputActivation, axonsActivation, null,
         outputActivation);
   }
 
@@ -67,23 +66,15 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
     LOGGER.debug("Back propagating through synapses activation....");
 
     validateAxonsAndAxonsActivation();
-
-    NeuronsActivation dz = activationFunctionActivation.backPropagate(da, context).getOutput();
-
-    return backPropagateThroughAxons(dz, context);
+    
+    return backPropagateThroughAxons(da.getOutput(), context);
   }
 
   @Override
   public DirectedSynapsesGradient backPropagate(CostFunctionGradient da,
       DirectedSynapsesContext context) {
-
-    LOGGER.debug("Back propagating through synapses activation....");
-
-    validateAxonsAndAxonsActivation();
-
-    NeuronsActivation dz = activationFunctionActivation.backPropagate(da, context).getOutput();
-
-    return backPropagateThroughAxons(dz, context);
+    throw new UnsupportedOperationException("Back propagation of CostFunctionGradient "
+        + "not currently supported");
   }
 
   private void validateAxonsAndAxonsActivation() {

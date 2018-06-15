@@ -29,13 +29,20 @@ public class DirectedSynapsesInputImpl implements DirectedSynapsesInput {
    * The input activation on the left hand Neurons of the DirectedSynapses.
    */
   private NeuronsActivation input;
+  private NeuronsActivation residualInput;
 
-  public DirectedSynapsesInputImpl(NeuronsActivation input) {
+  public DirectedSynapsesInputImpl(NeuronsActivation input, NeuronsActivation residualInput) {
     this.input = input;
+    this.residualInput = residualInput;
   }
 
   @Override
   public NeuronsActivation getInput() {
     return input;
+  }
+
+  @Override
+  public NeuronsActivation getResidualInput() {
+    return residualInput;
   }
 }

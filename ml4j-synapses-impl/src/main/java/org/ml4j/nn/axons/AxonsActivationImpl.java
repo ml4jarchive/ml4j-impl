@@ -58,7 +58,8 @@ public class AxonsActivationImpl implements AxonsActivation {
   public NeuronsActivationWithPossibleBiasUnit getPostDropoutInputWithPossibleBias() {
     return postDropoutInput;
   }
-
+  
+  @Override
   public Axons<?, ?, ?> getAxons() {
     return axons;
   }

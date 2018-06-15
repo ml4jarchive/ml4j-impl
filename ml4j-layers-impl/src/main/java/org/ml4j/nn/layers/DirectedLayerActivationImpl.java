@@ -113,7 +113,7 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
     return backPropagateAndAddToSynapseGradientList(acts, grad, remainingActivations, layerContext);
   }
 
-  private DirectedLayerGradient backPropagateAndAddToSynapseGradientList(
+  protected DirectedLayerGradient backPropagateAndAddToSynapseGradientList(
       List<DirectedSynapsesGradient> synapseGradientList,
       DirectedSynapsesGradient outerSynapsesGradient,
       List<DirectedSynapsesActivation> activationsToBackPropagateThrough,

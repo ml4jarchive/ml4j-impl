@@ -4,6 +4,8 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
+import org.ml4j.nn.graph.DirectedDipoleGraph;
+import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.neurons.Neurons;
 
 /**
@@ -66,12 +68,7 @@ public class BatchNormDirectedSynapsesImpl
 
   @Override
   public DifferentiableActivationFunction getActivationFunction() {
-    return null;
-  }
-
-  @Override
-  public Axons<?, ?, ?> getAxons() {
-    return scaleAndShiftAxons;
+    return activationFunction;
   }
 
   @Override
@@ -97,5 +94,15 @@ public class BatchNormDirectedSynapsesImpl
   @Override
   public void setExponentiallyWeightedAverageInputFeatureVariances(Matrix arg0) {
     throw new UnsupportedOperationException("Not implemented yet");    
+  }
+
+  @Override
+  public DirectedDipoleGraph<Axons<?, ?, ?>> getAxonsGraph() {
+    return new DirectedDipoleGraphImpl<Axons<?, ?, ?>>(scaleAndShiftAxons);
+  }
+
+  @Override
+  public Axons<?, ?, ?> getPrimaryAxons() {
+    return scaleAndShiftAxons;
   }
 }

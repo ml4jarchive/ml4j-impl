@@ -173,11 +173,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
     for (DirectedLayerGradient gradient : reversed) {
       for (DirectedSynapsesGradient synapsesGradient : gradient.getSynapsesGradients()) {
         
-        AxonsGradient totalTrainableAxonsGradient 
-            = synapsesGradient.getTotalTrainableAxonsGradient();
+        List<AxonsGradient> totalTrainableAxonsGradient 
+            = synapsesGradient.getTotalTrainableAxonsGradients();
         
         if (totalTrainableAxonsGradient != null) {
-          totalTrainableAxonsGradients.add(totalTrainableAxonsGradient);
+          totalTrainableAxonsGradients.addAll(totalTrainableAxonsGradient);
         }
       }
     }

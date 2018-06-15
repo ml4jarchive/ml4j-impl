@@ -41,7 +41,7 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    */
   private MatrixFactory matrixFactory;
   private boolean withFreezeOut;
-  private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
+  private Map<Integer, Map<Integer, AxonsContext>> axonsContextsByPathIndexAndAxonsIndex;
   
   /**
    * Construct a new default DirectedSynapsesContext.
@@ -52,7 +52,7 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
   public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
     this.withFreezeOut = withFreezeOut;
-    this.axonsContextsByAxonsIndex = new HashMap<>();
+    this.axonsContextsByPathIndexAndAxonsIndex = new HashMap<>();
   }
  
   @Override
@@ -61,16 +61,24 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
   }
 
   @Override
-  public AxonsContext getAxonsContext(int axonsIndex) {
+  public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
     
-    AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
+    Map<Integer, AxonsContext> axonsContextsByIndex 
+        = axonsContextsByPathIndexAndAxonsIndex.get(pathIndex);
+    if (axonsContextsByIndex == null) {
+      axonsContextsByIndex = new HashMap<Integer, AxonsContext>();
+      axonsContextsByPathIndexAndAxonsIndex.put(pathIndex, axonsContextsByIndex);
+    }
+    AxonsContext axonsContext = axonsContextsByIndex.get(axonsIndex);
+
     if (axonsContext == null) {
       axonsContext = new AxonsContextImpl(matrixFactory,  withFreezeOut);
-      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+      axonsContextsByIndex.put(axonsIndex, axonsContext);
     }
+    
     if (axonsContext.isWithFreezeOut() != withFreezeOut) {
       axonsContext.setWithFreezeOut(withFreezeOut);
-      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+      axonsContextsByIndex.put(axonsIndex, axonsContext);
     }
     return axonsContext;
   }

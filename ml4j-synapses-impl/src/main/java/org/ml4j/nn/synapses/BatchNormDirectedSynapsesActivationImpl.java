@@ -8,12 +8,16 @@ import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsGradientImpl;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
+import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationWithPossibleBiasUnit;
+
+import java.util.Arrays;
 
 public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesActivationBase {
   
   private ScaleAndShiftAxons scaleAndShiftAxons;
+  private AxonsActivation axonsActivation;
   
   /**
    * @param synapses The synapses.
@@ -28,9 +32,11 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
       DirectedSynapsesInput inputActivation, AxonsActivation axonsActivation,
       DifferentiableActivationFunctionActivation activationFunctionActivation,
       NeuronsActivation outputActivation) {
-    super(synapses, inputActivation, axonsActivation, 
+    super(synapses, inputActivation, 
+        new DirectedDipoleGraphImpl<AxonsActivation>(axonsActivation), 
         activationFunctionActivation, outputActivation);
     this.scaleAndShiftAxons = scaleAndShiftAxons;
+    this.axonsActivation = axonsActivation;
   }
 
   @Override
@@ -38,7 +44,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
       DirectedSynapsesContext context) {
  
     NeuronsActivationWithPossibleBiasUnit xhatn1 =
-        getAxonsActivation().getPostDropoutInputWithPossibleBias()
+        axonsActivation.getPostDropoutInputWithPossibleBias()
         .withBiasUnit(false, context);
     
     NeuronsActivation xhatn = new NeuronsActivation(xhatn1.getActivations(), 
@@ -94,6 +100,11 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
 
     int num = xhat.getRows();
 
+    if (getInput().getResidualInput() != null) {
+      throw new IllegalArgumentException(
+          "Residual " + "input not supported for batch norm synapses");
+    }
+    
     NeuronsActivation input = getInput().getInput();
 
     Matrix meanMatrix = getMeanMatrix(input, context.getMatrixFactory());
@@ -126,8 +137,8 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(0, dgamma);
     axonsGradient.putRow(1, dbeta);
 
-    return new DirectedSynapsesGradientImpl(dxn, 
-        new AxonsGradientImpl(scaleAndShiftAxons, axonsGradient.transpose()));
+    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(
+        new AxonsGradientImpl(scaleAndShiftAxons, axonsGradient.transpose())), null);
   }
   
   
@@ -135,14 +146,14 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
   public DirectedSynapsesGradient backPropagate(CostFunctionGradient outerGradient,
       DirectedSynapsesContext context) {
  
-    AxonsContext axonsContext = context.getAxonsContext(0);
+    AxonsContext axonsContext = context.getAxonsContext(0, 0);
     if (axonsContext.getLeftHandInputDropoutKeepProbability() != 1d) {
       throw new UnsupportedOperationException(
           "Reguarlisation of batch norm synapses not yet supported");
     }
 
     NeuronsActivationWithPossibleBiasUnit xhatn1 =
-        getAxonsActivation().getPostDropoutInputWithPossibleBias()
+        axonsActivation.getPostDropoutInputWithPossibleBias()
         .withBiasUnit(false, context);
     
     NeuronsActivation xhatn = new NeuronsActivation(xhatn1.getActivations(), 
@@ -239,8 +250,8 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     axonsGradient.putRow(1, dbeta);
     
 
-    return new DirectedSynapsesGradientImpl(dxn, 
-        new AxonsGradientImpl(scaleAndShiftAxons, axonsGradient.transpose()));
+    return new DirectedSynapsesGradientImpl(dxn, Arrays.asList(
+        new AxonsGradientImpl(scaleAndShiftAxons, axonsGradient.transpose())), null);
   }
   
   /**
@@ -306,7 +317,7 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
 
   @Override
   public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
-    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
+    AxonsContext axonsContext = synapsesContext.getAxonsContext(0, 0);
     if (axonsContext.getLeftHandInputDropoutKeepProbability() != 1d) {
       throw new UnsupportedOperationException(
           "Reguarlisation of batch norm synapses not yet supported");

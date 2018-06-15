@@ -20,6 +20,9 @@ import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.AxonsGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Default implementation of DirectedSynapsesGradient.
  * 
@@ -27,25 +30,36 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  */
 public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
 
-  private AxonsGradient axonsGradient;
+  private List<AxonsGradient> axonsGradients;
   private NeuronsActivation output;
+  private NeuronsActivation residualOutput;
 
-  public DirectedSynapsesGradientImpl(NeuronsActivation output, AxonsGradient axonsGradient) {
-    this.axonsGradient = axonsGradient;
+  /**
+   * @param output The output gradient
+   * @param axonsGradients The axons gradients
+   * @param residualOutput The residual output gradient.
+   */
+  public DirectedSynapsesGradientImpl(NeuronsActivation output, List<AxonsGradient> axonsGradients, 
+      NeuronsActivation residualOutput) { 
+    this.axonsGradients = axonsGradients;
     this.output = output;
+    this.residualOutput = residualOutput;
   }
 
   @Override
-  public AxonsGradient getTotalTrainableAxonsGradient() {
-    return axonsGradient;
+  public List<AxonsGradient> getTotalTrainableAxonsGradients() {
+    return axonsGradients;
   }
   
   @Override
-  public AxonsGradient getAverageTrainableAxonsGradient() {
-    return axonsGradient == null ? null : 
-      new AxonsGradientImpl(axonsGradient.getAxons(), 
-          axonsGradient.getGradient()
-          .div(axonsGradient.getGradient().getColumns()));
+  public List<AxonsGradient> getAverageTrainableAxonsGradients() {
+    
+    List<AxonsGradient> averageGradients = new ArrayList<>();
+    for (AxonsGradient axonsGradient : axonsGradients) {
+      averageGradients.add(new AxonsGradientImpl(axonsGradient.getAxons(), 
+          axonsGradient.getGradient().div(axonsGradient.getGradient().getColumns())));
+    }
+    return averageGradients;
   }
 
   @Override
@@ -55,8 +69,11 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
 
   @Override
   public String toString() {
-    return "DirectedSynapsesGradientImpl [axonsGradient=" 
-          + axonsGradient.getGradient().getRows() + ":"
-        + axonsGradient.getGradient().getColumns() + "]";
+    return "DirectedSynapsesGradientImpl";
+  }
+
+  @Override
+  public NeuronsActivation getResidualOutput() {
+    return residualOutput;
   }
 }
