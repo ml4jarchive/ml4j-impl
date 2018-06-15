@@ -31,6 +31,7 @@ import org.ml4j.nn.synapses.BatchNormDirectedSynapses;
 import org.ml4j.nn.synapses.BatchNormDirectedSynapsesImpl;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
+import org.ml4j.nn.synapses.DirectedSynapsesContext;
 import org.ml4j.nn.synapses.DirectedSynapsesInput;
 import org.ml4j.nn.synapses.DirectedSynapsesInputImpl;
 import org.slf4j.Logger;
@@ -117,7 +118,6 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
   public NeuronsActivation getOptimalInputForOutputNeuron(int outputNeuronIndex,
       DirectedLayerContext directedLayerContext) {
     LOGGER.debug("Obtaining optimal input for output neuron with index:" + outputNeuronIndex);
-    //int countJ = getPrimaryAxons().getLeftNeurons().getNeuronCountExcludingBias();
     Matrix weights = getPrimaryAxons().getDetachedConnectionWeights();
     int countJ = weights.getRows() - (getPrimaryAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0);
     double[] maximisingInputFeatures = new double[countJ];
@@ -193,5 +193,18 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>,
           getPrimaryAxons().getRightNeurons() ,getPrimaryActivationFunction()));
     }
     return synapses;
+  }
+  
+  @Override
+  public double getTotalRegularisationCost(DirectedLayerContext layerContext) {
+    double totalRegularisationCost = 0d;
+    int synapsesIndex = 0;
+    for (DirectedSynapses<?, ?> synapses : getSynapses()) {
+      DirectedSynapsesContext synapsesContext = layerContext.getSynapsesContext(synapsesIndex);
+      totalRegularisationCost =
+          totalRegularisationCost + synapses.getTotalRegularisationCost(synapsesContext);
+      synapsesIndex++;
+    }
+    return totalRegularisationCost;
   }
 }

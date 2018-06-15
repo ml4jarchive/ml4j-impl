@@ -137,7 +137,7 @@ public class AxonsDirectedSynapsesActivationImpl extends DirectedSynapsesActivat
 
         // Will contain bias unit if Axons have left bias unit
         inputGradient = axonsActivation.getAxons()
-            .pushRightToLeft(gradientToBackPropagate, axonsActivation, axonsContext).getOutput();
+            .pushRightToLeft(gradientToBackPropagate, null, axonsContext).getOutput();
 
         AxonsGradient totalTrainableAxonsGradient =
             getTrainableAxonsGradient(axonsActivation, axonsContext, gradientToBackPropagate);
@@ -189,7 +189,8 @@ public class AxonsDirectedSynapsesActivationImpl extends DirectedSynapsesActivat
 
         LOGGER.debug("Calculating total regularisation Gradients");
 
-        Matrix connectionWeightsCopy = axons.getDetachedConnectionWeights();
+        Matrix connectionWeightsCopy = ((TrainableAxons<?, ?, ?>)axons)
+            .getDetachedConnectionWeights();
 
         Matrix firstRow = totalTrainableAxonsGradientMatrix.getRow(0);
         Matrix firstColumn = totalTrainableAxonsGradientMatrix.getColumn(0);

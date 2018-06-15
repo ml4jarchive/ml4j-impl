@@ -16,26 +16,18 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
-import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
-import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.graph.DirectedDipoleGraph;
-import org.ml4j.nn.graph.DirectedPath;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of DirectedSynapsesActivation.
  * 
  * @author Michael Lavelle
  */
-public abstract class DirectedSynapsesActivationBase implements DirectedSynapsesActivation {
-
-  private static final Logger LOGGER = 
-      LoggerFactory.getLogger(DirectedSynapsesActivationBase.class);
+public abstract class DirectedSynapsesActivationBase implements DirectedSynapsesActivation, 
+    AxonsDirectedSynapsesActivation, ActivationFunctionDirectedSynapsesActivation {
   
   protected DirectedSynapsesInput inputActivation;
   protected DirectedDipoleGraph<AxonsActivation> axonsActivationGraph;
@@ -74,59 +66,6 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
   @Override
   public DirectedSynapses<?, ?> getSynapses() {
     return synapses;
-  }
-
-  @Override
-  public double getAverageRegularisationCost(DirectedSynapsesContext synapsesContext) {
-    LOGGER.debug("Calculating average regularisation cost");
-    return getTotalRegularisationCost(synapsesContext) 
-        / outputActivation.getActivations().getRows();
-  }
-
-  @Override
-  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
-  
-    double totalRegularisationCost = 0d;
-    int pathIndex = 0;
-    for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath  : 
-          synapses.getAxonsGraph().getParallelPaths()) {
-        
-      int axonsIndex = 0;
-      for (Axons<?, ?, ?> axons : parallelAxonsPath.getEdges()) {
-        AxonsContext axonsContext = synapsesContext.getAxonsContext(pathIndex, axonsIndex);
-
-        if (axonsContext.getRegularisationLambda() != 0) {
-
-          LOGGER.debug("Calculating total regularisation cost");
-          
-          Matrix weightsWithBiases = axons.getDetachedConnectionWeights();
-
-          int[] rows = new int[weightsWithBiases.getRows()
-              - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
-          int[] cols = new int[weightsWithBiases.getColumns()
-              - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)];
-          for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
-            cols[j - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
-          }
-          for (int j = 1; j < weightsWithBiases.getRows(); j++) {
-            rows[j - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
-          }
-
-          Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
-
-          double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
-          totalRegularisationCost = 
-              totalRegularisationCost 
-              + ((axonsContext.getRegularisationLambda()) * regularisationMatrix) / 2;
-        }
-        
-        
-        axonsIndex++;
-      }
-      pathIndex++;
-      
-    }
-    return totalRegularisationCost;
   }
 
   @Override

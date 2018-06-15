@@ -96,17 +96,14 @@ public class ForwardPropagationImpl implements ForwardPropagation {
     return backPropagation;
   }
 
-  @Override
-  public double getAverageRegularisationCost(DirectedNeuralNetworkContext context) {
-    return getTotalRegularisationCost(context) / outputActivations.getActivations().getRows();
-  }
 
   @Override
   public double getTotalRegularisationCost(DirectedNeuralNetworkContext context) {
     double totalRegularisationCost = 0d;
     int layerIndex = 0;
     for (DirectedLayerActivation activation : activations) {
-      totalRegularisationCost = totalRegularisationCost + activation.getTotalRegularisationCost(
+      totalRegularisationCost = totalRegularisationCost 
+           + activation.getLayer().getTotalRegularisationCost(
           context.getLayerContext(layerIndex++));
     }
     return totalRegularisationCost;

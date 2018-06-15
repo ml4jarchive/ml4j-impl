@@ -18,22 +18,23 @@ import org.ml4j.Matrix;
 
 public class AxonsGradientImpl implements AxonsGradient {
 
-  private TrainableAxons<?, ?, ?> axons;
+  private TrainableAxonsWeightsContainer axonsWeightsContainer;
   
   private Matrix gradient;
 
   /**
-   * @param axons The TrainableAxons that generated this gradient.
+   * @param axonsWeightsContainer The TrainableAxonsWeightsContainer wrapping the weights that
+   *        generated this gradient.
    * @param gradient The gradient.
    */
-  public AxonsGradientImpl(TrainableAxons<?, ?, ?> axons, Matrix gradient) {
+  public AxonsGradientImpl(TrainableAxonsWeightsContainer axonsWeightsContainer, Matrix gradient) {
     super();
-    this.axons = axons;
+    this.axonsWeightsContainer = axonsWeightsContainer;
     this.gradient = gradient;
   }
 
-  public TrainableAxons<?, ?, ?> getAxons() {
-    return axons;
+  public TrainableAxonsWeightsContainer getAxonsWeightsContainer() {
+    return axonsWeightsContainer;
   }
 
   public Matrix getGradient() {

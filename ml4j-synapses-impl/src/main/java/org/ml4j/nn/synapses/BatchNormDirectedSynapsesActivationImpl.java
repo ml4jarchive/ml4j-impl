@@ -315,13 +315,4 @@ public class BatchNormDirectedSynapsesActivationImpl extends DirectedSynapsesAct
     return meanMatrix;
   }
 
-  @Override
-  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
-    AxonsContext axonsContext = synapsesContext.getAxonsContext(0, 0);
-    if (axonsContext.getLeftHandInputDropoutKeepProbability() != 1d) {
-      throw new UnsupportedOperationException(
-          "Reguarlisation of batch norm synapses not yet supported");
-    }
-    return 0;
-  }
 }

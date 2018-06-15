@@ -22,7 +22,7 @@ import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
 import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
 import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
-import org.ml4j.nn.axons.TrainableAxons;
+import org.ml4j.nn.axons.TrainableAxonsWeightsContainer;
 import org.ml4j.nn.costfunctions.CostFunction;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
@@ -233,7 +233,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
       int iterationIndex) {
     int axonsIndex = 0;
     for (AxonsGradient axonsGradient : trainableAxonsGradients) {
-      TrainableAxons<?, ?, ?> trainableAxons = axonsGradient.getAxons();
+      TrainableAxonsWeightsContainer axonsWeightsContainer 
+          = axonsGradient.getAxonsWeightsContainer();
       // Transpose the axon gradients into matrices that correspond to the orientation of the
       // connection weights ( COLUMNS_SPAN_FEATURE_SET )
       Matrix axonsGrad = axonsGradient.getGradient().transpose();
@@ -241,7 +242,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
           trainingContext, epochIndex, batchIndex, iterationIndex);
       // Adjust the weights of each set of Axons by subtracting the learning-rate scaled
       // gradient matrices
-      trainableAxons.adjustConnectionWeights(
+      axonsWeightsContainer.adjustConnectionWeights(
           adjustedAxonsGradient.mul(
               getTrainingLearningRate(trainingContext, epochIndex, batchIndex, iterationIndex)),
           ConnectionWeightsAdjustmentDirection.SUBTRACTION);

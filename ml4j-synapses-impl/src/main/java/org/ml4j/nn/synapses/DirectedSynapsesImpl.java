@@ -21,6 +21,8 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsActivation;
+import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.graph.DirectedDipoleGraph;
 import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
 import org.ml4j.nn.graph.DirectedPath;
@@ -36,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Lavelle
  */
 public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> 
-    implements DirectedSynapses<L, R> {
+    implements DirectedSynapses<L, R>, AxonsDirectedSynapses<L, R> {
 
   /**
    * Default serialization id.
@@ -86,6 +88,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   /**
    * @return The Axons graph within these DirectedSynapses.
    */
+  @Override
   public DirectedDipoleGraph<Axons<?, ?, ?>> getAxonsGraph() {
     return new DirectedDipoleGraphImpl<Axons<?, ?, ?>>(primaryAxons);
   }
@@ -214,4 +217,54 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons>
   public R getRightNeurons() {
     return primaryAxons.getRightNeurons();
   }
+  
+  @Override
+  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
+  
+    double totalRegularisationCost = 0d;
+    int pathIndex = 0;
+    for (DirectedPath<Axons<?, ?, ?>> parallelAxonsPath  : 
+          getAxonsGraph().getParallelPaths()) {
+        
+      int axonsIndex = 0;
+      for (Axons<?, ?, ?> axons : parallelAxonsPath.getEdges()) {
+        AxonsContext axonsContext = synapsesContext.getAxonsContext(pathIndex, axonsIndex);
+
+        if (axonsContext.getRegularisationLambda() != 0 
+            && axons instanceof TrainableAxons 
+            && axons.isTrainable(axonsContext)) {
+
+          LOGGER.debug("Calculating total regularisation cost");
+          
+          Matrix weightsWithBiases = ((TrainableAxons<?, ?, ?>)axons)
+              .getDetachedConnectionWeights();
+
+          int[] rows = new int[weightsWithBiases.getRows()
+              - (getLeftNeurons().hasBiasUnit() ? 1 : 0)];
+          int[] cols = new int[weightsWithBiases.getColumns()
+              - (getRightNeurons().hasBiasUnit() ? 1 : 0)];
+          for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
+            cols[j - (getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
+          }
+          for (int j = 1; j < weightsWithBiases.getRows(); j++) {
+            rows[j - (getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
+          }
+
+          Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
+
+          double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
+          totalRegularisationCost = 
+              totalRegularisationCost 
+              + ((axonsContext.getRegularisationLambda()) * regularisationMatrix) / 2;
+        }
+        
+        
+        axonsIndex++;
+      }
+      pathIndex++;
+      
+    }
+    return totalRegularisationCost;
+  }
+
 }

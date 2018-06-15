@@ -144,25 +144,6 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
   }
 
   @Override
-  public double getAverageRegularistationCost(DirectedLayerContext layerContext) {
-    return getTotalRegularisationCost(layerContext)
-        / outputActivation.getActivations().getRows();
-  }
-
-  @Override
-  public double getTotalRegularisationCost(DirectedLayerContext layerContext) {
-    double totalRegularisationCost = 0d;
-    int synapsesIndex = 0;
-    for (DirectedSynapsesActivation activation : synapseActivations) {
-      DirectedSynapsesContext synapsesContext = layerContext.getSynapsesContext(synapsesIndex);
-      totalRegularisationCost =
-          totalRegularisationCost + activation.getTotalRegularisationCost(synapsesContext);
-      synapsesIndex++;
-    }
-    return totalRegularisationCost;
-  }
-
-  @Override
   public List<DirectedSynapsesActivation> getSynapsesActivations() {
     return synapseActivations;
   }

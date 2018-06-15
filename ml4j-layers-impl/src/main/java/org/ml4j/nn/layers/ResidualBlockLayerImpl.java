@@ -10,6 +10,7 @@ import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.synapses.DirectedSynapses;
 import org.ml4j.nn.synapses.DirectedSynapsesActivation;
+import org.ml4j.nn.synapses.DirectedSynapsesContext;
 import org.ml4j.nn.synapses.DirectedSynapsesInput;
 import org.ml4j.nn.synapses.DirectedSynapsesInputImpl;
 import org.ml4j.nn.synapses.ResidualSynapsesImpl;
@@ -157,5 +158,18 @@ public class ResidualBlockLayerImpl<A extends TrainableAxons<?, ?, A>,
   public ResidualBlockLayerImpl<A, L> dup() {
     return new ResidualBlockLayerImpl<A, L>(layer1.dup(), layer2.dup(), matrixFactory, 
         residualAxons.dup());
+  }
+  
+  @Override
+  public double getTotalRegularisationCost(DirectedLayerContext layerContext) {
+    double totalRegularisationCost = 0d;
+    int synapsesIndex = 0;
+    for (DirectedSynapses<?, ?> synapses : getSynapses()) {
+      DirectedSynapsesContext synapsesContext = layerContext.getSynapsesContext(synapsesIndex);
+      totalRegularisationCost =
+          totalRegularisationCost + synapses.getTotalRegularisationCost(synapsesContext);
+      synapsesIndex++;
+    }
+    return totalRegularisationCost;
   }
 }

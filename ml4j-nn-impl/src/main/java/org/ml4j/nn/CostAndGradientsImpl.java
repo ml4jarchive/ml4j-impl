@@ -67,7 +67,7 @@ public class CostAndGradientsImpl implements CostAndGradients {
     List<AxonsGradient> averages = new ArrayList<>();
     for (AxonsGradient total : getTotalTrainableAxonsGradients()) {
       averages.add(
-          new AxonsGradientImpl(total.getAxons(), 
+          new AxonsGradientImpl(total.getAxonsWeightsContainer(), 
               total.getGradient().div(numberOfTrainingExamples)));
     }
     return averages;

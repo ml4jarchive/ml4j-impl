@@ -56,7 +56,7 @@ public class DirectedSynapsesGradientImpl implements DirectedSynapsesGradient {
     
     List<AxonsGradient> averageGradients = new ArrayList<>();
     for (AxonsGradient axonsGradient : axonsGradients) {
-      averageGradients.add(new AxonsGradientImpl(axonsGradient.getAxons(), 
+      averageGradients.add(new AxonsGradientImpl(axonsGradient.getAxonsWeightsContainer(), 
           axonsGradient.getGradient().div(axonsGradient.getGradient().getColumns())));
     }
     return averageGradients;

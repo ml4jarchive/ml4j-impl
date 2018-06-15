@@ -127,4 +127,10 @@ public class ActivationFunctionDirectedSynapsesImpl<L extends Neurons, R extends
   public R getRightNeurons() {
     return rightNeurons;
   }
+  
+  @Override
+  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
+    return 0;
+  }
+    
 }

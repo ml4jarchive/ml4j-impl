@@ -3,6 +3,7 @@ package org.ml4j.nn.synapses;
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.ScaleAndShiftAxons;
 import org.ml4j.nn.graph.DirectedDipoleGraph;
 import org.ml4j.nn.graph.DirectedDipoleGraphImpl;
@@ -17,7 +18,8 @@ import org.ml4j.nn.neurons.Neurons;
  * @param <R> The Neurons on the right hand side of these batch-norm DirectedSynapses.
  */
 public class BatchNormDirectedSynapsesImpl
-      <L extends Neurons, R extends Neurons> implements BatchNormDirectedSynapses<L, R> {
+      <L extends Neurons, R extends Neurons> implements BatchNormDirectedSynapses<L, R>, 
+      AxonsDirectedSynapses<L, R> {
 
   /**
    * Default serialization id.
@@ -104,5 +106,16 @@ public class BatchNormDirectedSynapsesImpl
   @Override
   public Axons<?, ?, ?> getPrimaryAxons() {
     return scaleAndShiftAxons;
+  }
+  
+  
+  @Override
+  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
+    AxonsContext axonsContext = synapsesContext.getAxonsContext(0, 0);
+    if (axonsContext.getLeftHandInputDropoutKeepProbability() != 1d) {
+      throw new UnsupportedOperationException(
+          "Reguarlisation of batch norm synapses not yet supported");
+    }
+    return 0;
   }
 }

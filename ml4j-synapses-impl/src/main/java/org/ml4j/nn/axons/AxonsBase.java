@@ -446,12 +446,6 @@ public abstract class AxonsBase<L extends Neurons, R extends Neurons,
         outputActivation);
   }
 
-  @Override
-  public Matrix getDetachedConnectionWeights() {
-    LOGGER.debug("Duplicating connetion weights");
-    return connectionWeights.dup();
-  }
-
   protected void adjustConnectionWeights(Matrix adjustment,
       ConnectionWeightsAdjustmentDirection adjustmentDirection, boolean initialisation) {
 
@@ -476,6 +470,14 @@ public abstract class AxonsBase<L extends Neurons, R extends Neurons,
       connectionWeights.subi(adjustment);
     }
   }
+  
+  
+  @Override
+  public Matrix getDetachedConnectionWeights() {
+    LOGGER.debug("Duplicating connetion weights");
+    return connectionWeights.dup();
+  }
+  
 
   protected void applyAdditionalConnectionWeightAdjustmentConstraints(Matrix adjustment) {
     // No-op by default

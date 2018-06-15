@@ -16,7 +16,7 @@ import org.ml4j.nn.neurons.Neurons;
 public abstract class TrainableAxonsBase<L extends Neurons, 
     R extends Neurons, A extends TrainableAxons<L, R, A>, C extends AxonsConfig> 
     extends AxonsBase<L, R, A, C> implements TrainableAxons<L, R, A> {
-
+  
   /**
    * Default serialization id.
    */
@@ -55,6 +55,5 @@ public abstract class TrainableAxonsBase<L extends Neurons,
   public boolean isTrainable(AxonsContext context) {
     return !context.isWithFreezeOut();
   }
-  
   
 }
