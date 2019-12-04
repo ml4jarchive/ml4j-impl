@@ -14,14 +14,23 @@
 
 package org.ml4j.nn.supervised;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.ml4j.EditableMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.CostAndGradientsImpl;
 import org.ml4j.nn.FeedForwardNeuralNetworkBase;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
-import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.components.ChainableDirectedComponent;
+import org.ml4j.nn.components.ChainableDirectedComponentActivation;
+import org.ml4j.nn.components.DirectedComponentChain;
+import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
 /**
  * Default implementation of SupervisedFeedForwardNeuralNetwork.
@@ -29,7 +38,7 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  * @author Michael Lavelle
  */
 public class SupervisedFeedForwardNeuralNetworkImpl 
-    extends FeedForwardNeuralNetworkBase<FeedForwardNeuralNetworkContext, 
+    extends FeedForwardNeuralNetworkBase<FeedForwardNeuralNetworkContext, DirectedComponentChain<NeuronsActivation, ?, ?, ?>,
     SupervisedFeedForwardNeuralNetwork> implements SupervisedFeedForwardNeuralNetwork {
   
   /**
@@ -42,13 +51,42 @@ public class SupervisedFeedForwardNeuralNetworkImpl
    * 
    * @param layers The layers
    */
-  public SupervisedFeedForwardNeuralNetworkImpl(FeedForwardLayer<?, ?>... layers) {
-    super(layers);
+  public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentChain<NeuronsActivation, ?, ?, ?> initialisingComponentChain) {
+    super(initialisingComponentChain);
+  }
+  
+  /**
+   * Constructor for a multi-layer supervised FeedForwardNeuralNetwork.
+   * 
+   * @param layers The layers
+   */
+  public SupervisedFeedForwardNeuralNetworkImpl(List<ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>> componentList) {
+    super(new DefaultDirectedComponentChainImpl<>(componentList));
+  }
+  
+  /**
+   * Constructor for a multi-layer supervised FeedForwardNeuralNetwork.
+   * 
+   * @param layers The layers
+   */
+  public SupervisedFeedForwardNeuralNetworkImpl(ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>... componentList) {
+    super(new DefaultDirectedComponentChainImpl<>(Arrays.asList(componentList)));
   }
 
   @Override
   public void train(NeuronsActivation trainingDataActivations,
       NeuronsActivation trainingLabelActivations, FeedForwardNeuralNetworkContext trainingContext) {
+	  if (trainingDataActivations
+		        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+		      throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
+		          + "orientation supported currently");
+		    }
+	  
+	  if (trainingLabelActivations
+		        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+		      throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
+		          + "orientation supported currently");
+		    }
     super.train(trainingDataActivations, trainingLabelActivations, trainingContext);
   }
   
@@ -61,22 +99,22 @@ public class SupervisedFeedForwardNeuralNetworkImpl
    * @return The accuracy
    */
   @Override
-  public double getClassificationAccuracy(NeuronsActivation inputActivations,
+  public float getClassificationAccuracy(NeuronsActivation inputActivations,
       NeuronsActivation desiredClassificationActivations, FeedForwardNeuralNetworkContext context) {
 
     // Forward propagate the trainingDataActivations
     ForwardPropagation forwardPropagation = forwardPropagate(inputActivations, context);
 
-    Matrix predictions = getClassifications(forwardPropagation.getOutputs().getActivations(),
+    Matrix predictions = getClassifications(forwardPropagation.getOutput().getActivations(context.getMatrixFactory()).transpose(),
         context.getMatrixFactory());
 
-    return computeAccuracy(predictions, desiredClassificationActivations.getActivations());
+    return computeAccuracy(predictions, desiredClassificationActivations.getActivations(context.getMatrixFactory()).transpose());
   }
 
   private Matrix getClassifications(Matrix outputActivations, MatrixFactory matrixFactory) {
 
-    Matrix predictions = 
-        matrixFactory.createZeros(outputActivations.getRows(), outputActivations.getColumns());
+    EditableMatrix predictions = 
+        matrixFactory.createZeros(outputActivations.getRows(), outputActivations.getColumns()).asEditableMatrix();
     for (int row = 0; row < outputActivations.getRows(); row++) {
 
       int index = outputActivations.getRow(row).argmax();
@@ -93,13 +131,14 @@ public class SupervisedFeedForwardNeuralNetworkImpl
    * @param Y The desired output labels
    * @return The accuracy of the network
    */
-  protected double computeAccuracy(Matrix predictions, Matrix outputs) {
+  protected float computeAccuracy(Matrix predictions, Matrix outputs) {
     return ((predictions.mul(outputs)).sum()) * 100 / outputs.getRows();
   }
 
   @Override
   public SupervisedFeedForwardNeuralNetwork dup() {
-    return new SupervisedFeedForwardNeuralNetworkImpl(getLayer(0), getLayer(1));
+	  throw new UnsupportedOperationException("Not yet implemented");
+    //return new SupervisedFeedForwardNeuralNetworkImpl2(getLayer(0), getLayer(1));
   }
   
   @Override
@@ -107,4 +146,15 @@ public class SupervisedFeedForwardNeuralNetworkImpl
       NeuronsActivation desiredOutpuActivations, FeedForwardNeuralNetworkContext trainingContext) {
     return super.getCostAndGradients(inputActivations, desiredOutpuActivations, trainingContext);
   }
+
+@Override
+public List<ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>> decompose() {
+	throw new UnsupportedOperationException(); 
+
+}
+
+@Override
+public FeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
+	throw new UnsupportedOperationException(); 
+}
 }

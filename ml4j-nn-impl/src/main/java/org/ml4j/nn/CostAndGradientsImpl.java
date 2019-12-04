@@ -14,11 +14,11 @@
 
 package org.ml4j.nn;
 
-import org.ml4j.nn.axons.AxonsGradient;
-import org.ml4j.nn.axons.AxonsGradientImpl;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.axons.AxonsGradientImpl;
 
 /**
  * Encapsulates the total and average costs and gradients associated with a forward propagation
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class CostAndGradientsImpl implements CostAndGradients {
 
-  private double totalCost;
+  private float totalCost;
   
   private List<AxonsGradient> totalTrainableAxonsGradients;
   
@@ -39,7 +39,7 @@ public class CostAndGradientsImpl implements CostAndGradients {
    * @param totalTrainableAxonsGradients The totalGradients.
    * @param numberOfTrainingExamples The number of training examples.
    */
-  public CostAndGradientsImpl(double totalCost, 
+  public CostAndGradientsImpl(float totalCost, 
       List<AxonsGradient> totalTrainableAxonsGradients, int numberOfTrainingExamples) {
     super();
     this.totalCost = totalCost;
@@ -47,11 +47,11 @@ public class CostAndGradientsImpl implements CostAndGradients {
     this.numberOfTrainingExamples = numberOfTrainingExamples;
   }
 
-  public double getTotalCost() {
+  public float getTotalCost() {
     return totalCost;
   }
   
-  public double getAverageCost() {
+  public float getAverageCost() {
     return getTotalCost() / numberOfTrainingExamples;
   }
 
@@ -67,9 +67,24 @@ public class CostAndGradientsImpl implements CostAndGradients {
     List<AxonsGradient> averages = new ArrayList<>();
     for (AxonsGradient total : getTotalTrainableAxonsGradients()) {
       averages.add(
-          new AxonsGradientImpl(total.getAxonsWeightsContainer(), 
-              total.getGradient().div(numberOfTrainingExamples)));
+          new AxonsGradientImpl(total.getAxons(), 
+              total.getWeightsGradient().div(numberOfTrainingExamples), total.getLeftToRightBiasGradient() == null ? null : 
+            	  total.getLeftToRightBiasGradient().div(numberOfTrainingExamples)));
     }
     return averages;
   }
+
+@Override
+public void close() {
+    for (AxonsGradient axonsGradient : totalTrainableAxonsGradients) {
+  	  axonsGradient.getWeightsGradient().close();
+  	  if (axonsGradient.getLeftToRightBiasGradient() != null) {
+  		  axonsGradient.getLeftToRightBiasGradient().close();
+  	  }
+  	  if (axonsGradient.getRightToLeftBiasGradient() != null) {
+  		  axonsGradient.getRightToLeftBiasGradient().close();
+  	  }
+  	  
+    }	
+}
 }

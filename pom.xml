@@ -3,12 +3,12 @@
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.ml4j</groupId>
         <artifactId>ml4j-impl</artifactId>
-        <version>2.0</version>
+        <version>1.0</version>
         <packaging>pom</packaging>
 	<modules>
-		<module>ml4j-matrices-impl</module>
-		<module>ml4j-synapses-impl</module>
-		<module>ml4j-layers-impl</module>
+                <module>ml4j-matrices-impl</module>
+		<module>ml4j-axons-impl</module>
+		<module>ml4j-components-impl</module>
 		<module>ml4j-nn-impl</module>
         </modules>
 </project>

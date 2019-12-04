@@ -12,10 +12,10 @@
 	</distributionManagement>
 	<repositories>
 		<repository>
-			<id>ml4j-snapshots</id>
-			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/snapshots</url>
+			<id>ml4j-releases</id>
+			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/releases</url>
 			<snapshots>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
@@ -25,10 +25,28 @@
 			<artifactId>ml4j-matrices-api</artifactId>
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.googlecode.netlib-java/netlib-java -->
+<dependency>
+    <groupId>com.googlecode.netlib-java</groupId>
+    <artifactId>netlib-java</artifactId>
+    <version>1.1</version>
+</dependency>
+		
+		<dependency>
+		    <groupId>org.nd4j</groupId>
+		    <artifactId>nd4j-native-platform</artifactId>
+		    <version>0.9.1</version>
+		</dependency>
+		<dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.2</version>
+        <scope>provided</scope>
+		</dependency>
 		<dependency>
   			<groupId>org.jblas</groupId>
   			<artifactId>jblas</artifactId>
-  			<version>1.2.3</version>
+  			<version>1.2.4</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -53,8 +71,8 @@
 							<configLocation>google_checks.xml</configLocation>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
-							<failsOnError>true</failsOnError>
-							<failOnViolation>true</failOnViolation>
+							<failsOnError>false</failsOnError>
+							<failOnViolation>false</failOnViolation>
 							<violationSeverity>warning</violationSeverity>
 							<linkXRef>false</linkXRef>
 						</configuration>
@@ -73,6 +91,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.3</version>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
@@ -85,6 +104,7 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
+			 -->
 		</plugins>
 	</reporting>
 </project>
