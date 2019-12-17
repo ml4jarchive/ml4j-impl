@@ -25,6 +25,16 @@
 			<artifactId>ml4j-nn-api</artifactId>
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
+			<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-matrices-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+				<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-base-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
 		  <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -47,9 +57,21 @@
 		-->
 			<dependency>
 			<groupId>org.ml4j</groupId>
-			<artifactId>ml4j-components-impl</artifactId>
+			<artifactId>ml4j-base-components</artifactId>
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
+			<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-layers-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-activationfunctions-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		 -->
 	</dependencies>
 	<build>
 		<plugins>

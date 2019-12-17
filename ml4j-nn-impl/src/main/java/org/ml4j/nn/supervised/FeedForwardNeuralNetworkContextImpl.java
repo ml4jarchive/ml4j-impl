@@ -70,9 +70,9 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
    * 
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory) {
+  public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
     this.matrixFactory = matrixFactory;
-    this.directedComponentsContext = new DirectedComponentsContextImpl(matrixFactory);
+    this.directedComponentsContext = new DirectedComponentsContextImpl(matrixFactory, isTrainingContext);
   }
 
   @Override

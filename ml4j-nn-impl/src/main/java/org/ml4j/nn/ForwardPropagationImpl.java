@@ -17,11 +17,14 @@
 package org.ml4j.nn;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
+import org.ml4j.nn.components.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
+import org.ml4j.nn.components.defaults.DefaultChainableDirectedComponentActivationAdapter;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -80,11 +83,9 @@ public class ForwardPropagationImpl implements ForwardPropagation {
   }
 
 @Override
-public List<ChainableDirectedComponentActivation<NeuronsActivation>> decompose() {
-	return activationChain.decompose();
+public List<DefaultChainableDirectedComponentActivation> decompose() {
+	return activationChain.decompose().stream().map(c -> new DefaultChainableDirectedComponentActivationAdapter(c)).collect(Collectors.toList());
 }
-
-
 
 @Override
 public NeuronsActivation getOutput() {

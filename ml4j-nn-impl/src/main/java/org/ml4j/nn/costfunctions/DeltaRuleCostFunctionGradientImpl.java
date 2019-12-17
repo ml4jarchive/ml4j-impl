@@ -18,11 +18,8 @@ package org.ml4j.nn.costfunctions;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.ml4j.jblas.JBlasMatrixFactory2;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.LinearActivationFunction;
-import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
-import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -40,22 +37,18 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
   private NeuronsActivation desiredOutputs;
   private NeuronsActivation actualOutputs;
   private CostFunction costFunction;
+  private MatrixFactory matrixFactory;
 
   /**
    * @param costFunction The cost function.
    * @param desiredOutputs The desired outputs of the network.
    * @param actualOutputs The actual outputs of the network.
    */
-  public DeltaRuleCostFunctionGradientImpl(CostFunction costFunction,
+  public DeltaRuleCostFunctionGradientImpl(MatrixFactory matrixFactory, CostFunction costFunction,
       NeuronsActivation desiredOutputs, NeuronsActivation actualOutputs) {
     this.desiredOutputs = desiredOutputs;
-    
-    //System.out.println("Desired:" + desiredOutputs.getActivations().getRows() + ":"
-    //		+ desiredOutputs.getActivations().getColumns());
-    
-    
-  //  System.out.println("Actual:" + actualOutputs.getActivations().getRows() + ":"
-   // 		+ actualOutputs.getActivations().getColumns());
+    this.matrixFactory = matrixFactory;
+
     
     if (desiredOutputs
 	        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
@@ -80,15 +73,15 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
   private boolean isDeltaRuleSupported(DifferentiableActivationFunction finalActivationFunction) {
 
     if (costFunction instanceof CrossEntropyCostFunction
-        && finalActivationFunction instanceof SigmoidActivationFunction) {
+        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.SIGMOID) {
       return true;
     }
     if (costFunction instanceof MultiClassCrossEntropyCostFunction
-        && finalActivationFunction instanceof SoftmaxActivationFunction) {
+        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.SOFTMAX) {
       return true;
     }
     if (costFunction instanceof SumSquaredErrorCostFunction
-        && finalActivationFunction instanceof LinearActivationFunction) {
+        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.LINEAR) {
       return true;
     }
     return false;
@@ -110,10 +103,7 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
     // end up being the difference between the target activations ( which are the
     // same as the trainingDataActivations as this is an AutoEncoder), and the
     // activations resulting from the forward propagation
-    
-    // TODO 
-    MatrixFactory matrixFactory = new JBlasMatrixFactory2();
-    
+        
     Matrix deltasM = actualOutputs.getActivations(matrixFactory).sub(desiredOutputs.getActivations(matrixFactory));
 
     
