@@ -8,6 +8,7 @@ import org.ml4j.nn.components.DirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentBatch;
 import org.ml4j.nn.components.DirectedComponentBatchActivation;
 import org.ml4j.nn.components.DirectedComponentBatchImpl;
+import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -31,5 +32,10 @@ public class DefaultDirectedComponentBatchImpl<L extends DirectedComponent<Neuro
 	@Override
 	public DirectedComponentBatch<NeuronsActivation, L, DirectedComponentBatchActivation<NeuronsActivation, A>, A, DirectedComponentsContext, DirectedComponentsContext> dup() {
 		return new DefaultDirectedComponentBatchImpl<L, A>((List<L>) getComponents().stream().map(c -> c.dup()).collect(Collectors.toList()));
+	}
+
+	@Override
+	public DirectedComponentType getComponentType() {
+		return DirectedComponentType.COMPONENT_BATCH;
 	}
 }

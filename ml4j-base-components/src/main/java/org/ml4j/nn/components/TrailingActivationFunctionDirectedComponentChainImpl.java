@@ -37,7 +37,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			throw new IllegalArgumentException("Component list must contain at least one component");
 		} else {
 			ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> finalComponent = decomposedList.get(decomposedList.size() - 1);
-			if (finalComponent instanceof DifferentiableActivationFunctionComponent) {
+			if (finalComponent.getComponentType() == DirectedComponentType.ACTIVATION_FUNCTION) {
 				finalDifferentiableActivationFunctionComponent = (DifferentiableActivationFunctionComponent)finalComponent;
 				decomposedList.remove(decomposedList.size() - 1);
 				this.precedingChain = new DefaultDirectedComponentChainImpl(decomposedList);
@@ -107,6 +107,11 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		
 		return new TrailingActivationFunctionDirectedComponentChainImpl(dupComponents, finalDifferentiableActivationFunctionComponent.dup(), 
 				precedingChain.dup());
+	}
+
+	@Override
+	public DirectedComponentType getComponentType() {
+		return DirectedComponentType.COMPONENT_CHAIN;
 	}
 	
 }

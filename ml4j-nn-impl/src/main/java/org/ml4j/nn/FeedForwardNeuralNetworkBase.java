@@ -31,6 +31,7 @@ import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChain;
+import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
@@ -622,5 +623,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	public C getLastEpochTrainingContext() {
 		return lastEpochTrainingContext;
 	}
+	
+	@Override
+	public DirectedComponentType getComponentType() {
+		return DirectedComponentType.NETWORK;
+	}	
 
 }

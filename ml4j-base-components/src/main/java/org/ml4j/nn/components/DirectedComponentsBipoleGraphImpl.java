@@ -51,7 +51,7 @@ public abstract class DirectedComponentsBipoleGraphImpl<I, L extends ChainableDi
 	//}
 
 	@Override
-	public List<ChainableDirectedComponent<I, ? extends ChainableDirectedComponentActivation<I>, ?>> decompose() {
+	public List<? extends ChainableDirectedComponent<I, ? extends ChainableDirectedComponentActivation<I>, ?>> decompose() {
 		return Arrays.asList(this);
 	}
 }

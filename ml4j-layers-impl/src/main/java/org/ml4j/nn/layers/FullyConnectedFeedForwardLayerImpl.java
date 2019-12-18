@@ -83,7 +83,7 @@ public class FullyConnectedFeedForwardLayerImpl
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
       Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
     super(
-        directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, null, null),
+        directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, connectionWeights, biases),
         primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 

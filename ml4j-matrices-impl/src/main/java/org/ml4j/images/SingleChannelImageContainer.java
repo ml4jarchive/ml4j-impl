@@ -8,8 +8,8 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 	protected float[] data;
 	protected int startIndex;
 
-	public SingleChannelImageContainer(float[] data, int startIndex, int height, int width, int paddingHeight, int paddingWidth,
-			int examples) {
+	public SingleChannelImageContainer(float[] data, int startIndex, int height, int width, int paddingHeight,
+			int paddingWidth, int examples) {
 		super(height, width, paddingHeight, paddingWidth, examples);
 		this.data = data;
 		this.startIndex = startIndex;
@@ -119,8 +119,6 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 		}
 	}
 
-	
-
 	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
 		for (int i = startIndex; i < startIndex + getDataLength(); i++) {
@@ -136,7 +134,7 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			data[i] = modifier.acceptAndModify(data[i]);
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		this.data = null;

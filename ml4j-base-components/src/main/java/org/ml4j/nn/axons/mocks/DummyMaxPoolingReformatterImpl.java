@@ -39,7 +39,6 @@ public class DummyMaxPoolingReformatterImpl implements ConvolutionalFormatter {
 
 	@Override
 	public Matrix getIndexes() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 }

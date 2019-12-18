@@ -29,12 +29,12 @@ public class DefaultDirectedComponentChainImpl extends DirectedComponentChainBas
 
 	@Override
 	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-		// TODO Auto-generated method stub
-		// 		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
-
-		return null;
+		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
 	}
 
-	
+	@Override
+	public DirectedComponentType getComponentType() {
+		return DirectedComponentType.COMPONENT_CHAIN;
+	}
 	
 }

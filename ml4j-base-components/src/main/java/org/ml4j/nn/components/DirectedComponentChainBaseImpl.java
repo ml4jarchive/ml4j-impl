@@ -2,7 +2,6 @@ package org.ml4j.nn.components;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class DirectedComponentChainBaseImpl<I, D extends ChainableDirectedComponent<I, ? extends A, ?>, A extends ChainableDirectedComponentActivation<I>, B extends DirectedComponentChainActivation<I, A>> implements DirectedComponentChain<I, D , A, B> {
 
@@ -11,12 +10,6 @@ public abstract class DirectedComponentChainBaseImpl<I, D extends ChainableDirec
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@Override
-	public List<? extends ChainableDirectedComponent<I, ? extends ChainableDirectedComponentActivation<I>, ?>> decompose() {
-		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
-	}
-
-
 	protected List<D> components;
 	
 	public DirectedComponentChainBaseImpl(List<? extends D> components) {

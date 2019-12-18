@@ -22,8 +22,7 @@ public class DummyDifferentiableActivationFunctionActivation implements Differen
 	
 	@Override
 	public DifferentiableActivationFunction getActivationFunction() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -12,13 +12,14 @@ import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatchImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl;
+import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl2;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
@@ -115,11 +116,11 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		parallelChains.add(skipConnectionChain);
 
 		// Parallel Chain Batch of preceding chain and skip connection
-		DefaultDirectedComponentChainBatch<?, ?> parallelBatch = new DefaultDirectedComponentChainBatchImpl<>(
+		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelBatch = new DefaultDirectedComponentChainBatchImpl<>(
 				parallelChains);
 
 		// Parallel Chain Graph of preceding chain and skip connection
-		DefaultDirectedComponentBipoleGraph parallelGraph = new DefaultDirectedComponentChainBipoleGraphImpl<>(
+		DefaultDirectedComponentBipoleGraph parallelGraph = new DefaultDirectedComponentChainBipoleGraphImpl2(
 				directedComponentFactory, parallelBatch, PathCombinationStrategy.ADDITION);
 
 		// Residual block component list is composed of the parallel chain graph

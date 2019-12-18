@@ -19,25 +19,25 @@ package org.ml4j.nn.synapses;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.ChainableDirectedComponent;
-import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.components.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.DefaultDirectedComponentChainActivation;
+import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
-import org.ml4j.nn.components.defaults.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatchImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl;
+import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl2;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
@@ -61,6 +61,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedSynapsesImpl.class);
 
 	private DifferentiableActivationFunction activationFunction;
+	private DifferentiableActivationFunctionComponent activationFunctionComponent;
+
 	private DefaultDirectedComponentBipoleGraph axonsGraph;
 
 	private DirectedComponentFactory directedComponentFactory;
@@ -82,10 +84,14 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 			DifferentiableActivationFunction activationFunction) {
 		super();
 		this.activationFunction = activationFunction;
+		this.activationFunctionComponent = directedComponentFactory
+				.createDifferentiableActivationFunctionComponent(activationFunction);
 		this.axonsGraph = axonsGraph;
 		this.directedComponentFactory = directedComponentFactory;
 		this.leftNeurons = leftNeurons;
 		this.rightNeurons = rightNeurons;
+		Objects.requireNonNull(axonsGraph, "axonsGraph");
+
 	}
 
 	/**
@@ -111,8 +117,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 				components);
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 		chainsList.add(chain);
-		DefaultDirectedComponentChainBatch<?, ?> batch = new DefaultDirectedComponentChainBatchImpl<>(chainsList);
-		return new DefaultDirectedComponentChainBipoleGraphImpl<>(directedComponentFactory, batch,
+		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = new DefaultDirectedComponentChainBatchImpl<>(chainsList);
+		return new DefaultDirectedComponentChainBipoleGraphImpl2(directedComponentFactory, batch,
 				PathCombinationStrategy.ADDITION);
 	}
 
@@ -147,10 +153,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
 
-		DifferentiableActivationFunctionComponent actComp = directedComponentFactory
-				.createDifferentiableActivationFunctionComponent(activationFunction);
-
-		DifferentiableActivationFunctionActivation actAct = actComp.forwardPropagate(totalAxonsOutputActivation,
+		DifferentiableActivationFunctionActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
 				new NeuronsActivationContext() {
 
 					/**
@@ -194,13 +197,14 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		
 		List<DefaultChainableDirectedComponent<?, ?>> components = 
 				new ArrayList<>();
-		components.addAll(axonsGraph.decompose().stream().map(c -> adaptComponent(c)).collect(Collectors.toList()));
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(activationFunction));
+		components.addAll(axonsGraph.decompose().stream().collect(Collectors.toList()));
+		components.addAll(activationFunctionComponent.decompose());
 		return components;
 	}
-	
-	 protected <C> DefaultChainableDirectedComponentAdapter<?> adaptComponent(ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> c) {
-		  return new DefaultChainableDirectedComponentAdapter<>(c);
+
+	  @Override
+	  public DirectedComponentType getComponentType() {
+		  return DirectedComponentType.SYNAPSES;
 	  }
 
 }

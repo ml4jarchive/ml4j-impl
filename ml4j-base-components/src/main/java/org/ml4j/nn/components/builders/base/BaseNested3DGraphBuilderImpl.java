@@ -16,7 +16,7 @@ import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.common.ComponentsContainer;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatchImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl;
+import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl2;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
@@ -98,7 +98,7 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 			List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 			chainsList.addAll(this.parent3DGraph.get().getChains());
 			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = new DefaultDirectedComponentChainBatchImpl<>(chainsList);
-			parent3DGraph.get().addComponent(new DefaultDirectedComponentChainBipoleGraphImpl<>(directedComponentFactory, batch, pathCombinationStrategy));
+			parent3DGraph.get().addComponent(new DefaultDirectedComponentChainBipoleGraphImpl2(directedComponentFactory, batch, pathCombinationStrategy));
 			parent3DGraph.get().getEndNeurons().clear();
 			parent3DGraph.get().getChains().clear();
 

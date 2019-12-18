@@ -5,7 +5,7 @@ import org.ml4j.floatmatrix.FloatMatrixFactory;
 
 public class DefaultFloatMatrixFactory implements FloatMatrixFactory {
 
-	  /**
+	/**
 	 * Default serialization id
 	 */
 	private static final long serialVersionUID = 1L;
@@ -24,5 +24,5 @@ public class DefaultFloatMatrixFactory implements FloatMatrixFactory {
 	public FloatMatrix create(int rows, int columns, float[] data) {
 		return new FloatMatrix(rows, columns, data);
 	}
-	
+
 }

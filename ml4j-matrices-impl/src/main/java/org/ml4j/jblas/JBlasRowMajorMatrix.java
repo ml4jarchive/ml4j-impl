@@ -138,7 +138,7 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 		return this;
 	}
 
-	 @Override
+	@Override
 	public int argmax() {
 		return getMatrix().argmax();
 	}

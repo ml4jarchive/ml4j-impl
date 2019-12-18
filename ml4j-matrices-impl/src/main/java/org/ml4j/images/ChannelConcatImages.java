@@ -5,8 +5,8 @@ import java.util.List;
 
 public class ChannelConcatImages extends ChannelConcatImageContainer<Images> implements Images {
 
-	public ChannelConcatImages(List<Images> channelConcatImages, int height, int width, int paddingHeight, int paddingWidth,
-			int examples) {
+	public ChannelConcatImages(List<Images> channelConcatImages, int height, int width, int paddingHeight,
+			int paddingWidth, int examples) {
 		super(channelConcatImages, height, width, paddingHeight, paddingWidth, examples);
 		for (Images im : channelConcatImages) {
 			if (im.getExamples() != examples) {
@@ -14,7 +14,7 @@ public class ChannelConcatImages extends ChannelConcatImageContainer<Images> imp
 			}
 		}
 	}
-	
+
 	@Override
 	public ChannelConcatImages softDup() {
 		List<Images> dups = new ArrayList<>();
@@ -23,7 +23,7 @@ public class ChannelConcatImages extends ChannelConcatImageContainer<Images> imp
 		}
 		return new ChannelConcatImages(dups, height, width, paddingHeight, paddingWidth, examples);
 	}
-	
+
 	@Override
 	public ChannelConcatImages dup() {
 		List<Images> dups = new ArrayList<>();
@@ -48,8 +48,5 @@ public class ChannelConcatImages extends ChannelConcatImageContainer<Images> imp
 	public int getExamples() {
 		return examples;
 	}
-
-
-
 
 }

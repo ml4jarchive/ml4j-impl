@@ -6,6 +6,7 @@ import org.ml4j.nn.components.ChainableDirectedComponent;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentBatch;
 import org.ml4j.nn.components.DirectedComponentBatchActivation;
+import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsBipoleGraphImpl;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.GenericManyToOneDirectedComponentActivation;
@@ -59,5 +60,10 @@ public class DirectedSynapsesBipoleGraphImpl<S extends DirectedSynapses<?, ?>> e
 	@Override
 	public DirectedSynapsesBipoleGraph<S> dup() {
 		return new DirectedSynapsesBipoleGraphImpl<S>(this.directedComponentFactory, edges.dup(), pathCombinationStrategy);
-		}	
+		}
+
+	@Override
+	public DirectedComponentType getComponentType() {
+		return DirectedComponentType.SYNAPSES_GRAPH;
+	}	
 }

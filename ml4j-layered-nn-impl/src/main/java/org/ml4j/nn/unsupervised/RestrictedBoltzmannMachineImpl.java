@@ -381,7 +381,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
       NeuronsActivation reconstructions) {
 	  
     Matrix diff = data.getActivations(matrixFactory).sub(reconstructions.getActivations(matrixFactory));
-    return diff.mul(diff).sum() / data.getActivations(matrixFactory).getRows();
+    return diff.mul(diff).sum() / data.getActivations(matrixFactory).getColumns();
   }
 
   @Override

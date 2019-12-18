@@ -6,10 +6,11 @@ import org.ml4j.FloatModifier;
 import org.ml4j.FloatPredicate;
 
 public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> extends ImageContainerBase<I> {
-	
+
 	protected List<I> channelConcatImages;
-	
-	public ChannelConcatImageContainer(List<I> channelConcatImages, int height, int width, int paddingHeight, int paddingWidth, int examples) {
+
+	public ChannelConcatImageContainer(List<I> channelConcatImages, int height, int width, int paddingHeight,
+			int paddingWidth, int examples) {
 		super(height, width, paddingHeight, paddingWidth, examples);
 		this.channelConcatImages = channelConcatImages;
 		for (I im : channelConcatImages) {
@@ -27,8 +28,7 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
-	
-	
+
 	@Override
 	public void setPaddingHeight(int paddingHeight) {
 		super.setPaddingHeight(paddingHeight);
@@ -42,27 +42,29 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 	}
 
 	public void populateData(float[] data, int startIndex) {
-		 int startIndex2 = startIndex;
-		 for (I subImage : channelConcatImages) {
-			 subImage.populateData(data, startIndex2);
-			 startIndex2 = startIndex2 + subImage.getDataLength();
-		 }
-	} 
-	
-	public void populateDataSubImage(float[] data, int startIndex, int startHeight, int startWidth, int height, int width, int strideHeight, int strideWidth, boolean forIm2col2) {
-		 int startIndex2 = startIndex;
-		 for (I subImage : channelConcatImages) {
-			 subImage.populateDataSubImage(data, startIndex2, startHeight, startWidth, height, width, strideHeight, strideWidth, forIm2col2);
-			 startIndex2 = startIndex2 + subImage.getSubImageDataLength(height, width);
-		 }
+		int startIndex2 = startIndex;
+		for (I subImage : channelConcatImages) {
+			subImage.populateData(data, startIndex2);
+			startIndex2 = startIndex2 + subImage.getDataLength();
+		}
 	}
-	
+
+	public void populateDataSubImage(float[] data, int startIndex, int startHeight, int startWidth, int height,
+			int width, int strideHeight, int strideWidth, boolean forIm2col2) {
+		int startIndex2 = startIndex;
+		for (I subImage : channelConcatImages) {
+			subImage.populateDataSubImage(data, startIndex2, startHeight, startWidth, height, width, strideHeight,
+					strideWidth, forIm2col2);
+			startIndex2 = startIndex2 + subImage.getSubImageDataLength(height, width);
+		}
+	}
+
 	public int getDataLength() {
-			int length = 0;
-			for (I subImage : channelConcatImages) {
-				length = length + subImage.getDataLength();
-			}
-			return length;
+		int length = 0;
+		for (I subImage : channelConcatImages) {
+			length = length + subImage.getDataLength();
+		}
+		return length;
 	}
 
 	@Override
@@ -80,22 +82,25 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 	}
 
 	@Override
-	public void populateIm2col(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight, int strideWidth, int channels) {
+	public void populateIm2col(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
+			int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
-		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1)/strideWidth;
-		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1)/strideHeight;
+		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
+		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		for (I subImage : channelConcatImages) {
 			subImage.populateIm2col(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
-			startIndex = startIndex + windowWidth * windowHeight * examples * filterHeight * filterWidth * subImage.getChannels();
+			startIndex = startIndex
+					+ windowWidth * windowHeight * examples * filterHeight * filterWidth * subImage.getChannels();
 		}
 	}
-	
-	public void populateIm2col2(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight, int strideWidth, int channels) {
+
+	public void populateIm2col2(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
+			int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
-		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1)/strideWidth;
-		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1)/strideHeight;
+		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
+		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		for (I subImage : channelConcatImages) {
 			subImage.populateIm2col2(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
 			startIndex = startIndex + examples * subImage.getChannels() * windowWidth * windowHeight;
@@ -109,10 +114,8 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 
 	@Override
 	public void applyValueModifier(FloatModifier modifier) {
-		channelConcatImages.forEach(image -> image.applyValueModifier(modifier));		
+		channelConcatImages.forEach(image -> image.applyValueModifier(modifier));
 	}
-
-	
 
 	@Override
 	public void close() {

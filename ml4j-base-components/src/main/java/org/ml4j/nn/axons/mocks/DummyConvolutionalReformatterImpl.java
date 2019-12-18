@@ -42,19 +42,16 @@ public class DummyConvolutionalReformatterImpl implements ConvolutionalFormatter
 
 	@Override
 	public Matrix reformatLeftToRightInput(MatrixFactory matrixFactory, NeuronsActivation activations) {
-		// TODO Auto-generated method stub
-		return null;
+		return matrixFactory.createMatrix(targetInputFeatureCount, this.examples * preTransformOutputFeatureCount);
 	}
 
 	@Override
 	public Matrix reformatRightToLeftOutput(MatrixFactory matrixFactory, Matrix initialOutputMatrix) {
-		// TODO Auto-generated method stub
-		return null;
+		return matrixFactory.createMatrix(rightNeurons.getNeuronCountExcludingBias(), this.examples);
 	}
 
 	@Override
 	public Matrix getIndexes() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 }

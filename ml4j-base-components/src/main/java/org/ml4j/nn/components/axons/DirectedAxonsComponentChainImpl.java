@@ -3,9 +3,11 @@ package org.ml4j.nn.components.axons;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChainActivation;
 import org.ml4j.nn.components.DirectedComponentChainActivationImpl;
 import org.ml4j.nn.components.DirectedComponentChainBaseImpl;
+import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -31,5 +33,14 @@ public class DirectedAxonsComponentChainImpl<L extends Neurons, R extends Neuron
 	public DirectedAxonsComponentChain<L, R> dup() {
 		return new DirectedAxonsComponentChainImpl<>(this.components.stream().map(c -> c.dup()).collect(Collectors.toList()));
 	}
+
+	@Override
+	public DirectedComponentType getComponentType() {
+		return DirectedComponentType.AXONS_CHAIN;
+	}
 	
+	@Override
+	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
+		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
+	}
 }

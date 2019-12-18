@@ -22,16 +22,14 @@ import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.ChainableDirectedComponent;
-import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChain;
+import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
-import org.ml4j.nn.components.defaults.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +55,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
 
   protected MatrixFactory matrixFactory;
   
-  protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?,?>, ?, ?> componentChain;
+  protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
   protected TrailingActivationFunctionDirectedComponentChain<DefaultChainableDirectedComponent<?, ?>> 
   		trailingActivationFunctionDirectedComponentChain;
   
@@ -71,8 +69,8 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
   protected AbstractFeedForwardLayer(DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?,?>, ?, ?> componentChain, MatrixFactory matrixFactory) {
 	  this.componentChain = componentChain;
 	  List<DefaultChainableDirectedComponent<?, ?>> chainableComponents = new ArrayList<>();
-		for (DefaultChainableDirectedComponent<?, ?> component : decompose()) {
-			chainableComponents.add(component);
+		for (DefaultChainableDirectedComponent<?, ?> component : componentChain.getComponents()) {
+			chainableComponents.addAll(component.decompose());
 		}
 	  this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(chainableComponents);
 	  this.matrixFactory = matrixFactory;
@@ -99,10 +97,18 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
 
   @Override
   public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-	return getComponents().stream().flatMap(c -> c.decompose().stream()).map(c -> adaptComponent(c)).collect((Collectors.toList()));
+	System.out.println("blah");
+	  for (DefaultChainableDirectedComponent<?, ?> b : getComponents()) {
+		System.out.println(b);
+	}
+	return getComponents().stream().flatMap(c -> c.decompose().stream()).collect((Collectors.toList()));
   }
+
+ 
+  @Override
+  public DirectedComponentType getComponentType() {
+	  return DirectedComponentType.LAYER;
+  }
+
   
-  protected <C> DefaultChainableDirectedComponentAdapter<?> adaptComponent(ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> c) {
-	  return new DefaultChainableDirectedComponentAdapter<>(c);
-  }
 }
