@@ -8,7 +8,6 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
@@ -23,7 +22,6 @@ import org.ml4j.nn.components.builders.synapses.SynapsesPermitted;
 import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
-import org.ml4j.nn.neurons.NeuronsActivation;
 
 public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder> implements AxonsPermitted<C>, SynapsesPermitted<C>, AxonsBuilder {
 
@@ -128,7 +126,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder> implements Ax
 		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(activationFunction));
 	}
 	
-	public DirectedComponentChain<NeuronsActivation, ?, ?, ?> getComponentChain() {
+	public DefaultDirectedComponentChain getComponentChain() {
 		addAxonsIfApplicable();
 		return new DefaultDirectedComponentChainImpl(components);
 	}
