@@ -11,10 +11,10 @@ import org.ml4j.nn.components.DirectedComponentsBipoleGraphImpl;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.GenericManyToOneDirectedComponentActivation;
 import org.ml4j.nn.components.GenericOneToManyDirectedComponentActivation;
-import org.ml4j.nn.components.ManyToOneDirectedComponent;
-import org.ml4j.nn.components.OneToManyDirectedComponent;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class DirectedSynapsesBipoleGraphImpl<S extends DirectedSynapses<?, ?>> extends DirectedComponentsBipoleGraphImpl<NeuronsActivation, DirectedSynapsesChain<S>, DirectedComponentBatch<NeuronsActivation, DirectedSynapsesChain<S> , DirectedComponentBatchActivation<NeuronsActivation, DirectedSynapsesChainActivation>, DirectedSynapsesChainActivation, DirectedComponentsContext, DirectedComponentsContext>, DirectedSynapsesChainActivation, DirectedComponentBatchActivation<NeuronsActivation, DirectedSynapsesChainActivation>, DirectedSynapsesBipoleGraphActivation, DirectedComponentsContext, DirectedComponentsContext>

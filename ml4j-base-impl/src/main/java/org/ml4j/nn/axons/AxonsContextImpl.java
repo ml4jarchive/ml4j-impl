@@ -25,77 +25,77 @@ import org.ml4j.MatrixFactory;
 
 public class AxonsContextImpl implements AxonsContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  /**
-   * The MatrixFactory we configure for this context.
-   */
-  private MatrixFactory matrixFactory;
-    
-  private boolean withFreezeOut;
-  
-  private float regularisationLambda;
-  
-  private float leftHandInputDropoutKeepProbability;
-  
-  private boolean trainingContext;
-  
-  /**
-   * Construct a new AxonsContext.
-   * 
-   * @param matrixFactory The MatrixFactory we configure for this context
-   * @param withFreezeOut Whether to freeze out these Axons.
-   */
-  public AxonsContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext, boolean withFreezeOut) {
-    this.matrixFactory = matrixFactory;
-    this.leftHandInputDropoutKeepProbability = 1f;
-    this.withFreezeOut = withFreezeOut;
-    this.trainingContext = isTrainingContext;
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public MatrixFactory getMatrixFactory() {
-    return matrixFactory;
-  }
+	/**
+	 * The MatrixFactory we configure for this context.
+	 */
+	private MatrixFactory matrixFactory;
 
-  @Override
-  public float getLeftHandInputDropoutKeepProbability() {
-    return leftHandInputDropoutKeepProbability;
-  }
+	private boolean withFreezeOut;
 
-  @Override
-  public boolean isWithFreezeOut() {
-    return withFreezeOut;
-  }
+	private float regularisationLambda;
 
-  @Override
-  public AxonsContext withFreezeOut(boolean withFreezeOut) {
-    this.withFreezeOut = withFreezeOut;
-    return this;
-  }
+	private float leftHandInputDropoutKeepProbability;
 
-  @Override
-  public float getRegularisationLambda() {
-    return regularisationLambda;
-  }
+	private boolean trainingContext;
 
-  @Override
-  public AxonsContext withLeftHandInputDropoutKeepProbability(float leftHandInputDropoutKeepProbability) {
-    this.leftHandInputDropoutKeepProbability = leftHandInputDropoutKeepProbability;
-    return this;
-  }
+	/**
+	 * Construct a new AxonsContext.
+	 * 
+	 * @param matrixFactory The MatrixFactory we configure for this context
+	 * @param withFreezeOut Whether to freeze out these Axons.
+	 */
+	public AxonsContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext, boolean withFreezeOut) {
+		this.matrixFactory = matrixFactory;
+		this.leftHandInputDropoutKeepProbability = 1f;
+		this.withFreezeOut = withFreezeOut;
+		this.trainingContext = isTrainingContext;
+	}
 
-  @Override
-  public AxonsContext withRegularisationLambda(float regularisationLambda) {
-    this.regularisationLambda = regularisationLambda;
-    return this;
-  }
+	@Override
+	public MatrixFactory getMatrixFactory() {
+		return matrixFactory;
+	}
 
-@Override
-public boolean isTrainingContext() {
-	return trainingContext;
-}
+	@Override
+	public float getLeftHandInputDropoutKeepProbability() {
+		return leftHandInputDropoutKeepProbability;
+	}
+
+	@Override
+	public boolean isWithFreezeOut() {
+		return withFreezeOut;
+	}
+
+	@Override
+	public AxonsContext withFreezeOut(boolean withFreezeOut) {
+		this.withFreezeOut = withFreezeOut;
+		return this;
+	}
+
+	@Override
+	public float getRegularisationLambda() {
+		return regularisationLambda;
+	}
+
+	@Override
+	public AxonsContext withLeftHandInputDropoutKeepProbability(float leftHandInputDropoutKeepProbability) {
+		this.leftHandInputDropoutKeepProbability = leftHandInputDropoutKeepProbability;
+		return this;
+	}
+
+	@Override
+	public AxonsContext withRegularisationLambda(float regularisationLambda) {
+		this.regularisationLambda = regularisationLambda;
+		return this;
+	}
+
+	@Override
+	public boolean isTrainingContext() {
+		return trainingContext;
+	}
 }

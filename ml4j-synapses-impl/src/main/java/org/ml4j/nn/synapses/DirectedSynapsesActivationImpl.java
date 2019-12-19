@@ -15,9 +15,9 @@
 package org.ml4j.nn.synapses;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
-import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;

@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
-import org.ml4j.nn.components.DefaultChainableDirectedComponentActivation;
-import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**

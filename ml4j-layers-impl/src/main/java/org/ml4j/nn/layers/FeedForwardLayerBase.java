@@ -27,13 +27,13 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChain;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -78,7 +78,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 	 */
 	protected FeedForwardLayerBase(DirectedComponentFactory directedComponentFactory, A primaryAxons,
 			DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(new DirectedSynapsesChainImpl<>(
+		super(directedComponentFactory, new DirectedSynapsesChainImpl<>(
 				getSynapses(directedComponentFactory, matrixFactory, primaryAxons, activationFunction, withBatchNorm)),
 				matrixFactory);
 		this.primaryAxons = primaryAxons;
@@ -136,7 +136,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 				directedComponentFactory, matrixFactory, primaryAxons, primaryActivationFunction, withBatchNorm));
 		List<DefaultChainableDirectedComponent<? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>> chainableComponents = new ArrayList<>();
 		chainableComponents.addAll(synapseChain.decompose());
-		return new TrailingActivationFunctionDirectedComponentChainImpl(chainableComponents);
+		return new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, chainableComponents);
 	}
 
 	@Override

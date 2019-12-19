@@ -26,20 +26,17 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraph;
-import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraphActivation;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatch;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatchImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl2;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
@@ -113,12 +110,12 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
 		List<DefaultChainableDirectedComponent<?,  ?>> components = Arrays
 				.asList(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
-		DefaultDirectedComponentChain chain = new DefaultDirectedComponentChainImpl(
+		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(
 				components);
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 		chainsList.add(chain);
-		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = new DefaultDirectedComponentChainBatchImpl<>(chainsList);
-		return new DefaultDirectedComponentChainBipoleGraphImpl2(directedComponentFactory, batch,
+		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+		return directedComponentFactory.createDirectedComponentBipoleGraph(batch,
 				PathCombinationStrategy.ADDITION);
 	}
 

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 

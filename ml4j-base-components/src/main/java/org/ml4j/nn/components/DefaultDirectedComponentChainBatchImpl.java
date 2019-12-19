@@ -1,16 +1,9 @@
-package org.ml4j.nn.components.defaults;
+package org.ml4j.nn.components;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.ChainableDirectedComponentActivation;
-import org.ml4j.nn.components.DirectedComponentBatchActivation;
-import org.ml4j.nn.components.DirectedComponentBatchImpl;
-import org.ml4j.nn.components.DirectedComponentChain;
-import org.ml4j.nn.components.DirectedComponentChainActivation;
-import org.ml4j.nn.components.DirectedComponentChainBatch;
-import org.ml4j.nn.components.DirectedComponentType;
-import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class DefaultDirectedComponentChainBatchImpl<L extends DirectedComponentChain<NeuronsActivation, ?, ? , T>, T extends DirectedComponentChainActivation<NeuronsActivation, A >, A extends ChainableDirectedComponentActivation<NeuronsActivation>> extends DirectedComponentBatchImpl<NeuronsActivation, L, T, DirectedComponentsContext, DirectedComponentsContext> 

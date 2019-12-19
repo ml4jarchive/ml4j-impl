@@ -5,20 +5,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.DefaultDirectedComponentChainActivation;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.common.ComponentsContainer;
 import org.ml4j.nn.components.builders.common.PathEnder;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatch;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatchImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl2;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 
 public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons>, C extends AxonsBuilder> extends BaseGraphBuilderImpl<C> implements PathEnder<P, C>{
@@ -42,7 +39,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 			addAxonsIfApplicable();
 			Neurons endNeurons = getComponentsGraphNeurons().getCurrentNeurons();
 			DefaultDirectedComponentChain
-			chain = new DefaultDirectedComponentChainImpl(getComponents());
+			chain = directedComponentFactory.createDirectedComponentChain(getComponents());
 			parentGraph.get().getChains().add(chain);
 			parentGraph.get().getComponentsGraphNeurons().setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
 			parentGraph.get().getComponentsGraphNeurons().setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
@@ -52,13 +49,13 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 					DirectedAxonsComponent<Neurons, Neurons> skipConnectionAxons = 
 							directedComponentFactory.createPassThroughAxonsComponent(initialNeurons, endNeurons);
 					DefaultDirectedComponentChain
-					skipConnection = new DefaultDirectedComponentChainImpl(Arrays.asList(skipConnectionAxons));
+					skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parentGraph.get().getChains().add(skipConnection);
 				} else {
 					DirectedAxonsComponent<Neurons, Neurons> skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons(initialNeurons.getNeuronCountExcludingBias(), 
 							true), endNeurons, null, null);
 					DefaultDirectedComponentChain
-					skipConnection = new DefaultDirectedComponentChainImpl(Arrays.asList(skipConnectionAxons));
+					skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parentGraph.get().getChains().add(skipConnection);
 				}
 			}
@@ -73,8 +70,8 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 			parentGraph.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 			List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 			chainsList.addAll(this.parentGraph.get().getChains());
-			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = new DefaultDirectedComponentChainBatchImpl<>(chainsList);
-			parentGraph.get().addComponent(new DefaultDirectedComponentChainBipoleGraphImpl2(directedComponentFactory, batch, pathCombinationStrategy));
+			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(batch, pathCombinationStrategy));
 			pathsEnded = true;
 			parentGraph.get().getEndNeurons().clear();
 			parentGraph.get().getChains().clear();

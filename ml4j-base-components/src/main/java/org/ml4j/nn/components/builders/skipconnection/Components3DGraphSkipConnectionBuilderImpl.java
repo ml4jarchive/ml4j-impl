@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.ComponentsNested3DGraphBuilderImpl;
 import org.ml4j.nn.components.builders.common.PathEnder;
 import org.ml4j.nn.components.builders.componentsgraph.Components3DGraphBuilder;
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphBuilder;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 
 public class Components3DGraphSkipConnectionBuilderImpl<P extends Components3DGraphBuilder<P, Q>, Q extends ComponentsGraphBuilder<Q>>
 		extends ComponentsNested3DGraphBuilderImpl<P, Components3DGraphSkipConnectionBuilder<P, Q>, ComponentsGraphSkipConnectionBuilder<Q>>

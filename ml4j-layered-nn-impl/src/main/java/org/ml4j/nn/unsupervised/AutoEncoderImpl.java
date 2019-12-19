@@ -19,8 +19,9 @@ import java.util.List;
 
 import org.ml4j.nn.CostAndGradientsImpl;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkBase;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerChain;
 import org.ml4j.nn.layers.DirectedLayerChainImpl;
 import org.ml4j.nn.layers.FeedForwardLayer;
@@ -43,6 +44,8 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutoEncoderImpl.class);
+	
+	private DirectedComponentFactory directedComponentFactory;
 
 	/**
 	 * Constructor for a simple 2-layer AutoEncoder.
@@ -50,8 +53,8 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	 * @param encodingLayer The encoding Layer
 	 * @param decodingLayer The decoding Layer
 	 */
-	public AutoEncoderImpl(FeedForwardLayer<?, ?> encodingLayer, FeedForwardLayer<?, ?> decodingLayer) {
-		this(new DirectedLayerChainImpl<>(Arrays.asList(encodingLayer, decodingLayer)));
+	public AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> encodingLayer, FeedForwardLayer<?, ?> decodingLayer) {
+		this(directedComponentFactory, new DirectedLayerChainImpl<>(Arrays.asList(encodingLayer, decodingLayer)));
 	}
 
 	/**
@@ -59,17 +62,17 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	 * 
 	 * @param layers The layers
 	 */
-	public AutoEncoderImpl(List<FeedForwardLayer<?, ?>> layers) {
-		this(new DirectedLayerChainImpl<>(layers));
+	public AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, List<FeedForwardLayer<?, ?>> layers) {
+		this(directedComponentFactory, new DirectedLayerChainImpl<>(layers));
 	}
 
-	protected AutoEncoderImpl(DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
-		super(initialisingComponentChain);
+	protected AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
+		super(directedComponentFactory, initialisingComponentChain);
 	}
 
 	@Override
 	public AutoEncoder dup() {
-		return new AutoEncoderImpl(this.initialisingComponentChain);
+		return new AutoEncoderImpl(directedComponentFactory, this.initialisingComponentChain);
 	}
 
 	@Override

@@ -3,10 +3,10 @@ package org.ml4j.nn.layers;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentChainBaseImpl;
 import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends DirectedComponentChainBaseImpl<NeuronsActivation, L, DirectedLayerActivation, DirectedLayerChainActivation> implements DirectedLayerChain<L> {

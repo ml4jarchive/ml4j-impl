@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.builders.base.Base3DGraphBuilderImpl;
 import org.ml4j.nn.components.builders.common.Components3DParallelPathsBuilderImpl;
 import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
@@ -14,6 +13,7 @@ import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphBuilder;
 import org.ml4j.nn.components.builders.skipconnection.Components3DGraphSkipConnectionBuilder;
 import org.ml4j.nn.components.builders.skipconnection.Components3DGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 
 public abstract class Components3DGraphBuilderImpl<C extends Components3DGraphBuilder<C, D>, D extends ComponentsGraphBuilder<D>> extends Base3DGraphBuilderImpl<C, D> 
 implements Components3DGraphBuilder<C, D> {

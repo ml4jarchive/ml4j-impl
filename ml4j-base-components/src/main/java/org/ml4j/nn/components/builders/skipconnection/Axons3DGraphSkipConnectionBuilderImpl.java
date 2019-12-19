@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axonsgraph.Axons3DGraphBuilder;
 import org.ml4j.nn.components.builders.axonsgraph.Axons3DGraphSkipConnectionBuilder;
@@ -17,6 +15,8 @@ import org.ml4j.nn.components.builders.common.Axons3DParallelPathsBuilderImpl;
 import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.common.PathEnder;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 
 public class Axons3DGraphSkipConnectionBuilderImpl<P extends Axons3DGraphBuilder<P, Q>, Q extends AxonsGraphBuilder<Q>>
 		extends BaseNested3DGraphBuilderImpl<P, Axons3DGraphSkipConnectionBuilder<P, Q>, AxonsGraphSkipConnectionBuilder<Q>>

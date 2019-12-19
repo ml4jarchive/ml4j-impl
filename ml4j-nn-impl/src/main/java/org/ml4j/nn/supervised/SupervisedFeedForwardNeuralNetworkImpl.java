@@ -27,11 +27,11 @@ import org.ml4j.nn.CostAndGradientsImpl;
 import org.ml4j.nn.FeedForwardNeuralNetworkBase;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagation;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChain;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.datasets.LabeledData;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -55,9 +55,9 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	 * 
 	 * @param layers The layers
 	 */
-	public SupervisedFeedForwardNeuralNetworkImpl(
+	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory, 
 			DefaultDirectedComponentChain initialisingComponentChain) {
-		super(initialisingComponentChain);
+		super(directedComponentFactory, initialisingComponentChain);
 	}
 
 	protected SupervisedFeedForwardNeuralNetworkImpl(
@@ -71,9 +71,9 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	 * 
 	 * @param layers The layers
 	 */
-	public SupervisedFeedForwardNeuralNetworkImpl(
+	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
 			List<DefaultChainableDirectedComponent<?,?>> componentList) {
-		super(new DefaultDirectedComponentChainImpl(componentList));
+		super(directedComponentFactory, directedComponentFactory.createDirectedComponentChain(componentList));
 	}
 
 	/**
@@ -82,9 +82,9 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	 * @param layers The layers
 	 */
 	@SafeVarargs
-	public SupervisedFeedForwardNeuralNetworkImpl(
+	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
 			DefaultChainableDirectedComponent<?, ?>... componentList) {
-		super(new DefaultDirectedComponentChainImpl(Arrays.asList(componentList)));
+		super(directedComponentFactory, directedComponentFactory.createDirectedComponentChain(Arrays.asList(componentList)));
 	}
 
 	@Override

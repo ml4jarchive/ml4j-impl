@@ -23,8 +23,9 @@ import org.ml4j.nn.CostAndGradientsImpl;
 import org.ml4j.nn.ForwardPropagation;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkBase;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkContext;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerChain;
 import org.ml4j.nn.layers.DirectedLayerChainImpl;
 import org.ml4j.nn.layers.FeedForwardLayer;
@@ -45,13 +46,13 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl
   private static final long serialVersionUID = 1L;
   
   
-  public LayeredSupervisedFeedForwardNeuralNetworkImpl(
+  public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
 		DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
-	super(initialisingComponentChain);
+	super(directedComponentFactory, initialisingComponentChain);
   }
   
-  public LayeredSupervisedFeedForwardNeuralNetworkImpl(List<FeedForwardLayer<?, ?>> layers) {
-		super(new DirectedLayerChainImpl<>(layers));
+  public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory, List<FeedForwardLayer<?, ?>> layers) {
+		super(directedComponentFactory, new DirectedLayerChainImpl<>(layers));
 	  }
 
   @Override

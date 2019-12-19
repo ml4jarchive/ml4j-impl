@@ -16,6 +16,7 @@ package org.ml4j.nn;
 
 import java.util.List;
 
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.layers.DirectedLayerChain;
 import org.ml4j.nn.layers.FeedForwardLayer;
 
@@ -33,8 +34,8 @@ public abstract class LayeredFeedForwardNeuralNetworkBase<C extends LayeredFeedF
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public LayeredFeedForwardNeuralNetworkBase(DirectedLayerChain<FeedForwardLayer<?,?>> initialisingComponentChain) {
-		super(initialisingComponentChain);
+	public LayeredFeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory, DirectedLayerChain<FeedForwardLayer<?,?>> initialisingComponentChain) {
+		super(directedComponentFactory, initialisingComponentChain);
 	}
 	
 	@Override

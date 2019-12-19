@@ -7,6 +7,12 @@ import java.util.stream.Collectors;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
 
@@ -21,14 +27,16 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	private List<DefaultChainableDirectedComponent<?, ?>> components;
 	private DifferentiableActivationFunctionComponent finalDifferentiableActivationFunctionComponent;
 	private DefaultDirectedComponentChain precedingChain; 
+	private DirectedComponentFactory directedComponentFactory;
 	
 	public DifferentiableActivationFunctionComponent getFinalComponent() {
 		return finalDifferentiableActivationFunctionComponent;
 	}
 
-	public TrailingActivationFunctionDirectedComponentChainImpl(List<? extends DefaultChainableDirectedComponent<?,?>> components) {
+	public TrailingActivationFunctionDirectedComponentChainImpl(DirectedComponentFactory directedComponentFactory, List<? extends DefaultChainableDirectedComponent<?,?>> components) {
 		this.components = new ArrayList<>();
 		this.components.addAll(components);
+		this.directedComponentFactory = directedComponentFactory;
 		List<DefaultChainableDirectedComponent<?, ?>> decomposedList = new ArrayList<>();
 		for (DefaultChainableDirectedComponent<?, ?>  component : decompose()) {
 			decomposedList.add(component);
@@ -40,7 +48,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			if (finalComponent.getComponentType() == DirectedComponentType.ACTIVATION_FUNCTION) {
 				finalDifferentiableActivationFunctionComponent = (DifferentiableActivationFunctionComponent)finalComponent;
 				decomposedList.remove(decomposedList.size() - 1);
-				this.precedingChain = new DefaultDirectedComponentChainImpl(decomposedList);
+				this.precedingChain = directedComponentFactory.createDirectedComponentChain(decomposedList);
 				
 			} else {
 				throw new IllegalArgumentException("Decomposed component list must end with a differentiable activation function component");
@@ -96,7 +104,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
 		List<DefaultChainableDirectedComponent<?, ?>> allComponents = new ArrayList<>();
 		allComponents.addAll(components);
-		return new DefaultDirectedComponentChainImpl(allComponents).decompose();
+		return directedComponentFactory.createDirectedComponentChain(allComponents).decompose();
 	}
 	
 	@Override

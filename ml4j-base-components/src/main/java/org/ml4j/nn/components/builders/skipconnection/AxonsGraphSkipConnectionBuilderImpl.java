@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axonsgraph.AxonsGraphSkipConnectionBuilder;
 import org.ml4j.nn.components.builders.axonsgraph.AxonsSubGraphBuilder;
@@ -14,6 +12,8 @@ import org.ml4j.nn.components.builders.common.AxonsParallelPathsBuilderImpl;
 import org.ml4j.nn.components.builders.common.ComponentsContainer;
 import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.Neurons;
 
 public class AxonsGraphSkipConnectionBuilderImpl<C extends ComponentsContainer<Neurons>> extends BaseNestedGraphBuilderImpl<C, AxonsGraphSkipConnectionBuilder<C>> 

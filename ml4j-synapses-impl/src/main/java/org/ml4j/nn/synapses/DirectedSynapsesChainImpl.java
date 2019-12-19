@@ -3,9 +3,9 @@ package org.ml4j.nn.synapses;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChainBaseImpl;
 import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class DirectedSynapsesChainImpl<S extends DirectedSynapses<?, ?>> extends DirectedComponentChainBaseImpl<NeuronsActivation, S, DirectedSynapsesActivation, DirectedSynapsesChainActivation> implements DirectedSynapsesChain<S> {

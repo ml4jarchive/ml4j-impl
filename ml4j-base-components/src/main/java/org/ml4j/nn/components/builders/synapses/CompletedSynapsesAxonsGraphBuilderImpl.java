@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.axonsgraph.AxonsGraphSkipConnectionBuilder;
@@ -15,8 +13,9 @@ import org.ml4j.nn.components.builders.base.BaseGraphBuilderImpl;
 import org.ml4j.nn.components.builders.common.AxonsParallelPathsBuilderImpl;
 import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBuilderImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 
 public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder> extends BaseGraphBuilderImpl<CompletedSynapsesAxonsGraphBuilder<P>> implements CompletedSynapsesAxonsGraphBuilder<P>, SynapsesEnder<P> {
 
@@ -55,7 +54,7 @@ public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder> exte
 		this.previousSupplier.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 		// TODO ML Here we would add the synapses instead of the chain
 		DefaultDirectedComponentChain
-			chain = new DefaultDirectedComponentChainImpl(this.getComponents());
+			chain = directedComponentFactory.createDirectedComponentChain(this.getComponents());
 		previousSupplier.get().addComponent(chain);
 		
 		return previousSupplier.get();

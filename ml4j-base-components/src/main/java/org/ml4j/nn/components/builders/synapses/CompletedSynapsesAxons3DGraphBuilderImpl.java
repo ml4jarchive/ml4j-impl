@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.Axons3DBuilder;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
@@ -16,8 +14,9 @@ import org.ml4j.nn.components.builders.axonsgraph.Axons3DSubGraphBuilderImpl;
 import org.ml4j.nn.components.builders.base.BaseNested3DGraphBuilderImpl;
 import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.Axons3DGraphSkipConnectionBuilderImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 
 public class CompletedSynapsesAxons3DGraphBuilderImpl<P extends Axons3DBuilder, Q extends AxonsBuilder> extends BaseNested3DGraphBuilderImpl<P, CompletedSynapsesAxons3DGraphBuilder<P, Q>, CompletedSynapsesAxonsGraphBuilder<Q>> implements CompletedSynapsesAxons3DGraphBuilder<P, Q>, SynapsesEnder<P>, ParallelPathsBuilder<Axons3DSubGraphBuilder<CompletedSynapsesAxons3DGraphBuilder<P, Q>, CompletedSynapsesAxonsGraphBuilder<Q>>> {
 
@@ -52,7 +51,7 @@ public class CompletedSynapsesAxons3DGraphBuilderImpl<P extends Axons3DBuilder, 
 		this.parent3DGraph.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 		// TODO ML Here we would add synapses instead of the chain
 		DefaultDirectedComponentChain
-			chain = new DefaultDirectedComponentChainImpl(getComponents());
+			chain = directedComponentFactory.createDirectedComponentChain(getComponents());
 		this.parent3DGraph.get().addComponent(chain);
 		return parent3DGraph.get();
 	}

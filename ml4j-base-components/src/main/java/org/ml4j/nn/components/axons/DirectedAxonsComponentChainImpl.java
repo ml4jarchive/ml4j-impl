@@ -3,11 +3,11 @@ package org.ml4j.nn.components.axons;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChainActivation;
 import org.ml4j.nn.components.DirectedComponentChainActivationImpl;
 import org.ml4j.nn.components.DirectedComponentChainBaseImpl;
 import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 

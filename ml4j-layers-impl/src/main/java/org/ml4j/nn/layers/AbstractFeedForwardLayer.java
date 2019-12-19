@@ -22,14 +22,15 @@ import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChain;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +67,13 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
    * @param matrixFactory The matrix factory
    * @param withBatchNorm Whether to enable batch norm.
    */
-  protected AbstractFeedForwardLayer(DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?,?>, ?, ?> componentChain, MatrixFactory matrixFactory) {
+  protected AbstractFeedForwardLayer(DirectedComponentFactory directedComponentFactory, DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?,?>, ?, ?> componentChain, MatrixFactory matrixFactory) {
 	  this.componentChain = componentChain;
 	  List<DefaultChainableDirectedComponent<?, ?>> chainableComponents = new ArrayList<>();
 		for (DefaultChainableDirectedComponent<?, ?> component : componentChain.getComponents()) {
 			chainableComponents.addAll(component.decompose());
 		}
-	  this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(chainableComponents);
+	  this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, chainableComponents);
 	  this.matrixFactory = matrixFactory;
   }
   

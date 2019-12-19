@@ -7,8 +7,6 @@ import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.Axons3DBuilder;
@@ -27,8 +25,9 @@ import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphNeurons;
 import org.ml4j.nn.components.builders.synapses.Synapses3DPermitted;
 import org.ml4j.nn.components.builders.synapses.SynapsesAxons3DGraphBuilder;
 import org.ml4j.nn.components.builders.synapses.SynapsesAxons3DGraphBuilderImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 
@@ -235,7 +234,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder, D extends
 
 	public DefaultDirectedComponentChain getComponentChain() {
 		addAxonsIfApplicable();
-		return new DefaultDirectedComponentChainImpl(components);
+		return directedComponentFactory.createDirectedComponentChain(components);
 	}
 	
 	@Override

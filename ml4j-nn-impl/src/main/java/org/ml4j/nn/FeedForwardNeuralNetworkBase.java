@@ -17,6 +17,9 @@ package org.ml4j.nn;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -29,12 +32,13 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentType;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChain;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.costfunctions.CostFunction;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
@@ -63,6 +67,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 	protected H initialisingComponentChain;
 	protected TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain;
+	
+	protected GradientAccumulator gradientAccumulator;
 
 	private C lastEpochTrainingContext;
 
@@ -76,10 +82,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 * 
 	 * @param layers The layers
 	 */
-	public FeedForwardNeuralNetworkBase(H initialisingComponentChain) {
+	public FeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory, H initialisingComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
-		this.trailingActivationFunctionComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
+		this.trailingActivationFunctionComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory,
 				initialisingComponentChain.getComponents());
+		this.gradientAccumulator = new LocalGradientAccumulator();
 	}
 	
 	/**
@@ -90,6 +97,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain, TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.trailingActivationFunctionComponentChain = trailingActivationFunctionComponentChain;
+		this.gradientAccumulator = new LocalGradientAccumulator();
 	}
 
 	// TODO - Refactor these methods
@@ -338,23 +346,36 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 							trainingContext);
 					
 					costAndGradientsList.add(costAndGradients);
+					
 
 					LOGGER.debug("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
 							+ costAndGradients.getAverageCost());
-
-					List<AxonsGradient> averageTrainableAxonsGradients = costAndGradients
-							.getAverageTrainableAxonsGradients();
-
-					adjustConnectionWeights(trainingContext, averageTrainableAxonsGradients, epochIndex2,
-							batchIndex.get(), iterationIndex.get());
-
-					for (AxonsGradient axonsGradient : averageTrainableAxonsGradients) {
-						axonsGradient.getWeightsGradient().close();
-						if (axonsGradient.getLeftToRightBiasGradient() != null) {
-							axonsGradient.getLeftToRightBiasGradient().close();
-						}
-						if (axonsGradient.getRightToLeftBiasGradient() != null) {
-							axonsGradient.getRightToLeftBiasGradient().close();
+					
+					Optional<Future<List<AxonsGradient>>> averageAxonsGradientsResult = gradientAccumulator.submitCostAndGradients(costAndGradients);
+		
+					if (averageAxonsGradientsResult.isPresent()) {
+	
+						List<AxonsGradient> averageTrainableAxonsGradients;
+						try {
+							averageTrainableAxonsGradients = averageAxonsGradientsResult.get().get();
+						
+							adjustConnectionWeights(trainingContext, averageTrainableAxonsGradients, epochIndex2,
+									batchIndex.get(), iterationIndex.get());
+		
+							for (AxonsGradient axonsGradient : averageTrainableAxonsGradients) {
+								axonsGradient.getWeightsGradient().close();
+								if (axonsGradient.getLeftToRightBiasGradient() != null) {
+									axonsGradient.getLeftToRightBiasGradient().close();
+								}
+								if (axonsGradient.getRightToLeftBiasGradient() != null) {
+									axonsGradient.getRightToLeftBiasGradient().close();
+								}
+							}
+						
+						} catch (InterruptedException e) {
+							LOGGER.error("Interrupted when waiting for response from gradient accumulator", e);
+						} catch (ExecutionException e) {
+							LOGGER.error("Execution exception when waiting for response from gradient accumulator", e);
 						}
 					}
 					

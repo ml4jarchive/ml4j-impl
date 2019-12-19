@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.base.BaseNestedGraphBuilderImpl;
 import org.ml4j.nn.components.builders.common.ComponentsContainer;
@@ -16,6 +15,7 @@ import org.ml4j.nn.components.builders.componentsgraph.ComponentsSubGraphBuilder
 import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnectionBuilder;
 import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.Neurons;
 
 public abstract class ComponentsNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons>, C extends AxonsBuilder> extends BaseNestedGraphBuilderImpl<P, C> implements ComponentsGraphBuilder<C>{

@@ -1,12 +1,10 @@
 package org.ml4j.nn.layers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentGradient;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainActivation;
-import org.ml4j.nn.components.defaults.DefaultChainableDirectedComponentActivationAdapter;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
@@ -54,7 +52,6 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
 
 	@Override
 	public List<DefaultChainableDirectedComponentActivation> decompose() {
-		return componentChainActivation.decompose().stream().map(c -> 
-		new DefaultChainableDirectedComponentActivationAdapter(c)).collect(Collectors.toList());
+		return componentChainActivation.decompose();
 	}
 }

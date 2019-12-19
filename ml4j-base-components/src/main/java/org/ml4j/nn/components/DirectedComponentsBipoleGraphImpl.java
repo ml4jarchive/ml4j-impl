@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 
 
 public abstract class DirectedComponentsBipoleGraphImpl<I, L extends ChainableDirectedComponent<I, A, C>, B extends DirectedComponentBatch<I, L , Y, A, C, C2>, A extends ChainableDirectedComponentActivation<I>, Y extends DirectedComponentBatchActivation<I, A>, Z extends DirectedComponentBipoleGraphActivation<I>, C, C2> implements DirectedComponentBipoleGraph<I,  C2, Z, B> {

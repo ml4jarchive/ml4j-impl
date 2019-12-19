@@ -9,19 +9,16 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.axons.factories.AxonsFactory;
-import org.ml4j.nn.components.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.DefaultDirectedComponentBipoleGraph;
-import org.ml4j.nn.components.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.DefaultDirectedComponentChainActivation;
-import org.ml4j.nn.components.PathCombinationStrategy;
 import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatch;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBatchImpl;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainBipoleGraphImpl2;
-import org.ml4j.nn.components.defaults.DefaultDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -46,7 +43,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 	 */
 	public ResidualBlockLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
 			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2, MatrixFactory matrixFactory) {
-		super(createComponentChain(directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
+		super(directedComponentFactory, createComponentChain(directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
 				matrixFactory);
 		this.layer1 = layer1;
 		this.layer2 = layer2;
@@ -77,7 +74,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 		// Return the component chain consisting of all components except the last
 		// activation function
-		return new DefaultDirectedComponentChainImpl(preceedingComponents);
+		return directedComponentFactory.createDirectedComponentChain(preceedingComponents);
 
 	}
 
@@ -107,7 +104,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		}
 
 		// Skip connection chain, either empty or containing the matching axons
-		DefaultDirectedComponentChain skipConnectionChain = new DefaultDirectedComponentChainImpl(
+		DefaultDirectedComponentChain skipConnectionChain = directedComponentFactory.createDirectedComponentChain(
 				matchingAxonsList);
 
 		// Parallel Chains of preceding chain and skip connection
@@ -116,12 +113,12 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		parallelChains.add(skipConnectionChain);
 
 		// Parallel Chain Batch of preceding chain and skip connection
-		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelBatch = new DefaultDirectedComponentChainBatchImpl<>(
+		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelBatch = directedComponentFactory.createDirectedComponentChainBatch(
 				parallelChains);
 
 		// Parallel Chain Graph of preceding chain and skip connection
-		DefaultDirectedComponentBipoleGraph parallelGraph = new DefaultDirectedComponentChainBipoleGraphImpl2(
-				directedComponentFactory, parallelBatch, PathCombinationStrategy.ADDITION);
+		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory.createDirectedComponentBipoleGraph(
+				parallelBatch, PathCombinationStrategy.ADDITION);
 
 		// Residual block component list is composed of the parallel chain graph
 		// followed by the final activation function
@@ -130,7 +127,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 		// Create a DirectedComponentChain from the list of components, that has an
 		// activation function as the final component
-		return new TrailingActivationFunctionDirectedComponentChainImpl(residualBlockListOfComponents);
+		return new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, residualBlockListOfComponents);
 	}
 
 	@Override
