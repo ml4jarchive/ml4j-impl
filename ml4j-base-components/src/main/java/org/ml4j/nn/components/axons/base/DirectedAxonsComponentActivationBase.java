@@ -20,12 +20,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DirectedAxonsComponentActivationBase extends DefaultChainableDirectedComponentActivationBase implements DirectedAxonsComponentActivation {
 	
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedAxonsComponentActivationBase.class);
 	
 	/**
 	 * The DirectedAxonsComponent that generated this activation.
 	 */
-	private DirectedAxonsComponent<?, ?> axonsComponent;
+	protected DirectedAxonsComponent<?, ?> directedAxonsComponent;
 
 	/**
 	 * Constructor for DirectedAxonsComponentActivationBase
@@ -35,7 +36,7 @@ public abstract class DirectedAxonsComponentActivationBase extends DefaultChaina
 	 */
 	public DirectedAxonsComponentActivationBase(DirectedAxonsComponent<?, ?> axonsComponent, NeuronsActivation output) {
 		super(output);
-		this.axonsComponent = axonsComponent;
+		this.directedAxonsComponent = axonsComponent;
 	}
 	
 	@Override
@@ -51,13 +52,8 @@ public abstract class DirectedAxonsComponentActivationBase extends DefaultChaina
 
 	@Override
 	public DirectedAxonsComponent<?, ?> getAxonsComponent() {
-		return axonsComponent;
+		return directedAxonsComponent;
 	}
 
-	@Override
-	public float getTotalRegularisationCost() {
-		// TODO
-		return 0;
-	}
 
 }

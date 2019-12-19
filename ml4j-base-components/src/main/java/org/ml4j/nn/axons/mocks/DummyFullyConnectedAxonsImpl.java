@@ -47,7 +47,7 @@ public class DummyFullyConnectedAxonsImpl implements FullyConnectedAxons {
 
 	@Override
 	public Matrix getDetachedConnectionWeights() {
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

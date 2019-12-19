@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class OneToManyDirectedComponentActivationBase implements OneToManyDirectedComponentActivation {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(OneToManyDirectedComponentActivationBase.class);
 	
 	private NeuronsActivation input;
@@ -27,5 +28,4 @@ public abstract class OneToManyDirectedComponentActivationBase implements OneToM
 		}
 		return outputs;
 	}
-
 }

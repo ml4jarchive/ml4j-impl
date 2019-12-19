@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ManyToOneDirectedComponentActivationBase implements ManyToOneDirectedComponentActivation {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ManyToOneDirectedComponentActivationBase.class);
 	
 	protected NeuronsActivation output;

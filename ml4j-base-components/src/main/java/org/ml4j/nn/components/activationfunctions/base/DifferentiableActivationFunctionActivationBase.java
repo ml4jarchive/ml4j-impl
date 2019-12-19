@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DifferentiableActivationFunctionActivationBase extends DefaultChainableDirectedComponentActivationBase implements DifferentiableActivationFunctionActivation {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DifferentiableActivationFunctionActivationBase.class);
 		
 	protected NeuronsActivation input;

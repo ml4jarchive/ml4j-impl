@@ -2,19 +2,17 @@ package org.ml4j.nn.synapses;
 
 import java.util.List;
 
-import org.ml4j.nn.components.ChainableDirectedComponent;
-import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentBatch;
 import org.ml4j.nn.components.DirectedComponentBatchActivation;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsBipoleGraphImpl;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.GenericManyToOneDirectedComponentActivation;
+import org.ml4j.nn.components.GenericOneToManyDirectedComponent;
 import org.ml4j.nn.components.GenericOneToManyDirectedComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
-import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class DirectedSynapsesBipoleGraphImpl<S extends DirectedSynapses<?, ?>> extends DirectedComponentsBipoleGraphImpl<NeuronsActivation, DirectedSynapsesChain<S>, DirectedComponentBatch<NeuronsActivation, DirectedSynapsesChain<S> , DirectedComponentBatchActivation<NeuronsActivation, DirectedSynapsesChainActivation>, DirectedSynapsesChainActivation, DirectedComponentsContext, DirectedComponentsContext>, DirectedSynapsesChainActivation, DirectedComponentBatchActivation<NeuronsActivation, DirectedSynapsesChainActivation>, DirectedSynapsesBipoleGraphActivation, DirectedComponentsContext, DirectedComponentsContext>
@@ -51,11 +49,7 @@ public class DirectedSynapsesBipoleGraphImpl<S extends DirectedSynapses<?, ?>> e
 		return directedComponentsContext;
 	}
 
-	@Override
-	protected OneToManyDirectedComponent<?> createOneToManyDirectedComponent(DirectedComponentFactory directedComponentFactory,
-			List<? extends ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, DirectedComponentsContext>> targetComponents) {
-		return directedComponentFactory.createOneToManyDirectedComponent(targetComponents);
-	}
+	
 
 	@Override
 	public DirectedSynapsesBipoleGraph<S> dup() {
@@ -65,5 +59,11 @@ public class DirectedSynapsesBipoleGraphImpl<S extends DirectedSynapses<?, ?>> e
 	@Override
 	public DirectedComponentType getComponentType() {
 		return DirectedComponentType.SYNAPSES_GRAPH;
+	}
+
+	@Override
+	protected GenericOneToManyDirectedComponent<NeuronsActivation, DirectedComponentsContext, ?> createOneToManyDirectedComponent(
+			DirectedComponentFactory directedComponentFactory, List<DirectedSynapsesChain<S>> targetComponents) {
+		return directedComponentFactory.createOneToManyDirectedComponent(() -> targetComponents.size());
 	}	
 }

@@ -14,7 +14,7 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch;
+	protected DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch;
 
 	public DefaultDirectedComponentChainBipoleGraphBase(
 			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch) {

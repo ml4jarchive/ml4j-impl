@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DefaultChainableDirectedComponentActivationBase implements DefaultChainableDirectedComponentActivation {
 	
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultChainableDirectedComponentActivationBase.class);
 	
 	/**
@@ -34,3 +35,5 @@ public abstract class DefaultChainableDirectedComponentActivationBase implements
 		return output;
 	}
 }
+
+

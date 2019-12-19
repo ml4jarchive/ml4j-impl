@@ -27,7 +27,7 @@ public abstract class DirectedComponentsBipoleGraphImpl<I, L extends ChainableDi
 		this.edges = edges;
 	}
 	
-	protected abstract GenericOneToManyDirectedComponent<I, C2, ?> createOneToManyDirectedComponent(DirectedComponentFactory directedComponentFactory, List<? extends ChainableDirectedComponent<I, ? extends ChainableDirectedComponentActivation<I>, C>> targetComponents);
+	protected abstract GenericOneToManyDirectedComponent<I, C2, ?> createOneToManyDirectedComponent(DirectedComponentFactory directedComponentFactory, List<L> targetComponents);
 	
 	protected abstract GenericManyToOneDirectedComponent<I, C2, ?> createManyToOneDirectedComponent(DirectedComponentFactory directedComponentFactory);
 

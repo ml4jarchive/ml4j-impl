@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ManyToOneDirectedComponentBase<A extends ManyToOneDirectedComponentActivation> implements ManyToOneDirectedComponent<A> {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(ManyToOneDirectedComponentBase.class);
 	
 	/**

@@ -11,8 +11,16 @@ import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Default base class for implementations of DefaultDirectedComponentChain.
+ * 
+ * Encapsulates a sequential chain of DefaultChainableDirectedComponents
+ * 
+ * @author Michael Lavelle
+ */
 public abstract class DefaultDirectedComponentChainBase implements DefaultDirectedComponentChain {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDirectedComponentChainBase.class);
 	
 	/**
