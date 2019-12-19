@@ -11,6 +11,11 @@ import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFuncti
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
 
+/**
+ * 
+ * 
+ * @author Michael Lavelle
+ */
 public abstract class DifferentiableActivationFunctionComponentBase implements DifferentiableActivationFunctionComponent {
 
 	/**
@@ -53,5 +58,4 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	public DirectedComponentType getComponentType() {
 		return DirectedComponentType.ACTIVATION_FUNCTION;
 	}
-
 }
