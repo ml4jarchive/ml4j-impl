@@ -13,6 +13,7 @@ import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
 
@@ -120,6 +121,16 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	@Override
 	public DirectedComponentType getComponentType() {
 		return DirectedComponentType.COMPONENT_CHAIN;
+	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return precedingChain.getInputNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return finalDifferentiableActivationFunctionComponent.getOutputNeurons();
 	}
 	
 }

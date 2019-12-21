@@ -82,7 +82,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		super();
 		this.activationFunction = activationFunction;
 		this.activationFunctionComponent = directedComponentFactory
-				.createDifferentiableActivationFunctionComponent(activationFunction);
+				.createDifferentiableActivationFunctionComponent(rightNeurons, activationFunction);
 		this.axonsGraph = axonsGraph;
 		this.directedComponentFactory = directedComponentFactory;
 		this.leftNeurons = leftNeurons;
@@ -115,7 +115,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 		chainsList.add(chain);
 		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
-		return directedComponentFactory.createDirectedComponentBipoleGraph(batch,
+		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), batch,
 				PathCombinationStrategy.ADDITION);
 	}
 
@@ -203,5 +203,15 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	  public DirectedComponentType getComponentType() {
 		  return DirectedComponentType.SYNAPSES;
 	  }
+
+	@Override
+	public Neurons getInputNeurons() {
+		return leftNeurons;
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return rightNeurons;
+	}
 
 }

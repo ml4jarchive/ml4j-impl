@@ -202,4 +202,16 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		int indICorrected = indI; // + (hasBiasUnit ? 1 : 0);
 		return weights.get(indJ, indICorrected);
 	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return trailingActivationFunctionDirectedComponentChain.getInputNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return trailingActivationFunctionDirectedComponentChain.getOutputNeurons();
+	}
+	
+	
 }

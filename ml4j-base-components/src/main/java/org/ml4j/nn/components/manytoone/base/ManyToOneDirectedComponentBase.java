@@ -3,6 +3,7 @@ package org.ml4j.nn.components.manytoone.base;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponentActivation;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,12 @@ public abstract class ManyToOneDirectedComponentBase<A extends ManyToOneDirected
 	 * Serialization id.
 	 */
 	private static final long serialVersionUID = -7049642040068320620L;
+	
+	protected PathCombinationStrategy pathCombinationStrategy;
+	
+	public ManyToOneDirectedComponentBase(PathCombinationStrategy pathCombinationStrategy) {
+		this.pathCombinationStrategy = pathCombinationStrategy;
+	}
 
 	@Override
 	public DirectedComponentType getComponentType() {

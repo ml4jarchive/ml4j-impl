@@ -50,4 +50,16 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 		return DirectedComponentType.AXONS;
 	}
 
+	@Override
+	public Neurons getInputNeurons() {
+		return axons.getLeftNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return axons.getRightNeurons();
+	}
+	
+	
+
 }

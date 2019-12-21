@@ -71,7 +71,8 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 			List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 			chainsList.addAll(this.parentGraph.get().getChains());
 			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
-			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(batch, pathCombinationStrategy));
+			Neurons graphInputNeurons = chainsList.get(0).getInputNeurons();
+			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons, parentGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), batch, pathCombinationStrategy));
 			pathsEnded = true;
 			parentGraph.get().getEndNeurons().clear();
 			parentGraph.get().getChains().clear();

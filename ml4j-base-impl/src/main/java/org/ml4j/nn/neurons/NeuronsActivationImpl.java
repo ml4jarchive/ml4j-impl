@@ -116,15 +116,15 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		}
 	}
 
-	public void combineFeaturesInline(NeuronsActivation other) {
+	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
 		if (other.getFeatureOrientation() != featureOrientation) {
 			throw new IllegalArgumentException("Incompatible orientations");
 		}
 		if (featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-			activations = activations.appendVertically(other.getActivations(null));
+			activations = activations.appendVertically(other.getActivations(matrixFactory));
 		} else {
 			try (InterrimMatrix previousActivations = this.activations.asInterrimMatrix()) {
-				this.activations = previousActivations.appendHorizontally(other.getActivations(null));
+				this.activations = previousActivations.appendHorizontally(other.getActivations(matrixFactory));
 			}
 		}
 	}

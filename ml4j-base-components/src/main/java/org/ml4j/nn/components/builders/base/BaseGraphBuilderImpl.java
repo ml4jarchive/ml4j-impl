@@ -122,7 +122,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder> implements Ax
 	
 	protected void addActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(activationFunction));
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
 	}
 	
 	public DefaultDirectedComponentChain getComponentChain() {

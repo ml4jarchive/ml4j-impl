@@ -9,6 +9,7 @@ import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
 
 /**
@@ -24,9 +25,11 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	private static final long serialVersionUID = -6033017517698579773L;
 	
 	protected DifferentiableActivationFunction activationFunction;
+	protected Neurons neurons;
 	
-	public DifferentiableActivationFunctionComponentBase(DifferentiableActivationFunction activationFunction){
+	public DifferentiableActivationFunctionComponentBase(Neurons neurons, DifferentiableActivationFunction activationFunction){
 		this.activationFunction = activationFunction;
+		this.neurons = neurons;
 	}
 
 	@Override
@@ -58,4 +61,15 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	public DirectedComponentType getComponentType() {
 		return DirectedComponentType.ACTIVATION_FUNCTION;
 	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return neurons;
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return neurons;
+	}
+	
 }

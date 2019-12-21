@@ -84,7 +84,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 		// Final activation function component
 		DifferentiableActivationFunctionComponent finalActivationFunctionComponent = directedComponentFactory
-				.createDifferentiableActivationFunctionComponent(layer2.getPrimaryActivationFunction());
+				.createDifferentiableActivationFunctionComponent(layer2.getOutputNeurons(), layer2.getPrimaryActivationFunction());
 
 		// Chain of components before the final activation function component
 		DefaultDirectedComponentChain precedingChain = createPrecedingChain(
@@ -117,7 +117,8 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 				parallelChains);
 
 		// Parallel Chain Graph of preceding chain and skip connection
-		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory.createDirectedComponentBipoleGraph(
+		// TODO - remove nulls
+		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory.createDirectedComponentBipoleGraph(null, null,
 				parallelBatch, PathCombinationStrategy.ADDITION);
 
 		// Residual block component list is composed of the parallel chain graph
@@ -167,5 +168,15 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
 		components.addAll(componentChain.getComponents());
 		return components;
+	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return layer1.getInputNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return layer1.getOutputNeurons();
 	}
 }

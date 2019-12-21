@@ -7,6 +7,7 @@ import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,5 +58,17 @@ public abstract class DefaultDirectedComponentChainBase implements DefaultDirect
 	public List<DefaultChainableDirectedComponent<?, ?>> getComponents() {
 		return sequentialComponents;
 	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return sequentialComponents.get(0).getInputNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return sequentialComponents.get(sequentialComponents.size() - 1).getOutputNeurons();
+	}
+	
+	
 
 }

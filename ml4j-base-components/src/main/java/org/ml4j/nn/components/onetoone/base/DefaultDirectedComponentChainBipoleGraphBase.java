@@ -6,6 +6,7 @@ import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
+import org.ml4j.nn.neurons.Neurons;
 
 public abstract class DefaultDirectedComponentChainBipoleGraphBase implements DefaultDirectedComponentBipoleGraph {
 
@@ -16,9 +17,14 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	
 	protected DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch;
 
-	public DefaultDirectedComponentChainBipoleGraphBase(
+	protected Neurons inputNeurons;
+	protected Neurons outputNeurons;
+	
+	public DefaultDirectedComponentChainBipoleGraphBase(Neurons inputNeurons, Neurons outputNeurons,
 			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch) {
 		this.parallelComponentChainsBatch = parallelComponentChainsBatch;
+		this.inputNeurons = inputNeurons;
+		this.outputNeurons = outputNeurons;
 	}
 	
 	@Override
@@ -29,4 +35,15 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	public DirectedComponentType getComponentType() {
 		return DirectedComponentType.COMPONENT_CHAIN_GRAPH;
 	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return inputNeurons;
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return outputNeurons;
+	}
+
 }
