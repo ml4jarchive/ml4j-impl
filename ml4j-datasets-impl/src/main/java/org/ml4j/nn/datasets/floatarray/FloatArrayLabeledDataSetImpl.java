@@ -82,8 +82,7 @@ public class FloatArrayLabeledDataSetImpl implements FloatArrayLabeledDataSet {
 
 	@Override
 	public FloatArrayBatchedLabeledDataSet toBatchedLabeledDataSet(int batchSize) {			
-		Stream<DataBatch<LabeledData<float[], float[]>>> s = StreamUtil.partition(stream().map(l -> new LabeledDataImpl<>(l.getData(), l.getLabel())), batchSize);
-		return new FloatArrayBatchedLabeledDataSetImpl(() -> s, featureCount, labelFeatureCount);
+		return new FloatArrayBatchedLabeledDataSetImpl(() -> StreamUtil.partition(stream().map(l -> new LabeledDataImpl<>(l.getData(), l.getLabel())), batchSize), featureCount, labelFeatureCount);
 	}
 
 }
