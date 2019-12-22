@@ -57,7 +57,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
   protected MatrixFactory matrixFactory;
   
   protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
-  protected TrailingActivationFunctionDirectedComponentChain<DefaultChainableDirectedComponent<?, ?>> 
+  protected TrailingActivationFunctionDirectedComponentChain 
   		trailingActivationFunctionDirectedComponentChain;
   
  

@@ -66,7 +66,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedForwardNeuralNetworkBase.class);
 
 	protected H initialisingComponentChain;
-	protected TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain;
+	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain;
 	
 	protected GradientAccumulator gradientAccumulator;
 
@@ -94,7 +94,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 * 
 	 * @param layers The layers
 	 */
-	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain, TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain) {
+	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain, TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.trailingActivationFunctionComponentChain = trailingActivationFunctionComponentChain;
 		this.gradientAccumulator = new LocalGradientAccumulator();
@@ -317,8 +317,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 			final int epochIndex2 = epochIndex;
 
-			try (Stream<LabeledData<NeuronsActivation, NeuronsActivation>> trainingDataStream = trainingDataSet
-					.get()) {
+			try (Stream<LabeledData<NeuronsActivation, NeuronsActivation>> trainingDataStream = 
+					trainingDataSet.get();
+				) {
 				
 
 			if (trainingContext.getTrainingMiniBatchSize() == null) {

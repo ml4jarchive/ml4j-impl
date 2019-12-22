@@ -131,7 +131,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		return components;
 	}
 
-	protected TrailingActivationFunctionDirectedComponentChain<?> createChain() {
+	protected TrailingActivationFunctionDirectedComponentChain createChain() {
 		DirectedSynapsesChain<DirectedSynapses<?, ?>> synapseChain = new DirectedSynapsesChainImpl<>(getSynapses(
 				directedComponentFactory, matrixFactory, primaryAxons, primaryActivationFunction, withBatchNorm));
 		List<DefaultChainableDirectedComponent<? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>> chainableComponents = new ArrayList<>();
