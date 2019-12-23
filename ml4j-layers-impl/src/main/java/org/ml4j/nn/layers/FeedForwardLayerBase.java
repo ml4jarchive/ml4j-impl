@@ -29,18 +29,16 @@ import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
-import org.ml4j.nn.synapses.DirectedSynapses;
-import org.ml4j.nn.synapses.DirectedSynapsesChain;
-import org.ml4j.nn.synapses.DirectedSynapsesChainImpl;
 import org.ml4j.nn.synapses.DirectedSynapsesImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +76,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 	 */
 	protected FeedForwardLayerBase(DirectedComponentFactory directedComponentFactory, A primaryAxons,
 			DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(directedComponentFactory, new DirectedSynapsesChainImpl<>(
+		super(directedComponentFactory, directedComponentFactory.createDirectedComponentChain(
 				getSynapses(directedComponentFactory, matrixFactory, primaryAxons, activationFunction, withBatchNorm)),
 				matrixFactory);
 		this.primaryAxons = primaryAxons;
@@ -108,11 +106,11 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		return primaryActivationFunction;
 	}
 
-	protected static List<DirectedSynapses<?, ?>> getSynapses(DirectedComponentFactory directedComponentFactory,
+	protected static List<DefaultChainableDirectedComponent<?, ?>> getSynapses(DirectedComponentFactory directedComponentFactory,
 			MatrixFactory matrixFactory, Axons<?, ?, ?> primaryAxons,
 			DifferentiableActivationFunction primaryActivationFunction, boolean withBatchNorm) {
 		Objects.requireNonNull(primaryAxons, "primaryAxons");
-		List<DirectedSynapses<?, ?>> synapses = new ArrayList<>();
+		List<DefaultChainableDirectedComponent<?, ?>> synapses = new ArrayList<>();
 		if (withBatchNorm) {
 			throw new UnsupportedOperationException("Not yet implemented");
 		} else {
@@ -132,8 +130,10 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 	}
 
 	protected TrailingActivationFunctionDirectedComponentChain createChain() {
-		DirectedSynapsesChain<DirectedSynapses<?, ?>> synapseChain = new DirectedSynapsesChainImpl<>(getSynapses(
+		
+		DefaultDirectedComponentChain synapseChain = directedComponentFactory.createDirectedComponentChain(getSynapses(
 				directedComponentFactory, matrixFactory, primaryAxons, primaryActivationFunction, withBatchNorm));
+		
 		List<DefaultChainableDirectedComponent<? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>> chainableComponents = new ArrayList<>();
 		chainableComponents.addAll(synapseChain.decompose());
 		return new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, chainableComponents);

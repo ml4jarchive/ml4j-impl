@@ -1,31 +1,45 @@
-package org.ml4j.nn.components;
+package org.ml4j.nn.components.onetoone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainActivationBase;
 
 public class TrailingActivationFunctionDirectedComponentChainActivationImpl
-		extends DefaultDirectedComponentChainActivationImpl implements TrailingActivationFunctionDirectedComponentChainActivation {
+		extends DefaultDirectedComponentChainActivationBase implements TrailingActivationFunctionDirectedComponentChainActivation {
 
 	private DifferentiableActivationFunctionActivation activationFunctionActivation;
 	private DefaultDirectedComponentChainActivation precedingChainActivation;
 	
 	public TrailingActivationFunctionDirectedComponentChainActivationImpl(DefaultDirectedComponentChainActivation precedingChainActivation,
 			DifferentiableActivationFunctionActivation activationFunctionActivation) {
-		super(getActivations(precedingChainActivation, activationFunctionActivation), activationFunctionActivation.getOutput());
+		super(activationFunctionActivation.getOutput());
 		this.activationFunctionActivation = activationFunctionActivation;
 		this.precedingChainActivation = precedingChainActivation;
 	}   
 
-	private static List<DefaultChainableDirectedComponentActivation> getActivations(
-			DefaultDirectedComponentChainActivation precedingChainActivation,
-			DifferentiableActivationFunctionActivation activationFunctionActivation) {
+	@Override
+	public DirectedComponentGradient<NeuronsActivation> backPropagate(CostFunctionGradient outerGradient) {
+		
+		DirectedComponentGradient<NeuronsActivation> activationFunctionGradient = activationFunctionActivation.backPropagate(outerGradient);
+		return precedingChainActivation.backPropagate(activationFunctionGradient);
+	}
+
+	@Override
+	public List<DefaultChainableDirectedComponentActivation> decompose() {
+		return getActivations().stream().flatMap(a -> a.decompose().stream()).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<DefaultChainableDirectedComponentActivation> getActivations() {
 		List<DefaultChainableDirectedComponentActivation> activations = new ArrayList<>();
 		activations.addAll(precedingChainActivation.getActivations());
 		activations.add(activationFunctionActivation);
@@ -33,8 +47,8 @@ public class TrailingActivationFunctionDirectedComponentChainActivationImpl
 	}
 
 	@Override
-	public DirectedComponentGradient<NeuronsActivation> backPropagate(CostFunctionGradient outerGradient) {
-		
+	public DirectedComponentGradient<NeuronsActivation> backPropagate(
+			DirectedComponentGradient<NeuronsActivation> outerGradient) {
 		DirectedComponentGradient<NeuronsActivation> activationFunctionGradient = activationFunctionActivation.backPropagate(outerGradient);
 		return precedingChainActivation.backPropagate(activationFunctionGradient);
 	}

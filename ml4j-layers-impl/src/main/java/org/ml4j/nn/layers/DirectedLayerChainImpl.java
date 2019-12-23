@@ -1,15 +1,16 @@
 package org.ml4j.nn.layers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DirectedComponentChain;
-import org.ml4j.nn.components.DirectedComponentChainBaseImpl;
 import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainBaseParent;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
-public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends DirectedComponentChainBaseImpl<NeuronsActivation, L, DirectedLayerActivation, DirectedLayerChainActivation> implements DirectedLayerChain<L> {
+public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends DefaultDirectedComponentChainBaseParent<L, DirectedLayerActivation, DirectedLayerChainActivation> implements DirectedLayerChain<L> {
 
 	/**
 	 * Default serialization id.
@@ -21,16 +22,10 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends Direc
 		super(components);
 	}
 
-	@Override
-	protected DirectedLayerChainActivation createChainActivation(
-			List<DirectedLayerActivation> componentActivations, NeuronsActivation inFlightInput) {
-		return new DirectedLayerChainActivationImpl(componentActivations);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public DirectedComponentChain<NeuronsActivation, L, DirectedLayerActivation, DirectedLayerChainActivation> dup() {
-		return new DirectedLayerChainImpl<L>((List<L>) this.components.stream().map(c -> c.dup()).collect(Collectors.toList()));
+	public DirectedLayerChain<L> dup() {
+		return new DirectedLayerChainImpl<L>((List<L>) this.sequentialComponents.stream().map(c -> c.dup()).collect(Collectors.toList()));
 	}	
 	
 	@Override
@@ -40,7 +35,23 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends Direc
 	
 	@Override
 	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
+		return sequentialComponents.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
+	}
+
+	@Override
+	public DirectedLayerChainActivation forwardPropagate(NeuronsActivation neuronsActivation, DirectedComponentsContext context) {
+		//LOGGER.debug("Forward propagating through DirectedLayerChainImpl");
+		NeuronsActivation inFlightActivation = neuronsActivation;
+		List<DirectedLayerActivation> activations = new ArrayList<>();
+		int index = 0;
+		for (L component : sequentialComponents) {
+			DirectedLayerActivation activation = forwardPropagate(inFlightActivation, component, index, context);
+			activations.add(activation);
+			inFlightActivation = activation.getOutput();
+			index++;
+		}
+		
+		return new DirectedLayerChainActivationImpl(activations);
 	}
 
 }
