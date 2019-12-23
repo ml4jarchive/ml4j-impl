@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -150,7 +150,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
 
-		DifferentiableActivationFunctionActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
+		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
 				new NeuronsActivationContext() {
 
 					/**

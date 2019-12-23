@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.ChainableDirectedComponent;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentType;
@@ -83,7 +83,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			DirectedComponentsContext context) {
 		
 		DefaultDirectedComponentChainActivation precedingChainActivation = precedingChain.forwardPropagate(input, context);
-		DifferentiableActivationFunctionActivation activationFunctionActivation = finalDifferentiableActivationFunctionComponent.forwardPropagate(precedingChainActivation.getOutput(), new NeuronsActivationContext() {
+		DifferentiableActivationFunctionComponentActivation activationFunctionComponentActivation = finalDifferentiableActivationFunctionComponent.forwardPropagate(precedingChainActivation.getOutput(), new NeuronsActivationContext() {
 
 			/**
 			 * Default serialization id.
@@ -97,7 +97,8 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		
 		//activationFunctionActivation.getInput().close();
 		
-		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(precedingChainActivation, activationFunctionActivation);
+		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(this, precedingChainActivation, 
+				activationFunctionComponentActivation);
 	}
 
 	@Override

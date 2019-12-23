@@ -4,24 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainActivationBase;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainActivationBase;
 
 public class TrailingActivationFunctionDirectedComponentChainActivationImpl
-		extends DefaultDirectedComponentChainActivationBase implements TrailingActivationFunctionDirectedComponentChainActivation {
+		extends DefaultDirectedComponentChainActivationBase<TrailingActivationFunctionDirectedComponentChain> implements TrailingActivationFunctionDirectedComponentChainActivation {
 
-	private DifferentiableActivationFunctionActivation activationFunctionActivation;
+	private DifferentiableActivationFunctionComponentActivation activationFunctionActivation;
 	private DefaultDirectedComponentChainActivation precedingChainActivation;
 	
-	public TrailingActivationFunctionDirectedComponentChainActivationImpl(DefaultDirectedComponentChainActivation precedingChainActivation,
-			DifferentiableActivationFunctionActivation activationFunctionActivation) {
-		super(activationFunctionActivation.getOutput());
+	public TrailingActivationFunctionDirectedComponentChainActivationImpl(TrailingActivationFunctionDirectedComponentChain componentChain, DefaultDirectedComponentChainActivation precedingChainActivation,
+			DifferentiableActivationFunctionComponentActivation activationFunctionActivation) {
+		super(componentChain, activationFunctionActivation.getOutput());
 		this.activationFunctionActivation = activationFunctionActivation;
 		this.precedingChainActivation = precedingChainActivation;
 	}   

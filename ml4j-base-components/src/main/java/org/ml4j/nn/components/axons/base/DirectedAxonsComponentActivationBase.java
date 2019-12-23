@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public abstract class DirectedAxonsComponentActivationBase extends DefaultChainableDirectedComponentActivationBase implements DirectedAxonsComponentActivation {
+public abstract class DirectedAxonsComponentActivationBase extends DefaultChainableDirectedComponentActivationBase<DirectedAxonsComponent<?, ?>> implements DirectedAxonsComponentActivation {
 	
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedAxonsComponentActivationBase.class);
@@ -35,7 +35,7 @@ public abstract class DirectedAxonsComponentActivationBase extends DefaultChaina
 	 * @param output The NeuronsActivation output on the RHS of the forward propagation.
 	 */
 	public DirectedAxonsComponentActivationBase(DirectedAxonsComponent<?, ?> axonsComponent, NeuronsActivation output) {
-		super(output);
+		super(axonsComponent, output);
 		this.directedAxonsComponent = axonsComponent;
 	}
 	
