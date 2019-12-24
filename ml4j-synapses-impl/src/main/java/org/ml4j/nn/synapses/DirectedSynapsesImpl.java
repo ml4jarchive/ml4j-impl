@@ -99,8 +99,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param primaryAxons             The primary Axons within these synapses
 	 * @param activationFunction       The activation function within these synapses
 	 */
-	public DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory,
-			Axons<? extends L, ? extends R, ?> primaryAxons, DifferentiableActivationFunction activationFunction) {
+	public  DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory,
+			Axons<L, R, ?> primaryAxons, DifferentiableActivationFunction activationFunction) {
 		this(directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), createGraph(directedComponentFactory, primaryAxons),
 				activationFunction);
 		this.directedComponentFactory = directedComponentFactory;
@@ -109,7 +109,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	private static DefaultDirectedComponentBipoleGraph createGraph(
 			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
 		List<DefaultChainableDirectedComponent<?,  ?>> components = Arrays
-				.asList(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
+				.asList();
 		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(
 				components);
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();

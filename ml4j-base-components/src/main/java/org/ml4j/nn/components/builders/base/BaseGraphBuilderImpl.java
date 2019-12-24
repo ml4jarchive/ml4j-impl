@@ -83,7 +83,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder> implements Ax
 				leftNeurons = new Neurons(builderState.getComponentsGraphNeurons().getCurrentNeurons().getNeuronCountExcludingBias(), true);
 			}
 
-			DirectedAxonsComponent<Neurons, Neurons> axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(leftNeurons, 
+			DirectedAxonsComponent<Neurons, Neurons, ?> axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(leftNeurons, 
 					builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getConnectionWeights(), builderState.getBiases());
 					
 			if (builderState.getFullyConnectedAxonsBuilder().getDirectedComponentsContext() != null && 

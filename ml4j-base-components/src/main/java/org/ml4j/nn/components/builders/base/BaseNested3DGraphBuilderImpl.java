@@ -47,14 +47,14 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 			if (addSkipConnection) {
 				if (initialNeurons.getNeuronCountIncludingBias() == endNeurons.getNeuronCountIncludingBias()) {
 					
-					DirectedAxonsComponent<Neurons, Neurons> skipConnectionAxons =
+					DirectedAxonsComponent<Neurons, Neurons, ?> skipConnectionAxons =
 							directedComponentFactory.createPassThroughAxonsComponent(initialNeurons, endNeurons);
 					DefaultDirectedComponentChain
 					skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parent3DGraph.get().getChains().add(skipConnection);
 				} else {
 					
-					DirectedAxonsComponent<Neurons, Neurons> skipConnectionAxons = 
+					DirectedAxonsComponent<Neurons, Neurons, ?> skipConnectionAxons = 
 							directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
 					DefaultDirectedComponentChain
 					skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));

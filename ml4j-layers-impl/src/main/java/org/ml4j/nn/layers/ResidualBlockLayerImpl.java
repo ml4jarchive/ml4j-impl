@@ -68,7 +68,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		}
 
 		// Create an axons only component from the last synapses
-		DirectedAxonsComponent<?, ?> axonsComponent = directedComponentFactory
+		DirectedAxonsComponent<?, ?, ?> axonsComponent = directedComponentFactory
 				.createDirectedAxonsComponent((Axons<? extends Neurons, ? extends Neurons, ?>) layer2.getPrimaryAxons());
 		preceedingComponents.add(axonsComponent);
 
@@ -98,7 +98,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 			FullyConnectedAxons matchingAxons = axonsFactory.createFullyConnectedAxons(
 					layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons(), null, null);
-			DirectedAxonsComponent<Neurons, Neurons> matchingComponent = directedComponentFactory
+			DirectedAxonsComponent<Neurons, Neurons, ?> matchingComponent = directedComponentFactory
 					.createDirectedAxonsComponent((matchingAxons));
 			matchingAxonsList.add(matchingComponent);
 		}

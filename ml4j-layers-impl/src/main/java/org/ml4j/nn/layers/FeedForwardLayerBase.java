@@ -114,7 +114,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		if (withBatchNorm) {
 			throw new UnsupportedOperationException("Not yet implemented");
 		} else {
-			synapses.add(new DirectedSynapsesImpl<Neurons, Neurons>(directedComponentFactory, primaryAxons,
+			synapses.add(new DirectedSynapsesImpl<>(directedComponentFactory, primaryAxons,
 					primaryActivationFunction));
 		}
 		return synapses;

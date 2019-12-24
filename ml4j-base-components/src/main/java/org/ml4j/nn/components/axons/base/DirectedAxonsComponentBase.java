@@ -14,7 +14,7 @@ import org.ml4j.nn.neurons.Neurons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Neurons, A extends Axons<? extends L, ? extends R,  ?>> implements DirectedAxonsComponent<L, R> {
+public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Neurons, A extends Axons<? extends L, ? extends R,  ?>> implements DirectedAxonsComponent<L, R, A> {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedAxonsComponentBase.class);
@@ -41,7 +41,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	}
 
 	@Override
-	public Axons<? extends L, ? extends R, ?> getAxons() {
+	public A getAxons() {
 		return axons;
 	}
 
