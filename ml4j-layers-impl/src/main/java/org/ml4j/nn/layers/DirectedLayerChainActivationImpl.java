@@ -2,8 +2,8 @@ package org.ml4j.nn.layers;
 
 import java.util.List;
 
-import org.ml4j.nn.components.DirectedComponentChainActivationImpl;
 import org.ml4j.nn.components.DirectedComponentGradient;
+import org.ml4j.nn.components.onetoone.DirectedComponentChainActivationImpl;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
 

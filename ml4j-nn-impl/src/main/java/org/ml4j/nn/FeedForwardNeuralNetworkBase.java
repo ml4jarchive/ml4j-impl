@@ -34,7 +34,6 @@ import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentType;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
@@ -54,6 +53,7 @@ import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 
 /**
  * Default base implementation of a FeedForwardNeuralNetwork.
@@ -66,7 +66,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedForwardNeuralNetworkBase.class);
 
 	protected H initialisingComponentChain;
-	protected TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain;
+	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain;
 	
 	protected GradientAccumulator gradientAccumulator;
 
@@ -94,7 +94,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 * 
 	 * @param layers The layers
 	 */
-	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain, TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain) {
+	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain, TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.trailingActivationFunctionComponentChain = trailingActivationFunctionComponentChain;
 		this.gradientAccumulator = new LocalGradientAccumulator();
@@ -317,8 +317,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 			final int epochIndex2 = epochIndex;
 
-			try (Stream<LabeledData<NeuronsActivation, NeuronsActivation>> trainingDataStream = trainingDataSet
-					.get()) {
+			try (Stream<LabeledData<NeuronsActivation, NeuronsActivation>> trainingDataStream = 
+					trainingDataSet.get();
+				) {
 				
 
 			if (trainingContext.getTrainingMiniBatchSize() == null) {

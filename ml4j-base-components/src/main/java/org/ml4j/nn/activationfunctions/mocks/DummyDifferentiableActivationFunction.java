@@ -27,7 +27,7 @@ public class DummyDifferentiableActivationFunction implements DifferentiableActi
 		NeuronsActivation output = activation.dup();
 		float[] values = output.getActivations(context.getMatrixFactory()).getRowByRowArray();
 		if (setOutputToZeros) output.applyValueModifier(v -> v == values[0] ? -1 : 0);		
-		return new DummyDifferentiableActivationFunctionActivation(activation);
+		return new DummyDifferentiableActivationFunctionActivation(this, activation, output);
 	}
 
 	@Override

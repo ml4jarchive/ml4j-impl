@@ -37,8 +37,7 @@ public abstract class OneToManyDirectedComponentActivationBase implements OneToM
 	public List<NeuronsActivation> getOutput() {
 		List<NeuronsActivation> outputs = new ArrayList<>();
 		for (int i = 0; i < outputNeuronsActivationCount; i++) {
-			// TODO
-			outputs.add(input.dup());
+			outputs.add(input);
 		}
 		return outputs;
 	}

@@ -1,6 +1,7 @@
 package org.ml4j.nn.components.onetoone.base;
 
 import org.ml4j.nn.components.base.DefaultChainableDirectedComponentActivationBase;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -11,10 +12,10 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  * 
  * @author Michael Lavelle
  */
-public abstract class DefaultDirectedComponentChainActivationBase extends DefaultChainableDirectedComponentActivationBase implements DefaultDirectedComponentChainActivation {
+public abstract class DefaultDirectedComponentChainActivationBase<L extends DefaultChainableDirectedComponent<?, ?>> extends DefaultChainableDirectedComponentActivationBase<L> implements DefaultDirectedComponentChainActivation {
 	
-	public DefaultDirectedComponentChainActivationBase(NeuronsActivation output) {
-		super(output);
+	public DefaultDirectedComponentChainActivationBase(L componentChain, NeuronsActivation output) {
+		super(componentChain, output);
 	}
 	
 }

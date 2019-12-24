@@ -1,11 +1,15 @@
-package org.ml4j.nn.components;
+package org.ml4j.nn.components.onetoone;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
+import org.ml4j.nn.components.ChainableDirectedComponent;
+import org.ml4j.nn.components.ChainableDirectedComponentActivation;
+import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -18,7 +22,7 @@ import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
 
 public class TrailingActivationFunctionDirectedComponentChainImpl
- implements TrailingActivationFunctionDirectedComponentChain<DefaultChainableDirectedComponent<?, ?>> {
+ implements TrailingActivationFunctionDirectedComponentChain {
 
 	/**
 	 * Default serialization id.
@@ -34,7 +38,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		return finalDifferentiableActivationFunctionComponent;
 	}
 
-	public TrailingActivationFunctionDirectedComponentChainImpl(DirectedComponentFactory directedComponentFactory, List<? extends DefaultChainableDirectedComponent<?,?>> components) {
+	public TrailingActivationFunctionDirectedComponentChainImpl(DirectedComponentFactory directedComponentFactory, List<? extends DefaultChainableDirectedComponent<?, ?>> components) {
 		this.components = new ArrayList<>();
 		this.components.addAll(components);
 		this.directedComponentFactory = directedComponentFactory;
@@ -79,7 +83,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			DirectedComponentsContext context) {
 		
 		DefaultDirectedComponentChainActivation precedingChainActivation = precedingChain.forwardPropagate(input, context);
-		DifferentiableActivationFunctionActivation activationFunctionActivation = finalDifferentiableActivationFunctionComponent.forwardPropagate(precedingChainActivation.getOutput(), new NeuronsActivationContext() {
+		DifferentiableActivationFunctionComponentActivation activationFunctionComponentActivation = finalDifferentiableActivationFunctionComponent.forwardPropagate(precedingChainActivation.getOutput(), new NeuronsActivationContext() {
 
 			/**
 			 * Default serialization id.
@@ -93,7 +97,8 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		
 		//activationFunctionActivation.getInput().close();
 		
-		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(precedingChainActivation, activationFunctionActivation);
+		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(this, precedingChainActivation, 
+				activationFunctionComponentActivation);
 	}
 
 	@Override
@@ -109,7 +114,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	}
 	
 	@Override
-	public TrailingActivationFunctionDirectedComponentChain<DefaultChainableDirectedComponent<?, ?>> dup() {
+	public TrailingActivationFunctionDirectedComponentChain dup() {
 		
 		List<DefaultChainableDirectedComponent<?, ?>> dupComponents
 			= components.stream().map(c -> c.dup()).collect(Collectors.toList());

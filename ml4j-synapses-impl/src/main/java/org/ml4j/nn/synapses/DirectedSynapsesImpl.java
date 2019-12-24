@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -99,8 +99,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param primaryAxons             The primary Axons within these synapses
 	 * @param activationFunction       The activation function within these synapses
 	 */
-	public DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory,
-			Axons<? extends L, ? extends R, ?> primaryAxons, DifferentiableActivationFunction activationFunction) {
+	public  DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory,
+			Axons<L, R, ?> primaryAxons, DifferentiableActivationFunction activationFunction) {
 		this(directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), createGraph(directedComponentFactory, primaryAxons),
 				activationFunction);
 		this.directedComponentFactory = directedComponentFactory;
@@ -109,7 +109,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	private static DefaultDirectedComponentBipoleGraph createGraph(
 			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
 		List<DefaultChainableDirectedComponent<?,  ?>> components = Arrays
-				.asList(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
+				.asList();
 		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(
 				components);
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
@@ -150,7 +150,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
 
-		DifferentiableActivationFunctionActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
+		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
 				new NeuronsActivationContext() {
 
 					/**

@@ -1,4 +1,4 @@
-package org.ml4j.nn.components;
+package org.ml4j.nn.components.onetoone;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.components.ChainableDirectedComponentActivation;
+import org.ml4j.nn.components.DirectedComponentChainActivation;
+import org.ml4j.nn.components.DirectedComponentGradient;
+import org.ml4j.nn.components.DirectedComponentGradientImpl;
 
 public class DirectedComponentChainActivationImpl<I, A extends ChainableDirectedComponentActivation<I>> implements DirectedComponentChainActivation<I, A> {
 

@@ -19,7 +19,7 @@ package org.ml4j.nn.synapses;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
@@ -34,7 +34,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
 
 	protected NeuronsActivation inputActivation;
 	protected DefaultDirectedComponentBipoleGraphActivation axonsActivationGraph;
-	protected DifferentiableActivationFunctionActivation activationFunctionActivation;
+	protected DifferentiableActivationFunctionComponentActivation activationFunctionActivation;
 	protected NeuronsActivation outputActivation;
 	protected DirectedSynapses<?, ?> synapses;
 	protected DirectedComponentsContext synapsesContext;
@@ -52,7 +52,7 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
 	 */
 	public DirectedSynapsesActivationBase(DirectedSynapses<?, ?> synapses, NeuronsActivation inputActivation,
 			DefaultDirectedComponentBipoleGraphActivation axonsActivationGraph,
-			DifferentiableActivationFunctionActivation activationFunctionActivation, NeuronsActivation outputActivation,
+			DifferentiableActivationFunctionComponentActivation activationFunctionActivation, NeuronsActivation outputActivation,
 			DirectedComponentsContext synapsesContext) {
 		this.inputActivation = inputActivation;
 		this.outputActivation = outputActivation;

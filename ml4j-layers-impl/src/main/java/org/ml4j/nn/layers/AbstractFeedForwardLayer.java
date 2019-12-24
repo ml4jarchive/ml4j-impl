@@ -26,11 +26,11 @@ import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
   protected MatrixFactory matrixFactory;
   
   protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
-  protected TrailingActivationFunctionDirectedComponentChain<DefaultChainableDirectedComponent<?, ?>> 
+  protected TrailingActivationFunctionDirectedComponentChain 
   		trailingActivationFunctionDirectedComponentChain;
   
  

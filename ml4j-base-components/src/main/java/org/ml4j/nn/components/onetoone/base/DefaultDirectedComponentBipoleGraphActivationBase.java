@@ -1,14 +1,15 @@
 package org.ml4j.nn.components.onetoone.base;
 
 import org.ml4j.nn.components.base.DefaultChainableDirectedComponentActivationBase;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
-public abstract class DefaultDirectedComponentBipoleGraphActivationBase extends DefaultChainableDirectedComponentActivationBase
+public abstract class DefaultDirectedComponentBipoleGraphActivationBase extends DefaultChainableDirectedComponentActivationBase<DefaultDirectedComponentBipoleGraph>
 		implements DefaultDirectedComponentBipoleGraphActivation {
 	
-	public DefaultDirectedComponentBipoleGraphActivationBase(NeuronsActivation output) {
-		super(output);
+	public DefaultDirectedComponentBipoleGraphActivationBase(DefaultDirectedComponentBipoleGraph bipoleGraph, NeuronsActivation output) {
+		super(bipoleGraph, output);
 	}
 
 }

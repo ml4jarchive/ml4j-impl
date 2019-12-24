@@ -62,7 +62,7 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 
 	protected SupervisedFeedForwardNeuralNetworkImpl(
 			DefaultDirectedComponentChain initialisingComponentChain,
-			TrailingActivationFunctionDirectedComponentChain<?> trailingActivationFunctionComponentChain) {
+			TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
 		super(initialisingComponentChain, trailingActivationFunctionComponentChain);
 	}
 

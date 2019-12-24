@@ -14,7 +14,7 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
@@ -42,7 +42,7 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 	 */
 	public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses, NeuronsActivation inputActivation,
 			DefaultDirectedComponentBipoleGraphActivation axonsActivation,
-			DifferentiableActivationFunctionActivation activationFunctionActivation, NeuronsActivation outputActivation,
+			DifferentiableActivationFunctionComponentActivation activationFunctionActivation, NeuronsActivation outputActivation,
 			DirectedComponentsContext synapsesContext) {
 		super(synapses, inputActivation, axonsActivation, activationFunctionActivation, outputActivation,
 				synapsesContext);

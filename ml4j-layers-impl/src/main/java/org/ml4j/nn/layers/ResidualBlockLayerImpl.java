@@ -9,7 +9,6 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.axons.factories.AxonsFactory;
-import org.ml4j.nn.components.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -19,6 +18,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
@@ -68,7 +68,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		}
 
 		// Create an axons only component from the last synapses
-		DirectedAxonsComponent<?, ?> axonsComponent = directedComponentFactory
+		DirectedAxonsComponent<?, ?, ?> axonsComponent = directedComponentFactory
 				.createDirectedAxonsComponent((Axons<? extends Neurons, ? extends Neurons, ?>) layer2.getPrimaryAxons());
 		preceedingComponents.add(axonsComponent);
 
@@ -98,7 +98,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 			FullyConnectedAxons matchingAxons = axonsFactory.createFullyConnectedAxons(
 					layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons(), null, null);
-			DirectedAxonsComponent<Neurons, Neurons> matchingComponent = directedComponentFactory
+			DirectedAxonsComponent<Neurons, Neurons, ?> matchingComponent = directedComponentFactory
 					.createDirectedAxonsComponent((matchingAxons));
 			matchingAxonsList.add(matchingComponent);
 		}
