@@ -108,8 +108,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 	private static DefaultDirectedComponentBipoleGraph createGraph(
 			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
-		List<DefaultChainableDirectedComponent<?,  ?>> components = Arrays
-				.asList();
+		List<DefaultChainableDirectedComponent<?,  ?>> components = new ArrayList<>();
+		components.add(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
 		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(
 				components);
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
