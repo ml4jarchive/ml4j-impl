@@ -5,10 +5,10 @@ package org.ml4j.nn.components.onetoone.base;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DirectedComponentChain;
-import org.ml4j.nn.components.DirectedComponentChainActivation;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.generic.DirectedComponentChain;
+import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.Neurons;

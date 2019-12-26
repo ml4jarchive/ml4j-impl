@@ -25,7 +25,7 @@ public abstract class DefaultChainableDirectedComponentActivationBase<L extends 
 	protected NeuronsActivation output;
 	
 	protected L originatingComponent;
-
+	
 	/**
 	 * @param originatingComponent The component from which this activation originated
 	 * @param output The NeuronsActivation output on the RHS of the forward propagation.
@@ -39,6 +39,10 @@ public abstract class DefaultChainableDirectedComponentActivationBase<L extends 
 	public NeuronsActivation getOutput() {
 		return output;
 	}
+	
+	
+	
+	
 }
 
 

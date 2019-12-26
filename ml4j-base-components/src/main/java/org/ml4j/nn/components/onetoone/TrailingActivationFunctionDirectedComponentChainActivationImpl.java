@@ -1,6 +1,6 @@
 package org.ml4j.nn.components.onetoone;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +22,7 @@ public class TrailingActivationFunctionDirectedComponentChainActivationImpl
 	
 	public TrailingActivationFunctionDirectedComponentChainActivationImpl(TrailingActivationFunctionDirectedComponentChain componentChain, DefaultDirectedComponentChainActivation precedingChainActivation,
 			DifferentiableActivationFunctionComponentActivation activationFunctionActivation) {
-		super(componentChain, activationFunctionActivation.getOutput());
+		super(componentChain, Arrays.asList(precedingChainActivation, activationFunctionActivation), activationFunctionActivation.getOutput());
 		this.activationFunctionActivation = activationFunctionActivation;
 		this.precedingChainActivation = precedingChainActivation;
 	}   
@@ -37,14 +37,6 @@ public class TrailingActivationFunctionDirectedComponentChainActivationImpl
 	@Override
 	public List<DefaultChainableDirectedComponentActivation> decompose() {
 		return getActivations().stream().flatMap(a -> a.decompose().stream()).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<DefaultChainableDirectedComponentActivation> getActivations() {
-		List<DefaultChainableDirectedComponentActivation> activations = new ArrayList<>();
-		activations.addAll(precedingChainActivation.getActivations());
-		activations.add(activationFunctionActivation);
-		return activations;
 	}
 
 	@Override

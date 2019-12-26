@@ -5,9 +5,8 @@ import java.util.List;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 
-public abstract class DefaultComponentChainBatchBase implements DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> {
+public abstract class DefaultComponentChainBatchBase implements DefaultDirectedComponentChainBatch {
 
 	/**
 	 * Default serialization id.

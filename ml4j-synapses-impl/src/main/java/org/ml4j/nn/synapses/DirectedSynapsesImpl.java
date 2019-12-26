@@ -17,7 +17,6 @@
 package org.ml4j.nn.synapses;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,7 +35,6 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
@@ -110,11 +108,12 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
 		List<DefaultChainableDirectedComponent<?,  ?>> components = new ArrayList<>();
 		components.add(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
-		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(
-				components);
+	
+		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components
+				);
 		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 		chainsList.add(chain);
-		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+		DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), batch,
 				PathCombinationStrategy.ADDITION);
 	}

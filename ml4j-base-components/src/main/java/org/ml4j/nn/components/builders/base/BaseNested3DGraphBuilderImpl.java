@@ -15,7 +15,6 @@ import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 
@@ -95,7 +94,7 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 			List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 			chainsList.addAll(this.parent3DGraph.get().getChains());
 			Neurons graphInputNeurons = chainsList.get(0).getInputNeurons();
-			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+			DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 			parent3DGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons, parent3DGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), batch, pathCombinationStrategy));
 					
 					

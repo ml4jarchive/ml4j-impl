@@ -15,7 +15,6 @@ import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 
 public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons>, C extends AxonsBuilder> extends BaseGraphBuilderImpl<C> implements PathEnder<P, C>{
@@ -70,7 +69,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 			parentGraph.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 			List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
 			chainsList.addAll(this.parentGraph.get().getChains());
-			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+			DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 			Neurons graphInputNeurons = chainsList.get(0).getInputNeurons();
 			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons, parentGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), batch, pathCombinationStrategy));
 			pathsEnded = true;

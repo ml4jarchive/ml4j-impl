@@ -32,9 +32,9 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.TrainableAxons;
-import org.ml4j.nn.components.DirectedComponentChain;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
@@ -386,11 +386,12 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 				});
 				
 			}
-
+				CostAndGradients costAndGradients = costAndGradientsList.get(costAndGradientsList.size() - 1);
+				costAndGradientsList.clear();
 				epochAverageCostHandler
-						.accept(costAndGradientsList.get(costAndGradientsList.size() - 1).getAverageCost());
+						.accept(costAndGradients.getAverageCost());
 				LOGGER.debug("Epoch:" + epochIndex + " Cost:"
-						+ costAndGradientsList.get(costAndGradientsList.size() - 1).getAverageCost());
+						+ costAndGradients.getAverageCost());
 				lastEpochTrainingContext = trainingContext;
 			}
 		}

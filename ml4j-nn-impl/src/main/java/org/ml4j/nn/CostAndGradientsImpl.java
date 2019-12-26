@@ -32,7 +32,7 @@ public class CostAndGradientsImpl implements CostAndGradients {
   
   private List<AxonsGradient> totalTrainableAxonsGradients;
   
-  private int numberOfTrainingExamples;
+  private int numberOfTrainingExamples; 
 
   /**
    * @param totalCost The totalCost.

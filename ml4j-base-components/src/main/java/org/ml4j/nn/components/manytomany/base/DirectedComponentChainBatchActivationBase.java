@@ -3,11 +3,11 @@ package org.ml4j.nn.components.manytomany.base;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DirectedComponentBatchActivation;
+import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatchActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
-public abstract class DirectedComponentChainBatchActivationBase implements DirectedComponentBatchActivation<NeuronsActivation, DefaultDirectedComponentChainActivation>{
+public abstract class DirectedComponentChainBatchActivationBase implements DefaultDirectedComponentChainBatchActivation {
 
 	protected List<DefaultDirectedComponentChainActivation> activations;
 	

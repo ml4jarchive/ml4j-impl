@@ -7,9 +7,9 @@ import java.util.function.Supplier;
 
 import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
-import org.ml4j.nn.components.DirectedComponentChainActivation;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentGradientImpl;
+import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
 
 public class DirectedComponentChainActivationImpl<I, A extends ChainableDirectedComponentActivation<I>> implements DirectedComponentChainActivation<I, A> {
 

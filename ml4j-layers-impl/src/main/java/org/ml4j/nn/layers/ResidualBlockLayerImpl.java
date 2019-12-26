@@ -17,7 +17,6 @@ import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -113,7 +112,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		parallelChains.add(skipConnectionChain);
 
 		// Parallel Chain Batch of preceding chain and skip connection
-		DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelBatch = directedComponentFactory.createDirectedComponentChainBatch(
+		DefaultDirectedComponentChainBatch parallelBatch = directedComponentFactory.createDirectedComponentChainBatch(
 				parallelChains);
 
 		// Parallel Chain Graph of preceding chain and skip connection

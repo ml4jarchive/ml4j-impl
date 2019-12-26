@@ -4,24 +4,22 @@ import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 
 public abstract class DefaultDirectedComponentChainBipoleGraphBase implements DefaultDirectedComponentBipoleGraph {
-
+	
 	/**
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	protected DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch;
+	protected DefaultDirectedComponentChainBatch parallelComponentChainsBatch;
 
 	protected Neurons inputNeurons;
 	protected Neurons outputNeurons;
 	
 	public DefaultDirectedComponentChainBipoleGraphBase(Neurons inputNeurons, Neurons outputNeurons,
-			DefaultDirectedComponentChainBatch<DefaultDirectedComponentChain, DefaultDirectedComponentChainActivation> parallelComponentChainsBatch) {
+			DefaultDirectedComponentChainBatch parallelComponentChainsBatch) {
 		this.parallelComponentChainsBatch = parallelComponentChainsBatch;
 		this.inputNeurons = inputNeurons;
 		this.outputNeurons = outputNeurons;
@@ -46,4 +44,10 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 		return outputNeurons;
 	}
 
+	@Override
+	public DefaultDirectedComponentChainBatch getEdges() {
+		return parallelComponentChainsBatch;
+	}
+	
+	
 }
