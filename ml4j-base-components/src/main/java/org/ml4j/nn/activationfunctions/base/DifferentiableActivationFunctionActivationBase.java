@@ -1,5 +1,7 @@
-package org.ml4j.nn.activationfunctions;
+package org.ml4j.nn.activationfunctions.base;
 
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
