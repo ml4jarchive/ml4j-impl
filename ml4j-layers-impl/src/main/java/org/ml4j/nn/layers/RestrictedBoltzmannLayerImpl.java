@@ -121,7 +121,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
   public NeuronsActivation getOptimalVisibleActivationsForHiddenNeuron(int hiddenNeuronIndex,
       UndirectedLayerContext undirectedLayerContext, MatrixFactory matrixFactory) {
     LOGGER.debug("Obtaining optimal input for hidden neuron with index:" + hiddenNeuronIndex);
-    Matrix weights = getPrimaryAxons().getDetachedConnectionWeights();
+    Matrix weights = getPrimaryAxons().getDetachedAxonWeights().getConnectionWeights();
     int countJ = weights.getColumns();
     float[] maximisingInputFeatures = new float[countJ];
     boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();

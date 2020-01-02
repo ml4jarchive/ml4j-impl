@@ -18,6 +18,7 @@ package org.ml4j.nn.layers;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.factories.DifferentiableActivationFunctionFactory;
+import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.MaxPoolingAxons;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -65,7 +66,7 @@ public class MaxPoolingFeedForwardLayerImpl
       Neurons3D outputNeurons, MatrixFactory matrixFactory, 
       boolean withBatchNorm, int stride) {
     super(
-        directedComponentFactory, axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, false, stride, stride, 0, 0),
+        directedComponentFactory, axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, false, new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0).withPaddingHeight(0)),
         activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
   }
   
@@ -83,7 +84,7 @@ public class MaxPoolingFeedForwardLayerImpl
   public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons, 
       Neurons3D outputNeurons, MatrixFactory matrixFactory, 
       boolean scaleOutputs, boolean withBatchNorm, int stride) {
-    super(directedComponentFactory, axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, scaleOutputs, stride, stride, 0, 0),
+    super(directedComponentFactory, axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, scaleOutputs, new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0).withPaddingHeight(0)),
     activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
   }
 
@@ -94,17 +95,17 @@ public class MaxPoolingFeedForwardLayerImpl
   
   @Override
   public int getFilterHeight() {
-    return getPrimaryAxons().getFilterHeight();
+    return getPrimaryAxons().getConfig().getFilterHeight();
   }
 
   @Override
   public int getFilterWidth() {
-    return getPrimaryAxons().getFilterWidth();
+    return getPrimaryAxons().getConfig().getFilterWidth();
   }
 
   @Override
   public int getStride() {
-    return getPrimaryAxons().getStrideWidth();
+    return getPrimaryAxons().getConfig().getStrideWidth();
 
   }
 }

@@ -30,7 +30,9 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsGradient;
-import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
+import org.ml4j.nn.axons.AxonWeightsAdjustment;
+import org.ml4j.nn.axons.AxonWeightsAdjustmentDirection;
+import org.ml4j.nn.axons.AxonWeightsAdjustmentImpl;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -181,7 +183,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 						costAndGradients = getCostAndGradients(batchDataActivations, batchLabelActivations,
 								trainingContext);
 
-						LOGGER.info("Epoch:" + epochIndex + " batch " + batchIndex + " Cost:"
+						LOGGER.debug("Epoch:" + epochIndex + " batch " + batchIndex + " Cost:"
 								+ costAndGradients.getAverageCost());
 						// Timings.printTimings();
 
@@ -349,7 +351,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 					costAndGradientsList.add(costAndGradients);
 					
 
-					LOGGER.debug("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
+					LOGGER.info("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
 							+ costAndGradients.getAverageCost());
 					
 					Optional<Future<List<AxonsGradient>>> averageAxonsGradientsResult = gradientAccumulator.submitCostAndGradients(costAndGradients);
@@ -544,23 +546,29 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 			// scaled
 			// gradient matrices
 			Matrix weightsGradient = adjustedAxonsGradient.getWeightsGradient();
-
+			
 			try (InterrimMatrix weightsAdjustment = weightsGradient
 					.mul((float) getTrainingLearningRate(trainingContext, epochIndex, batchIndex, iterationIndex))
 					.asInterrimMatrix()) {
-
-				trainableAxons.adjustConnectionWeights(weightsAdjustment,
-						ConnectionWeightsAdjustmentDirection.SUBTRACTION);
-			}
-
-			if (trainableAxons.getLeftNeurons().hasBiasUnit()) {
-				try (InterrimMatrix biasAdjustment = adjustedAxonsGradient.getLeftToRightBiasGradient()
-						.mul(getTrainingLearningRate(trainingContext, epochIndex, batchIndex, iterationIndex))
-						.asInterrimMatrix()) {
-					trainableAxons.adjustLeftToRightBiases(biasAdjustment,
-							ConnectionWeightsAdjustmentDirection.SUBTRACTION);
+				AxonWeightsAdjustment axonWeightsAdjustment = null;
+				if (trainableAxons.getLeftNeurons().hasBiasUnit()) {
+					try (InterrimMatrix biasAdjustment = adjustedAxonsGradient.getLeftToRightBiasGradient()
+							.mul(getTrainingLearningRate(trainingContext, epochIndex, batchIndex, iterationIndex))
+							.asInterrimMatrix()) {
+						axonWeightsAdjustment = new AxonWeightsAdjustmentImpl(weightsAdjustment, biasAdjustment);
+						trainableAxons.adjustAxonWeights(axonWeightsAdjustment,
+								AxonWeightsAdjustmentDirection.SUBTRACTION);
+					}
+				} else {
+					axonWeightsAdjustment = new AxonWeightsAdjustmentImpl(weightsAdjustment);
+					trainableAxons.adjustAxonWeights(axonWeightsAdjustment,
+							AxonWeightsAdjustmentDirection.SUBTRACTION);
 				}
+			
 			}
+				
+
+			
 			axonsIndex++;
 		}
 	}

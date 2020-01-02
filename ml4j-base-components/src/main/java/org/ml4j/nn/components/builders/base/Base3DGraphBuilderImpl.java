@@ -6,6 +6,7 @@ import java.util.List;
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
@@ -107,8 +108,12 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder, D extends
 				leftNeurons = new Neurons3D(builderState.getComponentsGraphNeurons().getCurrentNeurons().getWidth(), builderState.getComponentsGraphNeurons().getCurrentNeurons().getHeight(), builderState.getComponentsGraphNeurons().getCurrentNeurons().getDepth(), true);
 			}
 			
+			Axons3DConfig axons3DConfig = new Axons3DConfig().withStrideWidth(builderState.getConvolutionalAxonsBuilder().getStrideWidth())
+					.withStrideHeight(builderState.getConvolutionalAxonsBuilder().getStrideHeight())
+					.withPaddingWidth(builderState.getConvolutionalAxonsBuilder().getPaddingWidth()).withPaddingHeight(builderState.getConvolutionalAxonsBuilder().getPaddingHeight());
+			
 			DirectedAxonsComponent<Neurons3D, Neurons3D, ?> axonsComponent
-					 = directedComponentFactory.createConvolutionalAxonsComponent(leftNeurons, builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getConvolutionalAxonsBuilder().getStrideWidth(), builderState.getConvolutionalAxonsBuilder().getStrideHeight(), builderState.getConvolutionalAxonsBuilder().getPaddingWidth(), builderState.getConvolutionalAxonsBuilder().getPaddingHeight(), builderState.getConnectionWeights(), builderState.getBiases());
+					 = directedComponentFactory.createConvolutionalAxonsComponent(leftNeurons, builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig, builderState.getConnectionWeights(), builderState.getBiases());
 			
 			if (builderState.getConvolutionalAxonsBuilder().getDirectedComponentsContext() != null && 
 					builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer() != null) {
@@ -123,9 +128,12 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder, D extends
 			builderState.getComponentsGraphNeurons().setRightNeurons(null);
 			builderState.setConnectionWeights(null);
 		} 
-		if ((builderState.getMaxPoolingAxonsBuilder() != null) && builderState.getComponentsGraphNeurons().getRightNeurons() != null) {			
+		if ((builderState.getMaxPoolingAxonsBuilder() != null) && builderState.getComponentsGraphNeurons().getRightNeurons() != null) {	
+			Axons3DConfig axons3DConfig = new Axons3DConfig().withStrideWidth(builderState.getMaxPoolingAxonsBuilder().getStrideWidth())
+					.withStrideHeight(builderState.getMaxPoolingAxonsBuilder().getStrideHeight())
+					.withPaddingWidth(builderState.getMaxPoolingAxonsBuilder().getPaddingWidth()).withPaddingHeight(builderState.getMaxPoolingAxonsBuilder().getPaddingHeight());
 			DirectedAxonsComponent<Neurons3D, Neurons3D, ?> axonsComponent
-			  = directedComponentFactory.createMaxPoolingAxonsComponent(builderState.getComponentsGraphNeurons().getCurrentNeurons(), builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getMaxPoolingAxonsBuilder().getStrideWidth(), builderState.getMaxPoolingAxonsBuilder().getStrideHeight(), builderState.getMaxPoolingAxonsBuilder().getPaddingWidth(), builderState.getMaxPoolingAxonsBuilder().getPaddingHeight(), builderState.getMaxPoolingAxonsBuilder().isScaleOutputs());
+			  = directedComponentFactory.createMaxPoolingAxonsComponent(builderState.getComponentsGraphNeurons().getCurrentNeurons(), builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig, builderState.getMaxPoolingAxonsBuilder().isScaleOutputs());
 			this.components.add(axonsComponent);
 			builderState.setMaxPoolingAxonsBuilder(null);
 			builderState.getComponentsGraphNeurons().setCurrentNeurons(builderState.getComponentsGraphNeurons().getRightNeurons());
@@ -155,9 +163,12 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder, D extends
 			builderState.getComponentsGraphNeurons().setRightNeurons(null);
 			builderState.setConnectionWeights(null);
 		}
-		if ((builderState.getAveragePoolingAxonsBuilder() != null) && builderState.getComponentsGraphNeurons().getRightNeurons() != null) {			
+		if ((builderState.getAveragePoolingAxonsBuilder() != null) && builderState.getComponentsGraphNeurons().getRightNeurons() != null) {	
+			Axons3DConfig axons3DConfig = new Axons3DConfig().withStrideWidth(builderState.getAveragePoolingAxonsBuilder().getStrideWidth())
+					.withStrideHeight(builderState.getAveragePoolingAxonsBuilder().getStrideHeight())
+					.withPaddingWidth(builderState.getAveragePoolingAxonsBuilder().getPaddingWidth()).withPaddingHeight(builderState.getAveragePoolingAxonsBuilder().getPaddingHeight());
 			DirectedAxonsComponent<Neurons3D, Neurons3D, ?> axonsComponent
-			  = directedComponentFactory.createAveragePoolingAxonsComponent(builderState.getComponentsGraphNeurons().getCurrentNeurons(), builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getAveragePoolingAxonsBuilder().getStrideWidth(), builderState.getAveragePoolingAxonsBuilder().getStrideHeight(),builderState.getAveragePoolingAxonsBuilder().getPaddingWidth(), builderState.getAveragePoolingAxonsBuilder().getPaddingHeight());
+			  = directedComponentFactory.createAveragePoolingAxonsComponent(builderState.getComponentsGraphNeurons().getCurrentNeurons(), builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig);
 			this.components.add(axonsComponent);
 			builderState.setAveragePoolingAxonsBuilder(null);
 			builderState.getComponentsGraphNeurons().setCurrentNeurons(builderState.getComponentsGraphNeurons().getRightNeurons());

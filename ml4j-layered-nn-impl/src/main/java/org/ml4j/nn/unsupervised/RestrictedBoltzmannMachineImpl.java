@@ -18,7 +18,9 @@ import org.ml4j.EditableMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.ActivationFunction;
-import org.ml4j.nn.axons.ConnectionWeightsAdjustmentDirection;
+import org.ml4j.nn.axons.AxonWeightsAdjustment;
+import org.ml4j.nn.axons.AxonWeightsAdjustmentDirection;
+import org.ml4j.nn.axons.AxonWeightsAdjustmentImpl;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.layers.RestrictedBoltzmannLayer;
@@ -244,15 +246,11 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
     
     Matrix leftToRightBiases = adjustment.getRow(0).getColumns(columns);
     Matrix rightToLeftBiases = adjustment.getColumn(0).getRows(rows);
+    
+    AxonWeightsAdjustment axonWeightsAdjustment = new AxonWeightsAdjustmentImpl(weightAdjustment.transpose(), leftToRightBiases.transpose(), rightToLeftBiases);
 
-    restrictedBoltzmannLayer.getPrimaryAxons().adjustConnectionWeights(weightAdjustment.transpose(),
-        ConnectionWeightsAdjustmentDirection.ADDITION);
-    
-    restrictedBoltzmannLayer.getPrimaryAxons().adjustLeftToRightBiases(leftToRightBiases.transpose(),
-            ConnectionWeightsAdjustmentDirection.ADDITION);
-    
-    restrictedBoltzmannLayer.getPrimaryAxons().adjustRightToLeftBiases(rightToLeftBiases,
-            ConnectionWeightsAdjustmentDirection.ADDITION);
+    restrictedBoltzmannLayer.getPrimaryAxons().adjustAxonWeights(axonWeightsAdjustment,
+        AxonWeightsAdjustmentDirection.ADDITION);
 
     return lastReconstructions;
 

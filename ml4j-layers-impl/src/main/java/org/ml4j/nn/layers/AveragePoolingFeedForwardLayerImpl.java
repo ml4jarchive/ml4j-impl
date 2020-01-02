@@ -19,6 +19,7 @@ package org.ml4j.nn.layers;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.factories.DifferentiableActivationFunctionFactory;
 import org.ml4j.nn.axons.AveragePoolingAxons;
+import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
@@ -65,7 +66,7 @@ public class AveragePoolingFeedForwardLayerImpl
   public AveragePoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons, 
       Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean withBatchNorm) {
     super(directedComponentFactory, 
-    		axonsFactory.createAveragePoolingAxons(inputNeurons, outputNeurons, 0, 0, 0, 0),
+    		axonsFactory.createAveragePoolingAxons(inputNeurons, outputNeurons, new Axons3DConfig()),
     		activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
   }
 
@@ -76,16 +77,16 @@ public class AveragePoolingFeedForwardLayerImpl
   
   @Override
   public int getFilterHeight() {
-    return getPrimaryAxons().getFilterHeight();
+    return getPrimaryAxons().getConfig().getFilterHeight();
   }
 
   @Override
   public int getFilterWidth() {
-    return getPrimaryAxons().getFilterWidth();
+    return getPrimaryAxons().getConfig().getFilterWidth();
   }
 
   @Override
   public int getStride() {
-    return getPrimaryAxons().getStrideWidth();
+    return getPrimaryAxons().getConfig().getStrideWidth();
   }
 }

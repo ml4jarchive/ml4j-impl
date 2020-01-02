@@ -19,6 +19,7 @@ package org.ml4j.nn.layers;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.ConvolutionalAxons;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -65,7 +66,7 @@ public class ConvolutionalFeedForwardLayerImpl
   public ConvolutionalFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons,
       int stride, int zeroPadding, DifferentiableActivationFunction primaryActivationFunction,
       MatrixFactory matrixFactory, boolean withBatchNorm) {
-    super(directedComponentFactory,axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons, stride, stride, zeroPadding, zeroPadding, null, null), primaryActivationFunction, matrixFactory, withBatchNorm);
+    super(directedComponentFactory,axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons, new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(zeroPadding).withPaddingHeight(zeroPadding), null, null), primaryActivationFunction, matrixFactory, withBatchNorm);
   }
   
   
@@ -105,7 +106,7 @@ public class ConvolutionalFeedForwardLayerImpl
       int stride, int zeroPadding,
       DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
       Matrix connectionWeights, Matrix biases, boolean withBatchNorm ) {
-    super(directedComponentFactory, axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons, stride, stride, zeroPadding, zeroPadding, connectionWeights, biases),
+    super(directedComponentFactory, axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons, new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(zeroPadding).withPaddingHeight(zeroPadding), connectionWeights, biases),
         primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 
@@ -117,22 +118,22 @@ public class ConvolutionalFeedForwardLayerImpl
 
   @Override
   public int getFilterHeight() {
-    return getPrimaryAxons().getFilterHeight();
+    return getPrimaryAxons().getConfig().getFilterHeight();
   }
 
   @Override
   public int getFilterWidth() {
-    return getPrimaryAxons().getFilterWidth();
+    return getPrimaryAxons().getConfig().getFilterWidth();
   }
 
   @Override
   public int getStride() {
-    return getPrimaryAxons().getStrideWidth();
+    return getPrimaryAxons().getConfig().getStrideWidth();
 
   }
 
   @Override
   public int getZeroPadding() {
-    return getPrimaryAxons().getZeroPaddingWidth();
+    return getPrimaryAxons().getConfig().getPaddingWidth();
   }
 }
