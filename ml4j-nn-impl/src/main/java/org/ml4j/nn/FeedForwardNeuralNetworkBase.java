@@ -351,7 +351,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 					costAndGradientsList.add(costAndGradients);
 					
 
-					LOGGER.info("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
+					LOGGER.debug("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
 							+ costAndGradients.getAverageCost());
 					
 					Optional<Future<List<AxonsGradient>>> averageAxonsGradientsResult = gradientAccumulator.submitCostAndGradients(costAndGradients);

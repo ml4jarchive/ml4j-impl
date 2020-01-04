@@ -265,11 +265,11 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
     // Calculate positive statisics
 	  
     NeuronsActivation visibleAxonsDataActivationsWithoutBiasActivation = hiddenNeuronsDataActivation
-        .getSynapsesActivation().getAxonsActivation().getPostDropoutInput();
+        .getSynapsesActivation().getAxonsActivation().getPostDropoutInput().get();
     
     NeuronsActivation hiddenAxonsDataActivationsWithoutBiasTransposed =
         visibleNeuronsReconstructionLayerActivation.getSynapsesActivation().getAxonsActivation()
-            .getPostDropoutInput();
+            .getPostDropoutInput().get();
 
     NeuronsActivationWithPossibleBiasUnit hiddenAxonsDataActivationsWithoutBias =
         new NeuronsActivationWithPossibleBiasUnit(
@@ -301,7 +301,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
 
     NeuronsActivation visibleAxonsReconstructionActivationsWithoutBias =
         contrastiveDivergenceActivation.getSynapsesActivation().getAxonsActivation()
-            .getPostDropoutInput();
+            .getPostDropoutInput().get();
 
     NeuronsActivation hiddenAxonsReconstructionActivationsWithoutBias =
         contrastiveDivergenceActivation.getHiddenActivationProbabilities();

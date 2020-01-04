@@ -18,7 +18,14 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+		<repository>
+			<id>ml4j-snapshots</id>
+			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>	
 	<dependencies>
 		<dependency>
 			<groupId>org.ml4j</groupId>

@@ -26,6 +26,13 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 					neurons.getHeight(), neurons.getWidth(), 0, 0, activations.getColumns());
 		}
 	}
+	
+	public ImageNeuronsActivationImpl(Neurons3D neurons,
+			Images images, boolean immutable) {
+		super(null, NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET, immutable);
+		this.neurons = neurons;
+		this.images = images;
+	}
 
 	@Override
 	public void setImmutable(boolean immutable) {
@@ -105,20 +112,22 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 		return images;
 	}
 
-	public Matrix im2Col(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
+	@Override
+	public Matrix im2ColConv(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth, int paddingHeight, int paddingWidth) {
 		Images imageWithPadding = images.softDup();
 		imageWithPadding.setPaddingHeight(paddingHeight);
 		imageWithPadding.setPaddingWidth(paddingWidth);
-		return imageWithPadding.im2col(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
+		return imageWithPadding.im2colConvExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
 	}
 
-	public Matrix im2Col2(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
+	@Override
+	public Matrix im2ColPool(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth, int paddingHeight, int paddingWidth) {
 		Images imageWithPadding = images.softDup();
 		imageWithPadding.setPaddingHeight(paddingHeight);
 		imageWithPadding.setPaddingWidth(paddingWidth);
-		return imageWithPadding.im2col2(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
+		return imageWithPadding.im2colPoolExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
 	}
 
 	@Override

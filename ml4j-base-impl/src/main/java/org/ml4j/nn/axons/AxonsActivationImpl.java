@@ -14,6 +14,8 @@
 
 package org.ml4j.nn.axons;
 
+import java.util.function.Supplier;
+
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -29,7 +31,7 @@ public class AxonsActivationImpl implements AxonsActivation {
   private Axons<?, ?, ?> axons;
   private AxonsDropoutMask dropoutMask;
   private NeuronsActivation outputActivations;
-  private NeuronsActivation postDropoutInput;
+  private Supplier<NeuronsActivation> postDropoutInput;
   
   /**
    * @param inputDropoutMask Any input dropout mask
@@ -37,15 +39,11 @@ public class AxonsActivationImpl implements AxonsActivation {
    * @param outputActivations The output.
    */
   public AxonsActivationImpl(Axons<?, ?, ?> axons, AxonsDropoutMask dropoutMask, 
-		  NeuronsActivation postDropoutInput, NeuronsActivation outputActivations, Neurons leftNeurons, Neurons rightNeurons) {
+		  Supplier<NeuronsActivation> postDropoutInput, NeuronsActivation outputActivations, Neurons leftNeurons, Neurons rightNeurons) {
     this.outputActivations = outputActivations;
     this.dropoutMask = dropoutMask;
     this.postDropoutInput = postDropoutInput;
     //this.postDropoutInput.setImmutable(true);
-
-	if (postDropoutInput.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-		throw new IllegalStateException("Currently only ROWS_SPAN_FEATURE_SET orientation supported");
-	}
 	if (outputActivations.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
 		throw new IllegalStateException("Currently only ROWS_SPAN_FEATURE_SET orientation supported");
 	}
@@ -65,7 +63,7 @@ public class AxonsActivationImpl implements AxonsActivation {
   }
 
   @Override
-  public NeuronsActivation getPostDropoutInput() {
+  public Supplier<NeuronsActivation> getPostDropoutInput() {
     return postDropoutInput;
   }
   

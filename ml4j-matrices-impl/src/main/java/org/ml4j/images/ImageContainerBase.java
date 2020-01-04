@@ -64,37 +64,64 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 
 	public abstract int getSubImageDataLength(int height, int width);
 
-	public abstract void populateIm2col(float[] data, int startIndex, int filterHeight, int filterWidth,
+	public abstract void populateIm2colConvExport(float[] data, int startIndex, int filterHeight, int filterWidth,
+			int strideHeight, int strideWidth, int channels);
+	
+	public abstract void populateIm2colPoolExport(float[] data, int startIndex, int filterHeight, int filterWidth,
 			int strideHeight, int strideWidth, int channels);
 
-	public abstract void populateIm2col2(float[] data, int startIndex, int filterHeight, int filterWidth,
+	public abstract void populateIm2colConvImport(float[] data, int startIndex, int filterHeight, int filterWidth,
 			int strideHeight, int strideWidth, int channels);
 
 	public abstract I dup();
 
 	public abstract I softDup();
 
-	public Matrix im2col(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
+	@Override
+	public Matrix im2colConvExport(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
-		populateIm2col(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
+		populateIm2colConvExport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 		return matrixFactory.createMatrixFromRowsByRowsArray(getChannels() * filterWidth * filterHeight,
 				windowWidth * windowHeight * examples, data);
 	}
-
-	public Matrix im2col2(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
+	
+	@Override
+	public void im2colConvImport(MatrixFactory matrixFactory, Matrix matrix, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
-		populateIm2col2(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
+		populateIm2colConvImport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
+	}
+
+	@Override
+	public Matrix im2colPoolExport(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
+			int strideWidth) {
+		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
+		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
+		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
+		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
+		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
+		populateIm2colPoolExport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 		return matrixFactory.createMatrixFromRowsByRowsArray(filterWidth * filterHeight,
 				windowWidth * windowHeight * examples * getChannels(), data);
+	}
+	
+	@Override
+	public void im2colPoolImport(MatrixFactory matrixFactory, Matrix matrix, int filterHeight, int filterWidth, int strideHeight,
+			int strideWidth) {
+		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
+		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
+		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
+		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
+		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
+		populateIm2colPoolImport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 	}
 }

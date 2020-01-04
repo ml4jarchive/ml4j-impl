@@ -82,27 +82,52 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 	}
 
 	@Override
-	public void populateIm2col(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
+	public void populateIm2colConvExport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		for (I subImage : channelConcatImages) {
-			subImage.populateIm2col(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
+			subImage.populateIm2colConvExport(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
 			startIndex = startIndex
 					+ windowWidth * windowHeight * examples * filterHeight * filterWidth * subImage.getChannels();
 		}
 	}
 
-	public void populateIm2col2(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
+	public void populateIm2colPoolExport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		for (I subImage : channelConcatImages) {
-			subImage.populateIm2col2(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
+			subImage.populateIm2colPoolExport(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
+			startIndex = startIndex + examples * subImage.getChannels() * windowWidth * windowHeight;
+		}
+	}
+	
+	public void populateIm2colConvImport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
+			int strideWidth, int channels) {
+		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
+		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
+		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
+		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
+		for (I subImage : channelConcatImages) {
+			subImage.populateIm2colConvImport(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
+			startIndex = startIndex
+					+ windowWidth * windowHeight * examples * filterHeight * filterWidth * subImage.getChannels();
+		}
+	}
+
+	public void populateIm2colPoolImport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
+			int strideWidth, int channels) {
+		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
+		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
+		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
+		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
+		for (I subImage : channelConcatImages) {
+			subImage.populateIm2colPoolImport(data, startIndex, filterHeight, filterWidth, strideHeight, strideWidth, channels);
 			startIndex = startIndex + examples * subImage.getChannels() * windowWidth * windowHeight;
 		}
 	}
