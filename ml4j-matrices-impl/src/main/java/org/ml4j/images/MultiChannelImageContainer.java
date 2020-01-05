@@ -55,6 +55,18 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 		}
 
 	}
+	
+	
+	public void populateDataSubImageReverse(float[] data, int startIndex, int startHeight, int startWidth, int height,
+			int width, int strideHeight, int strideWidth, boolean forIm2col2) {
+		int startIndex2 = startIndex;
+		for (ImageContainer<?> subImage : getChannelConcatImages()) {
+			subImage.populateDataSubImageReverse(data, startIndex2, startHeight, startWidth, height, width, strideHeight,
+					strideWidth, forIm2col2);
+			startIndex2 = startIndex2 + subImage.getSubImageDataLength(height, width);
+		}
+
+	}
 
 	@Override
 	public int getSubImageDataLength(int height, int width) {

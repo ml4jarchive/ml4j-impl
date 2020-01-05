@@ -72,6 +72,9 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 
 	public abstract void populateIm2colConvImport(float[] data, int startIndex, int filterHeight, int filterWidth,
 			int strideHeight, int strideWidth, int channels);
+	
+	public abstract void populateIm2colPoolImport(float[] data, int startIndex, int filterHeight, int filterWidth,
+			int strideHeight, int strideWidth, int channels);
 
 	public abstract I dup();
 
@@ -93,11 +96,7 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 	@Override
 	public void im2colConvImport(MatrixFactory matrixFactory, Matrix matrix, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth) {
-		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
-		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
-		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
-		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
-		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
+		float[] data = matrix.getRowByRowArray();
 		populateIm2colConvImport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 	}
 
@@ -117,11 +116,7 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 	@Override
 	public void im2colPoolImport(MatrixFactory matrixFactory, Matrix matrix, int filterHeight, int filterWidth, int strideHeight,
 			int strideWidth) {
-		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
-		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
-		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
-		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
-		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
+		float[] data = matrix.getRowByRowArray();
 		populateIm2colPoolImport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 	}
 }

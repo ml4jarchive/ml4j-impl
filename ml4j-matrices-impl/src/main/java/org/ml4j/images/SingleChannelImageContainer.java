@@ -78,6 +78,7 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 		}
 	}
 	
+	@Override
 	public void populateDataSubImageReverse(float[] data, int startIndex, int startHeight, int startWidth, int height,
 			int width, int strideHeight, int strideWidth, boolean forIm2col2) {
 		int startH = startHeight - paddingHeight;
@@ -90,10 +91,6 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 							this.width - startW2);
 					int startW = Math.max(paddingWidth - startWidth, 0);
 					JavaBlas.raxpy(examples * widthToCopy, 1, data, startIndex + targetH * width * examples + startW * examples, 1, this.data, this.startIndex + sourceH * this.width * examples + startW2 * examples, 1);
-
-				//	System.arraycopy(data, startIndex + targetH * width * examples + startW * examples,
-				//			this.data, this.startIndex + sourceH * this.width * examples + startW2 * examples,
-				//			examples * (widthToCopy));
 				} else {
 					int widthToCopy = 1;
 					int startW2 = startWidth - paddingWidth;
@@ -101,11 +98,6 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 					for (int w = startW2; w < this.width; w += strideWidth) {
 						if (w >= 0) {
 							JavaBlas.raxpy(examples * widthToCopy, 1, data, startIndex + targetH * width * examples + startW * examples, 1, this.data, this.startIndex + sourceH * this.width * examples + w * examples, 1);
-
-							//System.arraycopy(data,
-							//		startIndex + targetH * width * examples + startW * examples , this.data,
-								//	this.startIndex + sourceH * this.width * examples + w * examples,
-								//	examples * (widthToCopy));
 							startW = startW + 1;
 						}
 
@@ -114,7 +106,7 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
-
+	
 	@Override
 	public int getSubImageDataLength(int height, int width) {
 		return height * width * examples;
