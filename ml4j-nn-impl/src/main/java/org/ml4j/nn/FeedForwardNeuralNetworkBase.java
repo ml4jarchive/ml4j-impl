@@ -133,7 +133,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 		for (int epochIndex = epochStartIndex; epochIndex < epochStartIndex + numberOfEpochs; epochIndex++) {
 
 			if (trainingContext.getTrainingMiniBatchSize() == null) {
-				costAndGradients = getCostAndGradients(trainingDataActivations, trainingLabelActivations,
+				costAndGradients = getCostAndGradients(trainingDataActivations.dup(), trainingLabelActivations,
 						trainingContext);
 
 				LOGGER.info("Epoch:" + epochIndex + " Cost:" + costAndGradients.getAverageCost());

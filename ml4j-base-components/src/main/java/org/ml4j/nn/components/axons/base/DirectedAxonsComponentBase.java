@@ -37,7 +37,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 
 	@Override
 	public AxonsContext getContext(DirectedComponentsContext context, int componentIndex) {
-		return new AxonsContextImpl(context.getMatrixFactory(), context.isTrainingContext(), false);
+		return context.getContext(this, () -> new AxonsContextImpl(context.getMatrixFactory(), context.isTrainingContext(), false));
 	}
 
 	@Override
