@@ -1,3 +1,10 @@
+package org.ml4j.nn.layers;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.ml4j.EditableMatrix;
+
 /*
  * Copyright 2017 the original author or authors.
  *
@@ -12,16 +19,16 @@
  * the License.
  */
 
-package org.ml4j.nn.layers;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.ActivationFunction;
-import org.ml4j.nn.axons.FullyConnectedAxons;
-import org.ml4j.nn.axons.FullyConnectedAxonsImpl;
+import org.ml4j.nn.axons.TrainableAxons;
+import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationImpl;
 import org.ml4j.nn.synapses.UndirectedSynapses;
 import org.ml4j.nn.synapses.UndirectedSynapsesActivation;
 import org.ml4j.nn.synapses.UndirectedSynapsesContext;
@@ -31,10 +38,7 @@ import org.ml4j.nn.synapses.UndirectedSynapsesInputImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<FullyConnectedAxons> {
+public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<TrainableAxons<?, ?, ?>> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RestrictedBoltzmannLayerImpl.class);
 
@@ -43,7 +47,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    */
   private static final long serialVersionUID = 1L;
 
-  private FullyConnectedAxons axons;
+  private TrainableAxons<?, ?, ?> axons;
 
   private UndirectedSynapses<?, ?> synapses;
 
@@ -52,7 +56,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    * @param visibleActivationFunction The visible ActivationFunction
    * @param hiddenActivationFunction The hidden ActivationFunction
    */
-  public RestrictedBoltzmannLayerImpl(FullyConnectedAxons axons,
+  public RestrictedBoltzmannLayerImpl(TrainableAxons<?, ?, ?> axons,
       ActivationFunction<?, ?> visibleActivationFunction, 
       ActivationFunction<?, ?> hiddenActivationFunction) {
     this.axons = axons;
@@ -61,22 +65,24 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
   }
 
   /**
+   * @param axonsFactory A factory implementation to create axons.
    * @param visibleNeurons The visible Neurons.
    * @param hiddenNeurons The hidden Neurons.
    * @param visibleActivationFunction The visible ActivationFunction.
    * @param hiddenActivationFunction The hidden ActivationFunction.
    * @param matrixFactory The MatrixFactory.
    */
-  public RestrictedBoltzmannLayerImpl(Neurons visibleNeurons, Neurons hiddenNeurons,
+  public RestrictedBoltzmannLayerImpl(AxonsFactory axonsFactory, Neurons visibleNeurons, Neurons hiddenNeurons,
       ActivationFunction<? ,?> visibleActivationFunction, 
       ActivationFunction<?, ?> hiddenActivationFunction,
       MatrixFactory matrixFactory) {
-    this.axons = new FullyConnectedAxonsImpl(visibleNeurons, hiddenNeurons, matrixFactory);
+	  this.axons = axonsFactory.createFullyConnectedAxons(visibleNeurons, hiddenNeurons, null, null);
     this.synapses = new UndirectedSynapsesImpl<Neurons, Neurons>(axons, visibleActivationFunction,
         hiddenActivationFunction);
   }
 
   /**
+   * @param axonsFactory A factory implementation to create axons.
    * @param visibleNeurons The visible Neurons.
    * @param hiddenNeurons The hidden Neurons.
    * @param visibleActivationFunction The visible ActivationFunction.
@@ -84,66 +90,68 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    * @param matrixFactory The MatrixFactory.
    * @param initialWeights The initial weights.
    */
-  public RestrictedBoltzmannLayerImpl(Neurons visibleNeurons, Neurons hiddenNeurons,
+  public RestrictedBoltzmannLayerImpl(AxonsFactory axonsFactory, Neurons visibleNeurons, Neurons hiddenNeurons,
       ActivationFunction<?, ?> visibleActivationFunction, 
       ActivationFunction<?, ?> hiddenActivationFunction,
-      MatrixFactory matrixFactory, Matrix initialWeights) {
-    this.axons =
-        new FullyConnectedAxonsImpl(visibleNeurons, hiddenNeurons, matrixFactory, initialWeights);
+      MatrixFactory matrixFactory, Matrix initialWeights, Matrix initialLeftToRightBiases, Matrix initialRightToLeftBiases) {
+	  this.axons = axonsFactory.createFullyConnectedAxons(visibleNeurons, hiddenNeurons, initialWeights, initialLeftToRightBiases, initialRightToLeftBiases);
     this.synapses = new UndirectedSynapsesImpl<Neurons, Neurons>(axons, visibleActivationFunction,
         hiddenActivationFunction);
   }
 
   @Override
-  public RestrictedBoltzmannLayer<FullyConnectedAxons> dup() {
+  public RestrictedBoltzmannLayer<TrainableAxons<?, ?, ?>> dup() {
     return new RestrictedBoltzmannLayerImpl(axons.dup(), synapses.getLeftActivationFunction(),
         synapses.getRightActivationFunction());
   }
 
   @Override
-  public FullyConnectedAxons getPrimaryAxons() {
+  public TrainableAxons<?, ?, ?> getPrimaryAxons() {
     return axons;
   }
 
+  /*
   @Override
   public List<UndirectedSynapses<?, ?>> getSynapses() {
     return Arrays.asList(synapses);
   }
-
+  */
+ 
   @Override
   public NeuronsActivation getOptimalVisibleActivationsForHiddenNeuron(int hiddenNeuronIndex,
-      UndirectedLayerContext undirectedLayerContext) {
+      UndirectedLayerContext undirectedLayerContext, MatrixFactory matrixFactory) {
     LOGGER.debug("Obtaining optimal input for hidden neuron with index:" + hiddenNeuronIndex);
-    Matrix weights = getPrimaryAxons().getDetachedConnectionWeights();
-    int countJ = weights.getRows() - (getPrimaryAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0);
-    double[] maximisingInputFeatures = new double[countJ];
+    Matrix weights = getPrimaryAxons().getDetachedAxonWeights().getConnectionWeights();
+    int countJ = weights.getColumns();
+    float[] maximisingInputFeatures = new float[countJ];
     boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();
 
     for (int j = 0; j < countJ; j++) {
-      double wij = getWij(j, hiddenNeuronIndex, weights, hasBiasUnit);
-      double sum = 0;
+      float wij = getWij(j, hiddenNeuronIndex, weights, hasBiasUnit);
+      float sum = 0;
 
       if (wij != 0) {
 
         for (int j2 = 0; j2 < countJ; j2++) {
-          double weight = getWij(j2, hiddenNeuronIndex, weights, hasBiasUnit);
+          float weight = getWij(j2, hiddenNeuronIndex, weights, hasBiasUnit);
           if (weight != 0) {
-            sum = sum + Math.pow(weight, 2);
+            sum = sum + (float)Math.pow(weight, 2);
           }
         }
-        sum = Math.sqrt(sum);
+        sum = (float)Math.sqrt(sum);
       }
       maximisingInputFeatures[j] = wij / sum;
     }
-    return new NeuronsActivation(
-        undirectedLayerContext.getMatrixFactory()
-            .createMatrix(new double[][] {maximisingInputFeatures}),
-        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+    return new NeuronsActivationImpl(
+    		matrixFactory
+            .createMatrixFromRows(new float[][] {maximisingInputFeatures}),
+        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
   }
 
-  private double getWij(int indI, int indJ, Matrix weights, boolean hasBiasUnit) {
-    int indICorrected = indI + (hasBiasUnit ? 1 : 0);
-    return weights.get(indICorrected, indJ);
+
+  private float getWij(int indI, int indJ, Matrix weights, boolean hasBiasUnit) {
+    int indICorrected = indI;
+    return weights.get(indJ, indICorrected);
   }
 
   @Override
@@ -164,10 +172,10 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
       RestrictedBoltzmannLayerActivation visibleNeuronsReconstruction,
       UndirectedLayerContext layerContext) {
     UndirectedSynapsesInput synapsesInput = new UndirectedSynapsesInputImpl(
-        new NeuronsActivation(
+        new NeuronsActivationImpl(
             visibleNeuronsReconstruction.getSynapsesActivation().getOutput()
-            .getActivations().transpose(), 
-            NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
+            .getActivations(layerContext.getMatrixFactory()), 
+            NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
 
     UndirectedSynapsesActivation hiddenNeuronsSynapseActivation = synapses.pushLeftToRight(
         synapsesInput, visibleNeuronsReconstruction.getSynapsesActivation(),
@@ -220,16 +228,16 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
     
     
     UndirectedSynapsesInput synapsesInput = new UndirectedSynapsesInputImpl(
-        new NeuronsActivation(sample.getActivations().transpose(), 
+        new NeuronsActivationImpl(sample.getActivations(layerContext.getMatrixFactory()), 
             NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
     UndirectedSynapsesContext context = layerContext.createSynapsesContext(0);
     UndirectedSynapsesActivation visibleNeuronsSynapseActivation = synapses.pushRightToLeft(
         synapsesInput, previousVisibleToHiddenNeuronsActivation.getSynapsesActivation(), context);
 
     return new RestrictedBoltzmannLayerActivationImpl(visibleNeuronsSynapseActivation,
-        new NeuronsActivation(
-            visibleNeuronsSynapseActivation.getOutput().getActivations().transpose(), 
-            NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) ,
+        new NeuronsActivationImpl(
+            visibleNeuronsSynapseActivation.getOutput().getActivations(layerContext.getMatrixFactory()), 
+            NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) ,
         previousVisibleToHiddenNeuronsActivation.getHiddenActivationProbabilities());
   }
 
@@ -254,21 +262,21 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
    */
   public static Matrix generateInitialConnectionWeights(NeuronsActivation data, 
       Neurons visibleNeurons,
-      Neurons hiddenNeurons, double learningRate, MatrixFactory matrixFactory) {
+      Neurons hiddenNeurons, float learningRate, MatrixFactory matrixFactory) {
 
     int initialHiddenUnitBiasWeight = -4;
-    Matrix thetas = matrixFactory.createRandn(visibleNeurons.getNeuronCountIncludingBias(),
-        hiddenNeurons.getNeuronCountIncludingBias()).mul(learningRate);
+    EditableMatrix thetas = matrixFactory.createRandn(visibleNeurons.getNeuronCountIncludingBias(),
+        hiddenNeurons.getNeuronCountIncludingBias()).mul(learningRate).asEditableMatrix();
     for (int i = 1; i < thetas.getColumns(); i++) {
       thetas.put(0, i, initialHiddenUnitBiasWeight);
     }
     for (int i = 1; i < thetas.getRows(); i++) {
-      double[] proportionsOfOnUnits = getProportionsOfOnUnits(data.getActivations());
+      double[] proportionsOfOnUnits = getProportionsOfOnUnits(data.getActivations(matrixFactory));
       double proportionOfTimeUnitActivated = proportionsOfOnUnits[i - 1];
       // Needed to add the following to limit p here, otherwise the log blows up
       proportionOfTimeUnitActivated = Math.max(proportionOfTimeUnitActivated, 0.001);
-      double initialVisibleUnitBiasWeight =
-          Math.log(proportionOfTimeUnitActivated / (1 - proportionOfTimeUnitActivated));
+      float initialVisibleUnitBiasWeight =
+          (float)Math.log(proportionOfTimeUnitActivated / (1 - proportionOfTimeUnitActivated));
       thetas.put(i, 0, initialVisibleUnitBiasWeight);
     }
     thetas.put(0, 0, 0);
@@ -278,7 +286,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
   private static double[] getProportionsOfOnUnits(Matrix data) {
     int[] counts = new int[data.getColumns()];
     for (int row = 0; row < data.getRows(); row++) {
-      double[] dat = data.getRow(row).toArray();
+      float[] dat = data.getRow(row).getRowByRowArray();
       for (int i = 0; i < counts.length; i++) {
         if (dat[i] == 1) {
           counts[i]++;
@@ -291,5 +299,11 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Fu
     }
     return props;
   }
+
+	@Override
+	public List<UndirectedSynapses<?, ?>> getComponents() {
+	    return Arrays.asList(synapses);
+	}
+
 
 }

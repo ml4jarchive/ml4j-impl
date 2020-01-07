@@ -14,9 +14,11 @@
 
 package org.ml4j.nn.layers;
 
+import org.ml4j.EditableMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationImpl;
 import org.ml4j.nn.synapses.UndirectedSynapsesActivation;
 
 public class RestrictedBoltzmannLayerActivationImpl implements RestrictedBoltzmannLayerActivation {
@@ -64,11 +66,11 @@ public class RestrictedBoltzmannLayerActivationImpl implements RestrictedBoltzma
 
   private NeuronsActivation getBinarySample(NeuronsActivation probablities,
       MatrixFactory matrixFactory) {
-    Matrix rand = matrixFactory.createRand(probablities.getActivations().getRows(),
-        probablities.getActivations().getColumns());
-    Matrix res = probablities.getActivations().sub(rand);
-    Matrix sample = matrixFactory.createMatrix(probablities.getActivations().getRows(),
-        probablities.getActivations().getColumns());
+    Matrix rand = matrixFactory.createRand(probablities.getRows(),
+        probablities.getColumns());
+    Matrix res = probablities.getActivations(matrixFactory).sub(rand);
+    EditableMatrix sample = matrixFactory.createMatrix(probablities.getRows(),
+        probablities.getColumns()).asEditableMatrix();
     for (int r = 0; r < sample.getRows(); r++) {
       for (int c = 0; c < sample.getColumns(); c++) {
 
@@ -77,6 +79,6 @@ public class RestrictedBoltzmannLayerActivationImpl implements RestrictedBoltzma
         }
       }
     }
-    return new NeuronsActivation(sample, probablities.getFeatureOrientation());
+    return new NeuronsActivationImpl(sample, probablities.getFeatureOrientation());
   }
 }

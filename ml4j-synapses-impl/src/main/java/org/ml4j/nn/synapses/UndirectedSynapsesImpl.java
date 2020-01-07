@@ -64,7 +64,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public UndirectedSynapses<L, R> dup() {
-    return new UndirectedSynapsesImpl<L, R>(axons.dup(), leftActivationFunction,
+    return new UndirectedSynapsesImpl<>(axons.dup(), leftActivationFunction,
         rightActivationFunction);
   }
 
@@ -76,7 +76,7 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
   @Override
   public ActivationFunction<?, ?> getRightActivationFunction() {
-    return leftActivationFunction;
+    return rightActivationFunction;
   }
 
 
@@ -89,9 +89,9 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     LOGGER.debug("Pushing left to right through UndirectedSynapses");
     AxonsActivation axonsActivation =
-        axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0));
+        axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0, 0));
 
-    NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
+    NeuronsActivation axonsOutputActivation = axonsActivation.getPostDropoutOutput();
 
     NeuronsActivation outputNeuronsActivation =
         rightActivationFunction.activate(axonsOutputActivation, synapsesContext).getOutput();
@@ -109,9 +109,9 @@ public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
 
     LOGGER.debug("Pushing right to left through UndirectedSynapses");
     AxonsActivation axonsActivation =
-        axons.pushRightToLeft(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0));
+        axons.pushRightToLeft(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0, 0));
 
-    NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
+    NeuronsActivation axonsOutputActivation = axonsActivation.getPostDropoutOutput();
 
     NeuronsActivation outputNeuronsActivation =
         leftActivationFunction.activate(axonsOutputActivation, synapsesContext).getOutput();

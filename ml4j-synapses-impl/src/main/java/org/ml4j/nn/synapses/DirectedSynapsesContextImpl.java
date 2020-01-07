@@ -16,12 +16,12 @@
 
 package org.ml4j.nn.synapses;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Simple default implementation of DirectedSynapsesContext.
@@ -41,7 +41,8 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    */
   private MatrixFactory matrixFactory;
   private boolean withFreezeOut;
-  private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
+  private boolean isTrainingContext;
+  private Map<Integer, Map<Integer, AxonsContext>> axonsContextsByPathIndexAndAxonsIndex;
   
   /**
    * Construct a new default DirectedSynapsesContext.
@@ -49,10 +50,11 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
    * @param matrixFactory The MatrixFactory we configure for this context
    * @param withFreezeOut Whether to freeze out these Synapses.
    */
-  public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean withFreezeOut) {
+  public DirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
     this.withFreezeOut = withFreezeOut;
-    this.axonsContextsByAxonsIndex = new HashMap<>();
+    this.axonsContextsByPathIndexAndAxonsIndex = new HashMap<>();
+    this.isTrainingContext = isTrainingContext;
   }
  
   @Override
@@ -61,16 +63,24 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
   }
 
   @Override
-  public AxonsContext getAxonsContext(int axonsIndex) {
+  public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
     
-    AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
-    if (axonsContext == null) {
-      axonsContext = new AxonsContextImpl(matrixFactory,  withFreezeOut);
-      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+    Map<Integer, AxonsContext> axonsContextsByIndex 
+        = axonsContextsByPathIndexAndAxonsIndex.get(pathIndex);
+    if (axonsContextsByIndex == null) {
+      axonsContextsByIndex = new HashMap<Integer, AxonsContext>();
+      axonsContextsByPathIndexAndAxonsIndex.put(pathIndex, axonsContextsByIndex);
     }
+    AxonsContext axonsContext = axonsContextsByIndex.get(axonsIndex);
+
+    if (axonsContext == null) {
+      axonsContext = new AxonsContextImpl(matrixFactory, isTrainingContext,  withFreezeOut);
+      axonsContextsByIndex.put(axonsIndex, axonsContext);
+    }
+    
     if (axonsContext.isWithFreezeOut() != withFreezeOut) {
-      axonsContext.setWithFreezeOut(withFreezeOut);
-      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+      axonsContext.withFreezeOut(withFreezeOut);
+      axonsContextsByIndex.put(axonsIndex, axonsContext);
     }
     return axonsContext;
   }

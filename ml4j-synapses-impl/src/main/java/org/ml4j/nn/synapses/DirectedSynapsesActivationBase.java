@@ -16,13 +16,14 @@
 
 package org.ml4j.nn.synapses;
 
-import org.ml4j.Matrix;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
-import org.ml4j.nn.axons.AxonsActivation;
-import org.ml4j.nn.axons.AxonsContext;
+import java.util.Arrays;
+import java.util.List;
+
+import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
+import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of DirectedSynapsesActivation.
@@ -31,98 +32,49 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DirectedSynapsesActivationBase implements DirectedSynapsesActivation {
 
-  private static final Logger LOGGER = 
-      LoggerFactory.getLogger(DirectedSynapsesActivationBase.class);
-  
-  protected DirectedSynapsesInput inputActivation;
-  protected AxonsActivation axonsActivation;
-  protected DifferentiableActivationFunctionActivation activationFunctionActivation;
-  protected NeuronsActivation outputActivation;
-  protected DirectedSynapses<?, ?> synapses;
-  
-  /**
-   * Construct a new default DirectedSynapsesActivation
-   * 
-   * @param synapses The DirectedSynapses
-   * @param inputActivation The input NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation
-   * @param axonsActivation The axons NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation    
-   * @param outputActivation The output NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation.
-   */
-  public DirectedSynapsesActivationBase(DirectedSynapses<?, ?> synapses, 
-      DirectedSynapsesInput inputActivation, 
-      AxonsActivation axonsActivation, 
-      DifferentiableActivationFunctionActivation activationFunctionActivation,
-      NeuronsActivation outputActivation) {
-    this.inputActivation = inputActivation;
-    this.outputActivation = outputActivation;
-    this.synapses = synapses;
-    this.axonsActivation = axonsActivation;
-    this.activationFunctionActivation = activationFunctionActivation;
-  }
-  
-  @Override
-  public NeuronsActivation getOutput() {
-    return outputActivation;
-  }
+	protected NeuronsActivation inputActivation;
+	protected DefaultDirectedComponentBipoleGraphActivation axonsActivationGraph;
+	protected DifferentiableActivationFunctionComponentActivation activationFunctionActivation;
+	protected NeuronsActivation outputActivation;
+	protected DirectedSynapses<?, ?> synapses;
+	protected DirectedComponentsContext synapsesContext;
 
-  @Override
-  public DirectedSynapses<?, ?> getSynapses() {
-    return synapses;
-  }
+	/**
+	 * Construct a new default DirectedSynapsesActivation
+	 * 
+	 * @param synapses             The DirectedSynapses
+	 * @param inputActivation      The input NeuronsActivation of the
+	 *                             DirectedSynapses following a forward propagation
+	 * @param axonsActivationGraph The axons NeuronsActivation graph of the
+	 *                             DirectedSynapses following a forward propagation
+	 * @param outputActivation     The output NeuronsActivation of the
+	 *                             DirectedSynapses following a forward propagation.
+	 */
+	public DirectedSynapsesActivationBase(DirectedSynapses<?, ?> synapses, NeuronsActivation inputActivation,
+			DefaultDirectedComponentBipoleGraphActivation axonsActivationGraph,
+			DifferentiableActivationFunctionComponentActivation activationFunctionActivation, NeuronsActivation outputActivation,
+			DirectedComponentsContext synapsesContext) {
+		this.inputActivation = inputActivation;
+		this.outputActivation = outputActivation;
+		this.synapses = synapses;
+		this.axonsActivationGraph = axonsActivationGraph;
+		this.activationFunctionActivation = activationFunctionActivation;
+		this.synapsesContext = synapsesContext;
+	}
 
-  @Override
-  public double getAverageRegularisationCost(DirectedSynapsesContext synapsesContext) {
-    LOGGER.debug("Calculating average regularisation cost");
-    return getTotalRegularisationCost(synapsesContext) 
-        / outputActivation.getActivations().getRows();
-  }
+	@Override
+	public List<DefaultChainableDirectedComponentActivation> decompose() {
+		return Arrays.asList(axonsActivationGraph, activationFunctionActivation);
+	}
 
-  @Override
-  public double getTotalRegularisationCost(DirectedSynapsesContext synapsesContext) {
-  
-    AxonsContext axonsContext = synapsesContext.getAxonsContext(0);
-    
-    if (axonsContext.getRegularisationLambda() != 0 && synapses.getAxons() != null) {
+	@Override
+	public NeuronsActivation getOutput() {
+		return outputActivation;
+	}
 
-      LOGGER.debug("Calculating total regularisation cost");
-      
-      Matrix weightsWithBiases = synapses.getAxons().getDetachedConnectionWeights();
+	@Override
+	public DirectedSynapses<?, ?> getSynapses() {
+		return synapses;
+	}
 
-      int[] rows = new int[weightsWithBiases.getRows()
-          - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)];
-      int[] cols = new int[weightsWithBiases.getColumns()
-          - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)];
-      for (int j = 0; j < weightsWithBiases.getColumns(); j++) {
-        cols[j - (this.getSynapses().getRightNeurons().hasBiasUnit() ? 1 : 0)] = j;
-      }
-      for (int j = 1; j < weightsWithBiases.getRows(); j++) {
-        rows[j - (this.getSynapses().getLeftNeurons().hasBiasUnit() ? 1 : 0)] = j;
-      }
-
-      Matrix weightsWithoutBiases = weightsWithBiases.get(rows, cols);
-
-      double regularisationMatrix = weightsWithoutBiases.mul(weightsWithoutBiases).sum();
-      return ((axonsContext.getRegularisationLambda()) * regularisationMatrix) / 2;
-    } else {
-      return 0;
-    }
-  }
-
-  @Override
-  public AxonsActivation getAxonsActivation() {
-    return axonsActivation;
-  }
-
-  @Override
-  public DirectedSynapsesInput getInput() {
-    return inputActivation;
-  }
-  
-  @Override
-  public DifferentiableActivationFunctionActivation getActivationFunctionActivation() {
-    return activationFunctionActivation;
-  }
 }

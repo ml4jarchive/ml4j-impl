@@ -17,9 +17,11 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.LinearActivationFunction;
+import org.ml4j.nn.activationfunctions.factories.DifferentiableActivationFunctionFactory;
 import org.ml4j.nn.axons.AveragePoolingAxons;
-import org.ml4j.nn.axons.AveragePoolingAxonsImpl;
+import org.ml4j.nn.axons.Axons3DConfig;
+import org.ml4j.nn.axons.factories.AxonsFactory;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
 /**
@@ -35,48 +37,56 @@ public class AveragePoolingFeedForwardLayerImpl
    * Default serialization id.
    */
   private static final long serialVersionUID = 1L;
- 
+  
+  private DifferentiableActivationFunctionFactory activationFunctionFactory;
+   
   /**
+   * @param directedComponentFactory A factory implementation to create directed components.
+   * @param activationFunctionFactory A factory implementation to create activation functions.
    * @param primaryAxons The average pooling Axons.
    * @param matrixFactory The matrix factory.
    * @param withBatchNorm Whether to enable batch norm
    */
-  public AveragePoolingFeedForwardLayerImpl(AveragePoolingAxons primaryAxons, 
+  public AveragePoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, AveragePoolingAxons primaryAxons, 
       MatrixFactory matrixFactory, boolean withBatchNorm) {
-    super(primaryAxons, new LinearActivationFunction(), matrixFactory, withBatchNorm);
+    super(directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
+    this.activationFunctionFactory = activationFunctionFactory;
   }
   
   /**
+   * 
+   * @param directedComponentFactory A factory implementation to create directed components.
+   * @param axonsFactory A factory implementation to create axons.
+   * @param activationFunctionFactory A factory implementation to create activation functions.
    * @param inputNeurons The input Neurons.
    * @param outputNeurons The output Neurons
    * @param matrixFactory The MatrixFactory to use to initialise the weights
    * @param withBatchNorm Whether to enable batch norm
    */
-  public AveragePoolingFeedForwardLayerImpl(Neurons3D inputNeurons, 
+  public AveragePoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons, 
       Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean withBatchNorm) {
-    super(
-        new AveragePoolingAxonsImpl(inputNeurons, outputNeurons,
-            matrixFactory),
-        new LinearActivationFunction(), matrixFactory, withBatchNorm);
+    super(directedComponentFactory, 
+    		axonsFactory.createAveragePoolingAxons(inputNeurons, outputNeurons, new Axons3DConfig()),
+    		activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
   }
 
   @Override
   public AveragePoolingFeedForwardLayer dup() {
-    return new AveragePoolingFeedForwardLayerImpl(primaryAxons.dup(), matrixFactory, withBatchNorm);
+    return new AveragePoolingFeedForwardLayerImpl(directedComponentFactory, activationFunctionFactory, primaryAxons.dup(), matrixFactory, withBatchNorm);
   }
   
   @Override
   public int getFilterHeight() {
-    return getPrimaryAxons().getFilterHeight();
+    return getPrimaryAxons().getConfig().getFilterHeight();
   }
 
   @Override
   public int getFilterWidth() {
-    return getPrimaryAxons().getFilterWidth();
+    return getPrimaryAxons().getConfig().getFilterWidth();
   }
 
   @Override
   public int getStride() {
-    return getPrimaryAxons().getStride();
+    return getPrimaryAxons().getConfig().getStrideWidth();
   }
 }

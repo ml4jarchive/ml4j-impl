@@ -14,6 +14,8 @@
 
 package org.ml4j.nn.costfunctions;
 
+import org.ml4j.EditableMatrix;
+import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
 
 /**
@@ -25,29 +27,45 @@ import org.ml4j.Matrix;
 public class MultiClassCrossEntropyCostFunction implements CostFunction {
 
   @Override
-  public double getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
+  public float getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
    
-    Matrix jpart = (desiredOutputs.mul(-1).mul(limitLog(actualOutputs))).rowSums();
+	    if (actualOutputs.getColumns() != desiredOutputs.getColumns()) {
+	    	 throw new IllegalArgumentException("Mismatched column count between desired and actual outputs");
+	    }
+	    if (actualOutputs.getRows() != desiredOutputs.getRows()) {
+	   	 throw new IllegalArgumentException("Mismatched row count between desired and actual outputs");
+	   }
+	  
+		try (InterrimMatrix limitLog = limitLog(actualOutputs).asInterrimMatrix()) {
+			try (InterrimMatrix negativeOfDesiredOutputs = desiredOutputs.mul(-1).asInterrimMatrix()) {
+				try (InterrimMatrix jpart = (negativeOfDesiredOutputs.asEditableMatrix().muli(limitLog)).rowSums().asInterrimMatrix()) {
+					return jpart.sum();
+				}
+			}
 
-    return jpart.sum();
+		}
+   
   }
 
-  private double limit(double value) {
-    value = Math.min(value, 1 - 0.000000000000001);
-    value = Math.max(value, 0.000000000000001);
+  private double limit(float value) {
+	  // Removed 4 0's
+    value = Math.min(value, 1 - 0.00000000001f);
+    value = Math.max(value, 0.00000000001f);
     return value;
   }
 
   private Matrix limitLog(Matrix matrix) {
-    Matrix dupMatrix = matrix.dup();
-    for (int i = 0; i < dupMatrix.getLength(); i++) {
-      dupMatrix.put(i, (double) Math.log(limit(dupMatrix.get(i))));
+    EditableMatrix dupMatrix = matrix.dup().asEditableMatrix();
+    for (int r = 0; r < dupMatrix.getRows(); r++) {
+    	for (int c = 0; c < dupMatrix.getColumns(); c++) {
+    	      dupMatrix.put(r, c, (float) Math.log(limit(dupMatrix.get(r, c))));
+    	}
     }
     return dupMatrix;
   }
 
   @Override
-  public double getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    return getAverageCost(desiredOutputs, actualOutputs);
+  public float getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
+    return getTotalCost(desiredOutputs, actualOutputs)/desiredOutputs.getRows();
   }
 }

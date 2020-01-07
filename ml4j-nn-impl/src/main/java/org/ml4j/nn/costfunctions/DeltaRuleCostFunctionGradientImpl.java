@@ -17,14 +17,14 @@
 package org.ml4j.nn.costfunctions;
 
 import org.ml4j.Matrix;
-import org.ml4j.nn.activationfunctions.ActivationFunctionGradient;
-import org.ml4j.nn.activationfunctions.ActivationFunctionGradientImpl;
+import org.ml4j.MatrixFactory;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.LinearActivationFunction;
-import org.ml4j.nn.activationfunctions.SigmoidActivationFunction;
-import org.ml4j.nn.activationfunctions.SoftmaxActivationFunction;
+import org.ml4j.nn.components.DirectedComponentGradient;
+import org.ml4j.nn.components.DirectedComponentGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationImpl;
 
 /**
  * Responsible for back propagating the CostFunctionGradient through a final activation function
@@ -37,15 +37,35 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
   private NeuronsActivation desiredOutputs;
   private NeuronsActivation actualOutputs;
   private CostFunction costFunction;
+  private MatrixFactory matrixFactory;
 
   /**
    * @param costFunction The cost function.
    * @param desiredOutputs The desired outputs of the network.
    * @param actualOutputs The actual outputs of the network.
    */
-  public DeltaRuleCostFunctionGradientImpl(CostFunction costFunction,
+  public DeltaRuleCostFunctionGradientImpl(MatrixFactory matrixFactory, CostFunction costFunction,
       NeuronsActivation desiredOutputs, NeuronsActivation actualOutputs) {
     this.desiredOutputs = desiredOutputs;
+    this.matrixFactory = matrixFactory;
+
+    
+    if (desiredOutputs
+	        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+	      throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
+	          + "orientation supported currently");
+	    }
+    if (actualOutputs
+	        .getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+	      throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
+	          + "orientation supported currently");
+	    }
+    if (actualOutputs.getColumns() != desiredOutputs.getColumns()) {
+    	 throw new IllegalArgumentException("Mismatched column count between desired and actual outputs");
+    }
+    if (actualOutputs.getRows() != desiredOutputs.getRows()) {
+   	 throw new IllegalArgumentException("Mismatched row count between desired and actual outputs");
+   }
     this.costFunction = costFunction;
     this.actualOutputs = actualOutputs;
   }
@@ -53,22 +73,22 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
   private boolean isDeltaRuleSupported(DifferentiableActivationFunction finalActivationFunction) {
 
     if (costFunction instanceof CrossEntropyCostFunction
-        && finalActivationFunction instanceof SigmoidActivationFunction) {
+        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.SIGMOID) {
       return true;
     }
     if (costFunction instanceof MultiClassCrossEntropyCostFunction
-        && finalActivationFunction instanceof SoftmaxActivationFunction) {
+        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.SOFTMAX) {
       return true;
     }
     if (costFunction instanceof SumSquaredErrorCostFunction
-        && finalActivationFunction instanceof LinearActivationFunction) {
+        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.LINEAR) {
       return true;
     }
     return false;
   }
 
   @Override
-  public ActivationFunctionGradient backPropagateThroughFinalActivationFunction(
+  public DirectedComponentGradient<NeuronsActivation> backPropagateThroughFinalActivationFunction(
       DifferentiableActivationFunction finalActivationFunction) {
 
     if (!isDeltaRuleSupported(finalActivationFunction)) {
@@ -77,20 +97,22 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
               + " not supported for the delta rule for cost function:"
               + costFunction.getClass().getName());
     }
-
-
+    
     // When using either of the cross entropy cross functions,
     // the deltas we backpropagate
     // end up being the difference between the target activations ( which are the
     // same as the trainingDataActivations as this is an AutoEncoder), and the
     // activations resulting from the forward propagation
-    Matrix deltasM = actualOutputs.getActivations().sub(desiredOutputs.getActivations());
+        
+    Matrix deltasM = actualOutputs.getActivations(matrixFactory).sub(desiredOutputs.getActivations(matrixFactory));
 
-    // The deltas we back propagate are in the transposed orientation to the inputs
-    NeuronsActivation deltas = new NeuronsActivation(deltasM.transpose(),
+    
+    actualOutputs.getActivations(matrixFactory).close();
+    
+    NeuronsActivation deltas = new NeuronsActivationImpl(deltasM,
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 
-    return new ActivationFunctionGradientImpl(deltas);
+    return new DirectedComponentGradientImpl<>(deltas);
 
   }
 
@@ -98,4 +120,5 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
   public CostFunction getCostFunction() {
     return costFunction;
   }
+
 }

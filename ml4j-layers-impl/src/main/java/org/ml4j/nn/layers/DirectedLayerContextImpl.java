@@ -16,13 +16,12 @@
 
 package org.ml4j.nn.layers;
 
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.layers.DirectedLayerContext;
-import org.ml4j.nn.synapses.DirectedSynapsesContext;
-import org.ml4j.nn.synapses.DirectedSynapsesContextImpl;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.ml4j.MatrixFactory;
+import org.ml4j.nn.synapses.DirectedSynapsesContext;
+import org.ml4j.nn.synapses.DirectedSynapsesContextImpl;
 
 /**
  * Simple default implementation of DirectedLayerContext.
@@ -45,6 +44,7 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   private int layerIndex;
   
   private boolean withFreezeOut;
+  private boolean isTrainingContext;
   private Map<Integer, DirectedSynapsesContext> synapsesContextsBySynapsesIndex;
   
   /**
@@ -53,10 +53,11 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
    * @param layerIndex The index of the layer
    * @param matrixFactory The MatrixFactory we configure for this context
    */
-  public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory) {
+  public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
     this.matrixFactory = matrixFactory;
     this.layerIndex = layerIndex;
     this.synapsesContextsBySynapsesIndex = new HashMap<>();
+    this.isTrainingContext = isTrainingContext;
   }
  
   @Override
@@ -69,7 +70,7 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
 
     DirectedSynapsesContext synapsesContext = synapsesContextsBySynapsesIndex.get(synapsesIndex);
     if (synapsesContext == null) {
-      synapsesContext = new DirectedSynapsesContextImpl(matrixFactory, withFreezeOut);
+      synapsesContext = new DirectedSynapsesContextImpl(matrixFactory, isTrainingContext, withFreezeOut);
 
     }
     if (synapsesContext.isWithFreezeOut() != withFreezeOut) {
@@ -91,5 +92,10 @@ public class DirectedLayerContextImpl implements DirectedLayerContext {
   @Override
   public String toString() {
     return "DirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
-  } 
+  }
+
+@Override
+public boolean isTrainingContext() {
+	return isTrainingContext;
+} 
 }

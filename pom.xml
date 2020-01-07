@@ -6,9 +6,13 @@
         <version>1.0</version>
         <packaging>pom</packaging>
 	<modules>
-		<module>ml4j-matrices-impl</module>
+                <module>ml4j-matrices-impl</module>
+		<module>ml4j-base-impl</module>
+		<module>ml4j-datasets-impl</module>
+		<module>ml4j-base-components</module>
 		<module>ml4j-synapses-impl</module>
-		<module>ml4j-layers-impl</module>
+		<module>ml4j-layers-impl</module>	
 		<module>ml4j-nn-impl</module>
-        </modules>
+      		<module>ml4j-layered-nn-impl</module> 
+	 </modules>
 </project>

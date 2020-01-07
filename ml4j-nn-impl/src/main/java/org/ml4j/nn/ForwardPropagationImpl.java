@@ -16,17 +16,15 @@
 
 package org.ml4j.nn;
 
-import org.ml4j.nn.BackPropagation;
-import org.ml4j.nn.DirectedNeuralNetworkContext;
-import org.ml4j.nn.ForwardPropagation;
-import org.ml4j.nn.costfunctions.CostFunctionGradient;
-import org.ml4j.nn.layers.DirectedLayerActivation;
-import org.ml4j.nn.layers.DirectedLayerGradient;
-import org.ml4j.nn.neurons.NeuronsActivation;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import org.ml4j.nn.components.ChainableDirectedComponentActivation;
+import org.ml4j.nn.components.DirectedComponentGradient;
+import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
+import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
+import org.ml4j.nn.costfunctions.CostFunctionGradient;
+import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
  * Default implementation of ForwardPropagation.
@@ -35,8 +33,7 @@ import java.util.List;
  */
 public class ForwardPropagationImpl implements ForwardPropagation {
   
-  private NeuronsActivation outputActivations;
-  private List<DirectedLayerActivation> activations;
+  private TrailingActivationFunctionDirectedComponentChainActivation activationChain;
   
   /**
    * Create a new ForwardPropagation from the output activations at the
@@ -47,49 +44,20 @@ public class ForwardPropagationImpl implements ForwardPropagation {
    * @param outputActivations The output activations at the
    *        right hand side of a DirectedNeuralNetwork after a forward propagation.
    */
-  public ForwardPropagationImpl(List<DirectedLayerActivation> activations, 
-      NeuronsActivation outputActivations) {
+  public ForwardPropagationImpl(TrailingActivationFunctionDirectedComponentChainActivation activationChain) {
     super();
-    this.outputActivations = outputActivations;
-    this.activations = activations;
+    this.activationChain = activationChain;
   }
 
   @Override
-  public NeuronsActivation getOutputs() {
-    return outputActivations;
+  public DirectedComponentGradient<NeuronsActivation> backPropagate(DirectedComponentGradient<NeuronsActivation> arg0) {
+	  return activationChain.backPropagate(arg0);
   }
 
   @Override
   public BackPropagation backPropagate(CostFunctionGradient neuronActivationGradients, 
       DirectedNeuralNetworkContext context) {
-    
-    List<DirectedLayerActivation> reversedActivations = new ArrayList<>();
-    reversedActivations.addAll(activations);
-  
-    DirectedLayerGradient gradients = null;
-    List<DirectedLayerGradient> gradientsRet = new ArrayList<>();
-    Collections.reverse(reversedActivations);
-    int layerIndex = reversedActivations.size() - 1;
-    
-    for (DirectedLayerActivation activation : reversedActivations) {
-
-      DirectedLayerGradient gradient = null;
-      if (gradients == null) {
-        gradient = activation.backPropagate(neuronActivationGradients,
-            context.getLayerContext(layerIndex));
-      } else {
-        gradient =
-            activation.backPropagate(gradients, context.getLayerContext(layerIndex));
-      }
-      
-      gradientsRet.add(gradient);
-      gradients = gradient;
-      layerIndex--;
-    }
-    
-    Collections.reverse(gradientsRet);
-
-    BackPropagation backPropagation =  new BackPropagationImpl(gradientsRet);
+    BackPropagation backPropagation =  new BackPropagationImpl(activationChain.backPropagate(neuronActivationGradients));
     if (context.getBackPropagationListener() != null) {
       context.getBackPropagationListener().onBackPropagation(backPropagation);
     }
@@ -97,24 +65,29 @@ public class ForwardPropagationImpl implements ForwardPropagation {
   }
 
   @Override
-  public double getAverageRegularisationCost(DirectedNeuralNetworkContext context) {
-    return getTotalRegularisationCost(context) / outputActivations.getActivations().getRows();
-  }
-
-  @Override
-  public double getTotalRegularisationCost(DirectedNeuralNetworkContext context) {
-    double totalRegularisationCost = 0d;
-    int layerIndex = 0;
-    for (DirectedLayerActivation activation : activations) {
-      totalRegularisationCost = totalRegularisationCost + activation.getTotalRegularisationCost(
-          context.getLayerContext(layerIndex++));
+  public float getTotalRegularisationCost(DirectedNeuralNetworkContext context) {
+   float totalRegularisationCost = 0;
+ 
+    for (ChainableDirectedComponentActivation<NeuronsActivation> activation : activationChain.getActivations()) {
+    	for (ChainableDirectedComponentActivation<NeuronsActivation> decomposedActivation : activation.decompose()) {
+	    	if (decomposedActivation instanceof DirectedAxonsComponentActivation) {
+	    		DirectedAxonsComponentActivation axonsActivation = (DirectedAxonsComponentActivation)decomposedActivation;
+	    		 totalRegularisationCost = totalRegularisationCost + axonsActivation.getTotalRegularisationCost();
+	    	}
+    	}
     }
+  
     return totalRegularisationCost;
   }
-  
-  @Override
-  public List<DirectedLayerActivation> getLayerActivations() {
-    return activations;
-  }
- 
+
+@Override
+public List<DefaultChainableDirectedComponentActivation> decompose() {
+	return activationChain.decompose();
+}
+
+@Override
+public NeuronsActivation getOutput() {
+    return activationChain.getOutput();
+}
+
 }

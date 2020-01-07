@@ -35,6 +35,8 @@ public class UndirectedLayerContextImpl implements UndirectedLayerContext {
   private MatrixFactory matrixFactory;
   
   private boolean withFreezeOut;
+  
+  private boolean isTrainingContext;
     
   private int layerIndex;
   
@@ -42,9 +44,10 @@ public class UndirectedLayerContextImpl implements UndirectedLayerContext {
    * @param layerIndex The index of this Layer.
    * @param matrixFactory The MatrixFactory.
    */
-  public UndirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory) {
+  public UndirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
     this.layerIndex = layerIndex;
     this.matrixFactory = matrixFactory;
+    this.isTrainingContext = isTrainingContext;
   }
 
   @Override
@@ -54,7 +57,7 @@ public class UndirectedLayerContextImpl implements UndirectedLayerContext {
 
   @Override
   public UndirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
-    return new UndirectedSynapsesContextImpl(matrixFactory, 
+    return new UndirectedSynapsesContextImpl(matrixFactory, isTrainingContext,
         withFreezeOut);
   }
 

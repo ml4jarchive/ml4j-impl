@@ -16,12 +16,12 @@
 
 package org.ml4j.nn.synapses;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Simple default implementation of DirectedSynapsesContext.
@@ -41,6 +41,7 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
    */
   private MatrixFactory matrixFactory;
   private boolean withFreezeOut;
+  private boolean isTrainingContext;
   private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
   
   /**
@@ -49,9 +50,10 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
    * @param matrixFactory The MatrixFactory we configure for this context
    * @param withFreezeOut Whether to freeze out these Synapses.
    */
-  public UndirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean withFreezeOut) {
+  public UndirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext, boolean withFreezeOut) {
     this.matrixFactory = matrixFactory;
     this.withFreezeOut = withFreezeOut;
+    this.isTrainingContext = isTrainingContext;
     this.axonsContextsByAxonsIndex = new HashMap<>();
   }
  
@@ -61,15 +63,15 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
   }
 
   @Override
-  public AxonsContext getAxonsContext(int axonsIndex) {
+  public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
     
     AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
     if (axonsContext == null) {
-      axonsContext = new AxonsContextImpl(matrixFactory,  withFreezeOut);
+      axonsContext = new AxonsContextImpl(matrixFactory, isTrainingContext,  withFreezeOut);
       axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
     }
     if (axonsContext.isWithFreezeOut() != withFreezeOut) {
-      axonsContext.setWithFreezeOut(withFreezeOut);
+      axonsContext.withFreezeOut(withFreezeOut);
       axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
     }
     return axonsContext;
