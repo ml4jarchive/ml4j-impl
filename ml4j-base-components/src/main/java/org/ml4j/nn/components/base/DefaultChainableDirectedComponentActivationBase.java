@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
  * 
  * 
  * @author Michael Lavelle
+ * 
+ * @param <L> The specific type of DefaultChainableDirectedComponent from which this activation originated.
  */
 public abstract class DefaultChainableDirectedComponentActivationBase<L extends DefaultChainableDirectedComponent<?, ?>> implements DefaultChainableDirectedComponentActivation {
 	
@@ -24,6 +26,9 @@ public abstract class DefaultChainableDirectedComponentActivationBase<L extends 
 	 */
 	protected NeuronsActivation output;
 	
+	/**
+	 * The component from which this activation originated.
+	 */
 	protected L originatingComponent;
 	
 	/**
@@ -39,10 +44,6 @@ public abstract class DefaultChainableDirectedComponentActivationBase<L extends 
 	public NeuronsActivation getOutput() {
 		return output;
 	}
-	
-	
-	
-	
 }
 
 

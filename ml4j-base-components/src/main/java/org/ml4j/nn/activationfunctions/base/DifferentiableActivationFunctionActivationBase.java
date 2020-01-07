@@ -23,7 +23,8 @@ public abstract class DifferentiableActivationFunctionActivationBase implements 
 	protected DifferentiableActivationFunction activationFunction;
 	
 	/**
-	 * @param input The input to the activation function component
+	 * @param activationFunction The DifferentiableActivationFunction instance from which this activation was generated.
+	 * @param input The input to the activation function component.
 	 * @param output The output from the activation function component
 	 */
 	public DifferentiableActivationFunctionActivationBase(DifferentiableActivationFunction activationFunction, NeuronsActivation input, NeuronsActivation output) {

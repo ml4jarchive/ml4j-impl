@@ -2,8 +2,12 @@ package org.ml4j.nn.components.axons.base;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.components.DirectedComponentGradient;
+import org.ml4j.nn.components.DirectedComponentGradientImpl;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
@@ -33,7 +37,32 @@ public class DirectedAxonsComponentActivationAdapter implements DirectedAxonsCom
 		long endTime = new Date().getTime();
 		long timeTaken = endTime - startTime;
 		DefaultChainableDirectedComponentAdapter.addTime(timeTaken, "bp:" + name);
-		return grad;
+		return new DirectedComponentGradientImpl<>(grad.getTotalTrainableAxonsGradients().stream()
+				.map(s -> decorateGradientSupplier(s)).collect(Collectors.toList()), grad.getOutput());
+	}
+	
+	private Supplier<AxonsGradient> decorateGradientSupplier(Supplier<AxonsGradient> gradientSupplier) {
+		return gradientSupplier == null ? null : new GradientSupplierAdapter(gradientSupplier); 
+	}
+	
+	private class GradientSupplierAdapter implements Supplier<AxonsGradient> {
+
+		private Supplier<AxonsGradient> gradientSupplier;
+		
+		public GradientSupplierAdapter(Supplier<AxonsGradient> gradientSupplier) {
+			this.gradientSupplier = gradientSupplier;
+		}
+		
+		@Override
+		public AxonsGradient get() {
+			long startTime = new Date().getTime();
+			AxonsGradient gradient = gradientSupplier.get();
+			long endTime = new Date().getTime();
+			long timeTaken = endTime - startTime;
+			DefaultChainableDirectedComponentAdapter.addTime(timeTaken, "grad:" + name);
+			return gradient;
+		}
+		
 	}
 
 	@Override
