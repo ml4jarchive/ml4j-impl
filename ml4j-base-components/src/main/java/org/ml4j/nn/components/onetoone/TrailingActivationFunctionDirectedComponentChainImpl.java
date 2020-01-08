@@ -106,10 +106,14 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			@Override
 			public MatrixFactory getMatrixFactory() {
 				return context.getMatrixFactory();
+			}
+
+			@Override
+			public boolean isTrainingContext() {
+				return context.isTrainingContext();
 			}});
 		
 		//activationFunctionActivation.getInput().close();
-		
 		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(this, precedingChainActivation, 
 				activationFunctionComponentActivation);
 	}

@@ -37,7 +37,9 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	 */
 	protected Matrix activations;
 	private boolean immutable;
-
+	protected String stackTrace;
+	protected Integer exampleCount;
+		
 	/**
 	 * Defines whether the features of the activations are represented by the
 	 * columns or the rows of the activations Matrix.
@@ -57,7 +59,11 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	}
 
 	public void close() {
-		activations.close();
+		if (activations != null) {
+			//exampleCount = getExampleCount();
+			activations.close();
+			activations = null;
+		}
 	}
 
 	public Matrix getActivations(MatrixFactory matrixFactory) {
@@ -114,6 +120,14 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		} else if (activations != null) {
 			activations.setImmutable(immutable);
 		}
+		/*
+		ByteArrayOutputStream os = new ByteArrayOutputStream(); 
+		PrintWriter s = new PrintWriter(os); 
+		new RuntimeException().printStackTrace(s); s.flush();
+		s.close(); 
+		stackTrace = os.toString(); 
+		*/
+	
 	}
 
 	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
@@ -130,7 +144,11 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	}
 
 	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
-		return new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());
+		
+		// TODO
+		ImageNeuronsActivation imageNeuronsActivation =  new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());
+		this.activations = null;
+		return imageNeuronsActivation;
 	}
 
 	public void addInline(MatrixFactory matrixFactory, NeuronsActivation other) {
@@ -211,6 +229,17 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 
 	@Override
 	public int getExampleCount() {
-		return getColumns();
+		return exampleCount == null ? getColumns() : exampleCount;
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (activations != null) {
+			//System.out.println("Not null");
+			//System.out.println(this.stackTrace);
+			
+		}
+	}
+	
+	
 }

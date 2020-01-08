@@ -162,6 +162,11 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 						return directedComponentsContext.getMatrixFactory();
 					}
 
+					@Override
+					public boolean isTrainingContext() {
+						return directedComponentsContext.isTrainingContext();
+					}
+
 				});
 
 		NeuronsActivation outputNeuronsActivation = actAct.getOutput();

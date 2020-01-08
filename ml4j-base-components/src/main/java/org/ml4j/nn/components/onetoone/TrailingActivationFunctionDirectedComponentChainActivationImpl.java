@@ -55,8 +55,12 @@ public class TrailingActivationFunctionDirectedComponentChainActivationImpl
 	@Override
 	public DirectedComponentGradient<NeuronsActivation> backPropagate(
 			DirectedComponentGradient<NeuronsActivation> outerGradient) {
+		
 		DirectedComponentGradient<NeuronsActivation> activationFunctionGradient = activationFunctionActivation.backPropagate(outerGradient);
-		return precedingChainActivation.backPropagate(activationFunctionGradient);
+	
+		DirectedComponentGradient<NeuronsActivation> result = precedingChainActivation.backPropagate(activationFunctionGradient);
+	
+		return result;
 	}
 
 }

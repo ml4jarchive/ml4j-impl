@@ -8,6 +8,24 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 
 	protected float[] data;
 	protected int startIndex;
+	protected boolean closed;
+
+	@Override
+	public boolean isClosed() {
+		return closed;
+	}
+
+	@Override
+	public I dup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public I softDup() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public SingleChannelImageContainer(float[] data, int startIndex, int height, int width, int paddingHeight,
 			int paddingWidth, int examples) {
@@ -200,5 +218,6 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 	@Override
 	public void close() {
 		this.data = null;
+		this.closed = true;
 	}
 }

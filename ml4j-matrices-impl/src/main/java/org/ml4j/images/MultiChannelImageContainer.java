@@ -1,5 +1,7 @@
 package org.ml4j.images;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.ml4j.FloatModifier;
@@ -9,6 +11,13 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	protected float[] data;
 	protected int channels;
+	
+	protected boolean closed;
+
+	@Override
+	public boolean isClosed() {
+		return closed;
+	}
 
 	public MultiChannelImageContainer(float[] data, int channels, int height, int width, int paddingHeight,
 			int paddingWidth, int examples) {
@@ -151,6 +160,7 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	@Override
 	public void close() {
-		this.data = null;
+		ByteArrayOutputStream os = new ByteArrayOutputStream(); 
+		PrintWriter s = new PrintWriter(os); 
 	}
 }

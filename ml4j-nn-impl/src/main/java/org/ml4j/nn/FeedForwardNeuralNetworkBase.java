@@ -382,6 +382,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 						}
 					}
 					
+					batchDataActivations.close();
+					batchLabelActivations.close();
 
 					iterationIndex.addAndGet(1);
 					batchIndex.addAndGet(1);
@@ -478,10 +480,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 		CostFunctionGradient costFunctionGradient = new DeltaRuleCostFunctionGradientImpl(trainingContext.getMatrixFactory(), costFunction,
 				desiredOutputActivations, forwardPropagation.getOutput());
+		//forwardPropagation.getOutput().close();
+
 
 		// Back propagate the cost function gradient through the network
 		BackPropagation backPropagation = forwardPropagation.backPropagate(costFunctionGradient, trainingContext);
 	
+		backPropagation.getGradient().getOutput().close();
 
 		// Obtain the gradients of each set of Axons we wish to train - for this example
 		// it is
