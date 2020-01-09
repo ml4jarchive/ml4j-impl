@@ -38,8 +38,7 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	protected Matrix activations;
 	private boolean immutable;
 	protected String stackTrace;
-	protected Integer exampleCount;
-		
+	private boolean softDup;		
 	/**
 	 * Defines whether the features of the activations are represented by the
 	 * columns or the rows of the activations Matrix.
@@ -52,15 +51,16 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 
 	public void setImmutable(boolean immutable) {
 		this.immutable = immutable;
+		this.activations.setImmutable(immutable);
 	}
 
 	public boolean isImmutable() {
 		return immutable;
 	}
 
+	@Override
 	public void close() {
-		if (activations != null) {
-			//exampleCount = getExampleCount();
+		if (activations != null && !activations.isClosed()) {
 			activations.close();
 			activations = null;
 		}
@@ -120,14 +120,6 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		} else if (activations != null) {
 			activations.setImmutable(immutable);
 		}
-		/*
-		ByteArrayOutputStream os = new ByteArrayOutputStream(); 
-		PrintWriter s = new PrintWriter(os); 
-		new RuntimeException().printStackTrace(s); s.flush();
-		s.close(); 
-		stackTrace = os.toString(); 
-		*/
-	
 	}
 
 	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
@@ -146,8 +138,9 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
 		
 		// TODO
-		ImageNeuronsActivation imageNeuronsActivation =  new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());
-		this.activations = null;
+		ImageNeuronsActivation imageNeuronsActivation =  new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());		
+		softDup = true;
+
 		return imageNeuronsActivation;
 	}
 
@@ -179,7 +172,7 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	public NeuronsActivation dup() {
 		return new NeuronsActivationImpl(activations.dup(), featureOrientation);
 	}
-
+	
 	public int getRows() {
 		return activations.getRows();
 	}
@@ -229,17 +222,16 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 
 	@Override
 	public int getExampleCount() {
-		return exampleCount == null ? getColumns() : exampleCount;
+		return getColumns();
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		if (activations != null) {
-			//System.out.println("Not null");
-			//System.out.println(this.stackTrace);
-			
+	public void reshape(int featureCount, int exampleCount) {
+		if (this.immutable) {
+			throw new IllegalStateException();
 		}
+		activations.asEditableMatrix().reshape(featureCount, exampleCount);		
 	}
-	
+
 	
 }

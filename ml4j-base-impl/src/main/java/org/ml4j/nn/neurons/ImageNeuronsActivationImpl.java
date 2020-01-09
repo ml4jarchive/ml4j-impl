@@ -75,8 +75,8 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 
 	@Override
 	public void close() {
-		if (images != null) {
-			this.exampleCount = images.getExamples();
+		if (images != null && !images.isClosed()) {
+			exampleCount = images.getExamples();
 			images.close();
 			images = null;
 		}
@@ -118,7 +118,7 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 
 	@Override
 	public int getColumns() {
-		return images.getExamples();
+		return getExampleCount();
 	}
 
 	@Override
@@ -158,13 +158,9 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 		throw new UnsupportedOperationException();
 	}
 
-
 	@Override
-	protected void finalize() throws Throwable {
-		if (images != null && !images.isClosed()) {
-			//System.out.println("Not closed");
-			//System.out.println(stackTrace);
-		}
+	public void reshape(int featureCount, int exampleCount) {
+		throw new UnsupportedOperationException();
 	}
 	
 	

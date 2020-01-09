@@ -1,7 +1,5 @@
 package org.ml4j.images;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.ml4j.FloatModifier;
@@ -160,7 +158,7 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	@Override
 	public void close() {
-		ByteArrayOutputStream os = new ByteArrayOutputStream(); 
-		PrintWriter s = new PrintWriter(os); 
+		this.closed = true;
+		this.data = null;
 	}
 }

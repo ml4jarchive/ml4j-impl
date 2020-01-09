@@ -24,7 +24,7 @@ import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentGradientImpl;
 import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
 
-public class DirectedComponentChainActivationImpl<I, A extends ChainableDirectedComponentActivation<I>> implements DirectedComponentChainActivation<I, A> {
+public abstract class DirectedComponentChainActivationImpl<I, A extends ChainableDirectedComponentActivation<I>> implements DirectedComponentChainActivation<I, A> {
 
 	private I output;
 	protected List<A> activations;

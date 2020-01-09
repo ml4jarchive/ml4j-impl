@@ -19,6 +19,7 @@ package org.ml4j.nn;
 import java.util.List;
 
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
@@ -32,62 +33,70 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  * @author Michael Lavelle
  */
 public class ForwardPropagationImpl implements ForwardPropagation {
-  
-  private TrailingActivationFunctionDirectedComponentChainActivation activationChain;
-  
-  /**
-   * Create a new ForwardPropagation from the output activations at the
-   * right hand side of a DirectedNeuralNetwork after a forward propagation.
-   * 
-   * @param activations All the DirectedLayerActivation instaces generated
-   *        by the forward propagation.
-   * @param outputActivations The output activations at the
-   *        right hand side of a DirectedNeuralNetwork after a forward propagation.
-   */
-  public ForwardPropagationImpl(TrailingActivationFunctionDirectedComponentChainActivation activationChain) {
-    super();
-    this.activationChain = activationChain;
-  }
 
-  @Override
-  public DirectedComponentGradient<NeuronsActivation> backPropagate(DirectedComponentGradient<NeuronsActivation> arg0) {
-	  return activationChain.backPropagate(arg0);
-  }
+	private TrailingActivationFunctionDirectedComponentChainActivation activationChain;
 
-  @Override
-  public BackPropagation backPropagate(CostFunctionGradient neuronActivationGradients, 
-      DirectedNeuralNetworkContext context) {
-    BackPropagation backPropagation =  new BackPropagationImpl(activationChain.backPropagate(neuronActivationGradients));
-    if (context.getBackPropagationListener() != null) {
-      context.getBackPropagationListener().onBackPropagation(backPropagation);
-    }
-    return backPropagation;
-  }
+	/**
+	 * Create a new ForwardPropagation from the output activations at the right hand
+	 * side of a DirectedNeuralNetwork after a forward propagation.
+	 * 
+	 * @param activations       All the DirectedLayerActivation instaces generated
+	 *                          by the forward propagation.
+	 * @param outputActivations The output activations at the right hand side of a
+	 *                          DirectedNeuralNetwork after a forward propagation.
+	 */
+	public ForwardPropagationImpl(TrailingActivationFunctionDirectedComponentChainActivation activationChain) {
+		super();
+		this.activationChain = activationChain;
+	}
 
-  @Override
-  public float getTotalRegularisationCost(DirectedNeuralNetworkContext context) {
-   float totalRegularisationCost = 0;
- 
-    for (ChainableDirectedComponentActivation<NeuronsActivation> activation : activationChain.getActivations()) {
-    	for (ChainableDirectedComponentActivation<NeuronsActivation> decomposedActivation : activation.decompose()) {
-	    	if (decomposedActivation instanceof DirectedAxonsComponentActivation) {
-	    		DirectedAxonsComponentActivation axonsActivation = (DirectedAxonsComponentActivation)decomposedActivation;
-	    		 totalRegularisationCost = totalRegularisationCost + axonsActivation.getTotalRegularisationCost();
-	    	}
-    	}
-    }
-  
-    return totalRegularisationCost;
-  }
+	@Override
+	public DirectedComponentGradient<NeuronsActivation> backPropagate(
+			DirectedComponentGradient<NeuronsActivation> arg0) {
+		return activationChain.backPropagate(arg0);
+	}
 
-@Override
-public List<DefaultChainableDirectedComponentActivation> decompose() {
-	return activationChain.decompose();
-}
+	@Override
+	public BackPropagation backPropagate(CostFunctionGradient neuronActivationGradients,
+			DirectedNeuralNetworkContext context) {
+		BackPropagation backPropagation = new BackPropagationImpl(
+				activationChain.backPropagate(neuronActivationGradients));
+		if (context.getBackPropagationListener() != null) {
+			context.getBackPropagationListener().onBackPropagation(backPropagation);
+		}
+		return backPropagation;
+	}
 
-@Override
-public NeuronsActivation getOutput() {
-    return activationChain.getOutput();
-}
+	@Override
+	public float getTotalRegularisationCost(DirectedNeuralNetworkContext context) {
+		float totalRegularisationCost = 0;
+
+		for (ChainableDirectedComponentActivation<NeuronsActivation> activation : activationChain.getActivations()) {
+			for (ChainableDirectedComponentActivation<NeuronsActivation> decomposedActivation : activation
+					.decompose()) {
+				if (decomposedActivation instanceof DirectedAxonsComponentActivation) {
+					DirectedAxonsComponentActivation axonsActivation = (DirectedAxonsComponentActivation) decomposedActivation;
+					totalRegularisationCost = totalRegularisationCost + axonsActivation.getTotalRegularisationCost();
+				}
+			}
+		}
+
+		return totalRegularisationCost;
+	}
+
+	@Override
+	public List<DefaultChainableDirectedComponentActivation> decompose() {
+		return activationChain.decompose();
+	}
+
+	@Override
+	public NeuronsActivation getOutput() {
+		return activationChain.getOutput();
+	}
+
+	@Override
+	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
+		activationChain.close(completedLifeCycleStage);
+	}
 
 }

@@ -2,6 +2,7 @@ package org.ml4j.nn.layers;
 
 import java.util.List;
 
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.onetoone.DirectedComponentChainActivationImpl;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
@@ -44,6 +45,12 @@ public class DirectedLayerChainActivationImpl
 		} else {
 			return activationFunctionGradient;
 		}
+	}
+
+	@Override
+	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
+		finalLayerActivation.close(completedLifeCycleStage);
+		precedingChainActivation.close(completedLifeCycleStage);
 	}
 
 

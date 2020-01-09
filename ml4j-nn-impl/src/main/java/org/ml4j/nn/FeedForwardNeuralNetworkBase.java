@@ -34,6 +34,7 @@ import org.ml4j.nn.axons.AxonWeightsAdjustment;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentImpl;
 import org.ml4j.nn.axons.TrainableAxons;
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
@@ -504,6 +505,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 				totalTrainableAxonsGradients.add(gradient);
 			}
 		}
+		
+		forwardPropagation.close(DirectedComponentActivationLifecycle.FORWARD_PROPAGATION);
+
 
 		LOGGER.debug("Gradient count:" + totalTrainableAxonsGradients.size());
 		

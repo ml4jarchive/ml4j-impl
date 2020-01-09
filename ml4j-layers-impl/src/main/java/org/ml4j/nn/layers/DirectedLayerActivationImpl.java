@@ -2,6 +2,7 @@ package org.ml4j.nn.layers;
 
 import java.util.List;
 
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
@@ -53,5 +54,10 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
 	@Override
 	public List<DefaultChainableDirectedComponentActivation> decompose() {
 		return componentChainActivation.decompose();
+	}
+
+	@Override
+	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
+		componentChainActivation.close(completedLifeCycleStage);		
 	}
 }
