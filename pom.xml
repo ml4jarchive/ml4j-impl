@@ -8,6 +8,7 @@
 	<modules>
                 <module>ml4j-matrices-impl</module>
 		<module>ml4j-base-impl</module>
+		<module>ml4j-builders-impl</module>
 		<module>ml4j-datasets-impl</module>
 		<module>ml4j-base-components</module>
 		<module>ml4j-synapses-impl</module>

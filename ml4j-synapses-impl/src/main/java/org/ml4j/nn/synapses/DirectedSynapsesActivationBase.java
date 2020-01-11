@@ -19,8 +19,8 @@ package org.ml4j.nn.synapses;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;

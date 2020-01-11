@@ -16,7 +16,7 @@ package org.ml4j.nn.components.manytoone.base;
 import java.util.Date;
 import java.util.List;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponentActivation;
@@ -48,7 +48,7 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	}
 
 	@Override
-	public DirectedComponentType getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return delegated.getComponentType();
 	}
 

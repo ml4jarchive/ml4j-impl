@@ -18,7 +18,7 @@ package org.ml4j.nn.components.onetoone.base;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
@@ -59,8 +59,8 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 	}
 
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.COMPONENT_CHAIN;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.COMPONENT_CHAIN;
 	}
 
 	@Override

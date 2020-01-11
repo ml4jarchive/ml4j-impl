@@ -98,4 +98,13 @@ public class AxonsContextImpl implements AxonsContext {
 	public boolean isTrainingContext() {
 		return trainingContext;
 	}
+
+	@Override
+	public String toString() {
+		return "AxonsContextImpl [matrixFactory=" + matrixFactory + ", withFreezeOut=" + withFreezeOut
+				+ ", regularisationLambda=" + regularisationLambda + ", leftHandInputDropoutKeepProbability="
+				+ leftHandInputDropoutKeepProbability + ", trainingContext=" + trainingContext + "]";
+	}
+	
+	
 }

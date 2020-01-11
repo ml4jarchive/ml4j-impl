@@ -35,7 +35,7 @@ import org.ml4j.nn.axons.AxonWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentImpl;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -665,8 +665,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	}
 	
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.NETWORK;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.NETWORK;
 	}	
 
 }
