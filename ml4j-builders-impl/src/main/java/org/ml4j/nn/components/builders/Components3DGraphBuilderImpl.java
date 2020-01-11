@@ -32,7 +32,8 @@ import org.ml4j.nn.components.builders.initial.InitialComponents3DGraphBuilderIm
 import org.ml4j.nn.components.builders.skipconnection.Components3DGraphSkipConnectionBuilder;
 import org.ml4j.nn.components.builders.skipconnection.Components3DGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
-import org.ml4j.nn.definitions.Components3DGraphDefinition;
+import org.ml4j.nn.definitions.Component3Dto3DGraphDefinition;
+import org.ml4j.nn.definitions.Component3DtoNon3DGraphDefinition;
 
 public abstract class Components3DGraphBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent> extends Base3DGraphBuilderImpl<C, D, T> 
 implements Components3DGraphBuilder<C, D, T> {
@@ -80,18 +81,25 @@ implements Components3DGraphBuilder<C, D, T> {
 	
 	@Override
 	public Components3DGraphBuilder<C, D, T> withComponentDefinition(
-			Components3DGraphDefinition componentDefinition) {
-		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, builderState.getComponentsGraphNeurons().getCurrentNeurons());
+			Component3Dto3DGraphDefinition componentDefinition) {
+		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
 		addComponents(componentDefinition.createComponentGraph(builder).getComponents());
 		return this;
 	}
 
 	@Override
 	public Components3DGraphBuilder<C, D, T> withComponentDefinition(
-			List<Components3DGraphDefinition> componentDefinitions) {
-		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, builderState.getComponentsGraphNeurons().getCurrentNeurons());
-		addComponents(componentDefinitions.stream().flatMap(d -> d.createComponentGraph(builder).getComponents().stream()).collect(Collectors.toList()));
+			List<Component3Dto3DGraphDefinition> componentDefinitions) {
+		addComponents(componentDefinitions.stream().flatMap(d -> d.createComponentGraph(
+				new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, d.getInputNeurons())).getComponents().stream()).collect(Collectors.toList()));
 		return this;
 	}
+	
 
+	@Override
+	public ComponentsGraphBuilder<D, T> withComponentDefinition(Component3DtoNon3DGraphDefinition componentDefinition) {
+		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
+		addComponents(componentDefinition.createComponentGraph(builder).getComponents());
+		return getBuilder();
+	}
 }
