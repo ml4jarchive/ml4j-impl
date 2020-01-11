@@ -16,8 +16,8 @@ package org.ml4j.nn.components.activationfunctions.base;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
+import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.base.DefaultChainableDirectedComponentActivationBase;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.NeuronsActivation;

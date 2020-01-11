@@ -25,7 +25,6 @@ import org.ml4j.nn.components.axons.BatchNormDirectedAxonsComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.axons.base.BatchNormDirectedAxonsComponentAdapter;
 import org.ml4j.nn.components.axons.base.DirectedAxonsComponentAdapter;
-import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.manytoone.base.ManyToOneDirectedComponentAdapter;
@@ -135,16 +134,18 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 		return delegated.createDirectedComponentChain(sequentialComponents);
 	}
 
+	/*
 	@Override
 	public DefaultDirectedComponentChainBatch createDirectedComponentChainBatch(
 			List<DefaultDirectedComponentChain> parallelChains) {
 		return delegated.createDirectedComponentChainBatch(parallelChains);
 	}
+	*/
 
 	@Override
 	public DefaultDirectedComponentBipoleGraph createDirectedComponentBipoleGraph(Neurons arg0, Neurons arg1,
-			DefaultDirectedComponentChainBatch arg2, PathCombinationStrategy arg3) {
-		return delegated.createDirectedComponentBipoleGraph(arg0, arg1, arg2, arg3);
+			List<DefaultChainableDirectedComponent<?, ?>> parallelComponents, PathCombinationStrategy arg3) {
+		return delegated.createDirectedComponentBipoleGraph(arg0, arg1, parallelComponents, arg3);
 	}
 
 }

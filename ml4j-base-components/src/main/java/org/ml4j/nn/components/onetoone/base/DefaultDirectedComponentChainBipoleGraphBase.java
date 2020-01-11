@@ -13,10 +13,10 @@
  */
 package org.ml4j.nn.components.onetoone.base;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainBipoleGraph;
 import org.ml4j.nn.neurons.Neurons;
 
 /**
@@ -25,7 +25,7 @@ import org.ml4j.nn.neurons.Neurons;
  * @author Michael Lavelle
  *
  */
-public abstract class DefaultDirectedComponentChainBipoleGraphBase implements DefaultDirectedComponentBipoleGraph {
+public abstract class DefaultDirectedComponentChainBipoleGraphBase implements DefaultDirectedComponentChainBipoleGraph {
 	
 	/**
 	 * Default serialization id.
@@ -55,8 +55,8 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 		return context;
 	}
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.COMPONENT_CHAIN_GRAPH;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.COMPONENT_CHAIN_BIPOLE_GRAPH;
 	}
 
 	@Override

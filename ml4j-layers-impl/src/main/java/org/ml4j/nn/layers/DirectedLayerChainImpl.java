@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainBaseParent;
@@ -29,8 +29,8 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends Defau
 	}	
 	
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.LAYER_CHAIN;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.LAYER_CHAIN;
 	}
 	
 	@Override

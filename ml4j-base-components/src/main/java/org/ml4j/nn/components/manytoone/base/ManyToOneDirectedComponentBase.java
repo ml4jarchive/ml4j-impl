@@ -13,7 +13,7 @@
  */
 package org.ml4j.nn.components.manytoone.base;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponentActivation;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
@@ -37,8 +37,8 @@ public abstract class ManyToOneDirectedComponentBase<A extends ManyToOneDirected
 	}
 
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.MANY_TO_ONE;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.MANY_TO_ONE;
 	}
 
 }

@@ -23,13 +23,12 @@ import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
+import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
-import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
@@ -111,10 +110,10 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	
 		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components
 				);
-		List<DefaultDirectedComponentChain> chainsList = new ArrayList<>();
+		List<DefaultChainableDirectedComponent<?, ?>> chainsList = new ArrayList<>();
 		chainsList.add(chain);
-		DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
-		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), batch,
+		//DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), chainsList,
 				PathCombinationStrategy.ADDITION);
 	}
 
@@ -204,8 +203,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	  @Override
-	  public DirectedComponentType getComponentType() {
-		  return DirectedComponentType.SYNAPSES;
+	  public NeuralComponentType getComponentType() {
+		  return NeuralComponentType.SYNAPSES;
 	  }
 
 	@Override

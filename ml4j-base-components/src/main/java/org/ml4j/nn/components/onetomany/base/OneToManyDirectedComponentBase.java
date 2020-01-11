@@ -13,7 +13,7 @@
  */
 package org.ml4j.nn.components.onetomany.base;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponentActivation;
 import org.slf4j.Logger;
@@ -41,8 +41,8 @@ public abstract class OneToManyDirectedComponentBase<A extends OneToManyDirected
 
 
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.ONE_TO_MANY;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.ONE_TO_MANY;
 	}
 
 }

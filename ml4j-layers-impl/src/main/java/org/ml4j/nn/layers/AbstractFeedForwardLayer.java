@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -107,8 +107,8 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
 
  
   @Override
-  public DirectedComponentType getComponentType() {
-	  return DirectedComponentType.LAYER;
+  public NeuralComponentType getComponentType() {
+	  return NeuralComponentType.LAYER;
   }
 
   

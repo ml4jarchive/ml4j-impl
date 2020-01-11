@@ -15,7 +15,7 @@ package org.ml4j.nn.components.onetomany.base;
 
 import java.util.Date;
 
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponentActivation;
@@ -47,7 +47,7 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	}
 
 	@Override
-	public DirectedComponentType getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return delegated.getComponentType();
 	}
 

@@ -38,6 +38,7 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	protected Matrix activations;
 	private boolean immutable;
 	protected String stackTrace;
+	@SuppressWarnings("unused")
 	private boolean softDup;		
 	/**
 	 * Defines whether the features of the activations are represented by the

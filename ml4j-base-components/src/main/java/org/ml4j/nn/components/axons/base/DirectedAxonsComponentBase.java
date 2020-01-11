@@ -19,7 +19,7 @@ import java.util.List;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
-import org.ml4j.nn.components.DirectedComponentType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -72,8 +72,8 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	}
 
 	@Override
-	public DirectedComponentType getComponentType() {
-		return DirectedComponentType.AXONS;
+	public NeuralComponentType getComponentType() {
+		return NeuralComponentType.AXONS;
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
-import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
@@ -107,18 +106,18 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 				matchingAxonsList);
 
 		// Parallel Chains of preceding chain and skip connection
-		List<DefaultDirectedComponentChain> parallelChains = new ArrayList<>();
+		List<DefaultChainableDirectedComponent<?, ?>> parallelChains = new ArrayList<>();
 		parallelChains.add(precedingChain);
 		parallelChains.add(skipConnectionChain);
 
 		// Parallel Chain Batch of preceding chain and skip connection
-		DefaultDirectedComponentChainBatch parallelBatch = directedComponentFactory.createDirectedComponentChainBatch(
-				parallelChains);
+		//DefaultDirectedComponentChainBatch parallelBatch = directedComponentFactory.createDirectedComponentChainBatch(
+			//	parallelChains);
 
 		// Parallel Chain Graph of preceding chain and skip connection
 		// TODO - remove nulls
 		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory.createDirectedComponentBipoleGraph(null, null,
-				parallelBatch, PathCombinationStrategy.ADDITION);
+				parallelChains, PathCombinationStrategy.ADDITION);
 
 		// Residual block component list is composed of the parallel chain graph
 		// followed by the final activation function
