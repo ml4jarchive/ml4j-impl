@@ -62,6 +62,11 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 			@Override
 			public MatrixFactory getMatrixFactory() {
 				return context.getMatrixFactory();
+			}
+
+			@Override
+			public boolean isTrainingContext() {
+				return context.isTrainingContext();
 			}};
 	}
 

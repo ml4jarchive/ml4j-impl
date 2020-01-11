@@ -9,6 +9,11 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 
 	protected List<I> channelConcatImages;
 
+	@Override
+	public boolean isClosed() {
+		return channelConcatImages.stream().allMatch(im -> im.isClosed());
+	}
+
 	public ChannelConcatImageContainer(List<I> channelConcatImages, int height, int width, int paddingHeight,
 			int paddingWidth, int examples) {
 		super(height, width, paddingHeight, paddingWidth, examples);

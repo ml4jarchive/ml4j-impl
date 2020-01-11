@@ -37,7 +37,8 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	 */
 	protected Matrix activations;
 	private boolean immutable;
-
+	protected String stackTrace;
+	private boolean softDup;		
 	/**
 	 * Defines whether the features of the activations are represented by the
 	 * columns or the rows of the activations Matrix.
@@ -50,14 +51,19 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 
 	public void setImmutable(boolean immutable) {
 		this.immutable = immutable;
+		this.activations.setImmutable(immutable);
 	}
 
 	public boolean isImmutable() {
 		return immutable;
 	}
 
+	@Override
 	public void close() {
-		activations.close();
+		if (activations != null && !activations.isClosed()) {
+			activations.close();
+			activations = null;
+		}
 	}
 
 	public Matrix getActivations(MatrixFactory matrixFactory) {
@@ -130,7 +136,12 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	}
 
 	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
-		return new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());
+		
+		// TODO
+		ImageNeuronsActivation imageNeuronsActivation =  new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());		
+		softDup = true;
+
+		return imageNeuronsActivation;
 	}
 
 	public void addInline(MatrixFactory matrixFactory, NeuronsActivation other) {
@@ -161,7 +172,7 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	public NeuronsActivation dup() {
 		return new NeuronsActivationImpl(activations.dup(), featureOrientation);
 	}
-
+	
 	public int getRows() {
 		return activations.getRows();
 	}
@@ -213,4 +224,14 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	public int getExampleCount() {
 		return getColumns();
 	}
+
+	@Override
+	public void reshape(int featureCount, int exampleCount) {
+		if (this.immutable) {
+			throw new IllegalStateException();
+		}
+		activations.asEditableMatrix().reshape(featureCount, exampleCount);		
+	}
+
+	
 }

@@ -31,6 +31,7 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 	private Neurons3D neurons;
 	private Images images;
 	private boolean immutable;
+	private Integer exampleCount;
 
 	public ImageNeuronsActivationImpl(Matrix activations, Neurons3D neurons,
 			NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
@@ -64,7 +65,7 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 
 	@Override
 	public int getExampleCount() {
-		return images.getExamples();
+		return exampleCount == null ? images.getExamples() : exampleCount;
 	}
 
 	@Override
@@ -74,7 +75,11 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 
 	@Override
 	public void close() {
-		images.close();
+		if (images != null && !images.isClosed()) {
+			exampleCount = images.getExamples();
+			images.close();
+			images = null;
+		}
 	}
 
 	@Override
@@ -103,7 +108,7 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 
 	@Override
 	public NeuronsActivation dup() {
-		return new ImageNeuronsActivationImpl(neurons, images, this.getFeatureOrientation(), immutable);
+		return new ImageNeuronsActivationImpl(neurons, images.dup(), this.getFeatureOrientation(), immutable);
 	}
 
 	@Override
@@ -113,7 +118,7 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 
 	@Override
 	public int getColumns() {
-		return images.getExamples();
+		return getExampleCount();
 	}
 
 	@Override
@@ -152,4 +157,11 @@ public class ImageNeuronsActivationImpl extends NeuronsActivationImpl implements
 	public NeuronsActivation transpose() {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void reshape(int featureCount, int exampleCount) {
+		throw new UnsupportedOperationException();
+	}
+	
+	
 }

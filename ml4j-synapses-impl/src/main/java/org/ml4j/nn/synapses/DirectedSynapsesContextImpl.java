@@ -94,4 +94,9 @@ public class DirectedSynapsesContextImpl implements DirectedSynapsesContext {
   public void setWithFreezeOut(boolean withFreezeOut) {
     this.withFreezeOut = withFreezeOut;
   }
+
+@Override
+public boolean isTrainingContext() {
+	return isTrainingContext;
+}
 }

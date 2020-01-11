@@ -86,4 +86,9 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
   public void setWithFreezeOut(boolean withFreezeOut) {
     this.withFreezeOut = withFreezeOut;
   }
+
+@Override
+public boolean isTrainingContext() {
+	return isTrainingContext;
+}
 }

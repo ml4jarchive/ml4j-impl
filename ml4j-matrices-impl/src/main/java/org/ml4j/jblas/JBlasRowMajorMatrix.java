@@ -555,4 +555,18 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	public void setImmutable(boolean immutable) {
 		this.immutable = immutable;
 	}
+
+	@Override
+	public Matrix softDup() {
+		return createJBlasMatrix(softDupFloatMatrix(getMatrix()), false);
+	}
+	
+	public FloatMatrix softDupFloatMatrix(FloatMatrix matrix) {
+		return new FloatMatrix(matrix.getRows(), matrix.getColumns(), matrix.data);
+	}
+
+	@Override
+	public boolean isClosed() {
+		return matrix == null;
+	}
 }

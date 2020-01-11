@@ -76,4 +76,11 @@ public class RestrictedBoltzmannMachineContextImpl implements RestrictedBoltzman
   public MatrixFactory getMatrixFactory() {
     return layerContext.getMatrixFactory();
   }
+
+
+@Override
+public boolean isTrainingContext() {
+	// TODO
+	return true;
+}
 }

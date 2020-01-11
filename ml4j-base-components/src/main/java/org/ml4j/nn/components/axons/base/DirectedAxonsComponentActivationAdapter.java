@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.axons.AxonsGradient;
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentGradientImpl;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
@@ -96,6 +97,11 @@ public class DirectedAxonsComponentActivationAdapter implements DirectedAxonsCom
 	@Override
 	public float getTotalRegularisationCost() {
 		return delegated.getTotalRegularisationCost();
+	}
+
+	@Override
+	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
+		delegated.close(completedLifeCycleStage);
 	}
 
 }

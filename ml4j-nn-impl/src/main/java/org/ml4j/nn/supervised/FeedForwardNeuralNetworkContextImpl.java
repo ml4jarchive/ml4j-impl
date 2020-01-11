@@ -64,6 +64,8 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   private ForwardPropagationListener forwardPropagationListener;
 
   private BackPropagationListener backPropagationListener;
+  
+  private boolean isTrainingContext;
 
   /**
    * Construct a default AutoEncoderContext.
@@ -73,6 +75,7 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
     this.matrixFactory = matrixFactory;
     this.directedComponentsContext = new DirectedComponentsContextImpl(matrixFactory, isTrainingContext);
+    this.isTrainingContext = isTrainingContext;
   }
 
   @Override
@@ -199,4 +202,9 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
   public DirectedComponentsContext getDirectedComponentsContext() {
 	return this.directedComponentsContext;
   }
+
+@Override
+public boolean isTrainingContext() {
+	return isTrainingContext;
+}
 }

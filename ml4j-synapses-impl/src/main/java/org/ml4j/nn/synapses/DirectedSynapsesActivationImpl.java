@@ -15,6 +15,7 @@
 package org.ml4j.nn.synapses;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
@@ -77,5 +78,10 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 		if (synapses.getRightNeurons().hasBiasUnit()) {
 			throw new IllegalStateException("Backpropagation through axons with a rhs bias unit not supported");
 		}
+	}
+
+	@Override
+	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
+		axonsActivationGraph.close(completedLifeCycleStage);
 	}
 }

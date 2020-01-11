@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionComponentActivation;
+import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
@@ -55,8 +56,18 @@ public class TrailingActivationFunctionDirectedComponentChainActivationImpl
 	@Override
 	public DirectedComponentGradient<NeuronsActivation> backPropagate(
 			DirectedComponentGradient<NeuronsActivation> outerGradient) {
+		
 		DirectedComponentGradient<NeuronsActivation> activationFunctionGradient = activationFunctionActivation.backPropagate(outerGradient);
-		return precedingChainActivation.backPropagate(activationFunctionGradient);
+	
+		DirectedComponentGradient<NeuronsActivation> result = precedingChainActivation.backPropagate(activationFunctionGradient);
+	
+		return result;
+	}
+
+	@Override
+	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
+		activationFunctionActivation.close(completedLifeCycleStage);
+		precedingChainActivation.close(completedLifeCycleStage);
 	}
 
 }

@@ -9,6 +9,13 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	protected float[] data;
 	protected int channels;
+	
+	protected boolean closed;
+
+	@Override
+	public boolean isClosed() {
+		return closed;
+	}
 
 	public MultiChannelImageContainer(float[] data, int channels, int height, int width, int paddingHeight,
 			int paddingWidth, int examples) {
@@ -151,6 +158,7 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	@Override
 	public void close() {
+		this.closed = true;
 		this.data = null;
 	}
 }

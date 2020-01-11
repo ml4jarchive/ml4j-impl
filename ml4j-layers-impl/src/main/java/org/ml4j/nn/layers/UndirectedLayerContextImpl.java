@@ -74,5 +74,10 @@ public class UndirectedLayerContextImpl implements UndirectedLayerContext {
   @Override
   public String toString() {
     return "UndirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
-  } 
+  }
+
+@Override
+public boolean isTrainingContext() {
+	return isTrainingContext;
+} 
 }
