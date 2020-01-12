@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -60,7 +61,7 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 
 	@Override
 	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.COMPONENT_CHAIN;
+		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN);
 	}
 
 	@Override

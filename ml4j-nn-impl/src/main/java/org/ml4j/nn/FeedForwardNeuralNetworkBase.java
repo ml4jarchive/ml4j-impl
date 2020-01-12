@@ -27,20 +27,22 @@ import java.util.stream.Stream;
 
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
-import org.ml4j.nn.activationfunctions.ActivationFunctionType;
+import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.AxonWeightsAdjustment;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentImpl;
+import org.ml4j.nn.axons.AxonsGradient;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
+import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.costfunctions.CostFunction;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.costfunctions.CrossEntropyCostFunction;
@@ -56,7 +58,6 @@ import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 
 /**
  * Default base implementation of a FeedForwardNeuralNetwork.
@@ -644,13 +645,13 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 			throw new UnsupportedOperationException(
 					"Default cost function not yet defined for null activation function");
 		}
-		if (activationFunction.getActivationFunctionType() == ActivationFunctionType.SIGMOID) {
+		if (ActivationFunctionBaseType.SIGMOID.equals(activationFunction.getActivationFunctionType().getBaseType())) {
 			LOGGER.debug("Defaulting to use CrossEntropyCostFunction");
 			return new CrossEntropyCostFunction();
-		} else if (activationFunction.getActivationFunctionType() == ActivationFunctionType.SOFTMAX) {
+		} else if (ActivationFunctionBaseType.SOFTMAX.equals(activationFunction.getActivationFunctionType().getBaseType())) {
 			LOGGER.debug("Defaulting to use MultiClassCrossEntropyCostFunction");
 			return new MultiClassCrossEntropyCostFunction();
-		} else if (activationFunction.getActivationFunctionType() == ActivationFunctionType.LINEAR) {
+		} else if (ActivationFunctionBaseType.LINEAR.equals(activationFunction.getActivationFunctionType().getBaseType())) {
 			LOGGER.debug("Defaulting to use SumSquredErrorCostFunction");
 			return new SumSquaredErrorCostFunction();
 		} else {
@@ -666,7 +667,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	
 	@Override
 	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.NETWORK;
+		return NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK);
 	}	
 
 }

@@ -20,6 +20,7 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.Neurons;
@@ -77,7 +78,8 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 
 	@Override
 	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.ACTIVATION_FUNCTION;
+		return NeuralComponentType.createSubType(NeuralComponentBaseType.ACTIVATION_FUNCTION, 
+				activationFunction.getActivationFunctionType().getQualifiedId());
 	}
 
 	@Override

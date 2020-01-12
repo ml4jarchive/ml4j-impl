@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.ml4j.nn.datasets.DataBatch;
 import org.ml4j.nn.datasets.DataSet;
 import org.ml4j.nn.datasets.DataSetImpl;
 import org.ml4j.nn.datasets.FeatureExtractionErrorMode;

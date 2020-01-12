@@ -22,6 +22,7 @@ import org.ml4j.nn.components.ChainableDirectedComponent;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -63,7 +64,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			throw new IllegalArgumentException("Component list must contain at least one component");
 		} else {
 			ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> finalComponent = decomposedList.get(decomposedList.size() - 1);
-			if (finalComponent.getComponentType() == NeuralComponentType.ACTIVATION_FUNCTION) {
+			if (NeuralComponentBaseType.ACTIVATION_FUNCTION.equals(finalComponent.getComponentType().getBaseType())) {
 				finalDifferentiableActivationFunctionComponent = (DifferentiableActivationFunctionComponent)finalComponent;
 				decomposedList.remove(decomposedList.size() - 1);
 				this.precedingChain = directedComponentFactory.createDirectedComponentChain(decomposedList);
@@ -142,7 +143,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 
 	@Override
 	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.COMPONENT_CHAIN;
+		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN);
 	}
 
 	@Override
