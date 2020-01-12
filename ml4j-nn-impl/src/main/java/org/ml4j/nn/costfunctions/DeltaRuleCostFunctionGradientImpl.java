@@ -18,7 +18,7 @@ package org.ml4j.nn.costfunctions;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.ActivationFunctionType;
+import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentGradientImpl;
@@ -73,15 +73,15 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
   private boolean isDeltaRuleSupported(DifferentiableActivationFunction finalActivationFunction) {
 
     if (costFunction instanceof CrossEntropyCostFunction
-        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.SIGMOID) {
+        && ActivationFunctionBaseType.SIGMOID.equals(finalActivationFunction.getActivationFunctionType().getBaseType())) {
       return true;
     }
     if (costFunction instanceof MultiClassCrossEntropyCostFunction
-        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.SOFTMAX) {
+        && ActivationFunctionBaseType.SOFTMAX.equals(finalActivationFunction.getActivationFunctionType().getBaseType())) {
       return true;
     }
     if (costFunction instanceof SumSquaredErrorCostFunction
-        && finalActivationFunction.getActivationFunctionType() == ActivationFunctionType.LINEAR) {
+        && ActivationFunctionBaseType.LINEAR.equals(finalActivationFunction.getActivationFunctionType().getBaseType())) {
       return true;
     }
     return false;

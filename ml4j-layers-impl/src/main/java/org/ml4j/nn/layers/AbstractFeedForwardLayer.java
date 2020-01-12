@@ -25,6 +25,7 @@ import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -98,18 +99,11 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
 
   @Override
   public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-	System.out.println("blah");
-	  for (DefaultChainableDirectedComponent<?, ?> b : getComponents()) {
-		System.out.println(b);
-	}
 	return getComponents().stream().flatMap(c -> c.decompose().stream()).collect((Collectors.toList()));
   }
 
- 
   @Override
   public NeuralComponentType getComponentType() {
-	  return NeuralComponentType.LAYER;
+		return NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER);
   }
-
-  
 }

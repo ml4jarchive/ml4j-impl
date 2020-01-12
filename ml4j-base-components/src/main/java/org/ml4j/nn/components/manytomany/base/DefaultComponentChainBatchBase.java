@@ -15,6 +15,7 @@ package org.ml4j.nn.components.manytomany.base;
 
 import java.util.List;
 
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
@@ -44,7 +45,7 @@ public abstract class DefaultComponentChainBatchBase implements DefaultDirectedC
 
 	@Override
 	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.COMPONENT_CHAIN_BATCH;
+		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN_BATCH);
 	}
 
 }

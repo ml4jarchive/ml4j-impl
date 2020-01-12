@@ -15,6 +15,7 @@ package org.ml4j.nn.components.onetoone.base;
 
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.neurons.Neurons;
@@ -56,7 +57,7 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	}
 	@Override
 	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.COMPONENT_BIPOLE_GRAPH;
+		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_BIPOLE_GRAPH);
 	}
 
 	@Override

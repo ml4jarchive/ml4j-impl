@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ml4j.Matrix;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
@@ -142,6 +143,11 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 	protected void addActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addAxonsIfApplicable();
 		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
+	}
+	
+	protected void addActivationFunction(ActivationFunctionType activationFunctionType) {
+		addAxonsIfApplicable();
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType));
 	}
 	
 	public T getComponentChain() {

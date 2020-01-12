@@ -16,6 +16,7 @@ package org.ml4j.nn.components.builders;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
@@ -52,6 +53,12 @@ public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T ex
 	@Override
 	public C withActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addActivationFunction(activationFunction);
+		return getBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(ActivationFunctionType activationFunctionType) {
+		addActivationFunction(activationFunctionType);
 		return getBuilder();
 	}
 }

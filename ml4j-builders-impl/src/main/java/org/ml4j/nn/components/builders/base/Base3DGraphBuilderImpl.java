@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.AxonsContext;
@@ -263,6 +264,11 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	public void addActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addAxonsIfApplicable();
 		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
+	}
+	
+	public void addActivationFunction(ActivationFunctionType activationFunctionType) {
+		addAxonsIfApplicable();
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType));
 	}
 
 	public T getComponentChain() {

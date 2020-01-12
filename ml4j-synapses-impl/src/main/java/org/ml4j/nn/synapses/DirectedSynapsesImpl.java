@@ -26,6 +26,7 @@ import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -204,7 +205,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 	  @Override
 	  public NeuralComponentType getComponentType() {
-		  return NeuralComponentType.SYNAPSES;
+			return NeuralComponentType.getBaseType(NeuralComponentBaseType.SYNAPSES);
 	  }
 
 	@Override
