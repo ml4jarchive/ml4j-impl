@@ -85,7 +85,7 @@ public class Components3DGraphSkipConnectionBuilderImpl<P extends Components3DGr
 			Component3Dto3DGraphDefinition componentDefinition) {
 		addAxonsIfApplicable();
 		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
-		addComponents(componentDefinition.createComponentGraph(builder).getComponents());
+		addComponents(componentDefinition.createComponentGraph(builder, directedComponentFactory).getComponents());
 		builderState.getComponentsGraphNeurons().setRightNeurons(null);
 		builderState.getComponentsGraphNeurons().setCurrentNeurons(componentDefinition.getOutputNeurons());
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
@@ -97,7 +97,7 @@ public class Components3DGraphSkipConnectionBuilderImpl<P extends Components3DGr
 	public ComponentsGraphSkipConnectionBuilder<Q, T> withComponentDefinition(Component3DtoNon3DGraphDefinition componentDefinition) {
 		addAxonsIfApplicable();
 		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
-		addComponents(componentDefinition.createComponentGraph(builder).getComponents());
+		addComponents(componentDefinition.createComponentGraph(builder, directedComponentFactory).getComponents());
 		builderState.getComponentsGraphNeurons().setRightNeurons(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
 		builderState.setConnectionWeights(null);

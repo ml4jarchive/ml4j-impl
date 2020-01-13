@@ -16,12 +16,14 @@ package org.ml4j.nn.components.manytoone.base;
 import java.util.Date;
 import java.util.List;
 
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedComponentActivation>  
 	implements ManyToOneDirectedComponent<A> {
@@ -31,6 +33,8 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ManyToOneDirectedComponentAdapter.class);
+	
 	private ManyToOneDirectedComponent<A> delegated;
 	
 	public ManyToOneDirectedComponentAdapter(ManyToOneDirectedComponent<A> delegated) {
@@ -39,6 +43,9 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 
 	@Override
 	public A forwardPropagate(List<NeuronsActivation> input, DirectedComponentsContext context) {
+		
+		LOGGER.info(getComponentType().toString());
+		
 		long startTime = new Date().getTime();
 		A activation =  delegated.forwardPropagate(input, context);
 		long endTime = new Date().getTime();
@@ -48,7 +55,7 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
+	public NeuralComponentType<?> getComponentType() {
 		return delegated.getComponentType();
 	}
 

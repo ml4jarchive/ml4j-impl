@@ -44,8 +44,7 @@ public abstract class DefaultComponentChainBatchBase implements DefaultDirectedC
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
+	public NeuralComponentType<?> getComponentType() {
 		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN_BATCH);
 	}
-
 }

@@ -55,9 +55,10 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	public DirectedComponentsContext getContext(DirectedComponentsContext context, int componentIndex) {
 		return context;
 	}
+	
 	@Override
-	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_BIPOLE_GRAPH);
+	public NeuralComponentType<? extends DefaultDirectedComponentBipoleGraph> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_BIPOLE_GRAPH), DefaultDirectedComponentBipoleGraph.class.getName());
 	}
 
 	@Override

@@ -666,8 +666,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	}
 	
 	@Override
-	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK);
+	public NeuralComponentType<FeedForwardNeuralNetwork<C, N>> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK), "FEED_FORWARD");
 	}	
 
 }

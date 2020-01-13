@@ -15,12 +15,14 @@ package org.ml4j.nn.components.onetomany.base;
 
 import java.util.Date;
 
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedComponentActivation>  
 	implements OneToManyDirectedComponent<A> {
@@ -30,6 +32,9 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(OneToManyDirectedComponentAdapter.class);
+
+	
 	private OneToManyDirectedComponent<A> delegated;
 	
 	public OneToManyDirectedComponentAdapter(OneToManyDirectedComponent<A> delegated) {
@@ -38,6 +43,9 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 
 	@Override
 	public A forwardPropagate(NeuronsActivation input, DirectedComponentsContext context) {
+		
+		LOGGER.info(getComponentType().toString());
+		
 		long startTime = new Date().getTime();
 		A activation =  delegated.forwardPropagate(input, context);
 		long endTime = new Date().getTime();
@@ -47,7 +55,7 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
+	public NeuralComponentType<?> getComponentType() {
 		return delegated.getComponentType();
 	}
 

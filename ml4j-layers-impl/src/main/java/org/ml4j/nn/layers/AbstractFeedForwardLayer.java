@@ -103,7 +103,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
   }
 
   @Override
-  public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER);
+  public NeuralComponentType<FeedForwardLayer<A, L>> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER), FeedForwardLayer.class.getName());
   }
 }

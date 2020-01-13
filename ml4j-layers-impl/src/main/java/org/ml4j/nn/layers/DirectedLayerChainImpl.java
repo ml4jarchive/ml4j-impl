@@ -30,8 +30,8 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>> extends Defau
 	}	
 	
 	@Override
-	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER_CHAIN);
+	public NeuralComponentType<DirectedLayerChain<L>> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER_CHAIN), getClass().getName());
 	}
 	
 	@Override

@@ -142,8 +142,8 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN);
+	public NeuralComponentType<TrailingActivationFunctionDirectedComponentChain> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN),"TRAILING_ACTIVATION_FUNCTION");
 	}
 
 	@Override

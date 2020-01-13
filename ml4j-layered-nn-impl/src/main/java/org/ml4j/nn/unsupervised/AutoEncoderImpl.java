@@ -25,6 +25,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerChain;
 import org.ml4j.nn.layers.DirectedLayerChainImpl;
 import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
@@ -120,6 +121,17 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	public AutoEncoderContext getContext(DirectedComponentsContext context, int componentIndex) {
 		throw new UnsupportedOperationException();
 
+	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		// TODO Auto-generated method stub
+		return trailingActivationFunctionComponentChain.getInputNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return trailingActivationFunctionComponentChain.getOutputNeurons();
 	}
 
 }
