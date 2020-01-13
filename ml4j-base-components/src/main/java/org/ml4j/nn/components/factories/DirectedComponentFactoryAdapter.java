@@ -149,9 +149,8 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public DefaultChainableDirectedComponent<?, ?> createComponent(Neurons leftNeurons, Neurons rightNeurons,
-			NeuralComponentType<DefaultChainableDirectedComponent<?, ?>> neuralComponentType) {
+	public <S extends DefaultChainableDirectedComponent<?, ?>> DefaultChainableDirectedComponent<?, ?> createComponent(
+			Neurons leftNeurons, Neurons rightNeurons, NeuralComponentType<S> neuralComponentType) {
 		return delegated.createComponent(leftNeurons, rightNeurons, neuralComponentType);
 	}
-
 }

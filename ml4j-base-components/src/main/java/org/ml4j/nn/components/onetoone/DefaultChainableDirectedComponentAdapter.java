@@ -105,7 +105,7 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public NeuralComponentType<? extends DefaultChainableDirectedComponent<A, C>> getComponentType() {
+	public NeuralComponentType<? extends DefaultChainableDirectedComponent<?, ?>> getComponentType() {
 		return delegated.getComponentType();
 	}
 
