@@ -29,6 +29,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerChain;
 import org.ml4j.nn.layers.DirectedLayerChainImpl;
 import org.ml4j.nn.layers.FeedForwardLayer;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
@@ -131,6 +132,23 @@ public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
 public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
 	throw new UnsupportedOperationException(); 
 
+}
+
+@Override
+public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
+		LayeredFeedForwardNeuralNetworkContext context) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public Neurons getInputNeurons() {
+	return initialisingComponentChain.getInputNeurons();
+}
+
+@Override
+public Neurons getOutputNeurons() {
+	return initialisingComponentChain.getOutputNeurons();
 }
 
 

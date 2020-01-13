@@ -17,6 +17,8 @@ package org.ml4j.nn.components.onetoone.base;
 
 import java.util.List;
 
+import org.ml4j.nn.components.NeuralComponentBaseType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
@@ -40,6 +42,11 @@ public abstract class DefaultDirectedComponentChainBase
 
 	public DefaultDirectedComponentChainBase(List<DefaultChainableDirectedComponent<?, ?>> sequentialComponents) {
 		super(sequentialComponents);
+	}
+	
+	@Override
+	public NeuralComponentType<DefaultDirectedComponentChain> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN), DefaultDirectedComponentChain.class.getName());
 	}
 
 }

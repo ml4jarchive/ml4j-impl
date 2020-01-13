@@ -27,6 +27,8 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainableDirectedComponentActivation, C> implements DefaultChainableDirectedComponent<A, C> {
 
@@ -34,6 +36,8 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	 * Default serialization.
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultChainableDirectedComponentAdapter.class);
 	
 	protected DefaultChainableDirectedComponent<A, C> delegated;
 	
@@ -73,7 +77,7 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 	
 	
-	public static synchronized void addTime(long timeTaken, String name) {
+	public static void addTime(long timeTaken, String name) {
 		AtomicLong existingTime = timesByClassName.get(name);
 		if (existingTime == null) {
 			existingTime = new AtomicLong(0);
@@ -91,6 +95,7 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 
 	@Override
 	public A forwardPropagate(NeuronsActivation input, C context) {
+		LOGGER.info(getComponentType().toString());
 		long startTime = new Date().getTime();
 		A activation =delegated.forwardPropagate(input, context);
 		long endTime = new Date().getTime();
@@ -100,7 +105,7 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
+	public NeuralComponentType<? extends DefaultChainableDirectedComponent<A, C>> getComponentType() {
 		return delegated.getComponentType();
 	}
 

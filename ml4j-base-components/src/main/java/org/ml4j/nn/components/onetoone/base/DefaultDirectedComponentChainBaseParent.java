@@ -13,14 +13,10 @@
  */
 package org.ml4j.nn.components.onetoone.base;
 
-
-
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -57,11 +53,6 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 
 	protected <X, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, int componentIndex, DirectedComponentsContext context) {
 		return component.forwardPropagate(input, component.getContext(context, componentIndex));
-	}
-
-	@Override
-	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN);
 	}
 
 	@Override

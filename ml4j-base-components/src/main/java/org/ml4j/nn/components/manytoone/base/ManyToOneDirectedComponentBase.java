@@ -38,7 +38,7 @@ public abstract class ManyToOneDirectedComponentBase<A extends ManyToOneDirected
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
+	public NeuralComponentType<?> getComponentType() {
 		return NeuralComponentType.getBaseType(NeuralComponentBaseType.MANY_TO_ONE);
 	}
 

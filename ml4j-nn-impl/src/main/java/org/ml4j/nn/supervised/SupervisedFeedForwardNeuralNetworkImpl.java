@@ -33,6 +33,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.datasets.LabeledData;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
@@ -183,5 +184,15 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	@Override
 	public FeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Neurons getInputNeurons() {
+		return trailingActivationFunctionComponentChain.getInputNeurons();
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return trailingActivationFunctionComponentChain.getOutputNeurons();
 	}
 }

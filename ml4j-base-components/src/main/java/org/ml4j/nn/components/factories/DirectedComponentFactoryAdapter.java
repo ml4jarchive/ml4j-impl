@@ -21,6 +21,7 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.Axons3DConfig;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.BatchNormDirectedAxonsComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
@@ -141,18 +142,16 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 		return delegated.createDirectedComponentChain(sequentialComponents);
 	}
 
-	/*
-	@Override
-	public DefaultDirectedComponentChainBatch createDirectedComponentChainBatch(
-			List<DefaultDirectedComponentChain> parallelChains) {
-		return delegated.createDirectedComponentChainBatch(parallelChains);
-	}
-	*/
-
 	@Override
 	public DefaultDirectedComponentBipoleGraph createDirectedComponentBipoleGraph(Neurons arg0, Neurons arg1,
 			List<DefaultChainableDirectedComponent<?, ?>> parallelComponents, PathCombinationStrategy arg3) {
 		return delegated.createDirectedComponentBipoleGraph(arg0, arg1, parallelComponents, arg3);
+	}
+
+	@Override
+	public DefaultChainableDirectedComponent<?, ?> createComponent(Neurons leftNeurons, Neurons rightNeurons,
+			NeuralComponentType<DefaultChainableDirectedComponent<?, ?>> neuralComponentType) {
+		return delegated.createComponent(leftNeurons, rightNeurons, neuralComponentType);
 	}
 
 }

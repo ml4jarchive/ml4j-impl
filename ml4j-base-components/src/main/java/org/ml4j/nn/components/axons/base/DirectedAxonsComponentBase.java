@@ -43,6 +43,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedAxonsComponentBase.class);
 
+	private static final String DIRECTED_AXONS_SUBTYPE_NAME = "DIRECTED";	
 	/**
 	 * Default serialization id.
 	 */
@@ -73,8 +74,9 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	}
 
 	@Override
-	public NeuralComponentType getComponentType() {
-		return NeuralComponentType.getBaseType(NeuralComponentBaseType.AXONS);
+	public NeuralComponentType<DirectedAxonsComponent<L, R, A>> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.AXONS), 
+				DIRECTED_AXONS_SUBTYPE_NAME), axons.getClass().getSimpleName());
 	}
 
 	@Override
