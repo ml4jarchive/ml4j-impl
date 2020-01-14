@@ -21,6 +21,7 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.CostAndGradientsImpl;
 import org.ml4j.nn.ForwardPropagation;
+import org.ml4j.nn.ForwardPropagationImpl;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkBase;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkContext;
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -33,124 +34,121 @@ import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
- * Default implementation of SupervisedFeedForwardNeuralNetwork.
+ * Default implementation of LayeredSupervisedFeedForwardNeuralNetwork.
  *
  * @author Michael Lavelle
  */
-public class LayeredSupervisedFeedForwardNeuralNetworkImpl 
-    extends LayeredFeedForwardNeuralNetworkBase<LayeredFeedForwardNeuralNetworkContext,
-    LayeredSupervisedFeedForwardNeuralNetwork> implements LayeredSupervisedFeedForwardNeuralNetwork {
-  
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  
-  public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
-		DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
-	super(directedComponentFactory, initialisingComponentChain);
-  }
-  
-  public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory, List<FeedForwardLayer<?, ?>> layers) {
+public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
+		LayeredFeedForwardNeuralNetworkBase<LayeredFeedForwardNeuralNetworkContext, LayeredSupervisedFeedForwardNeuralNetwork>
+		implements LayeredSupervisedFeedForwardNeuralNetwork {
+
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
+			DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
+		super(directedComponentFactory, initialisingComponentChain);
+	}
+
+	public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
+			List<FeedForwardLayer<?, ?>> layers) {
 		super(directedComponentFactory, new DirectedLayerChainImpl<>(layers));
-	  }
+	}
 
-  @Override
-  public void train(NeuronsActivation trainingDataActivations,
-      NeuronsActivation trainingLabelActivations, LayeredFeedForwardNeuralNetworkContext trainingContext) {
-    super.train(trainingDataActivations, trainingLabelActivations, trainingContext);
-  }
-  
-  /**
-   * Return the prediction accuracy.
-   * 
-   * @param inputActivations The input activations.
-   * @param desiredClassificationActivations The desired prediction activations.
-   * @param context The context.
-   * @return The accuracy
-   */
-  @Override
-  public float getClassificationAccuracy(NeuronsActivation inputActivations,
-      NeuronsActivation desiredClassificationActivations, LayeredFeedForwardNeuralNetworkContext context) {
+	@Override
+	public void train(NeuronsActivation trainingDataActivations, NeuronsActivation trainingLabelActivations,
+			LayeredFeedForwardNeuralNetworkContext trainingContext) {
+		super.train(trainingDataActivations, trainingLabelActivations, trainingContext);
+	}
 
-    // Forward propagate the trainingDataActivations
-    ForwardPropagation forwardPropagation = forwardPropagate(inputActivations, context);
+	/**
+	 * Return the prediction accuracy.
+	 * 
+	 * @param inputActivations                 The input activations.
+	 * @param desiredClassificationActivations The desired prediction activations.
+	 * @param context                          The context.
+	 * @return The accuracy
+	 */
+	@Override
+	public float getClassificationAccuracy(NeuronsActivation inputActivations,
+			NeuronsActivation desiredClassificationActivations, LayeredFeedForwardNeuralNetworkContext context) {
 
-    Matrix predictions = getClassifications(forwardPropagation.getOutput().getActivations(context.getMatrixFactory()).transpose(),
-        context.getMatrixFactory());
+		// Forward propagate the trainingDataActivations
+		ForwardPropagation forwardPropagation = forwardPropagate(inputActivations, context);
 
-    return computeAccuracy(predictions, desiredClassificationActivations.getActivations(context.getMatrixFactory()).transpose());
-  }
+		Matrix predictions = getClassifications(
+				forwardPropagation.getOutput().getActivations(context.getMatrixFactory()).transpose(),
+				context.getMatrixFactory());
 
-  private Matrix getClassifications(Matrix outputActivations, MatrixFactory matrixFactory) {
+		return computeAccuracy(predictions,
+				desiredClassificationActivations.getActivations(context.getMatrixFactory()).transpose());
+	}
 
-    EditableMatrix predictions = 
-        matrixFactory.createZeros(outputActivations.getRows(), outputActivations.getColumns()).asEditableMatrix();
-    for (int row = 0; row < outputActivations.getRows(); row++) {
+	private Matrix getClassifications(Matrix outputActivations, MatrixFactory matrixFactory) {
 
-      int index = outputActivations.getRow(row).argmax();
-      predictions.put(row, index, 1);
-    }
-    return predictions;
-  }
+		EditableMatrix predictions = matrixFactory
+				.createZeros(outputActivations.getRows(), outputActivations.getColumns()).asEditableMatrix();
+		for (int row = 0; row < outputActivations.getRows(); row++) {
 
-  /**
-   * Helper function to compute the accuracy of predictions using calculated predictions predictions
-   * and correct output matrix.
-   *
-   * @param predictions The predictions
-   * @param Y The desired output labels
-   * @return The accuracy of the network
-   */
-  protected float computeAccuracy(Matrix predictions, Matrix outputs) {
-    return ((predictions.mul(outputs)).sum()) * 100 / outputs.getRows();
-  }
+			int index = outputActivations.getRow(row).argmax();
+			predictions.put(row, index, 1);
+		}
+		return predictions;
+	}
 
-  @Override
-  public LayeredSupervisedFeedForwardNeuralNetwork dup() {
-	  throw new UnsupportedOperationException("Not yet implemented");
-    //return new SupervisedFeedForwardNeuralNetworkImpl2(getLayer(0), getLayer(1));
-  }
-  
-  @Override
-  public CostAndGradientsImpl getCostAndGradients(NeuronsActivation inputActivations,
-      NeuronsActivation desiredOutpuActivations, LayeredFeedForwardNeuralNetworkContext trainingContext) {
-    return super.getCostAndGradients(inputActivations, desiredOutpuActivations, trainingContext);
-  }
+	/**
+	 * Helper function to compute the accuracy of predictions using calculated
+	 * predictions predictions and correct output matrix.
+	 *
+	 * @param predictions The predictions
+	 * @param Y           The desired output labels
+	 * @return The accuracy of the network
+	 */
+	protected float computeAccuracy(Matrix predictions, Matrix outputs) {
+		return ((predictions.mul(outputs)).sum()) * 100 / outputs.getRows();
+	}
 
+	@Override
+	public LayeredSupervisedFeedForwardNeuralNetwork dup() {
+		throw new UnsupportedOperationException("Not yet implemented");
+		// return new SupervisedFeedForwardNeuralNetworkImpl2(getLayer(0), getLayer(1));
+	}
 
+	@Override
+	public CostAndGradientsImpl getCostAndGradients(NeuronsActivation inputActivations,
+			NeuronsActivation desiredOutpuActivations, LayeredFeedForwardNeuralNetworkContext trainingContext) {
+		return super.getCostAndGradients(inputActivations, desiredOutpuActivations, trainingContext);
+	}
 
+	@Override
+	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
+		throw new UnsupportedOperationException();
 
-@Override
-public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-	throw new UnsupportedOperationException(); 
+	}
 
-}
+	@Override
+	public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
+		throw new UnsupportedOperationException();
 
-@Override
-public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
-	throw new UnsupportedOperationException(); 
+	}
 
-}
+	@Override
+	public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
+			LayeredFeedForwardNeuralNetworkContext context) {
+		return new ForwardPropagationImpl(trailingActivationFunctionComponentChain.forwardPropagate(inputActivation,
+				context.getDirectedComponentsContext()));
+	}
 
-@Override
-public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
-		LayeredFeedForwardNeuralNetworkContext context) {
-	// TODO Auto-generated method stub
-	return null;
-}
+	@Override
+	public Neurons getInputNeurons() {
+		return initialisingComponentChain.getInputNeurons();
+	}
 
-@Override
-public Neurons getInputNeurons() {
-	return initialisingComponentChain.getInputNeurons();
-}
-
-@Override
-public Neurons getOutputNeurons() {
-	return initialisingComponentChain.getOutputNeurons();
-}
-
-
+	@Override
+	public Neurons getOutputNeurons() {
+		return initialisingComponentChain.getOutputNeurons();
+	}
 
 }
