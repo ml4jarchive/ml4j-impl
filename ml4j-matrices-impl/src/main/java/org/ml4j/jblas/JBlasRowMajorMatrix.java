@@ -543,6 +543,10 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 
 	@Override
 	public EditableMatrix asEditableMatrix() {
+		if (isImmutable()) {
+			throw new IllegalStateException("Matrix is immutable");
+		}
+
 		return this;
 	}
 
