@@ -25,7 +25,7 @@ import org.nd4j.linalg.factory.Nd4j;
  * 
  * @author Michael Lavelle
  */
-public class Nd4jMatrixFactory implements MatrixFactory {
+public class Nd4jRowMajorMatrixFactory implements MatrixFactory {
 
 	/**
 	 * Default serialization id.
@@ -98,8 +98,8 @@ public class Nd4jMatrixFactory implements MatrixFactory {
 		return first.appendVertically(second);
 	}
 
-	protected Nd4jMatrix createNd4jMatrix(INDArray matrix, boolean immutable) {
-		return new Nd4jMatrix(matrix, immutable);
+	protected Nd4jRowMajorMatrix createNd4jMatrix(INDArray matrix, boolean immutable) {
+		return new Nd4jRowMajorMatrix(matrix, immutable);
 	}
 
 	@Override

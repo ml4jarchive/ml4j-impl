@@ -28,7 +28,7 @@ import org.nd4j.linalg.ops.transforms.Transforms;
  * 
  * @author Michael Lavelle
  */
-public class Nd4jMatrix implements Matrix, EditableMatrix, InterrimMatrix {
+public class Nd4jRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatrix {
 
 	/**
 	 * Default serialization id.
@@ -38,7 +38,7 @@ public class Nd4jMatrix implements Matrix, EditableMatrix, InterrimMatrix {
 	public INDArray matrix;
 	private boolean immutable;
 
-	public Nd4jMatrix(INDArray matrix, boolean immutable) {
+	public Nd4jRowMajorMatrix(INDArray matrix, boolean immutable) {
 		this.matrix = matrix;
 		this.immutable = immutable;
 	}
@@ -57,8 +57,8 @@ public class Nd4jMatrix implements Matrix, EditableMatrix, InterrimMatrix {
 	 * @return The resulting INDArray.
 	 */
 	private INDArray getNd4jIndArray(Matrix matrix) {
-		if (matrix instanceof Nd4jMatrix) {
-			return ((Nd4jMatrix) matrix).getIndArray();
+		if (matrix instanceof Nd4jRowMajorMatrix) {
+			return ((Nd4jRowMajorMatrix) matrix).getIndArray();
 		} else if (matrix instanceof JBlasRowMajorMatrix) {
 			return Nd4j.create(matrix.dup().getRowByRowArray(), new int[] { matrix.getRows(), matrix.getColumns() });
 		} else {
@@ -66,8 +66,8 @@ public class Nd4jMatrix implements Matrix, EditableMatrix, InterrimMatrix {
 		}
 	}
 
-	protected Nd4jMatrix createNd4jMatrix(INDArray matrix, boolean immutable) {
-		return new Nd4jMatrix(matrix, immutable);
+	protected Nd4jRowMajorMatrix createNd4jMatrix(INDArray matrix, boolean immutable) {
+		return new Nd4jRowMajorMatrix(matrix, immutable);
 	}
 
 	@Override
@@ -483,7 +483,7 @@ public class Nd4jMatrix implements Matrix, EditableMatrix, InterrimMatrix {
 		// return createNd4jMatrix(softDupIndArray(matrix), immutable);
 	}
 
-	public Nd4jMatrix softDupIndArray(INDArray matrix) {
+	public Nd4jRowMajorMatrix softDupIndArray(INDArray matrix) {
 		// TODO
 		return createNd4jMatrix(matrix, immutable);
 	}
