@@ -16,10 +16,8 @@
 
 package org.ml4j.nn;
 
-import org.ml4j.nn.BackPropagation;
-import org.ml4j.nn.layers.DirectedLayerGradient;
-
-import java.util.List;
+import org.ml4j.nn.components.DirectedComponentGradient;
+import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
  * Default implementation of BackPropagation.
@@ -28,14 +26,14 @@ import java.util.List;
  */
 public class BackPropagationImpl implements BackPropagation {
 
-  private List<DirectedLayerGradient> directedLayerGradients;
+  private DirectedComponentGradient<NeuronsActivation> gradient;
 
-  public BackPropagationImpl(List<DirectedLayerGradient> directedLayerGradients) {
-    this.directedLayerGradients = directedLayerGradients;
+  public BackPropagationImpl(DirectedComponentGradient<NeuronsActivation> gradient) {
+    this.gradient = gradient;
   }
 
   @Override
-  public List<DirectedLayerGradient> getDirectedLayerGradients() {
-    return directedLayerGradients;
+  public DirectedComponentGradient<NeuronsActivation> getGradient() {
+    return gradient;
   }
 }

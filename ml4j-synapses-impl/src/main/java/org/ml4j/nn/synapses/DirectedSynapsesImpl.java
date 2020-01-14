@@ -16,12 +16,28 @@
 
 package org.ml4j.nn.synapses;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunctionActivation;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.axons.AxonsActivation;
+import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentBaseType;
+import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
+import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,81 +46,176 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> 
-    implements DirectedSynapses<L, R> {
+public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implements DirectedSynapses<L, R> {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  private static final Logger LOGGER = 
-      LoggerFactory.getLogger(DirectedSynapsesImpl.class);
-  
-  private Axons<? extends L, ? extends R, ?> axons;
-  private DifferentiableActivationFunction activationFunction;
-  
-  /**
-   * Create a new implementation of DirectedSynapses.
-   * 
-   * @param axons The Axons within these synapses
-   * @param activationFunction The activation function within these synapses
-   */
-  public DirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
-      DifferentiableActivationFunction activationFunction) {
-    super();
-    this.axons = axons;
-    this.activationFunction = activationFunction;
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public Axons<? extends L, ? extends R, ?> getAxons() {
-    return axons;
-  }
+	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedSynapsesImpl.class);
 
-  @Override
-  public DirectedSynapses<L, R> dup() {
-    return new DirectedSynapsesImpl<L, R>(axons.dup(), activationFunction);
-  }
+	private DifferentiableActivationFunction activationFunction;
+	private DifferentiableActivationFunctionComponent activationFunctionComponent;
 
+	private DefaultDirectedComponentBipoleGraph axonsGraph;
 
-  @Override
-  public DifferentiableActivationFunction getActivationFunction() {
-    return activationFunction;
-  }
+	private DirectedComponentFactory directedComponentFactory;
+	
+	private L leftNeurons;
+	private R rightNeurons;
 
+	/**
+	 * Create a new implementation of DirectedSynapses.
+	 * 
+	 * @param directedComponentFactory
+	 * @param LeftNeurons
+	 * @param rightNeurons
+	 * @param axonsGraph
+	 * @param activationFunction
+	 */
+	protected DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory, L leftNeurons, R rightNeurons,
+			DefaultDirectedComponentBipoleGraph axonsGraph,
+			DifferentiableActivationFunction activationFunction) {
+		super();
+		this.activationFunction = activationFunction;
+		this.activationFunctionComponent = directedComponentFactory
+				.createDifferentiableActivationFunctionComponent(rightNeurons, activationFunction);
+		this.axonsGraph = axonsGraph;
+		this.directedComponentFactory = directedComponentFactory;
+		this.leftNeurons = leftNeurons;
+		this.rightNeurons = rightNeurons;
+		Objects.requireNonNull(axonsGraph, "axonsGraph");
 
-  @Override
-  public DirectedSynapsesActivation forwardPropagate(DirectedSynapsesInput input,
-      DirectedSynapsesContext synapsesContext) {
-   
-    NeuronsActivation inputNeuronsActivation = input.getInput();
-   
-    LOGGER.debug("Forward propagating through DirectedSynapses");
-    AxonsActivation axonsActivation = 
-        axons.pushLeftToRight(inputNeuronsActivation, null, 
-            synapsesContext.getAxonsContext(0));
-    
-    NeuronsActivation axonsOutputActivation = axonsActivation.getOutput();
-    
-    DifferentiableActivationFunctionActivation activationFunctionActivation = 
-        activationFunction.activate(axonsOutputActivation, synapsesContext);
-    
-    NeuronsActivation outputNeuronsActivation = activationFunctionActivation.getOutput();
-    
-    return new DirectedSynapsesActivationImpl(this, 
-        inputNeuronsActivation, axonsActivation,activationFunctionActivation,
-        outputNeuronsActivation);
-  
-  }
+	}
 
-  @Override
-  public L getLeftNeurons() {
-    return axons.getLeftNeurons();
-  }
+	/**
+	 * Create a new implementation of DirectedSynapses.
+	 * 
+	 * @param directedComponentFactory A factory implementation to create directed
+	 *                                 components
+	 * @param primaryAxons             The primary Axons within these synapses
+	 * @param activationFunction       The activation function within these synapses
+	 */
+	public  DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory,
+			Axons<L, R, ?> primaryAxons, DifferentiableActivationFunction activationFunction) {
+		this(directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), createGraph(directedComponentFactory, primaryAxons),
+				activationFunction);
+		this.directedComponentFactory = directedComponentFactory;
+	}
 
-  @Override
-  public R getRightNeurons() {
-    return axons.getRightNeurons();
-  }
+	private static DefaultDirectedComponentBipoleGraph createGraph(
+			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
+		List<DefaultChainableDirectedComponent<?,  ?>> components = new ArrayList<>();
+		components.add(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
+	
+		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components
+				);
+		List<DefaultChainableDirectedComponent<?, ?>> chainsList = new ArrayList<>();
+		chainsList.add(chain);
+		//DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), chainsList,
+				PathCombinationStrategy.ADDITION);
+	}
+
+	/**
+	 * @return The Axons graph within these DirectedSynapses.
+	 */
+	public DefaultDirectedComponentBipoleGraph getAxonsGraph() {
+		return axonsGraph;
+	}
+
+	@Override
+	public DirectedSynapses<L, R> dup() {
+		return new DirectedSynapsesImpl<>(directedComponentFactory, leftNeurons, rightNeurons, axonsGraph.dup(),
+				activationFunction);
+	}
+
+	@Override
+	public DifferentiableActivationFunction getActivationFunction() {
+		return activationFunction;
+	}
+
+	@Override
+	public DirectedSynapsesActivation forwardPropagate(NeuronsActivation input,
+			DirectedComponentsContext directedComponentsContext) {
+
+		LOGGER.debug("Forward propagating through DirectedSynapses");
+
+		NeuronsActivation inputNeuronsActivation = input;
+
+		DefaultDirectedComponentBipoleGraphActivation axonsActivationGraph = axonsGraph
+				.forwardPropagate(inputNeuronsActivation, directedComponentsContext);
+
+		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
+
+		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
+				new NeuronsActivationContext() {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public MatrixFactory getMatrixFactory() {
+						return directedComponentsContext.getMatrixFactory();
+					}
+
+					@Override
+					public boolean isTrainingContext() {
+						return directedComponentsContext.isTrainingContext();
+					}
+
+				});
+
+		NeuronsActivation outputNeuronsActivation = actAct.getOutput();
+
+		return new DirectedSynapsesActivationImpl(this, input, axonsActivationGraph, actAct, outputNeuronsActivation,
+				directedComponentsContext);
+
+	}
+
+	@Override
+	public L getLeftNeurons() {
+
+		return leftNeurons;
+	}
+
+	@Override
+	public R getRightNeurons() {
+		return rightNeurons;
+	}
+
+	@Override
+	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext,
+			int componentIndex) {
+		return directedComponentsContext;
+	}
+
+	@Override
+	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
+		
+		List<DefaultChainableDirectedComponent<?, ?>> components = 
+				new ArrayList<>();
+		components.addAll(axonsGraph.decompose().stream().collect(Collectors.toList()));
+		components.addAll(activationFunctionComponent.decompose());
+		return components;
+	}
+
+	  @Override
+	  public NeuralComponentType<DirectedSynapses<L, R>> getComponentType() {
+			return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.SYNAPSES), DirectedSynapses.class.getName()) ;
+	  }
+
+	@Override
+	public Neurons getInputNeurons() {
+		return leftNeurons;
+	}
+
+	@Override
+	public Neurons getOutputNeurons() {
+		return rightNeurons;
+	}
+
 }

@@ -4,13 +4,20 @@
 	<groupId>org.ml4j</groupId>
 	<artifactId>ml4j-nn-impl</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<name>ml4j-nn-impl</name>
 	<properties>
 	</properties>
 	<distributionManagement>
 	</distributionManagement>
 	<repositories>
+		<repository>
+			<id>ml4j-releases</id>
+			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/releases</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>ml4j-snapshots</id>
 			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/snapshots</url>
@@ -23,18 +30,55 @@
 		<dependency>
 			<groupId>org.ml4j</groupId>
 			<artifactId>ml4j-nn-api</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
+			<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-matrices-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+				<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-base-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		  <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.22</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- 
+		<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-layers-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		 -->
+		<!--  
 		<dependency>
 			<groupId>org.ml4j</groupId>
 			<artifactId>ml4j-synapses-impl</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		-->
+			<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-base-components</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+			<dependency>
 			<groupId>org.ml4j</groupId>
 			<artifactId>ml4j-layers-impl</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.ml4j</groupId>
+			<artifactId>ml4j-activationfunctions-impl</artifactId>
+			<version>2.0.0-SNAPSHOT</version>
+		</dependency>
+		 -->
 	</dependencies>
 	<build>
 		<plugins>
@@ -46,6 +90,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
@@ -69,10 +114,12 @@
 					</execution>
 				</executions>
 			</plugin>
+			 -->
 		</plugins>
 	</build>
 	<reporting>
 		<plugins>
+		    <!--  
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -90,6 +137,7 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
+			-->
 		</plugins>
 	</reporting>
 </project>

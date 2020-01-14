@@ -19,6 +19,7 @@ package org.ml4j.nn.layers;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
 
 /**
  * Default FeedForwardLayer implementation which can be passed any type of Axons.
@@ -34,15 +35,15 @@ public class FeedForwardLayerImpl extends FeedForwardLayerBase<Axons<?, ?, ?>,
    */
   private static final long serialVersionUID = 1L;
 
-  protected FeedForwardLayerImpl(Axons<?, ?, ?> primaryAxons,
+  protected FeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons,
       DifferentiableActivationFunction activationFunction, 
       MatrixFactory matrixFactory, boolean withBatchNorm) {
-    super(primaryAxons, activationFunction, matrixFactory, withBatchNorm);
+    super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
   }
 
   @Override
   public FeedForwardLayerImpl dup() {
-    return new FeedForwardLayerImpl(primaryAxons.dup(), 
+    return new FeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(), 
         primaryActivationFunction, matrixFactory, withBatchNorm);
   }
 }

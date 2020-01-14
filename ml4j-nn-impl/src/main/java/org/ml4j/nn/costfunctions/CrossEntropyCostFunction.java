@@ -16,6 +16,7 @@
 
 package org.ml4j.nn.costfunctions;
 
+import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
 
 /**
@@ -26,16 +27,32 @@ import org.ml4j.Matrix;
  */
 public class CrossEntropyCostFunction implements CostFunction {
 
-  @Override
-  public double getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    Matrix jpart = (desiredOutputs.mul(-1).mul(actualOutputs.log())
-        .sub(desiredOutputs.mul(-1).add(1).mul(actualOutputs.mul(-1).add(1).log()))).rowSums();
-    return jpart.sum();
-  }
+	@Override
+	public float getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
 
-  @Override
-  public double getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    int numberOfExamples = desiredOutputs.getRows();
-    return getTotalCost(desiredOutputs, actualOutputs) / numberOfExamples;
-  }
+		try (InterrimMatrix logOfActualOutputs = actualOutputs.log().asInterrimMatrix()) {
+			try (InterrimMatrix negativeOfDesiredOutputs = desiredOutputs.mul(-1).asInterrimMatrix()) {
+				try (InterrimMatrix negativeOfActualOutputsAddOne = actualOutputs.mul(-1).asEditableMatrix().addi(1).asInterrimMatrix()) {
+					try (InterrimMatrix first = negativeOfDesiredOutputs.mul(logOfActualOutputs).asInterrimMatrix()) {
+						try (InterrimMatrix second = negativeOfActualOutputsAddOne.logi().asInterrimMatrix()) {
+							try (InterrimMatrix third = negativeOfDesiredOutputs.asEditableMatrix().addi(1).muli(second)
+									.asInterrimMatrix()) {
+								try (InterrimMatrix jpart = first.asEditableMatrix().subi(third).asInterrimMatrix()) {
+									try (InterrimMatrix jpartRowSums = jpart.rowSums().asInterrimMatrix()) {
+										return jpartRowSums.sum();
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public float getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
+		int numberOfExamples = desiredOutputs.getRows();
+		return getTotalCost(desiredOutputs, actualOutputs) / numberOfExamples;
+	}
 }
