@@ -68,6 +68,9 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	}
 
 	public Matrix getActivations(MatrixFactory matrixFactory) {
+		if (activations == null) {
+			throw new IllegalStateException("NeuronsActivation has been closed");
+		}
 		if (!activations.isImmutable()) {
 			activations.setImmutable(immutable);
 		}

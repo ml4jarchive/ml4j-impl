@@ -69,9 +69,9 @@ public class JBlasRowMajorMatrixFactory implements MatrixFactory {
 		float[] targetData = new float[rows * cols];
 		for (int c = 0; c < cols; c++) {
 			for (int r = 0; r < rows; r++) {
-				int sourceDataIndex = c * cols + r;
-				int targetDataIndex = r * rows + c;
-				targetData[targetDataIndex] = data[sourceDataIndex];
+				int sourceDataIndex = r * cols + c;
+				int targetDataIndex = c * rows + r;
+				targetData[sourceDataIndex] = data[targetDataIndex];
 			}
 		}
 		return createJBlasMatrix(new FloatMatrix(cols, rows, targetData));
