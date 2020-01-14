@@ -14,362 +14,478 @@
 
 package org.ml4j.nd4j;
 
-import org.jblas.DoubleMatrix;
+import org.ml4j.EditableMatrix;
+import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
-import org.ml4j.jblas.JBlasMatrix;
+import org.ml4j.jblas.JBlasRowMajorMatrix;
+import org.ml4j.jblas.JBlasRowMajorMatrixFactory;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.ops.transforms.Transforms;
 
 /**
- * Default JBlas matrix implementation.
+ * Default Nd4j matrix implementation.
  * 
  * @author Michael Lavelle
  */
-public class Nd4jMatrix implements Matrix {
-
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-
-  public INDArray matrix;
-
-  public Nd4jMatrix(INDArray matrix) {
-    this.matrix = matrix;
-  }
-
-  private INDArray getIndArray() {
-    return matrix;
-  }
-
-  /**
-   * Create a new n4j4j INDArray from the Matrix.
-   * 
-   * @param matrix The matrix we want to convert to a INDArray.
-   * @return The resulting INDArray.
-   */
-  private INDArray createNd4jIndArray(Matrix matrix) {
-    if (matrix instanceof Nd4jMatrix) {
-      return ((Nd4jMatrix) matrix).getIndArray();
-    } else if (matrix instanceof JBlasMatrix) {
-      return Nd4j.create(matrix.transpose().toArray(),
-          new int[] {matrix.getRows(), matrix.getColumns()});
-    } else {
-      throw new UnsupportedOperationException("Only Nd4j and JBlas matrices currently supported");
-    }
-  }
-
-  protected Nd4jMatrix createNd4jMatrix(INDArray matrix) {
-    return new Nd4jMatrix(matrix);
-  }
-
-  @Override
-  public Matrix add(Matrix other) {
-    return createNd4jMatrix(matrix.add(createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix add(double value) {
-    return createNd4jMatrix(matrix.add(value));
-  }
-
-  @Override
-  public Matrix addi(Matrix other) {
-    this.matrix = matrix.addi(createNd4jIndArray(other));
-    return this;
-  }
-
-  @Override
-  public Matrix addi(double value) {
-    this.matrix = this.matrix.addi(value);
-    return this;
-  }
-
-  @Override
-  public int argmax() {
-    return asJBlasMatrix().argmax();
-  }
-
-  @Override
-  public Matrix copy(Matrix other) {
-    throw new UnsupportedOperationException("Not yet implemented");
-  }
-
-  @Override
-  public Matrix div(double value) {
-    return createNd4jMatrix(matrix.div(value));
-  }
-
-  @Override
-  public Matrix div(Matrix other) {
-    return createNd4jMatrix(matrix.div(createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix divi(double value) {
-    this.matrix = matrix.divi(value);
-    return this;
-  }
-
-  @Override
-  public Matrix divi(Matrix other) {
-    this.matrix = matrix.divi(createNd4jIndArray(other));
-    return this;
-  }
-
-  @Override
-  public Matrix diviColumnVector(Matrix other) {
-    this.matrix = matrix.diviColumnVector(createNd4jIndArray(other));
-    return this;
-  }
-
-  @Override
-  public double dot(Matrix other) {
-    return Nd4j.getBlasWrapper().dot(this.matrix, createNd4jIndArray(other));
-  }
-
-  @Override
-  public int[] findIndices() {
-    int len = 0;
-    for (int i = 0; i < getLength(); i++) {
-      if (get(i) != 0.0) {
-        len++;
-      }
-    }
-    int[] indices = new int[len];
-    int counter = 0;
-
-    for (int i = 0; i < getLength(); i++) {
-      if (get(i) != 0.0) {
-        indices[counter++] = i;
-      }
-    }
-    return indices;
-  }
-
-  @Override
-  public double get(int index) {
-    return matrix.getDouble(index);
-  }
-
-  @Override
-  public double get(int row, int col) {
-    return matrix.getDouble(row, col);
-  }
-
-  @Override
-  public Matrix get(int[] rows, int[] cols) {
-    return createNd4jMatrix(createNd4jIndArray(asJBlasMatrix().get(rows, cols)));
-  }
-
-  @Override
-  public int getColumns() {
-    return matrix.columns();
-  }
-
-  @Override
-  public Matrix getColumns(int[] cols) {
-    return createNd4jMatrix(matrix.getColumns(cols));
-  }
-
-  @Override
-  public int getLength() {
-    return matrix.length();
-  }
-
-  @Override
-  public Matrix getRowRange(int avalue, int bvalue, int cvalue) {
-    return createNd4jMatrix(
-        createNd4jIndArray(asJBlasMatrix().getRowRange(avalue, bvalue, cvalue)));
-  }
-
-  @Override
-  public int getRows() {
-    return matrix.rows();
-  }
-
-  @Override
-  public Matrix getRows(int[] rows) {
-    return createNd4jMatrix(matrix.getRows(rows));
-  }
-
-  @Override
-  public Matrix mmul(Matrix other, Matrix target) {
-    return createNd4jMatrix(matrix.mmuli(createNd4jIndArray(other), createNd4jIndArray(target)));
-  }
-
-  @Override
-  public Matrix mmul(Matrix other) {
-    return createNd4jMatrix(matrix.mmul(createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix mul(double value) {
-    return createNd4jMatrix(matrix.mul(value));
-  }
-
-  @Override
-  public Matrix mul(Matrix other) {
-    return createNd4jMatrix(matrix.mul(createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix muli(Matrix other) {
-    this.matrix = matrix.muli(createNd4jIndArray(other));
-    return this;
-  }
-
-  @Override
-  public Matrix muli(double value) {
-    this.matrix = matrix.muli(value);
-    return this;
-  }
-
-  @Override
-  public void put(int index, double value) {
-    matrix.putScalar(index, value);
-  }
-
-  @Override
-  public void put(int row, int col, double value) {
-    matrix.putScalar(row, col, value);
-  }
-
-  @Override
-  public void put(int[] indices, int cvalue, Matrix other) {
-    // matrix.put(indices, cvalue, createNd4jIndArray(other));
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
-
-  @Override
-  public void putColumn(int columnIndex, Matrix other) {
-    matrix.putColumn(columnIndex, createNd4jIndArray(other));
-  }
-
-  @Override
-  public void putRow(int rowIndex, Matrix other) {
-    matrix.putRow(rowIndex, createNd4jIndArray(other));
-  }
-
-  @Override
-  public void reshape(int newRows, int newColumns) {
-    this.matrix = matrix.reshape(newRows, newColumns);
-  }
-
-  @Override
-  public int[] rowArgmaxs() {
-    return asJBlasMatrix().rowArgmaxs();
-  }
-
-  @Override
-  public Matrix rowSums() {
-    return asJBlasMatrix().rowSums();
-  }
-
-  @Override
-  public Matrix sub(Matrix other) {
-    return createNd4jMatrix(matrix.sub(createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix subi(Matrix other) {
-    this.matrix = matrix.subi(createNd4jIndArray(other));
-    return this;
-  }
-
-  @Override
-  public double sum() {
-    return asJBlasMatrix().sum();
-  }
-
-  @Override
-  public double[][] toArray2() {
-    return asJBlasMatrix().toArray2();
-  }
-
-  @Override
-  public Matrix transpose() {
-    return createNd4jMatrix(matrix.transpose());
-  }
-
-  @Override
-  public Matrix appendHorizontally(Matrix other) {
-    return createNd4jMatrix(Nd4j.hstack(matrix, createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix appendVertically(Matrix other) {
-    return createNd4jMatrix(Nd4j.vstack(matrix, createNd4jIndArray(other)));
-  }
-
-  @Override
-  public Matrix asCudaMatrix() {
-    throw new UnsupportedOperationException("CUDA not yet supported");
-  }
-
-  @Override
-  public Matrix asJBlasMatrix() {
-    return new JBlasMatrix(
-        new DoubleMatrix(matrix.rows(), matrix.columns(), matrix.transpose().data().asDouble()));
-  }
-
-  @Override
-  public Matrix dup() {
-    return createNd4jMatrix(matrix.dup());
-  }
-
-  @Override
-  public Matrix expi() {
-    this.matrix = Transforms.exp(matrix);
-    return this;
-  }
-
-  @Override
-  public Matrix getColumn(int columnIndex) {
-    return createNd4jMatrix(matrix.getColumn(columnIndex));
-  }
-
-
-  @Override
-  public Matrix getRow(int rowIndex) {
-    return createNd4jMatrix(matrix.getRow(rowIndex));
-  }
-
-
-  @Override
-  public Matrix log() {
-    INDArray result = Transforms.log(matrix);
-    return createNd4jMatrix(result);
-  }
-
-  @Override
-  public Matrix logi() {
-    this.matrix = Transforms.log(matrix);
-    return this;
-  }
-
-
-  @Override
-  public Matrix pow(int value) {
-    INDArray result = Transforms.pow(matrix, value);
-    return createNd4jMatrix(result);
-  }
-
-  @Override
-  public Matrix powi(int value) {
-    this.matrix = Transforms.pow(matrix, value);
-    return this;
-  }
-
-  @Override
-  public Matrix sigmoid() {
-    INDArray result = Transforms.sigmoid(matrix);
-    return createNd4jMatrix(result);
-  }
-
-  @Override
-  public double[] toArray() {
-    return matrix.transpose().data().asDouble();
-  }
+public class Nd4jMatrix implements Matrix, EditableMatrix, InterrimMatrix {
+
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public INDArray matrix;
+	private boolean immutable;
+
+	public Nd4jMatrix(INDArray matrix, boolean immutable) {
+		this.matrix = matrix;
+		this.immutable = immutable;
+	}
+
+	private INDArray getIndArray() {
+		if (matrix == null) {
+			throw new IllegalStateException("Matrix has been closed");
+		}
+		return matrix;
+	}
+
+	/**
+	 * Create a new n4j4j INDArray from the Matrix.
+	 * 
+	 * @param matrix The matrix we want to convert to a INDArray.
+	 * @return The resulting INDArray.
+	 */
+	private INDArray getNd4jIndArray(Matrix matrix) {
+		if (matrix instanceof Nd4jMatrix) {
+			return ((Nd4jMatrix) matrix).getIndArray();
+		} else if (matrix instanceof JBlasRowMajorMatrix) {
+			return Nd4j.create(matrix.dup().getRowByRowArray(), new int[] { matrix.getRows(), matrix.getColumns() });
+		} else {
+			throw new UnsupportedOperationException("Only Nd4j and JBlas matrices currently supported");
+		}
+	}
+
+	protected Nd4jMatrix createNd4jMatrix(INDArray matrix, boolean immutable) {
+		return new Nd4jMatrix(matrix, immutable);
+	}
+
+	@Override
+	public Matrix add(Matrix other) {
+		return createNd4jMatrix(matrix.add(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix add(float value) {
+		return createNd4jMatrix(matrix.add(value), immutable);
+	}
+
+	@Override
+	public EditableMatrix addi(Matrix other) {
+		this.matrix = matrix.addi(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix addi(float value) {
+		this.matrix = this.matrix.addi(value);
+		return this;
+	}
+
+	@Override
+	public Matrix div(float value) {
+		return createNd4jMatrix(matrix.div(value), immutable);
+	}
+
+	@Override
+	public Matrix div(Matrix other) {
+		return createNd4jMatrix(matrix.div(getNd4jIndArray(other)), immutable);
+	}
+
+	@Override
+	public EditableMatrix divi(float value) {
+		this.matrix = matrix.divi(value);
+		return this;
+	}
+
+	@Override
+	public EditableMatrix divi(Matrix other) {
+		this.matrix = matrix.divi(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix diviColumnVector(Matrix other) {
+		this.matrix = matrix.diviColumnVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public float get(int index) {
+		return matrix.getFloat(index);
+	}
+
+	@Override
+	public float get(int row, int col) {
+		return matrix.getFloat(row, col);
+	}
+
+	@Override
+	public int getColumns() {
+		return matrix.columns();
+	}
+
+	@Override
+	public int getLength() {
+		return matrix.length();
+	}
+
+	@Override
+	public int getRows() {
+		return matrix.rows();
+	}
+
+	@Override
+	public Matrix mul(float value) {
+		return createNd4jMatrix(matrix.mul(value), false);
+	}
+
+	@Override
+	public Matrix mul(Matrix other) {
+		return createNd4jMatrix(matrix.mul(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public EditableMatrix muli(Matrix other) {
+
+		this.matrix = matrix.muli(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix muli(float value) {
+		this.matrix = matrix.muli(value);
+		return this;
+	}
+
+	@Override
+	public void put(int index, float value) {
+		matrix.putScalar(index, value);
+	}
+
+	@Override
+	public void put(int row, int col, float value) {
+		matrix.putScalar(row, col, value);
+	}
+
+	@Override
+	public void putColumn(int columnIndex, Matrix other) {
+		matrix.putColumn(columnIndex, getNd4jIndArray(other));
+	}
+
+	@Override
+	public void putRow(int rowIndex, Matrix other) {
+		matrix.putRow(rowIndex, getNd4jIndArray(other));
+	}
+
+	@Override
+	public void reshape(int newRows, int newColumns) {
+		this.matrix = matrix.reshape(newRows, newColumns);
+	}
+
+	@Override
+	public Matrix sub(Matrix other) {
+		return createNd4jMatrix(matrix.sub(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public EditableMatrix subi(Matrix other) {
+		this.matrix = matrix.subi(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public Matrix appendHorizontally(Matrix other) {
+		return createNd4jMatrix(Nd4j.hstack(matrix, getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix appendVertically(Matrix other) {
+		return createNd4jMatrix(Nd4j.vstack(matrix, getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix dup() {
+		return createNd4jMatrix(matrix.dup(), false);
+	}
+
+	@Override
+	public EditableMatrix expi() {
+		this.matrix = Transforms.exp(matrix);
+		return this;
+	}
+
+	@Override
+	public Matrix log() {
+		INDArray result = Transforms.log(matrix);
+		return createNd4jMatrix(result, false);
+	}
+
+	@Override
+	public Matrix logi() {
+		this.matrix = Transforms.log(matrix);
+		return this;
+	}
+
+	@Override
+	public Matrix sigmoid() {
+		INDArray result = Transforms.sigmoid(matrix);
+		return createNd4jMatrix(result, false);
+	}
+
+	@Override
+	public Matrix sub(float v) {
+		return createNd4jMatrix(matrix.sub(v), false);
+	}
+
+	@Override
+	public void close() {
+		if (this.matrix != null) {
+			this.matrix = null;
+		}
+	}
+
+	@Override
+	public boolean isClosed() {
+		return matrix == null;
+	}
+
+	@Override
+	public EditableMatrix asEditableMatrix() {
+		if (immutable) {
+			throw new IllegalStateException("Matrix is immutable");
+		}
+		return this;
+	}
+
+	@Override
+	public InterrimMatrix asInterrimMatrix() {
+		return this;
+	}
+
+	@Override
+	public boolean isImmutable() {
+		return immutable;
+	}
+
+	@Override
+	public void setImmutable(boolean immutable) {
+		this.immutable = immutable;
+	}
+
+	@Override
+	public EditableMatrix subi(float v) {
+		this.matrix = matrix.subi(v);
+		return this;
+	}
+
+	@Override
+	public EditableMatrix subiColumnVector(Matrix other) {
+		this.matrix = matrix.subiColumnVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix subiRowVector(Matrix other) {
+		this.matrix = matrix.subiRowVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix diviRowVector(Matrix other) {
+		this.matrix = matrix.diviRowVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix addiRowVector(Matrix other) {
+		this.matrix = matrix.addiRowVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix addiColumnVector(Matrix other) {
+		this.matrix = matrix.addiColumnVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix muliColumnVector(Matrix other) {
+		this.matrix = matrix.muliColumnVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public EditableMatrix muliRowVector(Matrix other) {
+		this.matrix = matrix.muliRowVector(getNd4jIndArray(other));
+		return this;
+	}
+
+	@Override
+	public float[] getRowByRowArray() {
+		return (float[]) matrix.data().asFloat();
+	}
+
+	@Override
+	public float[] toColumnByColumnArray() {
+		return asJBlasMatrix().getColumnByColumnArray();
+	}
+
+	@Override
+	public Matrix columnSums() {
+		return asJBlasMatrix().columnSums();
+	}
+
+	@Override
+	public int[] columnArgmaxs() {
+		return asJBlasMatrix().columnArgmaxs();
+	}
+
+	@Override
+	public Matrix mulColumnVector(Matrix other) {
+		return createNd4jMatrix(matrix.mulColumnVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix mulRowVector(Matrix other) {
+		return createNd4jMatrix(matrix.mulRowVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix addColumnVector(Matrix other) {
+		return createNd4jMatrix(matrix.addColumnVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix addRowVector(Matrix other) {
+		return createNd4jMatrix(matrix.addRowVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix divColumnVector(Matrix other) {
+		return createNd4jMatrix(matrix.divColumnVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix divRowVector(Matrix other) {
+		return createNd4jMatrix(matrix.divRowVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix subColumnVector(Matrix other) {
+		return createNd4jMatrix(matrix.subColumnVector(getNd4jIndArray(other)), false);
+	}
+
+	@Override
+	public Matrix subRowVector(Matrix other) {
+		return createNd4jMatrix(matrix.subRowVector(getNd4jIndArray(other)), false);
+	}
+
+	
+	// The below methods are implemented as they are because obvious implementations are not available in Nd4j, or there are issues using the
+	// Nd4j versions.  TODO - Migrate the below methods to Nd4j
+
+	@Override
+	public Matrix mmul(Matrix other) {
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix().mmul(asJBlasMatrix(other))), false);
+		// return createNd4jMatrix(matrix.mmul(createNd4jIndArray(other)));
+	}
+
+	@Override
+	public Matrix get(int[] rows, int[] cols) {
+		// throw new UnsupportedOperationException("Not yet implemented");
+		// TODO check immutable
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix().get(rows, cols)), immutable);
+	}
+
+	@Override
+	public int argmax() {
+		return asJBlasMatrix().argmax();
+	}
+
+	@Override
+	public Matrix getRows(int[] rows) {
+		// TODO - check immutable
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix()).getRows(rows), immutable);
+	}
+
+	@Override
+	public Matrix getColumns(int[] cols) {
+		// TODO - check immutable
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix()).getColumns(cols), immutable);
+	}
+
+	@Override
+	public Matrix rowSums() {
+		return asJBlasMatrix().rowSums();
+	}
+
+	@Override
+	public Matrix transpose() {
+		// return createNd4jMatrix(matrix.transpose());
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix().transpose()), false);
+	}
+
+	@Override
+	public float sum() {
+		return asJBlasMatrix().sum();
+	}
+
+	@Override
+	public Matrix getColumn(int columnIndex) {
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix().getColumn(columnIndex)), false);
+		// return createNd4jMatrix(matrix.getColumn(columnIndex));
+	}
+
+	@Override
+	public Matrix getRow(int rowIndex) {
+		return createNd4jMatrix(getNd4jIndArray(asJBlasMatrix().getRow(rowIndex)), false);
+	}
+
+	@Override
+	public float[] getColumnByColumnArray() {
+		return asJBlasMatrix().getColumnByColumnArray();
+	}
+
+	// The below methods are utility methods to aid the temporary JBlas matrix implementations as described above.
+	
+	private Matrix asJBlasMatrix() {
+		return asJBlasMatrix(this);
+	}
+
+	private Matrix asJBlasMatrix(Matrix other) {
+		if (other instanceof JBlasRowMajorMatrix) {
+			return other;
+		} else {
+			return
+			// TODO- check immutable
+			new JBlasRowMajorMatrixFactory().createMatrixFromRowsByRowsArray(other.getRows(), other.getColumns(),
+					other.getRowByRowArray());
+		}
+	}
+	
+	// The below methods are not yet implemented - TODO
+	
+	@Override
+	public Matrix softDup() {
+		// TODO
+		throw new UnsupportedOperationException("Not implemented yet");
+		// return createNd4jMatrix(softDupIndArray(matrix), immutable);
+	}
+
+	public Nd4jMatrix softDupIndArray(INDArray matrix) {
+		// TODO
+		return createNd4jMatrix(matrix, immutable);
+	}
+	
 }

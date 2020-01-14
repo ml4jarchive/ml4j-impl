@@ -16,7 +16,7 @@ package org.ml4j.nd4j;
 
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.ml4j.jblas.JBlasMatrixFactory;
+import org.ml4j.jblas.JBlasRowMajorMatrixFactory;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
@@ -27,74 +27,83 @@ import org.nd4j.linalg.factory.Nd4j;
  */
 public class Nd4jMatrixFactory implements MatrixFactory {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public Matrix createOnes(int rows, int columns) {
-    return createNd4jMatrix(Nd4j.ones(rows, columns));
-  }
+	@Override
+	public Matrix createOnes(int rows, int columns) {
+		return createNd4jMatrix(Nd4j.ones(rows, columns), false);
+	}
 
-  @Override
-  public Matrix createOnes(int length) {
-    return createNd4jMatrix(Nd4j.ones(length));
-  }
+	@Override
+	public Matrix createOnes(int length) {
+		return createNd4jMatrix(Nd4j.ones(length), false);
+	}
 
-  @Override
-  public Matrix createMatrix(double[][] data) {
-    return createNd4jMatrix(Nd4j.create(new JBlasMatrixFactory().createMatrix(data)
-        .toArray(),
-        new int[] {data.length, data[0].length}));
-  }
+	@Override
+	public Matrix createMatrixFromRows(float[][] data) {
+		// TODO - check immutable
+		return createNd4jMatrix(
+				Nd4j.create(new JBlasRowMajorMatrixFactory().createMatrixFromRows(data).getRowByRowArray(),
+						new int[] { data.length, data[0].length }),
+				false);
+	}
 
-  @Override
-  public Matrix createMatrix() {
-    return createNd4jMatrix(Nd4j.create());
-  }
+	@Override
+	public Matrix createMatrix() {
+		return createNd4jMatrix(Nd4j.create(), false);
+	}
 
-  @Override
-  public Matrix createMatrix(double[] data) {
-    return createNd4jMatrix(Nd4j.create(data));
-  }
+	@Override
+	public Matrix createMatrix(float[] data) {
+		// TODO - check immutable
+		return createNd4jMatrix(Nd4j.create(data), false);
+	}
 
-  @Override
-  public Matrix createMatrix(int rows, int cols, double[] data) {
-    return createNd4jMatrix(Nd4j.create(data, new int[] {rows, cols}));
-  }
+	@Override
+	public Matrix createMatrixFromRowsByRowsArray(int rows, int cols, float[] data) {
+		// TODO - check immutable
+		return createNd4jMatrix(Nd4j.create(data, new int[] { rows, cols }), false);
+	}
 
-  @Override
-  public Matrix createMatrix(int rows, int cols) {
-    return createNd4jMatrix(Nd4j.create(new int[] {rows, cols}));
-  }
+	@Override
+	public Matrix createMatrix(int rows, int cols) {
+		return createNd4jMatrix(Nd4j.create(new int[] { rows, cols }), false);
+	}
 
-  @Override
-  public Matrix createZeros(int rows, int cols) {
-    return createNd4jMatrix(Nd4j.create(new int[] {rows, cols}));
-  }
+	@Override
+	public Matrix createZeros(int rows, int cols) {
+		return createNd4jMatrix(Nd4j.create(new int[] { rows, cols }), false);
+	}
 
-  @Override
-  public Matrix createRandn(int rows, int cols) {
-    return createNd4jMatrix(Nd4j.randn(rows, cols));
-  }
+	@Override
+	public Matrix createRandn(int rows, int cols) {
+		return createNd4jMatrix(Nd4j.randn(rows, cols), false);
+	}
 
-  @Override
-  public Matrix createHorizontalConcatenation(Matrix first, Matrix second) {
-    return first.appendHorizontally(second);
-  }
+	@Override
+	public Matrix createHorizontalConcatenation(Matrix first, Matrix second) {
+		return first.appendHorizontally(second);
+	}
 
-  @Override
-  public Matrix createRand(int rows, int cols) {
-    return createNd4jMatrix(Nd4j.rand(rows, cols));
-  }
+	@Override
+	public Matrix createRand(int rows, int cols) {
+		return createNd4jMatrix(Nd4j.rand(rows, cols), false);
+	}
 
-  @Override
-  public Matrix createVerticalConcatenation(Matrix first, Matrix second) {
-    return first.appendVertically(second);
-  }
+	@Override
+	public Matrix createVerticalConcatenation(Matrix first, Matrix second) {
+		return first.appendVertically(second);
+	}
 
-  protected Nd4jMatrix createNd4jMatrix(INDArray matrix) {
-    return new Nd4jMatrix(matrix);
-  }
+	protected Nd4jMatrix createNd4jMatrix(INDArray matrix, boolean immutable) {
+		return new Nd4jMatrix(matrix, immutable);
+	}
+
+	@Override
+	public Matrix createMatrixFromColumnsByColumnsArray(int rows, int cols, float[] data) {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
 }
