@@ -15,14 +15,14 @@ package org.ml4j.nn.components.onetoone;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.ChainableDirectedComponent;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -33,52 +33,54 @@ import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponen
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationContext;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
 public class TrailingActivationFunctionDirectedComponentChainImpl
- implements TrailingActivationFunctionDirectedComponentChain {
+		implements TrailingActivationFunctionDirectedComponentChain {
 
 	/**
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private List<DefaultChainableDirectedComponent<?, ?>> components;
 	private DifferentiableActivationFunctionComponent finalDifferentiableActivationFunctionComponent;
-	private DefaultDirectedComponentChain precedingChain; 
+	private DefaultDirectedComponentChain precedingChain;
 	private DirectedComponentFactory directedComponentFactory;
-	
+
 	public DifferentiableActivationFunctionComponent getFinalComponent() {
 		return finalDifferentiableActivationFunctionComponent;
 	}
 
-	public TrailingActivationFunctionDirectedComponentChainImpl(DirectedComponentFactory directedComponentFactory, List<? extends DefaultChainableDirectedComponent<?, ?>> components) {
+	public TrailingActivationFunctionDirectedComponentChainImpl(DirectedComponentFactory directedComponentFactory,
+			List<? extends DefaultChainableDirectedComponent<?, ?>> components) {
 		this.components = new ArrayList<>();
 		this.components.addAll(components);
 		this.directedComponentFactory = directedComponentFactory;
 		List<DefaultChainableDirectedComponent<?, ?>> decomposedList = new ArrayList<>();
-		for (DefaultChainableDirectedComponent<?, ?>  component : decompose()) {
+		for (DefaultChainableDirectedComponent<?, ?> component : decompose()) {
 			decomposedList.add(component);
 		}
 		if (components.isEmpty()) {
 			throw new IllegalArgumentException("Component list must contain at least one component");
 		} else {
-			ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> finalComponent = decomposedList.get(decomposedList.size() - 1);
+			ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> finalComponent = decomposedList
+					.get(decomposedList.size() - 1);
 			if (NeuralComponentBaseType.ACTIVATION_FUNCTION.equals(finalComponent.getComponentType().getBaseType())) {
-				finalDifferentiableActivationFunctionComponent = (DifferentiableActivationFunctionComponent)finalComponent;
+				finalDifferentiableActivationFunctionComponent = (DifferentiableActivationFunctionComponent) finalComponent;
 				decomposedList.remove(decomposedList.size() - 1);
 				this.precedingChain = directedComponentFactory.createDirectedComponentChain(decomposedList);
-				
+
 			} else {
-				throw new IllegalArgumentException("Decomposed component list must end with a differentiable activation function component");
+				throw new IllegalArgumentException(
+						"Decomposed component list must end with a differentiable activation function component");
 			}
 		}
-		
-	}
-	
-	
 
-	private  TrailingActivationFunctionDirectedComponentChainImpl(
+	}
+
+	private TrailingActivationFunctionDirectedComponentChainImpl(
 			List<DefaultChainableDirectedComponent<?, ?>> components,
 			DifferentiableActivationFunctionComponent finalDifferentiableActivationFunctionComponent,
 			DefaultDirectedComponentChain precedingChain) {
@@ -95,32 +97,20 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	@Override
 	public TrailingActivationFunctionDirectedComponentChainActivation forwardPropagate(NeuronsActivation input,
 			DirectedComponentsContext context) {
-		
-		DefaultDirectedComponentChainActivation precedingChainActivation = precedingChain.forwardPropagate(input, context);
-		DifferentiableActivationFunctionComponentActivation activationFunctionComponentActivation = finalDifferentiableActivationFunctionComponent.forwardPropagate(precedingChainActivation.getOutput(), new NeuronsActivationContext() {
 
-			/**
-			 * Default serialization id.
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public MatrixFactory getMatrixFactory() {
-				return context.getMatrixFactory();
-			}
-
-			@Override
-			public boolean isTrainingContext() {
-				return context.isTrainingContext();
-			}});
-		
-		//activationFunctionActivation.getInput().close();
-		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(this, precedingChainActivation, 
+		DefaultDirectedComponentChainActivation precedingChainActivation = precedingChain.forwardPropagate(input,
+				context);
+		DifferentiableActivationFunctionComponentActivation activationFunctionComponentActivation = finalDifferentiableActivationFunctionComponent
+				.forwardPropagate(precedingChainActivation.getOutput(),
+						new NeuronsActivationContextImpl(context.getMatrixFactory(), false));
+		// activationFunctionActivation.getInput().close();
+		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(this, precedingChainActivation,
 				activationFunctionComponentActivation);
 	}
 
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext,
+			int componentIndex) {
 		return directedComponentsContext;
 	}
 
@@ -130,20 +120,22 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		allComponents.addAll(components);
 		return directedComponentFactory.createDirectedComponentChain(allComponents).decompose();
 	}
-	
+
 	@Override
 	public TrailingActivationFunctionDirectedComponentChain dup() {
-		
-		List<DefaultChainableDirectedComponent<?, ?>> dupComponents
-			= components.stream().map(c -> c.dup()).collect(Collectors.toList());
-		
-		return new TrailingActivationFunctionDirectedComponentChainImpl(dupComponents, finalDifferentiableActivationFunctionComponent.dup(), 
-				precedingChain.dup());
+
+		List<DefaultChainableDirectedComponent<?, ?>> dupComponents = components.stream().map(c -> c.dup())
+				.collect(Collectors.toList());
+
+		return new TrailingActivationFunctionDirectedComponentChainImpl(dupComponents,
+				finalDifferentiableActivationFunctionComponent.dup(), precedingChain.dup());
 	}
 
 	@Override
 	public NeuralComponentType<TrailingActivationFunctionDirectedComponentChain> getComponentType() {
-		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN),"TRAILING_ACTIVATION_FUNCTION");
+		return NeuralComponentType.createSubType(
+				NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN),
+				"TRAILING_ACTIVATION_FUNCTION");
 	}
 
 	@Override
@@ -156,4 +148,13 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		return finalDifferentiableActivationFunctionComponent.getOutputNeurons();
 	}
 	
+	@Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		return NeuronsActivationFeatureOrientation.intersectLists(precedingChain.supports(), finalDifferentiableActivationFunctionComponent.supports());
+	}
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		return NeuronsActivationFeatureOrientation.intersectOptionals(precedingChain.optimisedFor(), finalDifferentiableActivationFunctionComponent.optimisedFor());
+	}
 }

@@ -16,15 +16,15 @@ package org.ml4j.nn.components.activationfunctions.base;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 
 /**
  * 
@@ -38,11 +38,11 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	 */
 	private static final long serialVersionUID = -6033017517698579773L;
 	
-	protected DifferentiableActivationFunction activationFunction;
+	protected ActivationFunctionType activationFunctionType;
 	protected Neurons neurons;
 	
-	public DifferentiableActivationFunctionComponentBase(Neurons neurons, DifferentiableActivationFunction activationFunction){
-		this.activationFunction = activationFunction;
+	public DifferentiableActivationFunctionComponentBase(Neurons neurons, ActivationFunctionType activationFunctionType){
+		this.activationFunctionType = activationFunctionType;
 		this.neurons = neurons;
 	}
 
@@ -52,34 +52,19 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	}
 
 	@Override
-	public NeuronsActivationContext getContext(DirectedComponentsContext context, int arg1) {
-		return new NeuronsActivationContext() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public MatrixFactory getMatrixFactory() {
-				return context.getMatrixFactory();
-			}
-
-			@Override
-			public boolean isTrainingContext() {
-				return context.isTrainingContext();
-			}};
+	public NeuronsActivationContext getContext(DirectedComponentsContext context, int componentIndex) {
+		return new NeuronsActivationContextImpl(context.getMatrixFactory(), context.isTrainingContext());
 	}
 
 	@Override
-	public DifferentiableActivationFunction getActivationFunction() {
-		return activationFunction;
+	public ActivationFunctionType getActivationFunctionType() {
+		return activationFunctionType;
 	}
 
 	@Override
 	public NeuralComponentType<DifferentiableActivationFunctionComponent> getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentBaseType.ACTIVATION_FUNCTION, 
-				activationFunction.getActivationFunctionType().getQualifiedId());
+				activationFunctionType.getQualifiedId());
 	}
 
 	@Override

@@ -17,7 +17,9 @@
 package org.ml4j.nn.layers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.ml4j.MatrixFactory;
@@ -33,6 +35,7 @@ import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponen
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,4 +109,15 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>,
   public NeuralComponentType<FeedForwardLayer<A, L>> getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER), FeedForwardLayer.class.getName());
   }
+  
+  @Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+	}
+
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		return Optional.empty();
+	}
 }
