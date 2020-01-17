@@ -206,6 +206,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 	@Override
 	public UncompletedFullyConnectedAxonsBuilder<D> withFullyConnectedAxons() {
+		addAxonsIfApplicable();
 		builderState.setConnectionWeights(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
 		UncompletedFullyConnectedAxonsBuilder<D> axonsBuilder = new UncompletedFullyConnectedAxonsBuilderImpl<>(this::getBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
