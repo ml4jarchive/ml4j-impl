@@ -13,12 +13,15 @@
  */
 package org.ml4j.nn.components.manytomany.base;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
 /**
  * Default base class for a batch of DefaultDirectedComponentChain instances that can be activated in parallel.
@@ -26,7 +29,7 @@ import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
  * @author Michael Lavelle
  */
 public abstract class DefaultComponentChainBatchBase implements DefaultDirectedComponentChainBatch {
-
+	
 	/**
 	 * Default serialization id.
 	 */
@@ -47,4 +50,18 @@ public abstract class DefaultComponentChainBatchBase implements DefaultDirectedC
 	public NeuralComponentType<?> getComponentType() {
 		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN_BATCH);
 	}
+	
+
+	@Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		// TODO THUR
+		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+	}
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		// TODO THUR
+		return Optional.empty();
+	}
+
 }

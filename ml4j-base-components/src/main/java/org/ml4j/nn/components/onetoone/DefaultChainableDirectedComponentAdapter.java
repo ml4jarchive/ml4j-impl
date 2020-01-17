@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,6 +28,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,6 +129,16 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	@Override
 	public Neurons getOutputNeurons() {
 		return delegated.getOutputNeurons();
+	}
+
+	@Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		return delegated.supports();
+	}
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		return delegated.optimisedFor();
 	}
 
 }

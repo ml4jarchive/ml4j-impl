@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public abstract class DifferentiableActivationFunctionComponentActivationBase extends DefaultChainableDirectedComponentActivationBase<DifferentiableActivationFunctionComponent> implements DifferentiableActivationFunctionComponentActivation {
+public abstract class DifferentiableActivationFunctionComponentActivationBase<L extends DifferentiableActivationFunctionComponent> extends DefaultChainableDirectedComponentActivationBase<L> implements DifferentiableActivationFunctionComponentActivation {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DifferentiableActivationFunctionComponentActivationBase.class);
@@ -42,7 +42,7 @@ public abstract class DifferentiableActivationFunctionComponentActivationBase ex
 	 * @param input The input to the activation function component
 	 * @param output The output from the activation function component
 	 */
-	public DifferentiableActivationFunctionComponentActivationBase(DifferentiableActivationFunctionComponent activationFunctionComponent, NeuronsActivation input, NeuronsActivation output) {
+	public DifferentiableActivationFunctionComponentActivationBase(L activationFunctionComponent, NeuronsActivation input, NeuronsActivation output) {
 		super(activationFunctionComponent, output);
 		this.input = input;
 	}

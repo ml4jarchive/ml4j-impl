@@ -15,6 +15,7 @@ package org.ml4j.nn.components.manytoone.base;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentType;
@@ -22,6 +23,7 @@ import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,16 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	@Override
 	public ManyToOneDirectedComponent<A> dup() {
 		return new ManyToOneDirectedComponentAdapter<A>(delegated.dup());
+	}
+
+	@Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		return delegated.supports();
+	}
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		return delegated.optimisedFor();
 	}
 
 }
