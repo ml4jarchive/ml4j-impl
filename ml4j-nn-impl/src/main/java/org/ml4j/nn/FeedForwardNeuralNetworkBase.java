@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.axons.AxonWeightsAdjustment;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentDirection;
 import org.ml4j.nn.axons.AxonWeightsAdjustmentImpl;
@@ -638,25 +638,25 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 */
 	protected CostFunction getCostFunction() {
 
-		DifferentiableActivationFunction activationFunction = trailingActivationFunctionComponentChain
-				.getFinalComponent().getActivationFunction();
+		ActivationFunctionType activationFunctionType = trailingActivationFunctionComponentChain
+				.getFinalComponent().getActivationFunctionType();
 
-		if (activationFunction == null) {
+		if (activationFunctionType == null) {
 			throw new UnsupportedOperationException(
-					"Default cost function not yet defined for null activation function");
+					"Default cost function not yet defined for null activation function type");
 		}
-		if (ActivationFunctionBaseType.SIGMOID.equals(activationFunction.getActivationFunctionType().getBaseType())) {
+		if (ActivationFunctionBaseType.SIGMOID.equals(activationFunctionType.getBaseType())) {
 			LOGGER.debug("Defaulting to use CrossEntropyCostFunction");
 			return new CrossEntropyCostFunction();
-		} else if (ActivationFunctionBaseType.SOFTMAX.equals(activationFunction.getActivationFunctionType().getBaseType())) {
+		} else if (ActivationFunctionBaseType.SOFTMAX.equals(activationFunctionType.getBaseType())) {
 			LOGGER.debug("Defaulting to use MultiClassCrossEntropyCostFunction");
 			return new MultiClassCrossEntropyCostFunction();
-		} else if (ActivationFunctionBaseType.LINEAR.equals(activationFunction.getActivationFunctionType().getBaseType())) {
+		} else if (ActivationFunctionBaseType.LINEAR.equals(activationFunctionType.getBaseType())) {
 			LOGGER.debug("Defaulting to use SumSquredErrorCostFunction");
 			return new SumSquaredErrorCostFunction();
 		} else {
 			throw new UnsupportedOperationException(
-					"Default cost function not yet defined for:" + activationFunction.getClass());
+					"Default cost function not yet defined for:" + activationFunctionType);
 		}
 	}
 
@@ -669,5 +669,15 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	public NeuralComponentType<FeedForwardNeuralNetwork<C, N>> getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK), "FEED_FORWARD");
 	}	
+	
+	@Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		return trailingActivationFunctionComponentChain.supports();
+	}
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		return trailingActivationFunctionComponentChain.optimisedFor();
+	}
 
 }

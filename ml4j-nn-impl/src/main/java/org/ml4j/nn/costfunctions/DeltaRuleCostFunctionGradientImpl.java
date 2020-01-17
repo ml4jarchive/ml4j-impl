@@ -19,7 +19,7 @@ package org.ml4j.nn.costfunctions;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
-import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.components.DirectedComponentGradient;
 import org.ml4j.nn.components.DirectedComponentGradientImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -70,18 +70,18 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
     this.actualOutputs = actualOutputs;
   }
 
-  private boolean isDeltaRuleSupported(DifferentiableActivationFunction finalActivationFunction) {
+  private boolean isDeltaRuleSupported(ActivationFunctionType finalActivationFunctionType) {
 
     if (costFunction instanceof CrossEntropyCostFunction
-        && ActivationFunctionBaseType.SIGMOID.equals(finalActivationFunction.getActivationFunctionType().getBaseType())) {
+        && ActivationFunctionBaseType.SIGMOID.equals(finalActivationFunctionType.getBaseType())) {
       return true;
     }
     if (costFunction instanceof MultiClassCrossEntropyCostFunction
-        && ActivationFunctionBaseType.SOFTMAX.equals(finalActivationFunction.getActivationFunctionType().getBaseType())) {
+        && ActivationFunctionBaseType.SOFTMAX.equals(finalActivationFunctionType.getBaseType())) {
       return true;
     }
     if (costFunction instanceof SumSquaredErrorCostFunction
-        && ActivationFunctionBaseType.LINEAR.equals(finalActivationFunction.getActivationFunctionType().getBaseType())) {
+        && ActivationFunctionBaseType.LINEAR.equals(finalActivationFunctionType.getBaseType())) {
       return true;
     }
     return false;
@@ -89,11 +89,11 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
 
   @Override
   public DirectedComponentGradient<NeuronsActivation> backPropagateThroughFinalActivationFunction(
-      DifferentiableActivationFunction finalActivationFunction) {
+      ActivationFunctionType finalActivationFunctionType) {
 
-    if (!isDeltaRuleSupported(finalActivationFunction)) {
+    if (!isDeltaRuleSupported(finalActivationFunctionType)) {
       throw new IllegalArgumentException(
-          "Activation Function " + finalActivationFunction.getClass().getName()
+          "Activation Function " + finalActivationFunctionType
               + " not supported for the delta rule for cost function:"
               + costFunction.getClass().getName());
     }

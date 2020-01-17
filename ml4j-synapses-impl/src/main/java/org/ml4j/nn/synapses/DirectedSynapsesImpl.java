@@ -17,16 +17,17 @@
 package org.ml4j.nn.synapses;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -37,7 +38,8 @@ import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivat
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationContext;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,24 +152,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
 
 		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
-				new NeuronsActivationContext() {
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public MatrixFactory getMatrixFactory() {
-						return directedComponentsContext.getMatrixFactory();
-					}
-
-					@Override
-					public boolean isTrainingContext() {
-						return directedComponentsContext.isTrainingContext();
-					}
-
-				});
+				new NeuronsActivationContextImpl(directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
 
 		NeuronsActivation outputNeuronsActivation = actAct.getOutput();
 
@@ -216,6 +201,16 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	@Override
 	public Neurons getOutputNeurons() {
 		return rightNeurons;
+	}
+
+	@Override
+	public List<NeuronsActivationFeatureOrientation> supports() {
+		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+	}
+
+	@Override
+	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+		return Optional.empty();
 	}
 
 }
