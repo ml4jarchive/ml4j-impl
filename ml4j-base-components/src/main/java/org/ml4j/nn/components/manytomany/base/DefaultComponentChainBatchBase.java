@@ -51,16 +51,13 @@ public abstract class DefaultComponentChainBatchBase implements DefaultDirectedC
 		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN_BATCH);
 	}
 	
-
 	@Override
 	public List<NeuronsActivationFeatureOrientation> supports() {
-		// TODO THUR
 		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 	}
 
 	@Override
 	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
-		// TODO THUR
 		return Optional.empty();
 	}
 

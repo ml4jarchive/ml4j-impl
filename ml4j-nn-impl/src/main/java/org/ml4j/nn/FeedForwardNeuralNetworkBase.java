@@ -176,10 +176,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 									.getActivations(trainingContext.getMatrixFactory()).getColumns(columnsIndexes)
 									.asInterrimMatrix()) {
 
-						NeuronsActivation batchDataActivations = new NeuronsActivationImpl(dataBatch,
+						NeuronsActivation batchDataActivations = new NeuronsActivationImpl(getInputNeurons(), dataBatch,
 								trainingDataActivations.getFeatureOrientation());
 
-						NeuronsActivation batchLabelActivations = new NeuronsActivationImpl(labelBatch,
+						NeuronsActivation batchLabelActivations = new NeuronsActivationImpl(getInputNeurons(), labelBatch,
 								trainingLabelActivations.getFeatureOrientation());
 
 						costAndGradients = getCostAndGradients(batchDataActivations, batchLabelActivations,

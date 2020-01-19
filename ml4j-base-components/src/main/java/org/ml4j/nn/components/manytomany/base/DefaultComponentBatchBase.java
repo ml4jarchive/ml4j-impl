@@ -51,13 +51,11 @@ public abstract class DefaultComponentBatchBase implements DefaultDirectedCompon
 		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_BATCH);
 	}
 
-	// TODO THUR
 	@Override
 	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
 		return Optional.empty();
 	}
 
-	// TODO THUR
 	@Override
 	public List<NeuronsActivationFeatureOrientation> supports() {
 		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);

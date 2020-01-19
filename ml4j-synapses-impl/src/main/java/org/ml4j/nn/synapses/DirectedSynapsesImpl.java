@@ -116,7 +116,8 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		List<DefaultChainableDirectedComponent<?, ?>> chainsList = new ArrayList<>();
 		chainsList.add(chain);
 		//DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
-		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), chainsList,
+		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), 
+				primaryAxons.getRightNeurons(), chainsList,
 				PathCombinationStrategy.ADDITION);
 	}
 

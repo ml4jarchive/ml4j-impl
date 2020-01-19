@@ -119,9 +119,15 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public ManyToOneDirectedComponent<?> createManyToOneDirectedComponent(
+	public ManyToOneDirectedComponent<?> createManyToOneDirectedComponent(Neurons outputNeurons,
 			PathCombinationStrategy pathCombinationStrategy) {
-		return new ManyToOneDirectedComponentAdapter<>(delegated.createManyToOneDirectedComponent(pathCombinationStrategy));
+		return new ManyToOneDirectedComponentAdapter<>(delegated.createManyToOneDirectedComponent(outputNeurons, pathCombinationStrategy));
+	}
+
+	@Override
+	public ManyToOneDirectedComponent<?> createManyToOneDirectedComponent3D(Neurons3D outputNeurons,
+			PathCombinationStrategy pathCombinationStrategy) {
+		return new ManyToOneDirectedComponentAdapter<>(delegated.createManyToOneDirectedComponent3D(outputNeurons, pathCombinationStrategy));
 	}
 
 	@Override
@@ -153,4 +159,5 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 			Neurons leftNeurons, Neurons rightNeurons, NeuralComponentType<S> neuralComponentType) {
 		return delegated.createComponent(leftNeurons, rightNeurons, neuralComponentType);
 	}
+
 }

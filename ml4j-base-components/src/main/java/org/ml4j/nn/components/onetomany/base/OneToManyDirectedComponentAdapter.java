@@ -47,7 +47,7 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	@Override
 	public A forwardPropagate(NeuronsActivation input, DirectedComponentsContext context) {
 		
-		LOGGER.info(getComponentType().toString());
+		LOGGER.debug(getComponentType().toString());
 		
 		long startTime = new Date().getTime();
 		A activation =  delegated.forwardPropagate(input, context);

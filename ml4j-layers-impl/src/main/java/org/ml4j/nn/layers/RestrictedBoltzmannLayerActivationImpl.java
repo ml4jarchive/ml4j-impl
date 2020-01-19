@@ -79,6 +79,6 @@ public class RestrictedBoltzmannLayerActivationImpl implements RestrictedBoltzma
         }
       }
     }
-    return new NeuronsActivationImpl(sample, probablities.getFeatureOrientation());
+    return new NeuronsActivationImpl(probablities.getNeurons(), sample, probablities.getFeatureOrientation());
   }
 }

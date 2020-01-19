@@ -193,7 +193,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 			}
 			maximisingInputFeatures[j] = wij / sum;
 		}
-		return new NeuronsActivationImpl(
+		return new NeuronsActivationImpl(getInputNeurons(),
 				directedLayerContext.getMatrixFactory().createMatrixFromRows(new float[][] { maximisingInputFeatures }),
 				NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
 	}

@@ -109,7 +109,7 @@ public class DeltaRuleCostFunctionGradientImpl implements CostFunctionGradient {
     
     actualOutputs.getActivations(matrixFactory).close();
     
-    NeuronsActivation deltas = new NeuronsActivationImpl(deltasM,
+    NeuronsActivation deltas = new NeuronsActivationImpl(actualOutputs.getNeurons(), deltasM,
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 
     return new DirectedComponentGradientImpl<>(deltas);

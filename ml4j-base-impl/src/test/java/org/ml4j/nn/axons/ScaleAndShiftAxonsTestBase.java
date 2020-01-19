@@ -21,6 +21,7 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.jblas.JBlasRowMajorMatrixFactory;
 import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
@@ -67,7 +68,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
     Assert.assertEquals(featureCount, inputMatrix.getRows());
     Assert.assertEquals(100, inputMatrix.getColumns());
 
-    NeuronsActivation input = new NeuronsActivationImpl(inputMatrix,
+    NeuronsActivation input = new NeuronsActivationImpl(leftNeurons, inputMatrix,
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
     AxonsContext context = new AxonsContextImpl(matrixFactory, false, false);
     AxonsActivation axonsActivation = axons.pushLeftToRight(input, null, context);
@@ -120,11 +121,11 @@ public abstract class ScaleAndShiftAxonsTestBase {
 	    Assert.assertEquals(featureCount, inputMatrix.getRows());
 	    Assert.assertEquals(100, inputMatrix.getColumns());
 
-	    NeuronsActivation input = new NeuronsActivationImpl(inputMatrix,
+	    NeuronsActivation input = new NeuronsActivationImpl(leftNeurons, inputMatrix,
 	        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 	    AxonsContext context = new AxonsContextImpl(matrixFactory, false, false);
 	    AxonsActivation axonsActivation = axons.pushLeftToRight(input, null, context);
-	    NeuronsActivation rightNeuronsActivation = new NeuronsActivationImpl(axonsActivation.getPostDropoutOutput().getActivations(matrixFactory),
+	    NeuronsActivation rightNeuronsActivation = new NeuronsActivationImpl(rightNeurons, axonsActivation.getPostDropoutOutput().getActivations(matrixFactory),
 		        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 	    
 	    AxonsActivation finalActivation = axons.pushRightToLeft(rightNeuronsActivation, axonsActivation, context);
@@ -156,7 +157,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
     Assert.assertEquals(featureCount, inputMatrix.getRows());
     Assert.assertEquals(100, inputMatrix.getColumns());
 
-    NeuronsActivation input = new NeuronsActivationImpl(inputMatrix,
+    NeuronsActivation input = new NeuronsActivationImpl(leftNeurons, inputMatrix,
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
     AxonsContext context = new AxonsContextImpl(matrixFactory, false,  false);
     AxonsActivation axonsActivation = axons.pushRightToLeft(input, null, context);

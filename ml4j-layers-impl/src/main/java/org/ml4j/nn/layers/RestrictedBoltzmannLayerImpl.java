@@ -142,7 +142,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
       }
       maximisingInputFeatures[j] = wij / sum;
     }
-    return new NeuronsActivationImpl(
+    return new NeuronsActivationImpl(getVisibleNeurons(),
     		matrixFactory
             .createMatrixFromRows(new float[][] {maximisingInputFeatures}),
         NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
@@ -172,7 +172,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
       RestrictedBoltzmannLayerActivation visibleNeuronsReconstruction,
       UndirectedLayerContext layerContext) {
     UndirectedSynapsesInput synapsesInput = new UndirectedSynapsesInputImpl(
-        new NeuronsActivationImpl(
+        new NeuronsActivationImpl(getHiddenNeurons(),
             visibleNeuronsReconstruction.getSynapsesActivation().getOutput()
             .getActivations(layerContext.getMatrixFactory()), 
             NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
@@ -228,14 +228,14 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
     
     
     UndirectedSynapsesInput synapsesInput = new UndirectedSynapsesInputImpl(
-        new NeuronsActivationImpl(sample.getActivations(layerContext.getMatrixFactory()), 
+        new NeuronsActivationImpl(getHiddenNeurons(), sample.getActivations(layerContext.getMatrixFactory()), 
             NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
     UndirectedSynapsesContext context = layerContext.createSynapsesContext(0);
     UndirectedSynapsesActivation visibleNeuronsSynapseActivation = synapses.pushRightToLeft(
         synapsesInput, previousVisibleToHiddenNeuronsActivation.getSynapsesActivation(), context);
 
     return new RestrictedBoltzmannLayerActivationImpl(visibleNeuronsSynapseActivation,
-        new NeuronsActivationImpl(
+        new NeuronsActivationImpl(getVisibleNeurons(),
             visibleNeuronsSynapseActivation.getOutput().getActivations(layerContext.getMatrixFactory()), 
             NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) ,
         previousVisibleToHiddenNeuronsActivation.getHiddenActivationProbabilities());

@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.datasets.DataBatchImpl;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
@@ -79,7 +80,7 @@ public class FloatArrayDataBatchImpl extends DataBatchImpl<float[]> implements F
 				.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
 						matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
 
-		return new NeuronsActivationImpl(dataMatrix, NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+		return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 	}
 	
 	
