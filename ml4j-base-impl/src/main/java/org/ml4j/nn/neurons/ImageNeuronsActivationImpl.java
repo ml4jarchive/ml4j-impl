@@ -22,6 +22,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		if (featureOrientation == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
 			throw new UnsupportedOperationException("Not yet supported");
 		}
+		this.exampleCount = images.getExamples();
 	}
 	
 	public ImageNeuronsActivationImpl(Matrix activations, Neurons3D neurons,
@@ -38,6 +39,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 					neurons.getHeight(), neurons.getWidth(), 0, 0, activations.getColumns());
 		}
 		setImmutable(immutable);
+		this.exampleCount = images.getExamples();
 	}
 
 	@Override
