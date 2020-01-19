@@ -35,7 +35,6 @@ import org.ml4j.nn.components.builders.synapses.SynapsesAxonsGraphBuilderImpl;
 import org.ml4j.nn.components.builders.synapses.SynapsesPermitted;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
-import org.ml4j.nn.neurons.Neurons1D;
 
 public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent> implements AxonsPermitted<C>, SynapsesPermitted<C, T>, AxonsBuilder<T> {
 
@@ -99,7 +98,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 		if ((builderState.getFullyConnectedAxonsBuilder() != null) && builderState.getComponentsGraphNeurons().getRightNeurons() != null) {
 			Neurons leftNeurons = builderState.getComponentsGraphNeurons().getCurrentNeurons();
 			if (builderState.getComponentsGraphNeurons().hasBiasUnit() && !leftNeurons.hasBiasUnit()) {
-				leftNeurons = new Neurons1D(builderState.getComponentsGraphNeurons().getCurrentNeurons().getNeuronCountExcludingBias(), true);
+				leftNeurons = new Neurons(builderState.getComponentsGraphNeurons().getCurrentNeurons().getNeuronCountExcludingBias(), true);
 			}
 
 			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(leftNeurons, 
