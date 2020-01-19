@@ -155,7 +155,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
           Matrix dataBatch = trainingActivations.getActivations(trainingContext.getMatrixFactory()).getColumns(colIndexes);
 
           NeuronsActivation batchDataActivations =
-              new NeuronsActivationImpl(dataBatch, trainingActivations.getFeatureOrientation());
+              new NeuronsActivationImpl(getLayer().getVisibleNeurons(), dataBatch, trainingActivations.getFeatureOrientation());
           data = batchDataActivations;
           
           lastReconstructions = trainOnBatch(data, trainingContext);
@@ -273,7 +273,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
 
     NeuronsActivationWithPossibleBiasUnit hiddenAxonsDataActivationsWithoutBias =
         new NeuronsActivationWithPossibleBiasUnit(
-        		hiddenAxonsDataActivationsWithoutBiasTransposed.getActivations(trainingContext.getMatrixFactory()).asEditableMatrix(),
+        		hiddenAxonsDataActivationsWithoutBiasTransposed.getActivations(trainingContext.getMatrixFactory()),
             false,
             NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET, false);
     
@@ -282,7 +282,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
     
     NeuronsActivationWithPossibleBiasUnit visibleAxonsDataActivationsWithoutBias =
             new NeuronsActivationWithPossibleBiasUnit(
-            		visibleAxonsDataActivationsWithoutBiasActivation.getActivations(trainingContext.getMatrixFactory()).asEditableMatrix(),
+            		visibleAxonsDataActivationsWithoutBiasActivation.getActivations(trainingContext.getMatrixFactory()),
                 false,
                 NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET, false);
     
@@ -308,13 +308,13 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
 
     NeuronsActivationWithPossibleBiasUnit hiddenAxonsReconstructionActivations =
         new NeuronsActivationWithPossibleBiasUnit(
-            hiddenAxonsReconstructionActivationsWithoutBias.getActivations(trainingContext.getMatrixFactory()).asEditableMatrix(), false,
+            hiddenAxonsReconstructionActivationsWithoutBias.getActivations(trainingContext.getMatrixFactory()), false,
             NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET, false).withBiasUnit(restrictedBoltzmannLayer.getHiddenNeurons().hasBiasUnit(),
                 trainingContext);
     
     NeuronsActivationWithPossibleBiasUnit visibleAxonsReconstructionActivations =
             new NeuronsActivationWithPossibleBiasUnit(
-            		visibleAxonsReconstructionActivationsWithoutBias.getActivations(trainingContext.getMatrixFactory()).asEditableMatrix(), false,
+            		visibleAxonsReconstructionActivationsWithoutBias.getActivations(trainingContext.getMatrixFactory()), false,
                 NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET, false).withBiasUnit(restrictedBoltzmannLayer.getVisibleNeurons().hasBiasUnit(),
                     trainingContext);
 

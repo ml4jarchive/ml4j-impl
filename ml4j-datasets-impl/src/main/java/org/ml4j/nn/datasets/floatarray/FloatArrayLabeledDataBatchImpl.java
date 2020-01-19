@@ -19,6 +19,7 @@ import org.ml4j.nn.datasets.DataBatch;
 import org.ml4j.nn.datasets.LabeledData;
 import org.ml4j.nn.datasets.LabeledDataBatchImpl;
 import org.ml4j.nn.datasets.LabeledDataImpl;
+import org.ml4j.nn.neurons.Neurons1D;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
@@ -73,8 +74,8 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 				d.getValue().getData(), d.getValue().getLabel(), (int) d.getIndex()));
 
 		return new LabeledDataImpl<>(
-				new NeuronsActivationImpl(data.transpose(), NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
-				new NeuronsActivationImpl(labels.transpose(),
+				new NeuronsActivationImpl(new Neurons1D(data.getColumns(), false), data.transpose(), NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
+				new NeuronsActivationImpl(new Neurons1D(labels.getRows(), false), labels.transpose(),
 						NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
 	}
 

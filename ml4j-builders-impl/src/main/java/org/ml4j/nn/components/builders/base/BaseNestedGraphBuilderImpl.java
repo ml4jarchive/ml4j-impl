@@ -27,6 +27,7 @@ import org.ml4j.nn.components.builders.common.PathEnder;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.Neurons1D;
 
 public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, C extends AxonsBuilder<T>, T extends NeuralComponent> extends BaseGraphBuilderImpl<C, T> implements PathEnder<P, C>{
 
@@ -61,7 +62,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 					T skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parentGraph.get().getChains().add(skipConnection);
 				} else {
-					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons(initialNeurons.getNeuronCountExcludingBias(), 
+					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons1D(initialNeurons.getNeuronCountExcludingBias(), 
 							true), endNeurons, null, null);
 					T skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parentGraph.get().getChains().add(skipConnection);
@@ -80,7 +81,9 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 			chainsList.addAll(this.parentGraph.get().getChains());
 			//ComponentChainBatchDefinition batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 			Neurons graphInputNeurons = chainsList.get(0).getInputNeurons();
-			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons, parentGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), chainsList, pathCombinationStrategy));
+			Neurons graphOutputNeurons = parentGraph.get().getComponentsGraphNeurons().getCurrentNeurons();
+			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(
+					graphInputNeurons, new Neurons1D(graphOutputNeurons.getNeuronCountExcludingBias(), graphOutputNeurons.hasBiasUnit()) , chainsList, pathCombinationStrategy));
 			pathsEnded = true;
 			parentGraph.get().getEndNeurons().clear();
 			parentGraph.get().getChains().clear();

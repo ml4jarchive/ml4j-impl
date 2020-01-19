@@ -36,6 +36,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.Neurons1D;
 import org.ml4j.nn.neurons.Neurons3D;
 
 public class DirectedComponentFactoryAdapter implements DirectedComponentFactory {
@@ -119,9 +120,15 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public ManyToOneDirectedComponent<?> createManyToOneDirectedComponent(
+	public ManyToOneDirectedComponent<?> createManyToOneDirectedComponent(Neurons1D outputNeurons,
 			PathCombinationStrategy pathCombinationStrategy) {
-		return new ManyToOneDirectedComponentAdapter<>(delegated.createManyToOneDirectedComponent(pathCombinationStrategy));
+		return new ManyToOneDirectedComponentAdapter<>(delegated.createManyToOneDirectedComponent(outputNeurons, pathCombinationStrategy));
+	}
+
+	@Override
+	public ManyToOneDirectedComponent<?> createManyToOneDirectedComponent(Neurons3D outputNeurons,
+			PathCombinationStrategy pathCombinationStrategy) {
+		return new ManyToOneDirectedComponentAdapter<>(delegated.createManyToOneDirectedComponent(outputNeurons, pathCombinationStrategy));
 	}
 
 	@Override
@@ -153,4 +160,5 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 			Neurons leftNeurons, Neurons rightNeurons, NeuralComponentType<S> neuralComponentType) {
 		return delegated.createComponent(leftNeurons, rightNeurons, neuralComponentType);
 	}
+
 }

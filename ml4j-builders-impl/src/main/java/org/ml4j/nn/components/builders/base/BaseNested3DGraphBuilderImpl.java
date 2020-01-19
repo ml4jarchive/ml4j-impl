@@ -27,6 +27,7 @@ import org.ml4j.nn.components.builders.common.ComponentsContainer;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.Neurons1D;
 import org.ml4j.nn.neurons.Neurons3D;
 
 public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, 
@@ -64,7 +65,7 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 				} else {
 					
 					T skipConnectionAxons = 
-							directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
+							directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons1D(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
 					T skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parent3DGraph.get().getChains().add(skipConnection);
 				}
