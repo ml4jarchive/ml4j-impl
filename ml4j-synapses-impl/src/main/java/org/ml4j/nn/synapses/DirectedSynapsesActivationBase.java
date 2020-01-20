@@ -52,8 +52,8 @@ public abstract class DirectedSynapsesActivationBase implements DirectedSynapses
 	 */
 	public DirectedSynapsesActivationBase(DirectedSynapses<?, ?> synapses, NeuronsActivation inputActivation,
 			DefaultDirectedComponentBipoleGraphActivation axonsActivationGraph,
-			DifferentiableActivationFunctionComponentActivation activationFunctionActivation, NeuronsActivation outputActivation,
-			DirectedComponentsContext synapsesContext) {
+			DifferentiableActivationFunctionComponentActivation activationFunctionActivation,
+			NeuronsActivation outputActivation, DirectedComponentsContext synapsesContext) {
 		this.inputActivation = inputActivation;
 		this.outputActivation = outputActivation;
 		this.synapses = synapses;

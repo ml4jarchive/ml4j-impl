@@ -56,13 +56,12 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	 * 
 	 * @param layers The layers
 	 */
-	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory, 
+	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
 			DefaultDirectedComponentChain initialisingComponentChain) {
 		super(directedComponentFactory, initialisingComponentChain);
 	}
 
-	protected SupervisedFeedForwardNeuralNetworkImpl(
-			DefaultDirectedComponentChain initialisingComponentChain,
+	protected SupervisedFeedForwardNeuralNetworkImpl(DefaultDirectedComponentChain initialisingComponentChain,
 			TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
 		super(initialisingComponentChain, trailingActivationFunctionComponentChain);
 	}
@@ -73,7 +72,7 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	 * @param layers The layers
 	 */
 	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
-			List<DefaultChainableDirectedComponent<?,?>> componentList) {
+			List<DefaultChainableDirectedComponent<?, ?>> componentList) {
 		super(directedComponentFactory, directedComponentFactory.createDirectedComponentChain(componentList));
 	}
 
@@ -85,7 +84,8 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	@SafeVarargs
 	public SupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
 			DefaultChainableDirectedComponent<?, ?>... componentList) {
-		super(directedComponentFactory, directedComponentFactory.createDirectedComponentChain(Arrays.asList(componentList)));
+		super(directedComponentFactory,
+				directedComponentFactory.createDirectedComponentChain(Arrays.asList(componentList)));
 	}
 
 	@Override

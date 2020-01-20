@@ -6,10 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.ml4j.nn.axons.AxonsGradient;
 
-public class SimpleAverageAxonsGradientsFuture implements Future<List<AxonsGradient>>{
-	
+public class SimpleAverageAxonsGradientsFuture implements Future<List<AxonsGradient>> {
+
 	private CostAndGradients costAndGradients;
-	
+
 	public SimpleAverageAxonsGradientsFuture(CostAndGradients costAndGradients) {
 		this.costAndGradients = costAndGradients;
 	}

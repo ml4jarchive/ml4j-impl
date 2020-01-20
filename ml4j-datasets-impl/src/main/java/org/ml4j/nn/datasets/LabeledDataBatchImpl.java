@@ -30,12 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import com.codepoetics.protonpack.StreamUtils;
 
-
 public class LabeledDataBatchImpl<E, L> implements LabeledDataBatch<E, L> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LabeledDataBatchImpl.class);
 
-	
 	protected DataBatch<E> dataBatch;
 	protected DataBatch<L> labelBatch;
 
@@ -70,7 +68,8 @@ public class LabeledDataBatchImpl<E, L> implements LabeledDataBatch<E, L> {
 
 	@Override
 	public Stream<LabeledData<E, L>> stream() {
-		return StreamUtils.zip(dataBatch.stream(), labelBatch.stream(), (l, r) -> createLabeledData(l, r)).filter(Optional::isPresent).map(optional -> optional.get());
+		return StreamUtils.zip(dataBatch.stream(), labelBatch.stream(), (l, r) -> createLabeledData(l, r))
+				.filter(Optional::isPresent).map(optional -> optional.get());
 	}
 
 	public void add(LabeledData<E, L> labeledData) {
@@ -85,8 +84,7 @@ public class LabeledDataBatchImpl<E, L> implements LabeledDataBatch<E, L> {
 			return Optional.of(new LabeledDataImpl<>(element, label));
 		}
 	}
-	
-	
+
 	@Override
 	public int size() {
 		return dataBatch.size();
@@ -109,29 +107,38 @@ public class LabeledDataBatchImpl<E, L> implements LabeledDataBatch<E, L> {
 
 		return new BatchedLabeledDataSetImpl<E, L>(() -> dataBatchStream);
 	}
-	
+
 	@Override
-	public FloatArrayLabeledDataBatch toFloatArrayLabeledDataBatch(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {		
-		
-		
-		Stream<LabeledData<float[], float[]>> stream = stream().map(l -> getFeatures(l, featureExtractor, labelMapper, featureExtractionErrorMode)).filter(Optional::isPresent).map(Optional::get);
-		FloatArrayDataBatch dataBatch = new FloatArrayDataBatchImpl(stream.map(l -> l.getData()), featureExtractor.getFeatureCount(), size());
-		FloatArrayDataBatch labelBatch = new FloatArrayDataBatchImpl(stream.map(l -> l.getLabel()), featureExtractor.getFeatureCount(), size());
-		
-		return new FloatArrayLabeledDataBatchImpl(dataBatch, labelBatch, featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
+	public FloatArrayLabeledDataBatch toFloatArrayLabeledDataBatch(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
+
+		Stream<LabeledData<float[], float[]>> stream = stream()
+				.map(l -> getFeatures(l, featureExtractor, labelMapper, featureExtractionErrorMode))
+				.filter(Optional::isPresent).map(Optional::get);
+		FloatArrayDataBatch dataBatch = new FloatArrayDataBatchImpl(stream.map(l -> l.getData()),
+				featureExtractor.getFeatureCount(), size());
+		FloatArrayDataBatch labelBatch = new FloatArrayDataBatchImpl(stream.map(l -> l.getLabel()),
+				featureExtractor.getFeatureCount(), size());
+
+		return new FloatArrayLabeledDataBatchImpl(dataBatch, labelBatch, featureExtractor.getFeatureCount(),
+				labelMapper.getFeatureCount());
 	}
 
 	@Override
-	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper,
+	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
+		return new FloatArrayLabeledDataSetImpl(
+				() -> stream().map(l -> getFeatures(l, featureExtractor, labelMapper, featureExtractionErrorMode))
+						.filter(Optional::isPresent).map(Optional::get),
+				featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
+	}
+
+	private <T, S> Optional<LabeledData<float[], float[]>> getFeatures(LabeledData<T, S> element,
+			FeatureExtractor<T> featureExtractor, FeatureExtractor<S> labelMapper,
 			FeatureExtractionErrorMode featureExtractionErrorMode) {
-		return new FloatArrayLabeledDataSetImpl(() -> 
-			stream().map(l -> getFeatures(l, featureExtractor, labelMapper, featureExtractionErrorMode)).filter(Optional::isPresent).map(Optional::get),featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
-	}
-
-	
-	private <T, S> Optional<LabeledData<float[], float[]>> getFeatures(LabeledData<T, S> element, FeatureExtractor<T> featureExtractor, FeatureExtractor<S> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
-			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(element.getData()), labelMapper.getFeatures(element.getLabel())));
+			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(element.getData()),
+					labelMapper.getFeatures(element.getLabel())));
 		} catch (FeatureExtractionException e) {
 			if (featureExtractionErrorMode == FeatureExtractionErrorMode.LOG_WARNING) {
 				LOGGER.warn("Ignoring data element due to feature extraction failure", e);

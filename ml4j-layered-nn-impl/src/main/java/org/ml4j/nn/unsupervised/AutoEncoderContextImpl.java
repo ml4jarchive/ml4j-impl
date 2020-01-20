@@ -25,16 +25,15 @@ import org.ml4j.nn.supervised.LayeredFeedForwardNeuralNetworkContextImpl;
  * @author Michael Lavelle
  * 
  */
-public class AutoEncoderContextImpl 
-    extends LayeredFeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
+public class AutoEncoderContextImpl extends LayeredFeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
-      Integer endLayerIndex, boolean isTrainingContext) {
-    super(matrixFactory, startLayerIndex, endLayerIndex, isTrainingContext);
-  }
+	public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex, Integer endLayerIndex,
+			boolean isTrainingContext) {
+		super(matrixFactory, startLayerIndex, endLayerIndex, isTrainingContext);
+	}
 }

@@ -23,62 +23,61 @@ import org.ml4j.nn.synapses.UndirectedSynapsesActivation;
 
 public class RestrictedBoltzmannLayerActivationImpl implements RestrictedBoltzmannLayerActivation {
 
-  private UndirectedSynapsesActivation synapsesActivation;
-  private NeuronsActivation visibleNeuronProbablities;
-  private NeuronsActivation hiddenNeuronProbablities;
+	private UndirectedSynapsesActivation synapsesActivation;
+	private NeuronsActivation visibleNeuronProbablities;
+	private NeuronsActivation hiddenNeuronProbablities;
 
-  /**
-   * @param synapsesActivation The activation of the Synapses of this Layer.
-   * @param visibleNeuronProbablities The visible neuron probabilities.
-   * @param hiddenNeuronProbablities The hidden neuron probablities.
-   */
-  public RestrictedBoltzmannLayerActivationImpl(UndirectedSynapsesActivation synapsesActivation,
-      NeuronsActivation visibleNeuronProbablities, NeuronsActivation hiddenNeuronProbablities) {
-    this.synapsesActivation = synapsesActivation;
-    this.visibleNeuronProbablities = visibleNeuronProbablities;
-    this.hiddenNeuronProbablities = hiddenNeuronProbablities;
-  }
+	/**
+	 * @param synapsesActivation        The activation of the Synapses of this
+	 *                                  Layer.
+	 * @param visibleNeuronProbablities The visible neuron probabilities.
+	 * @param hiddenNeuronProbablities  The hidden neuron probablities.
+	 */
+	public RestrictedBoltzmannLayerActivationImpl(UndirectedSynapsesActivation synapsesActivation,
+			NeuronsActivation visibleNeuronProbablities, NeuronsActivation hiddenNeuronProbablities) {
+		this.synapsesActivation = synapsesActivation;
+		this.visibleNeuronProbablities = visibleNeuronProbablities;
+		this.hiddenNeuronProbablities = hiddenNeuronProbablities;
+	}
 
-  @Override
-  public NeuronsActivation getHiddenActivationBinarySample(MatrixFactory matrixFactory) {
-    return getBinarySample(hiddenNeuronProbablities, matrixFactory);
-  }
+	@Override
+	public NeuronsActivation getHiddenActivationBinarySample(MatrixFactory matrixFactory) {
+		return getBinarySample(hiddenNeuronProbablities, matrixFactory);
+	}
 
-  @Override
-  public NeuronsActivation getHiddenActivationProbabilities() {
-    return hiddenNeuronProbablities;
-  }
+	@Override
+	public NeuronsActivation getHiddenActivationProbabilities() {
+		return hiddenNeuronProbablities;
+	}
 
-  @Override
-  public UndirectedSynapsesActivation getSynapsesActivation() {
-    return synapsesActivation;
-  }
+	@Override
+	public UndirectedSynapsesActivation getSynapsesActivation() {
+		return synapsesActivation;
+	}
 
-  @Override
-  public NeuronsActivation getVisibleActivationBinarySample(MatrixFactory matrixFactory) {
-    return getBinarySample(visibleNeuronProbablities, matrixFactory);
-  }
+	@Override
+	public NeuronsActivation getVisibleActivationBinarySample(MatrixFactory matrixFactory) {
+		return getBinarySample(visibleNeuronProbablities, matrixFactory);
+	}
 
-  @Override
-  public NeuronsActivation getVisibleActivationProbablities() {
-    return visibleNeuronProbablities;
-  }
+	@Override
+	public NeuronsActivation getVisibleActivationProbablities() {
+		return visibleNeuronProbablities;
+	}
 
-  private NeuronsActivation getBinarySample(NeuronsActivation probablities,
-      MatrixFactory matrixFactory) {
-    Matrix rand = matrixFactory.createRand(probablities.getRows(),
-        probablities.getColumns());
-    Matrix res = probablities.getActivations(matrixFactory).sub(rand);
-    EditableMatrix sample = matrixFactory.createMatrix(probablities.getRows(),
-        probablities.getColumns()).asEditableMatrix();
-    for (int r = 0; r < sample.getRows(); r++) {
-      for (int c = 0; c < sample.getColumns(); c++) {
+	private NeuronsActivation getBinarySample(NeuronsActivation probablities, MatrixFactory matrixFactory) {
+		Matrix rand = matrixFactory.createRand(probablities.getRows(), probablities.getColumns());
+		Matrix res = probablities.getActivations(matrixFactory).sub(rand);
+		EditableMatrix sample = matrixFactory.createMatrix(probablities.getRows(), probablities.getColumns())
+				.asEditableMatrix();
+		for (int r = 0; r < sample.getRows(); r++) {
+			for (int c = 0; c < sample.getColumns(); c++) {
 
-        if (res.get(r, c) > 0) {
-          sample.put(r, c, 1);
-        }
-      }
-    }
-    return new NeuronsActivationImpl(probablities.getNeurons(), sample, probablities.getFeatureOrientation());
-  }
+				if (res.get(r, c) > 0) {
+					sample.put(r, c, 1);
+				}
+			}
+		}
+		return new NeuronsActivationImpl(probablities.getNeurons(), sample, probablities.getFeatureOrientation());
+	}
 }

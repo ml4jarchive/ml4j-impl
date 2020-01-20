@@ -14,8 +14,9 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 	private Images images;
 	private boolean immutable;
 	private Integer exampleCount;
-	
-	public ImageNeuronsActivationImpl(Neurons3D neurons, Images images, NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
+
+	public ImageNeuronsActivationImpl(Neurons3D neurons, Images images,
+			NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
 		this.neurons = neurons;
 		this.images = images;
 		setImmutable(immutable);
@@ -24,7 +25,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		}
 		this.exampleCount = images.getExamples();
 	}
-	
+
 	public ImageNeuronsActivationImpl(Matrix activations, Neurons3D neurons,
 			NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
 		if (featureOrientation == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
@@ -32,11 +33,11 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		}
 		this.neurons = neurons;
 		if (neurons.getDepth() == 1) {
-			images = new SingleChannelImages(activations.getRowByRowArray(), 0, neurons.getHeight(),
-					neurons.getWidth(), 0, 0, activations.getColumns());
+			images = new SingleChannelImages(activations.getRowByRowArray(), 0, neurons.getHeight(), neurons.getWidth(),
+					0, 0, activations.getColumns());
 		} else {
-			images = new MultiChannelImages(activations.getRowByRowArray(), neurons.getDepth(),
-					neurons.getHeight(), neurons.getWidth(), 0, 0, activations.getColumns());
+			images = new MultiChannelImages(activations.getRowByRowArray(), neurons.getDepth(), neurons.getHeight(),
+					neurons.getWidth(), 0, 0, activations.getColumns());
 		}
 		setImmutable(immutable);
 		this.exampleCount = images.getExamples();
@@ -46,22 +47,23 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 	public void addInline(MatrixFactory matrixFactory, NeuronsActivation other) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/*
-	private ImageNeuronsActivation combineFeatures(ImageNeuronsActivation other) {
-		if (other.getFeatureOrientation() != getFeatureOrientation()) {
-			throw new IllegalArgumentException();
-		}
-		Images channelConcatImages = new ChannelConcatImages(Arrays.asList(images, other.getImages()), neurons.getHeight(), neurons.getWidth(), 0, 0, exampleCount);
-		Neurons3D channelConcatNeurons = new Neurons3D(neurons.getWidth(), neurons.getHeight(), neurons.getDepth() + other.getNeurons().getDepth(), false);
-		return new ImageNeuronsActivationImpl(channelConcatNeurons, channelConcatImages, getFeatureOrientation(), other.isImmutable() || isImmutable());
-	}
-	*/
+	 * private ImageNeuronsActivation combineFeatures(ImageNeuronsActivation other)
+	 * { if (other.getFeatureOrientation() != getFeatureOrientation()) { throw new
+	 * IllegalArgumentException(); } Images channelConcatImages = new
+	 * ChannelConcatImages(Arrays.asList(images, other.getImages()),
+	 * neurons.getHeight(), neurons.getWidth(), 0, 0, exampleCount); Neurons3D
+	 * channelConcatNeurons = new Neurons3D(neurons.getWidth(), neurons.getHeight(),
+	 * neurons.getDepth() + other.getNeurons().getDepth(), false); return new
+	 * ImageNeuronsActivationImpl(channelConcatNeurons, channelConcatImages,
+	 * getFeatureOrientation(), other.isImmutable() || isImmutable()); }
+	 */
 
 	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
@@ -164,7 +166,6 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		imageWithPadding.setPaddingWidth(paddingWidth);
 		return imageWithPadding.im2colConvExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
 	}
-
 
 	@Override
 	public Matrix im2ColPool(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,

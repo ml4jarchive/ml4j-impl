@@ -564,7 +564,7 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	public Matrix softDup() {
 		return createJBlasMatrix(softDupFloatMatrix(getMatrix()), false);
 	}
-	
+
 	public FloatMatrix softDupFloatMatrix(FloatMatrix matrix) {
 		return new FloatMatrix(matrix.getRows(), matrix.getColumns(), matrix.data);
 	}

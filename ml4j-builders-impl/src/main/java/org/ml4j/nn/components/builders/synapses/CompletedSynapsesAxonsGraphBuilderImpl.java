@@ -31,37 +31,38 @@ import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder<T>, T extends NeuralComponent> extends BaseGraphBuilderImpl<CompletedSynapsesAxonsGraphBuilder<P, T>, T> implements CompletedSynapsesAxonsGraphBuilder<P, T>, SynapsesEnder<P> {
+public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder<T>, T extends NeuralComponent>
+		extends BaseGraphBuilderImpl<CompletedSynapsesAxonsGraphBuilder<P, T>, T>
+		implements CompletedSynapsesAxonsGraphBuilder<P, T>, SynapsesEnder<P> {
 
 	private Supplier<P> previousSupplier;
-	
-	public CompletedSynapsesAxonsGraphBuilderImpl(Supplier<P> previousSupplier, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
-			List<T> components) {
+
+	public CompletedSynapsesAxonsGraphBuilderImpl(Supplier<P> previousSupplier,
+			NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
+			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(directedComponentFactory, builderState, directedComponentsContext, components);
 		this.previousSupplier = previousSupplier;
 	}
 
 	@Override
 	public ParallelPathsBuilder<AxonsSubGraphBuilder<CompletedSynapsesAxonsGraphBuilder<P, T>, T>> withParallelPaths() {
-		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory,() -> this, directedComponentsContext);
-	}
-	
-	@Override
-	public AxonsGraphSkipConnectionBuilder<CompletedSynapsesAxonsGraphBuilder<P, T>, T> withSkipConnection() {
-		return new AxonsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, () -> this, directedComponentsContext);
 	}
 
 	@Override
-	public SynapsesEnder<P> withActivationFunction(
-			DifferentiableActivationFunction activationFunction) {
+	public AxonsGraphSkipConnectionBuilder<CompletedSynapsesAxonsGraphBuilder<P, T>, T> withSkipConnection() {
+		return new AxonsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState,
+				directedComponentsContext, new ArrayList<>());
+	}
+
+	@Override
+	public SynapsesEnder<P> withActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addActivationFunction(activationFunction);
 		return this;
 	}
-	
+
 	@Override
-	public SynapsesEnder<P> withActivationFunction(
-			ActivationFunctionType activationFunctionType) {
+	public SynapsesEnder<P> withActivationFunction(ActivationFunctionType activationFunctionType) {
 		addActivationFunction(activationFunctionType);
 		return this;
 	}
@@ -70,13 +71,16 @@ public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder<T>, T
 	public P endSynapses() {
 		addAxonsIfApplicable();
 		this.previousSupplier.get().addAxonsIfApplicable();
-		this.previousSupplier.get().getComponentsGraphNeurons().setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
-		this.previousSupplier.get().getComponentsGraphNeurons().setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
-		this.previousSupplier.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
+		this.previousSupplier.get().getComponentsGraphNeurons()
+				.setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
+		this.previousSupplier.get().getComponentsGraphNeurons()
+				.setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
+		this.previousSupplier.get().getComponentsGraphNeurons()
+				.setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 		// TODO ML Here we would add the synapses instead of the chain
 		T chain = directedComponentFactory.createDirectedComponentChain(this.getComponents());
 		previousSupplier.get().addComponent(chain);
-		
+
 		return previousSupplier.get();
 	}
 

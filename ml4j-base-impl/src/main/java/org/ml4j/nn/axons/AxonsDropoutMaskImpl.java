@@ -22,7 +22,7 @@ import org.ml4j.Matrix;
  *
  */
 public class AxonsDropoutMaskImpl implements AxonsDropoutMask {
-	
+
 	private Matrix dropoutMask;
 	private AxonsDropoutMaskType type;
 
@@ -30,7 +30,7 @@ public class AxonsDropoutMaskImpl implements AxonsDropoutMask {
 		this.dropoutMask = dropoutMask;
 		this.type = type;
 	}
-	
+
 	@Override
 	public Matrix getDropoutMask() {
 		return dropoutMask;

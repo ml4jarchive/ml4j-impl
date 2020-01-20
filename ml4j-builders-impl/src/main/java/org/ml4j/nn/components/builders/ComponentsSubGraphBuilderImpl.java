@@ -25,10 +25,13 @@ import org.ml4j.nn.components.builders.componentsgraph.ComponentsSubGraphBuilder
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, T extends NeuralComponent> extends ComponentsNestedGraphBuilderImpl<P, ComponentsSubGraphBuilder<P, T>, T> implements ComponentsSubGraphBuilder<P, T>, PathEnder<P, ComponentsSubGraphBuilder<P, T>> {
-	
-	public ComponentsSubGraphBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState, 
-			DirectedComponentsContext directedComponentsContext, List<T> components) {
+public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+		extends ComponentsNestedGraphBuilderImpl<P, ComponentsSubGraphBuilder<P, T>, T>
+		implements ComponentsSubGraphBuilder<P, T>, PathEnder<P, ComponentsSubGraphBuilder<P, T>> {
+
+	public ComponentsSubGraphBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory,
+			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			List<T> components) {
 		super(parentGraph, directedComponentFactory, builderState, directedComponentsContext, components);
 	}
 
@@ -44,6 +47,7 @@ public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons
 
 	@Override
 	protected ComponentsSubGraphBuilder<P, T> createNewNestedGraphBuilder() {
-		return new ComponentsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState, directedComponentsContext, new ArrayList<>());
+		return new ComponentsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState,
+				directedComponentsContext, new ArrayList<>());
 	}
 }

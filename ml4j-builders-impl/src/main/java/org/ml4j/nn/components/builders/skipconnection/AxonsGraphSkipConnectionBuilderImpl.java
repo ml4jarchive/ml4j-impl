@@ -30,14 +30,15 @@ import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
 
-public class AxonsGraphSkipConnectionBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent> extends BaseNestedGraphBuilderImpl<C, AxonsGraphSkipConnectionBuilder<C, T>, T> 
-implements AxonsGraphSkipConnectionBuilder<C, T>, SkipConnectionEnder<C> {
+public class AxonsGraphSkipConnectionBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+		extends BaseNestedGraphBuilderImpl<C, AxonsGraphSkipConnectionBuilder<C, T>, T>
+		implements AxonsGraphSkipConnectionBuilder<C, T>, SkipConnectionEnder<C> {
 
 	protected C builder;
-	
-	public AxonsGraphSkipConnectionBuilderImpl(Supplier<C> previousSupplier, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
-			List<T> components) {
+
+	public AxonsGraphSkipConnectionBuilderImpl(Supplier<C> previousSupplier,
+			NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
+			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(previousSupplier, directedComponentFactory, builderState, directedComponentsContext, components);
 	}
 
@@ -46,16 +47,16 @@ implements AxonsGraphSkipConnectionBuilder<C, T>, SkipConnectionEnder<C> {
 		return this;
 	}
 
-
 	@Override
 	public AxonsGraphSkipConnectionBuilder<AxonsGraphSkipConnectionBuilder<C, T>, T> withSkipConnection() {
-		return new AxonsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new AxonsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState,
+				directedComponentsContext, new ArrayList<>());
 	}
-	
 
 	@Override
 	public ParallelPathsBuilder<AxonsSubGraphBuilder<AxonsGraphSkipConnectionBuilder<C, T>, T>> withParallelPaths() {
-		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory,this::getBuilder, directedComponentsContext);
+		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder,
+				directedComponentsContext);
 	}
 
 	@Override
@@ -67,6 +68,7 @@ implements AxonsGraphSkipConnectionBuilder<C, T>, SkipConnectionEnder<C> {
 
 	@Override
 	protected AxonsGraphSkipConnectionBuilder<C, T> createNewNestedGraphBuilder() {
-		return new AxonsGraphSkipConnectionBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState, directedComponentsContext, new ArrayList<>());
+		return new AxonsGraphSkipConnectionBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState,
+				directedComponentsContext, new ArrayList<>());
 	}
 }

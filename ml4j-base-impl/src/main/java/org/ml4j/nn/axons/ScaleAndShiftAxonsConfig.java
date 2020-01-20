@@ -37,10 +37,10 @@ public class ScaleAndShiftAxonsConfig extends AxonsConfig {
 	/**
 	 * Configure scale and shift axons.
 	 * 
-	 * @param initialScaleRowVector
-	 *            A row vector consisting of the scalings for each output neuron.
-	 * @param initialShiftRowVector
-	 *            A row vector consisting of the shifts for each output neuron.
+	 * @param initialScaleRowVector A row vector consisting of the scalings for each
+	 *                              output neuron.
+	 * @param initialShiftRowVector A row vector consisting of the shifts for each
+	 *                              output neuron.
 	 */
 	public ScaleAndShiftAxonsConfig(Matrix initialScaleColumnVector, Matrix initialShiftColumnVector) {
 		super();

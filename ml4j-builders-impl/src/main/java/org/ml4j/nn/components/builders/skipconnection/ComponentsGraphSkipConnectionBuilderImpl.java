@@ -25,9 +25,12 @@ import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
 
-public class ComponentsGraphSkipConnectionBuilderImpl<P extends ComponentsContainer<Neurons, T>, T extends NeuralComponent> extends ComponentsNestedGraphBuilderImpl<P, ComponentsGraphSkipConnectionBuilder<P, T>, T> implements ComponentsGraphSkipConnectionBuilder<P, T> {
+public class ComponentsGraphSkipConnectionBuilderImpl<P extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+		extends ComponentsNestedGraphBuilderImpl<P, ComponentsGraphSkipConnectionBuilder<P, T>, T>
+		implements ComponentsGraphSkipConnectionBuilder<P, T> {
 
-	public ComponentsGraphSkipConnectionBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState, 
+	public ComponentsGraphSkipConnectionBuilderImpl(Supplier<P> parentGraph,
+			NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
 			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(parentGraph, directedComponentFactory, builderState, directedComponentsContext, components);
 	}
@@ -46,6 +49,7 @@ public class ComponentsGraphSkipConnectionBuilderImpl<P extends ComponentsContai
 
 	@Override
 	protected ComponentsGraphSkipConnectionBuilder<P, T> createNewNestedGraphBuilder() {
-		return new ComponentsGraphSkipConnectionBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState, directedComponentsContext, components);
+		return new ComponentsGraphSkipConnectionBuilderImpl<>(parentGraph, directedComponentFactory,
+				initialBuilderState, directedComponentsContext, components);
 	}
 }

@@ -25,19 +25,20 @@ import org.ml4j.nn.layers.FeedForwardLayer;
  *
  * @author Michael Lavelle
  */
-public abstract class LayeredFeedForwardNeuralNetworkBase<C extends LayeredFeedForwardNeuralNetworkContext, 
-    N extends LayeredFeedForwardNeuralNetwork<C,N>> 
-    extends FeedForwardNeuralNetworkBase<C, DirectedLayerChain<FeedForwardLayer<?,?>>, N> implements LayeredNeuralNetwork<FeedForwardLayer<?,?>, C, N> {
+public abstract class LayeredFeedForwardNeuralNetworkBase<C extends LayeredFeedForwardNeuralNetworkContext, N extends LayeredFeedForwardNeuralNetwork<C, N>>
+		extends FeedForwardNeuralNetworkBase<C, DirectedLayerChain<FeedForwardLayer<?, ?>>, N>
+		implements LayeredNeuralNetwork<FeedForwardLayer<?, ?>, C, N> {
 
 	/**
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public LayeredFeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory, DirectedLayerChain<FeedForwardLayer<?,?>> initialisingComponentChain) {
+	public LayeredFeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory,
+			DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
 		super(directedComponentFactory, initialisingComponentChain);
 	}
-	
+
 	@Override
 	public List<FeedForwardLayer<?, ?>> getLayers() {
 		return initialisingComponentChain.getComponents();
@@ -60,9 +61,7 @@ public abstract class LayeredFeedForwardNeuralNetworkBase<C extends LayeredFeedF
 
 	@Override
 	public FeedForwardLayer<?, ?> getFinalLayer() {
-		return initialisingComponentChain.getComponents().get(getNumberOfLayers() -1);
+		return initialisingComponentChain.getComponents().get(getNumberOfLayers() - 1);
 	}
-	
-	
 
 }

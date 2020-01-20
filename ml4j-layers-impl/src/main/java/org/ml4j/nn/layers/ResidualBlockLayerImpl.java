@@ -41,7 +41,8 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 	 */
 	public ResidualBlockLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
 			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2, MatrixFactory matrixFactory) {
-		super(directedComponentFactory, createComponentChain(directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
+		super(directedComponentFactory,
+				createComponentChain(directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
 				matrixFactory);
 		this.layer1 = layer1;
 		this.layer2 = layer2;
@@ -49,9 +50,8 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		this.axonsFactory = axonsFactory;
 	}
 
-	private static DefaultDirectedComponentChain createPrecedingChain(
-			DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> layer1,
-			FeedForwardLayer<?, ?> layer2) {
+	private static DefaultDirectedComponentChain createPrecedingChain(DirectedComponentFactory directedComponentFactory,
+			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2) {
 
 		// Start with all components
 		List<DefaultChainableDirectedComponent<?, ?>> allComponents = new ArrayList<>();
@@ -60,14 +60,13 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 		// Set preceedingComponents list to have all but the last synapses
 		List<DefaultChainableDirectedComponent<?, ?>> preceedingComponents = new ArrayList<>();
-		for (DefaultChainableDirectedComponent<?, ?> comp : allComponents.subList(0,
-				allComponents.size() - 1)) {
+		for (DefaultChainableDirectedComponent<?, ?> comp : allComponents.subList(0, allComponents.size() - 1)) {
 			preceedingComponents.add(comp);
 		}
 
 		// Create an axons only component from the last synapses
-		DirectedAxonsComponent<?, ?, ?> axonsComponent = directedComponentFactory
-				.createDirectedAxonsComponent((Axons<? extends Neurons, ? extends Neurons, ?>) layer2.getPrimaryAxons());
+		DirectedAxonsComponent<?, ?, ?> axonsComponent = directedComponentFactory.createDirectedAxonsComponent(
+				(Axons<? extends Neurons, ? extends Neurons, ?>) layer2.getPrimaryAxons());
 		preceedingComponents.add(axonsComponent);
 
 		// Return the component chain consisting of all components except the last
@@ -76,17 +75,17 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 	}
 
-	private static DefaultDirectedComponentChain createComponentChain(
-			DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, FeedForwardLayer<?, ?> layer1,
-			FeedForwardLayer<?, ?> layer2, MatrixFactory matrixFactory) {
+	private static DefaultDirectedComponentChain createComponentChain(DirectedComponentFactory directedComponentFactory,
+			AxonsFactory axonsFactory, FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2,
+			MatrixFactory matrixFactory) {
 
 		// Final activation function component
 		DifferentiableActivationFunctionComponent finalActivationFunctionComponent = directedComponentFactory
-				.createDifferentiableActivationFunctionComponent(layer2.getOutputNeurons(), layer2.getPrimaryActivationFunction());
+				.createDifferentiableActivationFunctionComponent(layer2.getOutputNeurons(),
+						layer2.getPrimaryActivationFunction());
 
 		// Chain of components before the final activation function component
-		DefaultDirectedComponentChain precedingChain = createPrecedingChain(
-				directedComponentFactory, layer1, layer2);
+		DefaultDirectedComponentChain precedingChain = createPrecedingChain(directedComponentFactory, layer1, layer2);
 
 		List<DefaultChainableDirectedComponent<?, ?>> matchingAxonsList = new ArrayList<>();
 
@@ -102,8 +101,8 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		}
 
 		// Skip connection chain, either empty or containing the matching axons
-		DefaultDirectedComponentChain skipConnectionChain = directedComponentFactory.createDirectedComponentChain(
-				matchingAxonsList);
+		DefaultDirectedComponentChain skipConnectionChain = directedComponentFactory
+				.createDirectedComponentChain(matchingAxonsList);
 
 		// Parallel Chains of preceding chain and skip connection
 		List<DefaultChainableDirectedComponent<?, ?>> parallelChains = new ArrayList<>();
@@ -111,22 +110,24 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		parallelChains.add(skipConnectionChain);
 
 		// Parallel Chain Batch of preceding chain and skip connection
-		//DefaultDirectedComponentChainBatch parallelBatch = directedComponentFactory.createDirectedComponentChainBatch(
-			//	parallelChains);
+		// DefaultDirectedComponentChainBatch parallelBatch =
+		// directedComponentFactory.createDirectedComponentChainBatch(
+		// parallelChains);
 
 		// Parallel Chain Graph of preceding chain and skip connection
 		// TODO - remove nulls
-		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory.createDirectedComponentBipoleGraph(null, null,
-				parallelChains, PathCombinationStrategy.ADDITION);
+		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory
+				.createDirectedComponentBipoleGraph(null, null, parallelChains, PathCombinationStrategy.ADDITION);
 
 		// Residual block component list is composed of the parallel chain graph
 		// followed by the final activation function
-		List<DefaultChainableDirectedComponent<?,  ?>> residualBlockListOfComponents = Arrays
-				.asList(parallelGraph, finalActivationFunctionComponent);
+		List<DefaultChainableDirectedComponent<?, ?>> residualBlockListOfComponents = Arrays.asList(parallelGraph,
+				finalActivationFunctionComponent);
 
 		// Create a DirectedComponentChain from the list of components, that has an
 		// activation function as the final component
-		return new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, residualBlockListOfComponents);
+		return new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory,
+				residualBlockListOfComponents);
 	}
 
 	@Override

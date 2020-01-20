@@ -29,32 +29,36 @@ import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class SynapsesAxonsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent> extends BaseGraphBuilderImpl<CompletedSynapsesAxonsGraphBuilder<C, T>, T> implements SynapsesAxonsGraphBuilder<C, T> {
+public class SynapsesAxonsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent> extends
+		BaseGraphBuilderImpl<CompletedSynapsesAxonsGraphBuilder<C, T>, T> implements SynapsesAxonsGraphBuilder<C, T> {
 
 	private Supplier<C> previousSupplier;
 	private CompletedSynapsesAxonsGraphBuilder<C, T> builder;
-	
-	public SynapsesAxonsGraphBuilderImpl(Supplier<C> previousSupplier, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
-			List<T> components) {
+
+	public SynapsesAxonsGraphBuilderImpl(Supplier<C> previousSupplier,
+			NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
+			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(directedComponentFactory, builderState, directedComponentsContext, components);
 		this.previousSupplier = previousSupplier;
 	}
 
 	@Override
 	public ParallelPathsBuilder<AxonsSubGraphBuilder<CompletedSynapsesAxonsGraphBuilder<C, T>, T>> withParallelPaths() {
-		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder, directedComponentsContext);
+		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder,
+				directedComponentsContext);
 	}
-	
+
 	@Override
 	public AxonsGraphSkipConnectionBuilder<CompletedSynapsesAxonsGraphBuilder<C, T>, T> withSkipConnection() {
-		return new AxonsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new AxonsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState,
+				directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
 	public CompletedSynapsesAxonsGraphBuilder<C, T> getBuilder() {
 		if (builder == null) {
-			builder = new CompletedSynapsesAxonsGraphBuilderImpl<>(previousSupplier, directedComponentFactory, builderState, directedComponentsContext, components);
+			builder = new CompletedSynapsesAxonsGraphBuilderImpl<>(previousSupplier, directedComponentFactory,
+					builderState, directedComponentsContext, components);
 		}
 		return builder;
 	}

@@ -58,6 +58,6 @@ public class DirectedLayerActivationImpl implements DirectedLayerActivation {
 
 	@Override
 	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
-		componentChainActivation.close(completedLifeCycleStage);		
+		componentChainActivation.close(completedLifeCycleStage);
 	}
 }

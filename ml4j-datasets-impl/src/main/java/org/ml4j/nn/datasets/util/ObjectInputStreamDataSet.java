@@ -29,22 +29,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ObjectInputStreamDataSet<E> implements DataSet<E> {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectInputStreamDataSet.class);
-	
+
 	private Supplier<ObjectInputStream> objectInputStreamSupplier;
 	private Class<E> cls;
-	
+
 	public ObjectInputStreamDataSet(Supplier<ObjectInputStream> objectInputStreamSupplier, Class<E> cls) {
-		this.objectInputStreamSupplier = objectInputStreamSupplier; 
+		this.objectInputStreamSupplier = objectInputStreamSupplier;
 		this.cls = cls;
 	}
-	
+
 	public ObjectInputStreamDataSet(File file, Class<E> cls) {
-		this.objectInputStreamSupplier = () -> createObjectInputStream(file); 
+		this.objectInputStreamSupplier = () -> createObjectInputStream(file);
 		this.cls = cls;
 	}
-	
+
 	private ObjectInputStream createObjectInputStream(File file) {
 		try {
 			FileInputStream fis = new FileInputStream(file);
@@ -55,7 +55,7 @@ public class ObjectInputStreamDataSet<E> implements DataSet<E> {
 					fis.close();
 					throw new UncheckedIOException(e);
 				} catch (IOException e1) {
-					LOGGER.warn("Unable to close file input stream", e1);					
+					LOGGER.warn("Unable to close file input stream", e1);
 					throw new UncheckedIOException(e);
 				}
 			}

@@ -31,71 +31,71 @@ import org.ml4j.nn.synapses.DirectedSynapsesContextImpl;
  */
 public class DirectedLayerContextImpl implements DirectedLayerContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  /**
-   * The MatrixFactory we configure for this context.
-   */
-  private MatrixFactory matrixFactory;
-  
-  private int layerIndex;
-  
-  private boolean withFreezeOut;
-  private boolean isTrainingContext;
-  private Map<Integer, DirectedSynapsesContext> synapsesContextsBySynapsesIndex;
-  
-  /**
-   * Construct a new DirectedLayerContext.
-   * 
-   * @param layerIndex The index of the layer
-   * @param matrixFactory The MatrixFactory we configure for this context
-   */
-  public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
-    this.matrixFactory = matrixFactory;
-    this.layerIndex = layerIndex;
-    this.synapsesContextsBySynapsesIndex = new HashMap<>();
-    this.isTrainingContext = isTrainingContext;
-  }
- 
-  @Override
-  public MatrixFactory getMatrixFactory() {
-    return matrixFactory;
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public DirectedSynapsesContext getSynapsesContext(int synapsesIndex) {
+	/**
+	 * The MatrixFactory we configure for this context.
+	 */
+	private MatrixFactory matrixFactory;
 
-    DirectedSynapsesContext synapsesContext = synapsesContextsBySynapsesIndex.get(synapsesIndex);
-    if (synapsesContext == null) {
-      synapsesContext = new DirectedSynapsesContextImpl(matrixFactory, isTrainingContext, withFreezeOut);
+	private int layerIndex;
 
-    }
-    if (synapsesContext.isWithFreezeOut() != withFreezeOut) {
-      synapsesContext.setWithFreezeOut(withFreezeOut);
-      synapsesContextsBySynapsesIndex.put(synapsesIndex, synapsesContext);
-    }
+	private boolean withFreezeOut;
+	private boolean isTrainingContext;
+	private Map<Integer, DirectedSynapsesContext> synapsesContextsBySynapsesIndex;
 
-    return synapsesContext;
-  }
-  
-  public boolean isWithFreezeOut() {
-    return withFreezeOut;
-  }
+	/**
+	 * Construct a new DirectedLayerContext.
+	 * 
+	 * @param layerIndex    The index of the layer
+	 * @param matrixFactory The MatrixFactory we configure for this context
+	 */
+	public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
+		this.matrixFactory = matrixFactory;
+		this.layerIndex = layerIndex;
+		this.synapsesContextsBySynapsesIndex = new HashMap<>();
+		this.isTrainingContext = isTrainingContext;
+	}
 
-  public void setWithFreezeOut(boolean withFreezeOut) {
-    this.withFreezeOut = withFreezeOut;
-  }
+	@Override
+	public MatrixFactory getMatrixFactory() {
+		return matrixFactory;
+	}
 
-  @Override
-  public String toString() {
-    return "DirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
-  }
+	@Override
+	public DirectedSynapsesContext getSynapsesContext(int synapsesIndex) {
 
-@Override
-public boolean isTrainingContext() {
-	return isTrainingContext;
-} 
+		DirectedSynapsesContext synapsesContext = synapsesContextsBySynapsesIndex.get(synapsesIndex);
+		if (synapsesContext == null) {
+			synapsesContext = new DirectedSynapsesContextImpl(matrixFactory, isTrainingContext, withFreezeOut);
+
+		}
+		if (synapsesContext.isWithFreezeOut() != withFreezeOut) {
+			synapsesContext.setWithFreezeOut(withFreezeOut);
+			synapsesContextsBySynapsesIndex.put(synapsesIndex, synapsesContext);
+		}
+
+		return synapsesContext;
+	}
+
+	public boolean isWithFreezeOut() {
+		return withFreezeOut;
+	}
+
+	public void setWithFreezeOut(boolean withFreezeOut) {
+		this.withFreezeOut = withFreezeOut;
+	}
+
+	@Override
+	public String toString() {
+		return "DirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
+	}
+
+	@Override
+	public boolean isTrainingContext() {
+		return isTrainingContext;
+	}
 }

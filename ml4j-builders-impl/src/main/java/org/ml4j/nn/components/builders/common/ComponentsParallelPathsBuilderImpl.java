@@ -23,25 +23,28 @@ import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsSubGraphBuilder;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class ComponentsParallelPathsBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent> implements ParallelPathsBuilder<ComponentsSubGraphBuilder<C, T>> {
+public class ComponentsParallelPathsBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+		implements ParallelPathsBuilder<ComponentsSubGraphBuilder<C, T>> {
 
 	private NeuralComponentFactory<T> directedComponentFactory;
 	private Supplier<C> previousSupplier;
 	private ComponentsSubGraphBuilder<C, T> currentPath;
 	private DirectedComponentsContext directedComponentsContext;
-	
-	public ComponentsParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, Supplier<C> previousSupplier, DirectedComponentsContext directedComponentsContext) {
+
+	public ComponentsParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
+			Supplier<C> previousSupplier, DirectedComponentsContext directedComponentsContext) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.previousSupplier = previousSupplier;
 		this.directedComponentsContext = directedComponentsContext;
 	}
-	
+
 	@Override
 	public ComponentsSubGraphBuilder<C, T> withPath() {
 		if (currentPath != null) {
 			throw new UnsupportedOperationException("Multiple paths not yet supported");
 		}
-		currentPath =  new ComponentsSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory, previousSupplier.get().getBuilderState(), directedComponentsContext, new ArrayList<>());
+		currentPath = new ComponentsSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory,
+				previousSupplier.get().getBuilderState(), directedComponentsContext, new ArrayList<>());
 		return currentPath;
 	}
 }

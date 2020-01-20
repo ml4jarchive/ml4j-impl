@@ -29,67 +29,73 @@ import org.ml4j.nn.neurons.Neurons;
  * 
  * @author Michael Lavelle
  */
-public class FullyConnectedFeedForwardLayerImpl 
-    extends FeedForwardLayerBase<FullyConnectedAxons, FullyConnectedFeedForwardLayer>
-    implements FullyConnectedFeedForwardLayer {
+public class FullyConnectedFeedForwardLayerImpl
+		extends FeedForwardLayerBase<FullyConnectedAxons, FullyConnectedFeedForwardLayer>
+		implements FullyConnectedFeedForwardLayer {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
- 
-  /**
-   * @param directedComponentFactory A factory implementation to create directed components.
-   * @param primaryAxons The primary Axons
-   * @param activationFunction The primary activation function.
-   * @param matrixFactory The matrix factory.
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  public FullyConnectedFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, FullyConnectedAxons primaryAxons,
-      DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, 
-      boolean withBatchNorm) {
-    super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
-  }
-  
-  /**
-   * 
-   * @param directedComponentFactory A factory implementation to create directed components.
-   * @param axonsFactory A factory implementation to create axons.
-   * @param inputNeurons The input Neurons.
-   * @param outputNeurons The output Neurons
-   * @param primaryActivationFunction The primary activation function.
-   * @param matrixFactory The MatrixFactory to use to initialise the weights
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  public FullyConnectedFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, Neurons inputNeurons, Neurons outputNeurons,
-      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory, 
-      boolean withBatchNorm) {
-    super(
-        directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, null, null),
-        primaryActivationFunction, matrixFactory, withBatchNorm);
-  }
-  
-  /**
-   * @param directedComponentFactory A factory implementation to create directed components.
-   * @param axonsFactory A factory implementation to create axons.
-   * @param inputNeurons The input Neurons.
-   * @param outputNeurons The output Neurons
-   * @param primaryActivationFunction The primary activation function.
-   * @param matrixFactory The MatrixFactory to use to initialise the weights
-   * @param connectionWeights The connection weights
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  public FullyConnectedFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, Neurons inputNeurons, Neurons outputNeurons,
-      DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-      Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
-    super(
-        directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, connectionWeights, biases),
-        primaryActivationFunction, matrixFactory, withBatchNorm);
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public FullyConnectedFeedForwardLayer dup() {
-    return new FullyConnectedFeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(), 
-        primaryActivationFunction, matrixFactory, withBatchNorm);
-  }
+	/**
+	 * @param directedComponentFactory A factory implementation to create directed
+	 *                                 components.
+	 * @param primaryAxons             The primary Axons
+	 * @param activationFunction       The primary activation function.
+	 * @param matrixFactory            The matrix factory.
+	 * @param withBatchNorm            Whether to enable batch norm.
+	 */
+	public FullyConnectedFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+			FullyConnectedAxons primaryAxons, DifferentiableActivationFunction activationFunction,
+			MatrixFactory matrixFactory, boolean withBatchNorm) {
+		super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
+	}
+
+	/**
+	 * 
+	 * @param directedComponentFactory  A factory implementation to create directed
+	 *                                  components.
+	 * @param axonsFactory              A factory implementation to create axons.
+	 * @param inputNeurons              The input Neurons.
+	 * @param outputNeurons             The output Neurons
+	 * @param primaryActivationFunction The primary activation function.
+	 * @param matrixFactory             The MatrixFactory to use to initialise the
+	 *                                  weights
+	 * @param withBatchNorm             Whether to enable batch norm.
+	 */
+	public FullyConnectedFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+			AxonsFactory axonsFactory, Neurons inputNeurons, Neurons outputNeurons,
+			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
+			boolean withBatchNorm) {
+		super(directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, null, null),
+				primaryActivationFunction, matrixFactory, withBatchNorm);
+	}
+
+	/**
+	 * @param directedComponentFactory  A factory implementation to create directed
+	 *                                  components.
+	 * @param axonsFactory              A factory implementation to create axons.
+	 * @param inputNeurons              The input Neurons.
+	 * @param outputNeurons             The output Neurons
+	 * @param primaryActivationFunction The primary activation function.
+	 * @param matrixFactory             The MatrixFactory to use to initialise the
+	 *                                  weights
+	 * @param connectionWeights         The connection weights
+	 * @param withBatchNorm             Whether to enable batch norm.
+	 */
+	public FullyConnectedFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+			AxonsFactory axonsFactory, Neurons inputNeurons, Neurons outputNeurons,
+			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
+			Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
+		super(directedComponentFactory,
+				axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, connectionWeights, biases),
+				primaryActivationFunction, matrixFactory, withBatchNorm);
+	}
+
+	@Override
+	public FullyConnectedFeedForwardLayer dup() {
+		return new FullyConnectedFeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(),
+				primaryActivationFunction, matrixFactory, withBatchNorm);
+	}
 }

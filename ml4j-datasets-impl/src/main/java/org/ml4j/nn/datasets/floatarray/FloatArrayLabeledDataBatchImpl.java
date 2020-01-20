@@ -45,10 +45,9 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 		}
 		this.labelFeatureCount = labelFeatureCount;
 	}
-	
-	
 
-	public FloatArrayLabeledDataBatchImpl(DataBatch<float[]> dataBatch, DataBatch<float[]> labelBatch, int featureCount, int labelFeatureCount) {
+	public FloatArrayLabeledDataBatchImpl(DataBatch<float[]> dataBatch, DataBatch<float[]> labelBatch, int featureCount,
+			int labelFeatureCount) {
 		super(dataBatch, labelBatch);
 		this.featureCount = featureCount;
 		this.batchSize = dataBatch.size();
@@ -74,7 +73,8 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 				d.getValue().getData(), d.getValue().getLabel(), (int) d.getIndex()));
 
 		return new LabeledDataImpl<>(
-				new NeuronsActivationImpl(new Neurons(data.getColumns(), false), data.transpose(), NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
+				new NeuronsActivationImpl(new Neurons(data.getColumns(), false), data.transpose(),
+						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
 				new NeuronsActivationImpl(new Neurons(labels.getRows(), false), labels.transpose(),
 						NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
 	}
@@ -102,12 +102,12 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 		super.getLabelsSet().stream().forEach(f -> dataBatch.add(f));
 		return dataBatch;
 	}
-	
-	
+
 	@Override
-	public LabeledData<NeuronsActivation, NeuronsActivation> toNeuronsActivations(MatrixFactory matrixFactory) {
-		return new LabeledDataImpl<>(getDataSet().toNeuronsActivation(matrixFactory),
-				getLabelsSet().toNeuronsActivation(matrixFactory));
+	public LabeledData<NeuronsActivation, NeuronsActivation> toNeuronsActivations(MatrixFactory matrixFactory,
+			NeuronsActivationFeatureOrientation featureOrientation) {
+		return new LabeledDataImpl<>(getDataSet().toNeuronsActivation(matrixFactory, featureOrientation),
+				getLabelsSet().toNeuronsActivation(matrixFactory, featureOrientation));
 	}
 
 }

@@ -24,7 +24,8 @@ import org.ml4j.nn.components.builders.axonsgraph.Axons3DSubGraphBuilderImpl;
 import org.ml4j.nn.components.builders.axonsgraph.AxonsGraphBuilder;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class Axons3DParallelPathsBuilderImpl<C extends Axons3DGraphBuilder<C, D, T>, D extends AxonsGraphBuilder<D, T>, T extends NeuralComponent> implements ParallelPathsBuilder<Axons3DSubGraphBuilder<C, D, T>> {
+public class Axons3DParallelPathsBuilderImpl<C extends Axons3DGraphBuilder<C, D, T>, D extends AxonsGraphBuilder<D, T>, T extends NeuralComponent>
+		implements ParallelPathsBuilder<Axons3DSubGraphBuilder<C, D, T>> {
 
 	private NeuralComponentFactory<T> directedComponentFactory;
 	private Supplier<C> previousSupplier;
@@ -32,20 +33,24 @@ public class Axons3DParallelPathsBuilderImpl<C extends Axons3DGraphBuilder<C, D,
 	private DirectedComponentsContext directedComponentsContext;
 
 	private Axons3DSubGraphBuilder<C, D, T> currentPath;
-	
-	public Axons3DParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, Supplier<C> previousSupplier, Supplier<D> previousNon3DSupplier, DirectedComponentsContext directedComponentsContext) {
+
+	public Axons3DParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
+			Supplier<C> previousSupplier, Supplier<D> previousNon3DSupplier,
+			DirectedComponentsContext directedComponentsContext) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.previousSupplier = previousSupplier;
 		this.previousNon3DSupplier = previousNon3DSupplier;
 		this.directedComponentsContext = directedComponentsContext;
 	}
-	
+
 	@Override
 	public Axons3DSubGraphBuilder<C, D, T> withPath() {
 		if (currentPath != null) {
 			throw new UnsupportedOperationException("Multiple paths not yet supported");
 		}
-		currentPath =  new Axons3DSubGraphBuilderImpl<>(previousSupplier, previousNon3DSupplier, directedComponentFactory, previousSupplier.get().getBuilderState(), directedComponentsContext, new ArrayList<>());
+		currentPath = new Axons3DSubGraphBuilderImpl<>(previousSupplier, previousNon3DSupplier,
+				directedComponentFactory, previousSupplier.get().getBuilderState(), directedComponentsContext,
+				new ArrayList<>());
 		return currentPath;
 	}
 }

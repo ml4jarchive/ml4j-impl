@@ -17,7 +17,8 @@ import java.util.function.Supplier;
 
 import org.ml4j.nn.neurons.Neurons3D;
 
-public class UncompletedMaxPoolingAxonsBuilderImpl<C extends Axons3DBuilder<?>> extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedPoolingAxonsBuilder<C> {
+public class UncompletedPoolingAxonsBuilderImpl<C extends Axons3DBuilder<?>>
+		extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedPoolingAxonsBuilder<C> {
 
 	private int strideWidth = 1;
 	private int strideHeight = 1;
@@ -26,8 +27,8 @@ public class UncompletedMaxPoolingAxonsBuilderImpl<C extends Axons3DBuilder<?>> 
 	private Integer filterWidth;
 	private Integer filterHeight;
 	private boolean scaleOutputs;
-	
-	public UncompletedMaxPoolingAxonsBuilderImpl(Supplier<C> previousBuilder, Neurons3D leftNeurons) {
+
+	public UncompletedPoolingAxonsBuilderImpl(Supplier<C> previousBuilder, Neurons3D leftNeurons) {
 		super(previousBuilder, leftNeurons);
 	}
 
@@ -40,22 +41,24 @@ public class UncompletedMaxPoolingAxonsBuilderImpl<C extends Axons3DBuilder<?>> 
 	@Override
 	public UncompletedPoolingAxonsBuilder<C> withSamePadding() {
 		if (filterWidth != null) {
-			double paddingWidth =  ((double)((strideWidth-1) * this.getLeftNeurons().getWidth() - strideWidth + filterWidth))/2d;
-			int paddingWidthInt = (int)paddingWidth;
-			if (paddingWidth!= paddingWidthInt) {
+			double paddingWidth = ((double) ((strideWidth - 1) * this.getLeftNeurons().getWidth() - strideWidth
+					+ filterWidth)) / 2d;
+			int paddingWidthInt = (int) paddingWidth;
+			if (paddingWidth != paddingWidthInt) {
 				paddingWidthInt = paddingWidthInt + 1;
 			}
-			this.paddingWidth =paddingWidthInt;
-			
+			this.paddingWidth = paddingWidthInt;
+
 		}
 		if (filterHeight != null) {
-			double paddingHeight =  ((double)((strideHeight-1) * this.getLeftNeurons().getHeight() - strideHeight + filterHeight))/2d;
-			int paddingHeightInt = (int)paddingHeight;
+			double paddingHeight = ((double) ((strideHeight - 1) * this.getLeftNeurons().getHeight() - strideHeight
+					+ filterHeight)) / 2d;
+			int paddingHeightInt = (int) paddingHeight;
 			if (paddingHeight != paddingHeightInt) {
 				paddingHeightInt = paddingHeightInt + 1;
 			}
-			this.paddingHeight =paddingHeightInt;
-		}		
+			this.paddingHeight = paddingHeightInt;
+		}
 		return this;
 	}
 
