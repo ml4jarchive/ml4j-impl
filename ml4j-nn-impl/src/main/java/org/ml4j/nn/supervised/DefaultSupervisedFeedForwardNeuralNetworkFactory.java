@@ -8,11 +8,11 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 public class DefaultSupervisedFeedForwardNeuralNetworkFactory implements SupervisedFeedForwardNeuralNetworkFactory {
 
 	private DirectedComponentFactory directedComponentFactory;
-	
+
 	public DefaultSupervisedFeedForwardNeuralNetworkFactory(DirectedComponentFactory directedComponentFactory) {
 		this.directedComponentFactory = directedComponentFactory;
 	}
-	
+
 	@Override
 	public SupervisedFeedForwardNeuralNetwork createSupervisedFeedForwardNeuralNetwork(
 			List<DefaultChainableDirectedComponent<?, ?>> componentChain) {

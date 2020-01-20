@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ml4j</groupId>
@@ -13,14 +14,16 @@
 	<repositories>
 		<repository>
 			<id>ml4j-releases</id>
-			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/releases</url>
+			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/releases
+			</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>
 			<id>ml4j-snapshots</id>
-			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/snapshots</url>
+			<url>https://raw.githubusercontent.com/ml4j/mvn-repository/master/snapshots
+			</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -33,27 +36,26 @@
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.googlecode.netlib-java/netlib-java -->
-<dependency>
-    <groupId>com.googlecode.netlib-java</groupId>
-    <artifactId>netlib-java</artifactId>
-    <version>1.1</version>
-</dependency>
-		
 		<dependency>
-		    <groupId>org.nd4j</groupId>
-		    <artifactId>nd4j-native-platform</artifactId>
-		    <version>0.9.1</version>
+			<groupId>com.googlecode.netlib-java</groupId>
+			<artifactId>netlib-java</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>1.18.2</version>
-        <scope>provided</scope>
+			<groupId>org.nd4j</groupId>
+			<artifactId>nd4j-native-platform</artifactId>
+			<version>0.9.1</version>
 		</dependency>
 		<dependency>
-  			<groupId>org.jblas</groupId>
-  			<artifactId>jblas</artifactId>
-  			<version>1.2.4</version>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jblas</groupId>
+			<artifactId>jblas</artifactId>
+			<version>1.2.4</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -66,29 +68,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.17</version>
-				<executions>
-					<execution>
-						<id>validate</id>
-						<phase>validate</phase>
-						<configuration>
-							<configLocation>google_checks.xml</configLocation>
-							<encoding>UTF-8</encoding>
-							<consoleOutput>true</consoleOutput>
-							<failsOnError>false</failsOnError>
-							<failOnViolation>false</failOnViolation>
-							<violationSeverity>warning</violationSeverity>
-							<linkXRef>false</linkXRef>
-						</configuration>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -98,20 +77,6 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.3</version>
 			</plugin>
-			<!-- 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.17</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>checkstyle</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			 -->
 		</plugins>
 	</reporting>
 </project>

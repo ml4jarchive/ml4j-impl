@@ -45,7 +45,7 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutoEncoderImpl.class);
-	
+
 	private DirectedComponentFactory directedComponentFactory;
 
 	/**
@@ -54,7 +54,8 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	 * @param encodingLayer The encoding Layer
 	 * @param decodingLayer The decoding Layer
 	 */
-	public AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> encodingLayer, FeedForwardLayer<?, ?> decodingLayer) {
+	public AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> encodingLayer,
+			FeedForwardLayer<?, ?> decodingLayer) {
 		this(directedComponentFactory, new DirectedLayerChainImpl<>(Arrays.asList(encodingLayer, decodingLayer)));
 	}
 
@@ -67,7 +68,8 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 		this(directedComponentFactory, new DirectedLayerChainImpl<>(layers));
 	}
 
-	protected AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
+	protected AutoEncoderImpl(DirectedComponentFactory directedComponentFactory,
+			DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
 		super(directedComponentFactory, initialisingComponentChain);
 	}
 

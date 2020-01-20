@@ -8,31 +8,34 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 
 public class NeuronsActivationImpl implements NeuronsActivation {
-	
+
 	protected Matrix activations;
 	private boolean immutable;
 	private NeuronsActivationFeatureOrientation featureOrientation;
 	private Neurons neurons;
-	
-	public NeuronsActivationImpl( Neurons neurons, Matrix activations, NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
+
+	public NeuronsActivationImpl(Neurons neurons, Matrix activations,
+			NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
 		this.neurons = neurons;
 		this.activations = activations;
 		this.featureOrientation = featureOrientation;
 		this.immutable = immutable;
-	
+
 		if (neurons == null) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		/*
-		if (neurons.getNeuronCountExcludingBias() != (featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? activations.getRows() : activations.getColumns())) {
-			throw new IllegalArgumentException();
-		}
-		*/
-	
+		 * if (neurons.getNeuronCountExcludingBias() != (featureOrientation ==
+		 * NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ?
+		 * activations.getRows() : activations.getColumns())) { throw new
+		 * IllegalArgumentException(); }
+		 */
+
 	}
-	
-	public NeuronsActivationImpl( Neurons neurons, Matrix activations, NeuronsActivationFeatureOrientation featureOrientation) {
+
+	public NeuronsActivationImpl(Neurons neurons, Matrix activations,
+			NeuronsActivationFeatureOrientation featureOrientation) {
 		this(neurons, activations, featureOrientation, false);
 	}
 
@@ -50,7 +53,6 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		}
 		editableActivations.addi(other.getActivations(matrixFactory));
 	}
-	
 
 	@Override
 	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
@@ -89,7 +91,8 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		if (neurons.getNeuronCountIncludingBias() != neurons.getNeuronCountIncludingBias()) {
 			throw new IllegalArgumentException();
 		}
-		return new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable() || immutable);		
+		return new ImageNeuronsActivationImpl(activations, neurons, featureOrientation,
+				activations.isImmutable() || immutable);
 	}
 
 	@Override
@@ -99,7 +102,6 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 			activations = null;
 		}
 	}
-
 
 	@Override
 	public NeuronsActivation dup() {
@@ -121,12 +123,14 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 
 	@Override
 	public int getExampleCount() {
-		return featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? getColumns() : getRows();
+		return featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? getColumns()
+				: getRows();
 	}
 
 	@Override
 	public int getFeatureCount() {
-		return featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? getRows() : getColumns();
+		return featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? getRows()
+				: getColumns();
 	}
 
 	@Override
@@ -155,9 +159,9 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 			throw new IllegalStateException();
 		}
 		if (featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-			activations.asEditableMatrix().reshape(featureCount, exampleCount);		
+			activations.asEditableMatrix().reshape(featureCount, exampleCount);
 		} else {
-			activations.asEditableMatrix().reshape(exampleCount, featureCount);		
+			activations.asEditableMatrix().reshape(exampleCount, featureCount);
 		}
 	}
 

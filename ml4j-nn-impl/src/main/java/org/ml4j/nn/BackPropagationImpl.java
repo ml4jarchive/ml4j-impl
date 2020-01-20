@@ -26,14 +26,14 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  */
 public class BackPropagationImpl implements BackPropagation {
 
-  private DirectedComponentGradient<NeuronsActivation> gradient;
+	private DirectedComponentGradient<NeuronsActivation> gradient;
 
-  public BackPropagationImpl(DirectedComponentGradient<NeuronsActivation> gradient) {
-    this.gradient = gradient;
-  }
+	public BackPropagationImpl(DirectedComponentGradient<NeuronsActivation> gradient) {
+		this.gradient = gradient;
+	}
 
-  @Override
-  public DirectedComponentGradient<NeuronsActivation> getGradient() {
-    return gradient;
-  }
+	@Override
+	public DirectedComponentGradient<NeuronsActivation> getGradient() {
+		return gradient;
+	}
 }

@@ -28,22 +28,22 @@ public class AxonWeightsAdjustmentImpl implements AxonWeightsAdjustment {
 	private Matrix connectionWeights;
 	private Matrix leftToRightBiases;
 	private Matrix rightToLeftBiases;
-	
+
 	public AxonWeightsAdjustmentImpl(Matrix connectionWeights) {
 		this.connectionWeights = connectionWeights;
 	}
-	
+
 	public AxonWeightsAdjustmentImpl(Matrix connectionWeights, Matrix leftToRightBiases) {
 		this.connectionWeights = connectionWeights;
 		this.leftToRightBiases = leftToRightBiases;
 	}
-	
+
 	public AxonWeightsAdjustmentImpl(Matrix connectionWeights, Matrix leftToRightBiases, Matrix rightToLeftBiases) {
 		this.connectionWeights = connectionWeights;
 		this.leftToRightBiases = leftToRightBiases;
 		this.rightToLeftBiases = rightToLeftBiases;
 	}
-	
+
 	@Override
 	public Matrix getConnectionWeights() {
 		return connectionWeights;

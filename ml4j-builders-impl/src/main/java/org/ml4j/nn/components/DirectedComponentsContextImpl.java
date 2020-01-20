@@ -25,16 +25,17 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	private Map<DirectedComponent<?, ?, ?>, ComponentContext<?>> contexts;
 	private MatrixFactory matrixFactory;
 	private boolean isTraining;
-	
+
 	public DirectedComponentsContextImpl(MatrixFactory matrixFactory, boolean isTraining) {
 		this.contexts = new HashMap<>();
 		this.matrixFactory = matrixFactory;
 		this.isTraining = isTraining;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public <C extends Serializable> C getContext(DirectedComponent<?, ?, C> component, Supplier<C> defaultContextSupplier) {
+	public <C extends Serializable> C getContext(DirectedComponent<?, ?, C> component,
+			Supplier<C> defaultContextSupplier) {
 		ComponentContext<C> existingContext = (ComponentContext<C>) contexts.get(component);
 
 		if (existingContext != null) {
@@ -45,20 +46,20 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 			return newContext.getContext();
 		}
 	}
-	
+
 	public void addComponentContext(ComponentContext<?> componentContext) {
 		this.contexts.put(componentContext.getComponent(), componentContext);
 	}
-	
+
 	private class ComponentContext<C extends Serializable> implements Serializable {
-		
+
 		/**
 		 * Default serialization id.
 		 */
 		private static final long serialVersionUID = 1L;
 		private DirectedComponent<?, ?, C> component;
 		private C context;
-		
+
 		public ComponentContext(DirectedComponent<?, ?, C> component, C context) {
 			this.component = component;
 			this.context = context;
@@ -71,8 +72,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 		public C getContext() {
 			return context;
 		}
-		
-		
+
 	}
 
 	@Override

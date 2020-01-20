@@ -28,7 +28,7 @@ import com.codepoetics.protonpack.StreamUtils;
 public class MultiSourceLabeledDataSetImpl<E, L> implements LabeledDataSet<E, L> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MultiSourceLabeledDataSetImpl.class);
-	
+
 	private DataSet<E> dataSet;
 	private DataSet<L> labelSet;
 
@@ -86,26 +86,28 @@ public class MultiSourceLabeledDataSetImpl<E, L> implements LabeledDataSet<E, L>
 		if (data.size() != labels.size()) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		return new DataBatchImpl<>(
 				StreamUtils.zip(data.stream(), labels.stream(), (l, r) -> new LabeledDataImpl<>(l, r)), data.size());
 
 	}
 
-
 	@Override
-	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper,
-			FeatureExtractionErrorMode featureExtractionErrorMode) {
-		return new FloatArrayLabeledDataSetImpl(() -> stream().map(l -> toLabeledFloatArray(featureExtractor, labelMapper, l, 
-				featureExtractionErrorMode))
-				.filter(Optional::isPresent).map(Optional::get), featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
+	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
+		return new FloatArrayLabeledDataSetImpl(
+				() -> stream()
+						.map(l -> toLabeledFloatArray(featureExtractor, labelMapper, l, featureExtractionErrorMode))
+						.filter(Optional::isPresent).map(Optional::get),
+				featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
 	}
-	
-	private Optional<LabeledData<float[], float[]>> toLabeledFloatArray(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper, 
-			LabeledData<E, L> labeledData, 
+
+	private Optional<LabeledData<float[], float[]>> toLabeledFloatArray(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, LabeledData<E, L> labeledData,
 			FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
-			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(labeledData.getData()), labelMapper.getFeatures(labeledData.getLabel())));
+			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(labeledData.getData()),
+					labelMapper.getFeatures(labeledData.getLabel())));
 		} catch (FeatureExtractionException e) {
 			if (featureExtractionErrorMode == FeatureExtractionErrorMode.LOG_WARNING) {
 				LOGGER.warn("Ignoring data element due to feature extraction failure", e);
@@ -117,6 +119,4 @@ public class MultiSourceLabeledDataSetImpl<E, L> implements LabeledDataSet<E, L>
 		}
 	}
 
-	
-	
 }

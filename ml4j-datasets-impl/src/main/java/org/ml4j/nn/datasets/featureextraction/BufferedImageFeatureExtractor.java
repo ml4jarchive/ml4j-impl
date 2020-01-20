@@ -40,18 +40,18 @@ public class BufferedImageFeatureExtractor implements FeatureExtractor<BufferedI
 	public int getFeatureCount() {
 		return width * height * 3;
 	}
-	
+
 	public static BufferedImage resize(BufferedImage img, int newW, int newH) throws FeatureExtractionException {
 		try {
-		  return Thumbnails.of(img).forceSize(newW, newH).asBufferedImage();
+			return Thumbnails.of(img).forceSize(newW, newH).asBufferedImage();
 		} catch (IOException e) {
-			throw new FeatureExtractionException("Unable to resize image",e);
+			throw new FeatureExtractionException("Unable to resize image", e);
 		}
 	}
 
 	@Override
 	public float[] getFeatures(BufferedImage image) throws FeatureExtractionException {
-	
+
 		if (image.getWidth() != width || image.getHeight() != height) {
 			image = resize(image, width, height);
 		}
@@ -79,6 +79,5 @@ public class BufferedImageFeatureExtractor implements FeatureExtractor<BufferedI
 
 		return data;
 	}
-	
-	
+
 }

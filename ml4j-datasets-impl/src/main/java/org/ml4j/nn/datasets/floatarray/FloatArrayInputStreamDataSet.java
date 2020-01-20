@@ -23,7 +23,7 @@ import org.ml4j.nn.datasets.util.ObjectInputStreamDataSet;
 public class FloatArrayInputStreamDataSet extends ObjectInputStreamDataSet<float[]> implements FloatArrayDataSet {
 
 	private int featureCount;
-	
+
 	public FloatArrayInputStreamDataSet(File file, int featureCount) {
 		super(file, float[].class);
 		this.featureCount = featureCount;
@@ -39,5 +39,4 @@ public class FloatArrayInputStreamDataSet extends ObjectInputStreamDataSet<float
 		return new FloatArrayBatchedDataSetImpl(super.toBatchedDataSet(batchSize), featureCount);
 	}
 
-	
 }

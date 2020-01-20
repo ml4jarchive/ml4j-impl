@@ -19,18 +19,20 @@ import org.ml4j.nn.components.builders.initial.InitialComponents3DGraphBuilderIm
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public class DefaultComponents3DGraphBuilderFactory<T extends NeuralComponent> implements Components3DGraphBuilderFactory<T> {
+public class DefaultComponents3DGraphBuilderFactory<T extends NeuralComponent>
+		implements Components3DGraphBuilderFactory<T> {
 
 	private NeuralComponentFactory<T> directedComponentFactory;
-	
+
 	public DefaultComponents3DGraphBuilderFactory(NeuralComponentFactory<T> directedComponentFactory) {
 		this.directedComponentFactory = directedComponentFactory;
 	}
-	
-	@Override
-	public InitialComponents3DGraphBuilder<T> createInitialComponents3DGraphBuilder(Neurons3D initialNeurons, DirectedComponentsContext directedComponentsContext) {
-		return new InitialComponents3DGraphBuilderImpl<>(directedComponentFactory, directedComponentsContext, initialNeurons);
-	}
 
+	@Override
+	public InitialComponents3DGraphBuilder<T> createInitialComponents3DGraphBuilder(Neurons3D initialNeurons,
+			DirectedComponentsContext directedComponentsContext) {
+		return new InitialComponents3DGraphBuilderImpl<>(directedComponentFactory, directedComponentsContext,
+				initialNeurons);
+	}
 
 }

@@ -32,14 +32,18 @@ import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.Axons3DGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class CompletedSynapsesAxons3DGraphBuilderImpl<P extends Axons3DBuilder<T>, Q extends AxonsBuilder<T>, T extends NeuralComponent> extends BaseNested3DGraphBuilderImpl<P, CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, CompletedSynapsesAxonsGraphBuilder<Q, T>, T> implements CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, SynapsesEnder<P>, ParallelPathsBuilder<Axons3DSubGraphBuilder<CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, CompletedSynapsesAxonsGraphBuilder<Q, T>, T>> {
+public class CompletedSynapsesAxons3DGraphBuilderImpl<P extends Axons3DBuilder<T>, Q extends AxonsBuilder<T>, T extends NeuralComponent>
+		extends
+		BaseNested3DGraphBuilderImpl<P, CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, CompletedSynapsesAxonsGraphBuilder<Q, T>, T>
+		implements CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, SynapsesEnder<P>,
+		ParallelPathsBuilder<Axons3DSubGraphBuilder<CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, CompletedSynapsesAxonsGraphBuilder<Q, T>, T>> {
 
-	private Supplier<Q> parentNon3DGraph;	
+	private Supplier<Q> parentNon3DGraph;
 	private CompletedSynapsesAxonsGraphBuilderImpl<Q, T> builder;
-	
-	public CompletedSynapsesAxons3DGraphBuilderImpl(Supplier<P> parent3DGraph, Supplier<Q> parentNon3DGraph, NeuralComponentFactory<T> directedComponentFactory,
-			Base3DGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
-			List<T> components) {
+
+	public CompletedSynapsesAxons3DGraphBuilderImpl(Supplier<P> parent3DGraph, Supplier<Q> parentNon3DGraph,
+			NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
+			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(parent3DGraph, directedComponentFactory, builderState, directedComponentsContext, components);
 		this.parentNon3DGraph = parentNon3DGraph;
 	}
@@ -50,25 +54,25 @@ public class CompletedSynapsesAxons3DGraphBuilderImpl<P extends Axons3DBuilder<T
 	}
 
 	@Override
-	public SynapsesEnder<P> withActivationFunction(
-			DifferentiableActivationFunction activationFunction) {
+	public SynapsesEnder<P> withActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addActivationFunction(activationFunction);
 		return this;
 	}
-	
+
 	@Override
-	public SynapsesEnder<P> withActivationFunction(
-			ActivationFunctionType activationFunctionType) {
+	public SynapsesEnder<P> withActivationFunction(ActivationFunctionType activationFunctionType) {
 		addActivationFunction(activationFunctionType);
 		return this;
 	}
-	
+
 	@Override
 	public P endSynapses() {
 		addAxonsIfApplicable();
 		this.parent3DGraph.get().addAxonsIfApplicable();
-		this.parent3DGraph.get().getComponentsGraphNeurons().setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
-		this.parent3DGraph.get().getComponentsGraphNeurons().setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
+		this.parent3DGraph.get().getComponentsGraphNeurons()
+				.setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
+		this.parent3DGraph.get().getComponentsGraphNeurons()
+				.setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
 		this.parent3DGraph.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 		// TODO ML Here we would add synapses instead of the chain
 		T chain = directedComponentFactory.createDirectedComponentChain(getComponents());
@@ -85,23 +89,27 @@ public class CompletedSynapsesAxons3DGraphBuilderImpl<P extends Axons3DBuilder<T
 	public CompletedSynapsesAxonsGraphBuilder<Q, T> getBuilder() {
 		if (builder == null) {
 			addAxonsIfApplicable();
-			builder =  new CompletedSynapsesAxonsGraphBuilderImpl<>(parentNon3DGraph, directedComponentFactory, builderState.getNon3DBuilderState(), directedComponentsContext, getComponents());
+			builder = new CompletedSynapsesAxonsGraphBuilderImpl<>(parentNon3DGraph, directedComponentFactory,
+					builderState.getNon3DBuilderState(), directedComponentsContext, getComponents());
 		}
 		return builder;
 	}
 
 	@Override
 	public Axons3DSubGraphBuilder<CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, CompletedSynapsesAxonsGraphBuilder<Q, T>, T> withPath() {
-		return new Axons3DSubGraphBuilderImpl<>(this::get3DBuilder, this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new Axons3DSubGraphBuilderImpl<>(this::get3DBuilder, this::getBuilder, directedComponentFactory,
+				builderState, directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
 	public Axons3DGraphSkipConnectionBuilder<CompletedSynapsesAxons3DGraphBuilder<P, Q, T>, CompletedSynapsesAxonsGraphBuilder<Q, T>, T> withSkipConnection() {
-		return new Axons3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new Axons3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, this::getBuilder,
+				directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
 	protected CompletedSynapsesAxons3DGraphBuilder<P, Q, T> createNewNestedGraphBuilder() {
-		return new CompletedSynapsesAxons3DGraphBuilderImpl<>(parent3DGraph, parentNon3DGraph, directedComponentFactory, initialBuilderState, directedComponentsContext, new ArrayList<>());
+		return new CompletedSynapsesAxons3DGraphBuilderImpl<>(parent3DGraph, parentNon3DGraph, directedComponentFactory,
+				initialBuilderState, directedComponentsContext, new ArrayList<>());
 	}
 }

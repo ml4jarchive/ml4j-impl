@@ -43,19 +43,21 @@ public class DirectoryImagesWithPathsDataSet extends LabeledDataSetImpl<Supplier
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryImagesWithPathsDataSet.class);
 
-	
 	public DirectoryImagesWithPathsDataSet(Path directory, Predicate<Path> pathPredicate) {
 		super(() -> getImages(directory, pathPredicate, null, null));
 	}
-	
-	public DirectoryImagesWithPathsDataSet(Path directory, Predicate<Path> pathPredicate, int rescaleWidth, int rescaleHeight) {
+
+	public DirectoryImagesWithPathsDataSet(Path directory, Predicate<Path> pathPredicate, int rescaleWidth,
+			int rescaleHeight) {
 		super(() -> getImages(directory, pathPredicate, rescaleWidth, rescaleHeight));
 	}
 
-	private static Stream<LabeledData<Supplier<Image>, Path>> getImages(Path file, Predicate<Path> pathPredicate, Integer rescaleWidth, Integer rescaleHeight) {
+	private static Stream<LabeledData<Supplier<Image>, Path>> getImages(Path file, Predicate<Path> pathPredicate,
+			Integer rescaleWidth, Integer rescaleHeight) {
 		try {
 			if (Files.isDirectory(file)) {
-				return Files.list(file).filter(f -> pathPredicate.test(f)).flatMap(f -> getImages(f, pathPredicate, rescaleWidth, rescaleHeight));
+				return Files.list(file).filter(f -> pathPredicate.test(f))
+						.flatMap(f -> getImages(f, pathPredicate, rescaleWidth, rescaleHeight));
 			} else {
 				List<LabeledData<Supplier<Image>, Path>> list = Arrays
 						.asList(new LabeledDataImpl<>(getImage(file, rescaleWidth, rescaleHeight), file));
@@ -77,13 +79,12 @@ public class DirectoryImagesWithPathsDataSet extends LabeledDataSetImpl<Supplier
 	}
 
 	private static Image getImageFromFile(Path path, Integer rescaleWidth, Integer rescaleHeight) {
-		
+
 		try {
 			LOGGER.debug("Loading image from file:" + path.toFile());
 			BufferedImage bufferedImage = ImageIO.read(path.toFile());
 			if (bufferedImage != null) {
-				int width = rescaleWidth != null ? rescaleWidth :
-					bufferedImage.getWidth();
+				int width = rescaleWidth != null ? rescaleWidth : bufferedImage.getWidth();
 				int height = rescaleHeight != null ? rescaleHeight : bufferedImage.getHeight();
 				BufferedImageFeatureExtractor mapper = new BufferedImageFeatureExtractor(width, height);
 				return new MultiChannelImage(mapper.getFeatures(bufferedImage), 3, width, height, 0, 0);
@@ -93,9 +94,9 @@ public class DirectoryImagesWithPathsDataSet extends LabeledDataSetImpl<Supplier
 			}
 		} catch (Exception e) {
 			throw new FeatureExtractionRuntimeException("Unable to read features from file:" + path, e);
-		} 
+		}
 	}
-	
+
 	@Override
 	public DataSet<Path> getPathsDataSet() {
 		return new DataSetImpl<>(() -> getLabels());

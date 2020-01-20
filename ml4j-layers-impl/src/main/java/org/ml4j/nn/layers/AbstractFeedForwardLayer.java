@@ -46,75 +46,75 @@ import org.slf4j.LoggerFactory;
  * 
  * @param <A> The type of primary Axons in this FeedForwardLayer.
  */
-public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, 
-    L extends FeedForwardLayer<A, L>> 
-    implements FeedForwardLayer<A, L> {
+public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L extends FeedForwardLayer<A, L>>
+		implements FeedForwardLayer<A, L> {
 
-/**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
- 
-  private static final Logger LOGGER = 
-      LoggerFactory.getLogger(AbstractFeedForwardLayer.class);
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  protected MatrixFactory matrixFactory;
-  
-  protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
-  protected TrailingActivationFunctionDirectedComponentChain 
-  		trailingActivationFunctionDirectedComponentChain;
-  
- 
-  /**
-   * @param primaryAxons The primary Axons
-   * @param activationFunction The primary activation function
-   * @param matrixFactory The matrix factory
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  protected AbstractFeedForwardLayer(DirectedComponentFactory directedComponentFactory, DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?,?>, ?, ?> componentChain, MatrixFactory matrixFactory) {
-	  this.componentChain = componentChain;
-	  List<DefaultChainableDirectedComponent<?, ?>> chainableComponents = new ArrayList<>();
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFeedForwardLayer.class);
+
+	protected MatrixFactory matrixFactory;
+
+	protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
+	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionDirectedComponentChain;
+
+	/**
+	 * @param primaryAxons       The primary Axons
+	 * @param activationFunction The primary activation function
+	 * @param matrixFactory      The matrix factory
+	 * @param withBatchNorm      Whether to enable batch norm.
+	 */
+	protected AbstractFeedForwardLayer(DirectedComponentFactory directedComponentFactory,
+			DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain,
+			MatrixFactory matrixFactory) {
+		this.componentChain = componentChain;
+		List<DefaultChainableDirectedComponent<?, ?>> chainableComponents = new ArrayList<>();
 		for (DefaultChainableDirectedComponent<?, ?> component : componentChain.getComponents()) {
 			chainableComponents.addAll(component.decompose());
 		}
-	  this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, chainableComponents);
-	  this.matrixFactory = matrixFactory;
-  }
-  
-  
-  @Override
-  public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
-      DirectedLayerContext directedLayerContext) {
-    LOGGER.debug(directedLayerContext.toString() + ":Forward propagating through layer");
-    
-	DirectedComponentsContext componentsContext = new DirectedComponentsContextImpl(directedLayerContext.getMatrixFactory(), directedLayerContext.isTrainingContext()); 
+		this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
+				directedComponentFactory, chainableComponents);
+		this.matrixFactory = matrixFactory;
+	}
 
-    TrailingActivationFunctionDirectedComponentChainActivation activation = trailingActivationFunctionDirectedComponentChain.forwardPropagate(inputNeuronsActivation, componentsContext);
-    
-	return new DirectedLayerActivationImpl(this, activation, directedLayerContext);   
-  }
-  
-  @Override
-  public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
-	  return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(componentIndex, matrixFactory, directedComponentsContext.isTrainingContext()));
-  }
-  
+	@Override
+	public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
+			DirectedLayerContext directedLayerContext) {
+		LOGGER.debug(directedLayerContext.toString() + ":Forward propagating through layer");
 
-  @Override
-  public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-	return getComponents().stream().flatMap(c -> c.decompose().stream()).collect((Collectors.toList()));
-  }
+		DirectedComponentsContext componentsContext = new DirectedComponentsContextImpl(
+				directedLayerContext.getMatrixFactory(), directedLayerContext.isTrainingContext());
 
-  @Override
-  public NeuralComponentType<FeedForwardLayer<A, L>> getComponentType() {
-		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER), FeedForwardLayer.class.getName());
-  }
-  
-  @Override
+		TrailingActivationFunctionDirectedComponentChainActivation activation = trailingActivationFunctionDirectedComponentChain
+				.forwardPropagate(inputNeuronsActivation, componentsContext);
+
+		return new DirectedLayerActivationImpl(this, activation, directedLayerContext);
+	}
+
+	@Override
+	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
+		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(componentIndex,
+				matrixFactory, directedComponentsContext.isTrainingContext()));
+	}
+
+	@Override
+	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
+		return getComponents().stream().flatMap(c -> c.decompose().stream()).collect((Collectors.toList()));
+	}
+
+	@Override
+	public NeuralComponentType<FeedForwardLayer<A, L>> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER),
+				FeedForwardLayer.class.getName());
+	}
+
+	@Override
 	public List<NeuronsActivationFeatureOrientation> supports() {
 		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
 	}
-
 
 	@Override
 	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {

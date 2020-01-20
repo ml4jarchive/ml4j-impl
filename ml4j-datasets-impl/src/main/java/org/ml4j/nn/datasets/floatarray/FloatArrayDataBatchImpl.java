@@ -67,21 +67,31 @@ public class FloatArrayDataBatchImpl extends DataBatchImpl<float[]> implements F
 	private void addToMatrix(MatrixFactory matrixFactory, Matrix matrix, float[] data, int featureCount, int row) {
 		matrix.asEditableMatrix().putRow(row, matrixFactory.createMatrixFromRowsByRowsArray(1, featureCount, data));
 	}
-	
-	
+
 	@Override
-	public NeuronsActivation toNeuronsActivation(MatrixFactory matrixFactory) {
+	public NeuronsActivation toNeuronsActivation(MatrixFactory matrixFactory,
+			NeuronsActivationFeatureOrientation featureOrientation) {
 
-		Matrix dataMatrix = matrixFactory.createMatrix(featureCount, batchSize);
-		
+		Matrix dataMatrix = featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET
+				? matrixFactory.createMatrix(featureCount, batchSize)
+				: matrixFactory.createMatrix(batchSize, featureCount);
+
 		Stream<float[]> floatStream = stream();
+		if (featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+			StreamUtils.zipWithIndex(floatStream)
+					.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
+							matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
+			return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, featureOrientation);
 
-		StreamUtils.zipWithIndex(floatStream)
-				.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
-						matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
+		} else {
+			StreamUtils.zipWithIndex(floatStream).forEach(e -> dataMatrix.asEditableMatrix().putRow((int) e.getIndex(),
+					matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
 
-		return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+			return new NeuronsActivationImpl(new Neurons(dataMatrix.getColumns(), false), dataMatrix,
+					featureOrientation);
+
+		}
+
 	}
-	
-	
+
 }

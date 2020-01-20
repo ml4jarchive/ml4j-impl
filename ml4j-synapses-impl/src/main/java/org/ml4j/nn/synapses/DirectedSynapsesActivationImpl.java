@@ -43,8 +43,8 @@ public class DirectedSynapsesActivationImpl extends DirectedSynapsesActivationBa
 	 */
 	public DirectedSynapsesActivationImpl(DirectedSynapses<?, ?> synapses, NeuronsActivation inputActivation,
 			DefaultDirectedComponentBipoleGraphActivation axonsActivation,
-			DifferentiableActivationFunctionComponentActivation activationFunctionActivation, NeuronsActivation outputActivation,
-			DirectedComponentsContext synapsesContext) {
+			DifferentiableActivationFunctionComponentActivation activationFunctionActivation,
+			NeuronsActivation outputActivation, DirectedComponentsContext synapsesContext) {
 		super(synapses, inputActivation, axonsActivation, activationFunctionActivation, outputActivation,
 				synapsesContext);
 	}

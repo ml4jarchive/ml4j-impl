@@ -26,48 +26,47 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  */
 public class UndirectedSynapsesActivationImpl implements UndirectedSynapsesActivation {
 
-  private NeuronsActivation inputActivation;
-  private AxonsActivation axonsActivation;
-  private NeuronsActivation outputActivation;
-  private UndirectedSynapses<?, ?> synapses;
-  
-  /**
-   * Construct a new default DirectedSynapsesActivation
-   * 
-   * @param synapses The DirectedSynapses
-   * @param inputActivation The input NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation
-   * @param axonsActivation The axons NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation    
-   * @param outputActivation The output NeuronsActivation of the DirectedSynapses
-   *        following a forward propagation.
-   */
-  public UndirectedSynapsesActivationImpl(UndirectedSynapses<?, ?> synapses, 
-      NeuronsActivation inputActivation, 
-      AxonsActivation axonsActivation, NeuronsActivation outputActivation) {
-    this.inputActivation = inputActivation;
-    this.outputActivation = outputActivation;
-    this.synapses = synapses;
-    this.axonsActivation = axonsActivation;
-  }
-  
-  @Override
-  public NeuronsActivation getOutput() {
-    return outputActivation;
-  }
-  
-  @Override
-  public UndirectedSynapses<?, ?> getSynapses() {
-    return synapses;
-  }
-  
-  @Override
-  public AxonsActivation getAxonsActivation() {
-    return axonsActivation;
-  }
+	private NeuronsActivation inputActivation;
+	private AxonsActivation axonsActivation;
+	private NeuronsActivation outputActivation;
+	private UndirectedSynapses<?, ?> synapses;
 
-  @Override
-  public NeuronsActivation getInput() {
-    return inputActivation;
-  }
+	/**
+	 * Construct a new default DirectedSynapsesActivation
+	 * 
+	 * @param synapses         The DirectedSynapses
+	 * @param inputActivation  The input NeuronsActivation of the DirectedSynapses
+	 *                         following a forward propagation
+	 * @param axonsActivation  The axons NeuronsActivation of the DirectedSynapses
+	 *                         following a forward propagation
+	 * @param outputActivation The output NeuronsActivation of the DirectedSynapses
+	 *                         following a forward propagation.
+	 */
+	public UndirectedSynapsesActivationImpl(UndirectedSynapses<?, ?> synapses, NeuronsActivation inputActivation,
+			AxonsActivation axonsActivation, NeuronsActivation outputActivation) {
+		this.inputActivation = inputActivation;
+		this.outputActivation = outputActivation;
+		this.synapses = synapses;
+		this.axonsActivation = axonsActivation;
+	}
+
+	@Override
+	public NeuronsActivation getOutput() {
+		return outputActivation;
+	}
+
+	@Override
+	public UndirectedSynapses<?, ?> getSynapses() {
+		return synapses;
+	}
+
+	@Override
+	public AxonsActivation getAxonsActivation() {
+		return axonsActivation;
+	}
+
+	@Override
+	public NeuronsActivation getInput() {
+		return inputActivation;
+	}
 }

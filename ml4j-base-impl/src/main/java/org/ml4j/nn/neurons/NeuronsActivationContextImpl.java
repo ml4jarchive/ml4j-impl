@@ -27,10 +27,10 @@ public class NeuronsActivationContextImpl implements NeuronsActivationContext {
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private MatrixFactory matrixFactory;
 	private boolean isTrainingContext;
-	
+
 	public NeuronsActivationContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
 		super();
 		this.matrixFactory = matrixFactory;

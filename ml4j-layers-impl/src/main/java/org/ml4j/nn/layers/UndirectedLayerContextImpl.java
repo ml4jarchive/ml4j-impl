@@ -27,57 +27,56 @@ import org.ml4j.nn.synapses.UndirectedSynapsesContextImpl;
  */
 public class UndirectedLayerContextImpl implements UndirectedLayerContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  private MatrixFactory matrixFactory;
-  
-  private boolean withFreezeOut;
-  
-  private boolean isTrainingContext;
-    
-  private int layerIndex;
-  
-  /**
-   * @param layerIndex The index of this Layer.
-   * @param matrixFactory The MatrixFactory.
-   */
-  public UndirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
-    this.layerIndex = layerIndex;
-    this.matrixFactory = matrixFactory;
-    this.isTrainingContext = isTrainingContext;
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public MatrixFactory getMatrixFactory() {
-    return matrixFactory;
-  }
+	private MatrixFactory matrixFactory;
 
-  @Override
-  public UndirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
-    return new UndirectedSynapsesContextImpl(matrixFactory, isTrainingContext,
-        withFreezeOut);
-  }
+	private boolean withFreezeOut;
 
-  @Override
-  public boolean isWithFreezeOut() {
-    return withFreezeOut;
-  }
+	private boolean isTrainingContext;
 
-  @Override
-  public void setWithFreezeOut(boolean withFreezeOut) {
-    this.withFreezeOut = withFreezeOut;
-  }
+	private int layerIndex;
 
-  @Override
-  public String toString() {
-    return "UndirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
-  }
+	/**
+	 * @param layerIndex    The index of this Layer.
+	 * @param matrixFactory The MatrixFactory.
+	 */
+	public UndirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
+		this.layerIndex = layerIndex;
+		this.matrixFactory = matrixFactory;
+		this.isTrainingContext = isTrainingContext;
+	}
 
-@Override
-public boolean isTrainingContext() {
-	return isTrainingContext;
-} 
+	@Override
+	public MatrixFactory getMatrixFactory() {
+		return matrixFactory;
+	}
+
+	@Override
+	public UndirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
+		return new UndirectedSynapsesContextImpl(matrixFactory, isTrainingContext, withFreezeOut);
+	}
+
+	@Override
+	public boolean isWithFreezeOut() {
+		return withFreezeOut;
+	}
+
+	@Override
+	public void setWithFreezeOut(boolean withFreezeOut) {
+		this.withFreezeOut = withFreezeOut;
+	}
+
+	@Override
+	public String toString() {
+		return "UndirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
+	}
+
+	@Override
+	public boolean isTrainingContext() {
+		return isTrainingContext;
+	}
 }

@@ -29,11 +29,12 @@ import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBu
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent> extends BaseNestedGraphBuilderImpl<C, AxonsSubGraphBuilder<C, T>, T> implements AxonsSubGraphBuilder<C, T>, 
-	PathEnder<C, AxonsSubGraphBuilder<C, T>> {
+public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+		extends BaseNestedGraphBuilderImpl<C, AxonsSubGraphBuilder<C, T>, T>
+		implements AxonsSubGraphBuilder<C, T>, PathEnder<C, AxonsSubGraphBuilder<C, T>> {
 
 	protected C builder;
-	
+
 	public AxonsSubGraphBuilderImpl(Supplier<C> previousSupplier, NeuralComponentFactory<T> directedComponentFactory,
 			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
 			List<T> components) {
@@ -42,12 +43,14 @@ public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>,
 
 	@Override
 	public ParallelPathsBuilder<AxonsSubGraphBuilder<AxonsSubGraphBuilder<C, T>, T>> withParallelPaths() {
-		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder, directedComponentsContext);
+		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder,
+				directedComponentsContext);
 	}
-	
+
 	@Override
 	public AxonsGraphSkipConnectionBuilder<AxonsSubGraphBuilder<C, T>, T> withSkipConnection() {
-		return new AxonsGraphSkipConnectionBuilderImpl<>(() -> this, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new AxonsGraphSkipConnectionBuilderImpl<>(() -> this, directedComponentFactory, builderState,
+				directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
@@ -57,7 +60,8 @@ public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>,
 
 	@Override
 	public AxonsSubGraphBuilder<C, T> withPath() {
-		return new AxonsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new AxonsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, builderState,
+				directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
@@ -67,6 +71,7 @@ public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>,
 
 	@Override
 	protected AxonsSubGraphBuilder<C, T> createNewNestedGraphBuilder() {
-		return new AxonsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState, directedComponentsContext, components);
+		return new AxonsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState,
+				directedComponentsContext, components);
 	}
 }

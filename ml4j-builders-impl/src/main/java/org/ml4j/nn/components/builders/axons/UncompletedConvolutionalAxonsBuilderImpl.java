@@ -20,15 +20,16 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?>> extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedConvolutionalAxonsBuilder<C> {
+public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?>>
+		extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedConvolutionalAxonsBuilder<C> {
 
 	private int strideWidth = 1;
-	private int strideHeight= 1;
+	private int strideHeight = 1;
 	private int paddingWidth = 0;
 	private int paddingHeight = 0;
 	private Integer filterWidth;
 	private Integer filterHeight;
-	
+
 	public UncompletedConvolutionalAxonsBuilderImpl(Supplier<C> previousBuilder, Neurons3D leftNeurons) {
 		super(previousBuilder, leftNeurons);
 	}
@@ -38,20 +39,20 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 		previousBuilderSupplier.get().getComponentsGraphNeurons().setRightNeurons(neurons);
 		return previousBuilderSupplier.get();
 	}
-	
+
 	@Override
 	public UncompletedConvolutionalAxonsBuilder<C> withConnectionWeights(Matrix connectionWeights) {
 		previousBuilderSupplier.get().getBuilderState().setConnectionWeights(connectionWeights);
 		return this;
 	}
-	
+
 	@Override
 	public UncompletedConvolutionalAxonsBuilder<C> withBiases(Matrix biases) {
 		previousBuilderSupplier.get().getBuilderState().setBiases(biases);
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
 	}
-	
+
 	@Override
 	public UncompletedConvolutionalAxonsBuilder<C> withBiasUnit() {
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
@@ -72,26 +73,27 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 
 	@Override
 	public UncompletedConvolutionalAxonsBuilder<C> withSamePadding() {
-		//P = ((S-1)*W-S+F)/2
+		// P = ((S-1)*W-S+F)/2
 		if (filterWidth != null) {
-			double paddingWidth =  ((double)((strideWidth-1) * this.getLeftNeurons().getWidth() - strideWidth + filterWidth))/2d;
-			int paddingWidthInt = (int)paddingWidth;
+			double paddingWidth = ((double) ((strideWidth - 1) * this.getLeftNeurons().getWidth() - strideWidth
+					+ filterWidth)) / 2d;
+			int paddingWidthInt = (int) paddingWidth;
 			if (paddingWidth != paddingWidthInt) {
 				paddingWidthInt = paddingWidthInt + 1;
 			}
-			this.paddingWidth =paddingWidthInt;
-			
+			this.paddingWidth = paddingWidthInt;
+
 		}
 		if (filterHeight != null) {
-			double paddingHeight =  ((double)((strideHeight-1) * this.getLeftNeurons().getHeight() - strideHeight + filterHeight))/2d;
-			int paddingHeightInt = (int)paddingHeight;
+			double paddingHeight = ((double) ((strideHeight - 1) * this.getLeftNeurons().getHeight() - strideHeight
+					+ filterHeight)) / 2d;
+			int paddingHeightInt = (int) paddingHeight;
 			if (paddingHeight != paddingHeightInt) {
 				paddingHeightInt = paddingHeightInt + 1;
 			}
-			this.paddingHeight =paddingHeightInt;
+			this.paddingHeight = paddingHeightInt;
 		}
-		
-		
+
 		return this;
 	}
 
@@ -113,9 +115,10 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 		this.paddingHeight = heightPadding;
 		return this;
 	}
-	
+
 	@Override
-	public UncompletedConvolutionalAxonsBuilder<C> withAxonsContextConfigurer(Consumer<AxonsContext> axonsContextConfigurer) {
+	public UncompletedConvolutionalAxonsBuilder<C> withAxonsContextConfigurer(
+			Consumer<AxonsContext> axonsContextConfigurer) {
 		this.axonsContextConfigurer = axonsContextConfigurer;
 		return this;
 	}
@@ -129,7 +132,7 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 	public int getPaddingWidth() {
 		return paddingWidth;
 	}
-	
+
 	@Override
 	public int getStrideHeight() {
 		return strideHeight;

@@ -105,6 +105,5 @@ public class AxonsContextImpl implements AxonsContext {
 				+ ", regularisationLambda=" + regularisationLambda + ", leftHandInputDropoutKeepProbability="
 				+ leftHandInputDropoutKeepProbability + ", trainingContext=" + trainingContext + "]";
 	}
-	
-	
+
 }
