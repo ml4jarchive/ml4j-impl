@@ -52,13 +52,7 @@ public class SessionImpl<T extends NeuralComponent> implements Session<T> {
 	}
 
 	@Override
-	public NeuralNetworkBuilderSession<T> buildNeuralNetwork() {
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	@Override
 	public MatrixFactory getMatrixFactory() {
 		return directedComponentsContext.getMatrixFactory();
 	}
-
 }
