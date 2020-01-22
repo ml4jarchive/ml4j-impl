@@ -15,5 +15,6 @@
 		<module>ml4j-layers-impl</module>	
 		<module>ml4j-nn-impl</module>
       		<module>ml4j-layered-nn-impl</module> 
+		<module>ml4j-sessions-impl</module>	
 	 </modules>
 </project>

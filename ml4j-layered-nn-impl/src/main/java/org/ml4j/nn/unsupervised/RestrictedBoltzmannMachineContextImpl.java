@@ -17,8 +17,9 @@ package org.ml4j.nn.unsupervised;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.layers.UndirectedLayerContext;
 import org.ml4j.nn.layers.UndirectedLayerContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 
-public class RestrictedBoltzmannMachineContextImpl implements RestrictedBoltzmannMachineContext {
+public class RestrictedBoltzmannMachineContextImpl extends NeuronsActivationContextImpl implements RestrictedBoltzmannMachineContext {
 
 	/**
 	 * Default serialization id.
@@ -34,6 +35,7 @@ public class RestrictedBoltzmannMachineContextImpl implements RestrictedBoltzman
 	private Integer trainingMiniBatchSize;
 
 	public RestrictedBoltzmannMachineContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
+		super(matrixFactory, isTrainingContext);
 		this.layerContext = new UndirectedLayerContextImpl(0, matrixFactory, isTrainingContext);
 	}
 
@@ -74,11 +76,5 @@ public class RestrictedBoltzmannMachineContextImpl implements RestrictedBoltzman
 	@Override
 	public MatrixFactory getMatrixFactory() {
 		return layerContext.getMatrixFactory();
-	}
-
-	@Override
-	public boolean isTrainingContext() {
-		// TODO
-		return true;
 	}
 }

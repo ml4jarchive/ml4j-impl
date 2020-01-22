@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuronsActivationComponent;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.generic.DirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultChainableDirectedComponent<? extends A, ?>, 
 	A extends DefaultChainableDirectedComponentActivation, CH extends DirectedComponentChainActivation<NeuronsActivation, A>> implements 
-	DirectedComponentChain<NeuronsActivation, L, A, CH> {
+	DirectedComponentChain<NeuronsActivation, L, A, CH>, NeuronsActivationComponent {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDirectedComponentChainBaseParent.class);
@@ -53,12 +54,12 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 		this.sequentialComponents = sequentialComponents;
 	}
 
-	protected <X, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, int componentIndex, DirectedComponentsContext context) {
-		return component.forwardPropagate(input, component.getContext(context, componentIndex));
+	protected <X, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, DirectedComponentsContext context) {
+		return component.forwardPropagate(input, component.getContext(context));
 	}
 
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext context, int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext context) {
 		return context;
 	}
 

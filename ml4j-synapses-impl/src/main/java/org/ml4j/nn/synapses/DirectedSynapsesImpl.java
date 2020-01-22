@@ -173,8 +173,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext,
-			int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext) {
 		return directedComponentsContext;
 	}
 

@@ -129,7 +129,7 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
 	}
 
 	@Override
-	public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
+	public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0) {
 		throw new UnsupportedOperationException();
 
 	}

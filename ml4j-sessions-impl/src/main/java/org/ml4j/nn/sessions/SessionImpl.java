@@ -13,12 +13,13 @@
  */
 package org.ml4j.nn.sessions;
 
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
 /**
- * Default Session implementation for the creation of Neural Component graphs.
+ * Session implementation for the creation of Neural Component graphs.
  * 
  * @author Michael Lavelle
  *
@@ -50,4 +51,8 @@ public class SessionImpl<T extends NeuralComponent> implements Session<T> {
 		return directedComponentsContext;
 	}
 
+	@Override
+	public MatrixFactory getMatrixFactory() {
+		return directedComponentsContext.getMatrixFactory();
+	}
 }

@@ -59,8 +59,8 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public C getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
-		return delegated.getContext(directedComponentsContext, componentIndex);
+	public C getContext(DirectedComponentsContext directedComponentsContext) {
+		return delegated.getContext(directedComponentsContext);
 	}
 	
 	public static void printTimes() {
@@ -139,6 +139,11 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	@Override
 	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
 		return delegated.optimisedFor();
+	}
+
+	@Override
+	public A forwardPropagate(NeuronsActivation input, DirectedComponentsContext context) {
+		return delegated.forwardPropagate(input, context);
 	}
 
 }

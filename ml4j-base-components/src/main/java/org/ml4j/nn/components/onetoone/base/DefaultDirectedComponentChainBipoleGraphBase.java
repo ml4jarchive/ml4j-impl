@@ -52,7 +52,7 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	}
 	
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext context, int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext context) {
 		return context;
 	}
 	@Override
@@ -74,6 +74,4 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	public DefaultDirectedComponentChainBatch getEdges() {
 		return parallelComponentChainsBatch;
 	}
-	
-	
 }
