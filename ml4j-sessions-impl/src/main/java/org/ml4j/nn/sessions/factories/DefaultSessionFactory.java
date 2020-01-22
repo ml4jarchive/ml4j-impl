@@ -13,7 +13,9 @@
  */
 package org.ml4j.nn.sessions.factories;
 
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.sessions.Session;
@@ -29,9 +31,11 @@ import org.ml4j.nn.sessions.SessionImpl;
 public class DefaultSessionFactory<T extends NeuralComponent> implements SessionFactory<T> {
 
 	private NeuralComponentFactory<T> neuralComponentFactory;
+	private MatrixFactory matrixFactory;
 
-	public DefaultSessionFactory(NeuralComponentFactory<T> neuralComponentFactory) {
+	public DefaultSessionFactory(MatrixFactory matrixFactory, NeuralComponentFactory<T> neuralComponentFactory) {
 		this.neuralComponentFactory = neuralComponentFactory;
+		this.matrixFactory = matrixFactory;
 	}
 
 	@Override
@@ -42,6 +46,11 @@ public class DefaultSessionFactory<T extends NeuralComponent> implements Session
 	@Override
 	public NeuralComponentFactory<T> getNeuralComponentFactory() {
 		return neuralComponentFactory;
+	}
+
+	@Override
+	public Session<T> createSession() {
+		return new SessionImpl<T>(neuralComponentFactory, new DirectedComponentsContextImpl(matrixFactory, false));
 	}
 
 }

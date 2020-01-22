@@ -46,11 +46,6 @@ public class BatchNormDirectedAxonsComponentAdapter<N extends Neurons> extends D
 	public BatchNormDirectedAxonsComponentAdapter<N> dup() {
 		return new BatchNormDirectedAxonsComponentAdapter<N>( (BatchNormDirectedAxonsComponent<N, ?>) delegated.dup());
 	}
-	
-	@Override
-	public DirectedAxonsComponentActivation forwardPropagate(NeuronsActivation input, AxonsContext context) {
-		return new DirectedAxonsComponentActivationAdapter(super.forwardPropagate(input, context), name);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

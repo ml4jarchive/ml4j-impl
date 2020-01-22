@@ -13,6 +13,7 @@
  */
 package org.ml4j.nn.sessions;
 
+import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
@@ -48,6 +49,16 @@ public class SessionImpl<T extends NeuralComponent> implements Session<T> {
 	@Override
 	public DirectedComponentsContext getDirectedComponentsContext() {
 		return directedComponentsContext;
+	}
+
+	@Override
+	public NeuralNetworkBuilderSession<T> buildNeuralNetwork() {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+	@Override
+	public MatrixFactory getMatrixFactory() {
+		return directedComponentsContext.getMatrixFactory();
 	}
 
 }

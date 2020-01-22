@@ -22,6 +22,7 @@ import java.util.Map;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 
 /**
  * Simple default implementation of DirectedSynapsesContext.
@@ -29,7 +30,7 @@ import org.ml4j.nn.axons.AxonsContextImpl;
  * @author Michael Lavelle
  * 
  */
-public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext {
+public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl implements UndirectedSynapsesContext {
 
 	/**
 	 * Default serialization id.
@@ -39,9 +40,7 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
 	/**
 	 * The MatrixFactory we configure for this context.
 	 */
-	private MatrixFactory matrixFactory;
 	private boolean withFreezeOut;
-	private boolean isTrainingContext;
 	private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
 
 	/**
@@ -52,15 +51,9 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
 	 */
 	public UndirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext,
 			boolean withFreezeOut) {
-		this.matrixFactory = matrixFactory;
+		super(matrixFactory, isTrainingContext);
 		this.withFreezeOut = withFreezeOut;
-		this.isTrainingContext = isTrainingContext;
 		this.axonsContextsByAxonsIndex = new HashMap<>();
-	}
-
-	@Override
-	public MatrixFactory getMatrixFactory() {
-		return matrixFactory;
 	}
 
 	@Override
@@ -68,7 +61,7 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
 
 		AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
 		if (axonsContext == null) {
-			axonsContext = new AxonsContextImpl(matrixFactory, isTrainingContext, withFreezeOut);
+			axonsContext = new AxonsContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
 			axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
 		}
 		if (axonsContext.isWithFreezeOut() != withFreezeOut) {
@@ -86,10 +79,5 @@ public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext 
 	@Override
 	public void setWithFreezeOut(boolean withFreezeOut) {
 		this.withFreezeOut = withFreezeOut;
-	}
-
-	@Override
-	public boolean isTrainingContext() {
-		return isTrainingContext;
 	}
 }

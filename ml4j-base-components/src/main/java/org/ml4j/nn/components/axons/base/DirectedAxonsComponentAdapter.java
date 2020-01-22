@@ -45,12 +45,4 @@ public class DirectedAxonsComponentAdapter<L extends Neurons, R extends Neurons>
 	public DirectedAxonsComponentAdapter<L, R> dup() {
 		return new DirectedAxonsComponentAdapter<L, R>((DirectedAxonsComponent<L, R, ?>) delegated.dup());
 	}
-
-	@Override
-	public DirectedAxonsComponentActivation forwardPropagate(NeuronsActivation input, AxonsContext context) {
-		return new DirectedAxonsComponentActivationAdapter(super.forwardPropagate(input, context), name);
-	}
-	
-	
-
 }

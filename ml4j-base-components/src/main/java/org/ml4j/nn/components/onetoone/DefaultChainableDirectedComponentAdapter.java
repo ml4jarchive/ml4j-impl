@@ -141,4 +141,9 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 		return delegated.optimisedFor();
 	}
 
+	@Override
+	public A forwardPropagate(NeuronsActivation input, DirectedComponentsContext context) {
+		return delegated.forwardPropagate(input, context);
+	}
+
 }

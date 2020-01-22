@@ -14,11 +14,16 @@
 package org.ml4j.nn.components.onetoone.base;
 
 import org.ml4j.nn.components.NeuralComponentType;
+
+import java.util.stream.Stream;
+
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
  * Default base class for implementations of DefaultDirectedComponentBipoleGraph
@@ -75,6 +80,4 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	public DefaultDirectedComponentBatch getEdges() {
 		return parallelComponentBatch;
 	}
-	
-	
 }

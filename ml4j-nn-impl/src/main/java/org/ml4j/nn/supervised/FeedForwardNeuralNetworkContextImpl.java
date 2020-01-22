@@ -20,6 +20,7 @@ import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagationListener;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 
@@ -29,17 +30,13 @@ import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
  * @author Michael Lavelle
  * 
  */
-public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNetworkContext {
+public class FeedForwardNeuralNetworkContextImpl extends NeuronsActivationContextImpl implements FeedForwardNeuralNetworkContext {
 
 	/**
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The MatrixFactory we configure for this context.
-	 */
-	private MatrixFactory matrixFactory;
 
 	// private int startLayerIndex;
 
@@ -65,24 +62,16 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
 
 	private BackPropagationListener backPropagationListener;
 
-	private boolean isTrainingContext;
-
 	/**
 	 * Construct a default AutoEncoderContext.
 	 * 
 	 * @param matrixFactory The MatrixFactory we configure for this context
 	 */
 	public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
-		this.matrixFactory = matrixFactory;
+		super(matrixFactory, isTrainingContext);
 		this.directedComponentsContext = new DirectedComponentsContextImpl(matrixFactory, isTrainingContext);
-		this.isTrainingContext = isTrainingContext;
 	}
-
-	@Override
-	public MatrixFactory getMatrixFactory() {
-		return matrixFactory;
-	}
-
+	
 	/*
 	 * @Override public DirectedLayerContext getLayerContext(int layerIndex) {
 	 * 
@@ -192,10 +181,5 @@ public class FeedForwardNeuralNetworkContextImpl implements FeedForwardNeuralNet
 	@Override
 	public DirectedComponentsContext getDirectedComponentsContext() {
 		return this.directedComponentsContext;
-	}
-
-	@Override
-	public boolean isTrainingContext() {
-		return isTrainingContext;
 	}
 }
