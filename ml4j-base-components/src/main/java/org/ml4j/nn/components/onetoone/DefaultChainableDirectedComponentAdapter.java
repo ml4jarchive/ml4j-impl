@@ -59,8 +59,8 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public C getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
-		return delegated.getContext(directedComponentsContext, componentIndex);
+	public C getContext(DirectedComponentsContext directedComponentsContext) {
+		return delegated.getContext(directedComponentsContext);
 	}
 	
 	public static void printTimes() {

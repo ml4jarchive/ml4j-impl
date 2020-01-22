@@ -13,16 +13,12 @@
  */
 package org.ml4j.nn.components.onetoone.base;
 
-import java.util.stream.Stream;
-
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainBipoleGraph;
-import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainBipoleGraphActivation;
 import org.ml4j.nn.neurons.Neurons;
-import org.ml4j.nn.neurons.NeuronsActivation;
 
 /**
  * Default base class for implementations of DefaultDirectedComponentBipoleGraph
@@ -56,7 +52,7 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	}
 	
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext context, int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext context) {
 		return context;
 	}
 	@Override

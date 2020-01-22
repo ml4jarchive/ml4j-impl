@@ -152,7 +152,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 				// TODO
 				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
 					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent) axonsComponent)
-							.getContext(directedComponentsContext, 0);
+							.getContext(directedComponentsContext);
 					builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
 				}
 			}
@@ -203,7 +203,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 				// TODO
 				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
 					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent) axonsComponent)
-							.getContext(directedComponentsContext, 0);
+							.getContext(directedComponentsContext);
 					builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
 				}
 			}

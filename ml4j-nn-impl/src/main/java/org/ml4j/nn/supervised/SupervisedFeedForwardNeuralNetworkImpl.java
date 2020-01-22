@@ -182,7 +182,7 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	}
 
 	@Override
-	public FeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0, int arg1) {
+	public FeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -54,12 +54,12 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 		this.sequentialComponents = sequentialComponents;
 	}
 
-	protected <X, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, int componentIndex, DirectedComponentsContext context) {
-		return component.forwardPropagate(input, component.getContext(context, componentIndex));
+	protected <X, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, DirectedComponentsContext context) {
+		return component.forwardPropagate(input, component.getContext(context));
 	}
 
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext context, int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext context) {
 		return context;
 	}
 

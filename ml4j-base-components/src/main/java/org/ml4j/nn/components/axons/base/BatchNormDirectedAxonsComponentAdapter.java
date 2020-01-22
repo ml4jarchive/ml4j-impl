@@ -20,7 +20,6 @@ import org.ml4j.nn.components.axons.BatchNormDirectedAxonsComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.Neurons;
-import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class BatchNormDirectedAxonsComponentAdapter<N extends Neurons> extends DefaultChainableDirectedComponentAdapter<DirectedAxonsComponentActivation, AxonsContext> 
 	implements BatchNormDirectedAxonsComponent<N, Axons<N, N, ?>> {

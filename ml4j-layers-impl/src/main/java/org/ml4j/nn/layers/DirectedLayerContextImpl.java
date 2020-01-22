@@ -37,8 +37,6 @@ public class DirectedLayerContextImpl extends NeuronsActivationContextImpl imple
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private int layerIndex;
-
 	private boolean withFreezeOut;
 	private Map<Integer, DirectedSynapsesContext> synapsesContextsBySynapsesIndex;
 
@@ -48,9 +46,8 @@ public class DirectedLayerContextImpl extends NeuronsActivationContextImpl imple
 	 * @param layerIndex    The index of the layer
 	 * @param matrixFactory The MatrixFactory we configure for this context
 	 */
-	public DirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
+	public DirectedLayerContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
 		super(matrixFactory, isTrainingContext);
-		this.layerIndex = layerIndex;
 		this.synapsesContextsBySynapsesIndex = new HashMap<>();
 	}
 
@@ -80,6 +77,7 @@ public class DirectedLayerContextImpl extends NeuronsActivationContextImpl imple
 
 	@Override
 	public String toString() {
-		return "DirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
+		return "DirectedLayerContextImpl [withFreezeOut=" + withFreezeOut + ", synapsesContextsBySynapsesIndex="
+				+ synapsesContextsBySynapsesIndex + "]";
 	}
 }

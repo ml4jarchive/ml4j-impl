@@ -95,8 +95,8 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	}
 
 	@Override
-	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
-		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(componentIndex,
+	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext) {
+		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(
 				matrixFactory, directedComponentsContext.isTrainingContext()));
 	}
 

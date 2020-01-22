@@ -48,12 +48,10 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>>
 		// LOGGER.debug("Forward propagating through DirectedLayerChainImpl");
 		NeuronsActivation inFlightActivation = neuronsActivation;
 		List<DirectedLayerActivation> activations = new ArrayList<>();
-		int index = 0;
 		for (L component : sequentialComponents) {
-			DirectedLayerActivation activation = forwardPropagate(inFlightActivation, component, index, context);
+			DirectedLayerActivation activation = forwardPropagate(inFlightActivation, component, context);
 			activations.add(activation);
 			inFlightActivation = activation.getOutput();
-			index++;
 		}
 
 		return new DirectedLayerChainActivationImpl(activations);

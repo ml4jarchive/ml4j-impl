@@ -68,7 +68,7 @@ public class LayeredFeedForwardNeuralNetworkContextImpl extends FeedForwardNeura
 
 		DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
 		if (layerContext == null) {
-			layerContext = new DirectedLayerContextImpl(layerIndex, getMatrixFactory(), isTrainingContext);
+			layerContext = new DirectedLayerContextImpl(getMatrixFactory(), isTrainingContext);
 			directedLayerContexts.put(layerIndex, layerContext);
 		}
 

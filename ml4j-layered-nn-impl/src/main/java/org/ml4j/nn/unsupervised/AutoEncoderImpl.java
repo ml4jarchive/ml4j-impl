@@ -120,7 +120,7 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	}
 
 	@Override
-	public AutoEncoderContext getContext(DirectedComponentsContext context, int componentIndex) {
+	public AutoEncoderContext getContext(DirectedComponentsContext context) {
 		throw new UnsupportedOperationException();
 
 	}

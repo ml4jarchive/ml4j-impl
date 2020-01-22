@@ -19,9 +19,9 @@ import java.util.List;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.neurons.Neurons;
@@ -64,7 +64,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	}
 
 	@Override
-	public AxonsContext getContext(DirectedComponentsContext context, int componentIndex) {
+	public AxonsContext getContext(DirectedComponentsContext context) {
 		return context.getContext(this, () -> new AxonsContextImpl(context.getMatrixFactory(), context.isTrainingContext(), false));
 	}
 

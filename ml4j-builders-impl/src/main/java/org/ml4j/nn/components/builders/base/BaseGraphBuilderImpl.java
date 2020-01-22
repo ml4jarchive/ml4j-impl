@@ -113,7 +113,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 				// TODO
 				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
 					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent) axonsComponent)
-							.getContext(directedComponentsContext, 0);
+							.getContext(directedComponentsContext);
 					builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
 				}
 			}

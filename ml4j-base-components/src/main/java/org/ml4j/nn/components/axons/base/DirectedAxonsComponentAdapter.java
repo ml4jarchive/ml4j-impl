@@ -19,7 +19,6 @@ import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.Neurons;
-import org.ml4j.nn.neurons.NeuronsActivation;
 
 public class DirectedAxonsComponentAdapter<L extends Neurons, R extends Neurons> extends DefaultChainableDirectedComponentAdapter<DirectedAxonsComponentActivation, AxonsContext> 
 	implements DirectedAxonsComponent<L, R, Axons<L, R, ?>> {
