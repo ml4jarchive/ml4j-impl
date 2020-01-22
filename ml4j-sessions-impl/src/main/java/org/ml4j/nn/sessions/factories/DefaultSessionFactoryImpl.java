@@ -16,7 +16,6 @@ package org.ml4j.nn.sessions.factories;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
-import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.sessions.DefaultSession;
 import org.ml4j.nn.sessions.DefaultSessionImpl;
@@ -26,9 +25,8 @@ import org.ml4j.nn.sessions.DefaultSessionImpl;
  * 
  * @author Michael Lavelle
  *
- * @param <T> The type of NeuralComponent within the Session.
  */
-public class DefaultSessionFactoryImpl<T extends NeuralComponent> implements DefaultSessionFactory{
+public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 
 	private DirectedComponentFactory directedComponentFactory;
 	private MatrixFactory matrixFactory;
