@@ -19,7 +19,7 @@ import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
 /**
- * Default Session implementation for the creation of Neural Component graphs.
+ * Session implementation for the creation of Neural Component graphs.
  * 
  * @author Michael Lavelle
  *
