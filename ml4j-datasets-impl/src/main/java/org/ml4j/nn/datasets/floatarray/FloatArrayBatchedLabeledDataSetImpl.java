@@ -25,7 +25,7 @@ import org.ml4j.nn.datasets.LabeledDataImpl;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationLabeledDataSet;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationLabeledDataSetImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFormat;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.ml4j.streams.Streamable;
 
 public class FloatArrayBatchedLabeledDataSetImpl extends BatchedLabeledDataSetImpl<float[], float[]>

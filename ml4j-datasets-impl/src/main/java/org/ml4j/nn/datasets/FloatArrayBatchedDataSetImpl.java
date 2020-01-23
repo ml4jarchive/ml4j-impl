@@ -22,7 +22,7 @@ import org.ml4j.nn.datasets.floatarray.FloatArrayDataBatch;
 import org.ml4j.nn.datasets.floatarray.FloatArrayDataBatchImpl;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationDataSet;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationDataSetImpl;
-import org.ml4j.nn.neurons.NeuronsActivationFormat;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class FloatArrayBatchedDataSetImpl extends BatchedDataSetImpl<float[]> implements FloatArrayBatchedDataSet {
 

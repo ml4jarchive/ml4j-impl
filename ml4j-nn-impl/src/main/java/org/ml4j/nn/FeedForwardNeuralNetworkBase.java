@@ -53,8 +53,8 @@ import org.ml4j.nn.datasets.LabeledData;
 import org.ml4j.nn.datasets.LabeledDataSet;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
-import org.ml4j.nn.neurons.NeuronsActivationFormat;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 import org.slf4j.Logger;
@@ -180,10 +180,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 									.asInterrimMatrix()) {
 
 						NeuronsActivation batchDataActivations = new NeuronsActivationImpl(getInputNeurons(), dataBatch,
-								trainingDataActivations.getFeatureOrientation());
+								trainingDataActivations.getFormat());
 
 						NeuronsActivation batchLabelActivations = new NeuronsActivationImpl(getInputNeurons(),
-								labelBatch, trainingLabelActivations.getFeatureOrientation());
+								labelBatch, trainingLabelActivations.getFormat());
 
 						costAndGradients = getCostAndGradients(batchDataActivations, batchLabelActivations,
 								trainingContext);

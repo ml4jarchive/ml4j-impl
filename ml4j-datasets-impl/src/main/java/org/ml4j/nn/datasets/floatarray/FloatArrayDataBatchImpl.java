@@ -21,8 +21,8 @@ import org.ml4j.nn.datasets.DataBatchImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
-import org.ml4j.nn.neurons.NeuronsActivationFormat;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 import com.codepoetics.protonpack.StreamUtils;
 
@@ -82,14 +82,14 @@ public class FloatArrayDataBatchImpl extends DataBatchImpl<float[]> implements F
 			StreamUtils.zipWithIndex(floatStream)
 					.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
 							matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
-			return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, format.getFeatureOrientation());
+			return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, format);
 
 		} else {
 			StreamUtils.zipWithIndex(floatStream).forEach(e -> dataMatrix.asEditableMatrix().putRow((int) e.getIndex(),
 					matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
 
 			return new NeuronsActivationImpl(new Neurons(dataMatrix.getColumns(), false), dataMatrix,
-					format.getFeatureOrientation());
+					format);
 
 		}
 

@@ -13,19 +13,13 @@
  */
 package org.ml4j.nn.datasets.floatarray;
 
-import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.datasets.DataBatch;
 import org.ml4j.nn.datasets.LabeledData;
 import org.ml4j.nn.datasets.LabeledDataBatchImpl;
 import org.ml4j.nn.datasets.LabeledDataImpl;
-import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
-import org.ml4j.nn.neurons.NeuronsActivationFormat;
-import org.ml4j.nn.neurons.NeuronsActivationImpl;
-
-import com.codepoetics.protonpack.StreamUtils;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[], float[]>
 		implements FloatArrayLabeledDataBatch {
@@ -65,6 +59,7 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 		this.labelFeatureCount = labelFeatureCount;
 	}
 
+	/*
 	public LabeledData<NeuronsActivation, NeuronsActivation> getNeuronActivations(MatrixFactory matrixFactory) {
 
 		Matrix data = matrixFactory.createMatrix(batchSize, featureCount);
@@ -77,18 +72,23 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 				new NeuronsActivationImpl(new Neurons(data.getColumns(), false), data.transpose(),
 						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
 				new NeuronsActivationImpl(new Neurons(labels.getRows(), false), labels.transpose(),
-						NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
+						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
 	}
+	*/
 
+	/*
 	private void addToMatrices(MatrixFactory matrixFactory, Matrix dataMatrix, Matrix labelsMatrix, float[] data,
 			float[] labels, int row) {
 		addToMatrix(matrixFactory, dataMatrix, data, featureCount, row);
 		addToMatrix(matrixFactory, labelsMatrix, labels, labelFeatureCount, row);
 	}
+	*/
 
+	/*
 	private void addToMatrix(MatrixFactory matrixFactory, Matrix matrix, float[] data, int featureCount, int row) {
 		matrix.asEditableMatrix().putRow(row, matrixFactory.createMatrixFromRowsByRowsArray(1, featureCount, data));
 	}
+	*/
 
 	@Override
 	public FloatArrayDataBatch getDataSet() {
