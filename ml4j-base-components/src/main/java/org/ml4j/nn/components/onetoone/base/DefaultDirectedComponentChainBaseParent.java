@@ -15,6 +15,7 @@ package org.ml4j.nn.components.onetoone.base;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -25,7 +26,7 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,15 +81,14 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 	public Neurons getOutputNeurons() {
 		return sequentialComponents.get(sequentialComponents.size() - 1).getOutputNeurons();
 	}
-
+	
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return NeuronsActivationFeatureOrientation.intersectLists(sequentialComponents.stream().map(c -> c.supports()).collect(Collectors.toList()));
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return sequentialComponents.stream().map(c -> c.isSupported(format)).allMatch(Predicate.isEqual(true));
 	}
-
+	
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
-		return NeuronsActivationFeatureOrientation.intersectOptionals(sequentialComponents.stream().map(c -> c.optimisedFor()).collect(Collectors.toList()));
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
+		return NeuronsActivationFormat.intersectOptionals(sequentialComponents.stream().map(c -> c.optimisedFor()).collect(Collectors.toList()));
 	}
-
 }

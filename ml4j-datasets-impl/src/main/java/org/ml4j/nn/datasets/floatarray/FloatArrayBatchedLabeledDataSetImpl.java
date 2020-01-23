@@ -25,7 +25,7 @@ import org.ml4j.nn.datasets.LabeledDataImpl;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationLabeledDataSet;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationLabeledDataSetImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationFormat;
 import org.ml4j.streams.Streamable;
 
 public class FloatArrayBatchedLabeledDataSetImpl extends BatchedLabeledDataSetImpl<float[], float[]>
@@ -49,14 +49,14 @@ public class FloatArrayBatchedLabeledDataSetImpl extends BatchedLabeledDataSetIm
 
 	@Override
 	public NeuronsActivationLabeledDataSet toNeuronsActivationLabeledDataSet(MatrixFactory matrixFactory,
-			NeuronsActivationFeatureOrientation featureOrientation) {
+			NeuronsActivationFormat<?> format) {
 		return new NeuronsActivationLabeledDataSetImpl(
-				() -> stream().map(batch -> createLabeledData(matrixFactory, batch, featureOrientation)));
+				() -> stream().map(batch -> createLabeledData(matrixFactory, batch, format)));
 	}
 
 	private LabeledData<NeuronsActivation, NeuronsActivation> createLabeledData(MatrixFactory matrixFactory,
-			DataBatch<LabeledData<float[], float[]>> batch, NeuronsActivationFeatureOrientation featureOrientation) {
-		return createFloatArrayLabeledDataBatch(batch).toNeuronsActivations(matrixFactory, featureOrientation);
+			DataBatch<LabeledData<float[], float[]>> batch, NeuronsActivationFormat<?> format) {
+		return createFloatArrayLabeledDataBatch(batch).toNeuronsActivations(matrixFactory, format);
 	}
 
 	private FloatArrayLabeledDataBatch createFloatArrayLabeledDataBatch(

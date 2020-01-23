@@ -53,6 +53,7 @@ import org.ml4j.nn.datasets.LabeledData;
 import org.ml4j.nn.datasets.LabeledDataSet;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationFormat;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
 import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
@@ -662,14 +663,14 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK),
 				"FEED_FORWARD");
 	}
-
+	
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return trailingActivationFunctionComponentChain.supports();
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return trailingActivationFunctionComponentChain.isSupported(format);
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return trailingActivationFunctionComponentChain.optimisedFor();
 	}
 

@@ -22,6 +22,7 @@ import org.ml4j.nn.datasets.LabeledDataImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.NeuronsActivationFormat;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
 
 import com.codepoetics.protonpack.StreamUtils;
@@ -105,9 +106,9 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 
 	@Override
 	public LabeledData<NeuronsActivation, NeuronsActivation> toNeuronsActivations(MatrixFactory matrixFactory,
-			NeuronsActivationFeatureOrientation featureOrientation) {
-		return new LabeledDataImpl<>(getDataSet().toNeuronsActivation(matrixFactory, featureOrientation),
-				getLabelsSet().toNeuronsActivation(matrixFactory, featureOrientation));
+			NeuronsActivationFormat<?> format) {
+		return new LabeledDataImpl<>(getDataSet().toNeuronsActivation(matrixFactory, format),
+				getLabelsSet().toNeuronsActivation(matrixFactory, format));
 	}
 
 }

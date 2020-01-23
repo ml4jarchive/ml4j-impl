@@ -176,4 +176,9 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		return imageWithPadding.im2colPoolExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
 	}
 
+	@Override
+	public ImageNeuronsActivationFormat getFormat() {
+		return ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT;
+	}
+
 }

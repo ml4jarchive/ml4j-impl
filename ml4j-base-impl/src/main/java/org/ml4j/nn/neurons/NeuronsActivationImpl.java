@@ -171,4 +171,9 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		this.activations.setImmutable(immutable);
 	}
 
+	@Override
+	public NeuronsActivationFormat<?> getFormat() {
+		return new NeuronsActivationFormat<>(featureOrientation, new FlatFeaturesFormat());
+	}
+
 }
