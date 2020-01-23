@@ -24,6 +24,7 @@ import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public abstract class ScaleAndShiftAxonsTestBase {
 
@@ -68,7 +69,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
     Assert.assertEquals(100, inputMatrix.getColumns());
 
     NeuronsActivation input = new NeuronsActivationImpl(leftNeurons, inputMatrix,
-        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+    		NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET);
     AxonsContext context = new AxonsContextImpl(matrixFactory, false, false);
     AxonsActivation axonsActivation = axons.pushLeftToRight(input, null, context);
 
@@ -121,11 +122,11 @@ public abstract class ScaleAndShiftAxonsTestBase {
 	    Assert.assertEquals(100, inputMatrix.getColumns());
 
 	    NeuronsActivation input = new NeuronsActivationImpl(leftNeurons, inputMatrix,
-	        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+	    		NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET);
 	    AxonsContext context = new AxonsContextImpl(matrixFactory, false, false);
 	    AxonsActivation axonsActivation = axons.pushLeftToRight(input, null, context);
 	    NeuronsActivation rightNeuronsActivation = new NeuronsActivationImpl(rightNeurons, axonsActivation.getPostDropoutOutput().getActivations(matrixFactory),
-		        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+	    		NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET);
 	    
 	    AxonsActivation finalActivation = axons.pushRightToLeft(rightNeuronsActivation, axonsActivation, context);
 	    Matrix finalOutput = finalActivation.getPostDropoutOutput().getActivations(matrixFactory);
@@ -157,7 +158,7 @@ public abstract class ScaleAndShiftAxonsTestBase {
     Assert.assertEquals(100, inputMatrix.getColumns());
 
     NeuronsActivation input = new NeuronsActivationImpl(leftNeurons, inputMatrix,
-        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+    		NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET);
     AxonsContext context = new AxonsContextImpl(matrixFactory, false,  false);
     AxonsActivation axonsActivation = axons.pushRightToLeft(input, null, context);
 

@@ -26,8 +26,8 @@ import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.ml4j.nn.synapses.UndirectedSynapses;
 import org.ml4j.nn.synapses.UndirectedSynapsesActivation;
 import org.ml4j.nn.synapses.UndirectedSynapsesContext;
@@ -140,7 +140,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 		}
 		return new NeuronsActivationImpl(getVisibleNeurons(),
 				matrixFactory.createMatrixFromRows(new float[][] { maximisingInputFeatures }),
-				NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+				NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET);
 	}
 
 	private float getWij(int indI, int indJ, Matrix weights, boolean hasBiasUnit) {
@@ -167,7 +167,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 				new NeuronsActivationImpl(getHiddenNeurons(),
 						visibleNeuronsReconstruction.getSynapsesActivation().getOutput()
 								.getActivations(layerContext.getMatrixFactory()),
-						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
+								NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET));
 
 		UndirectedSynapsesActivation hiddenNeuronsSynapseActivation = synapses.pushLeftToRight(synapsesInput,
 				visibleNeuronsReconstruction.getSynapsesActivation(), layerContext.createSynapsesContext(0));
@@ -217,7 +217,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 
 		UndirectedSynapsesInput synapsesInput = new UndirectedSynapsesInputImpl(
 				new NeuronsActivationImpl(getHiddenNeurons(), sample.getActivations(layerContext.getMatrixFactory()),
-						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
+						NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET));
 		UndirectedSynapsesContext context = layerContext.createSynapsesContext(0);
 		UndirectedSynapsesActivation visibleNeuronsSynapseActivation = synapses.pushRightToLeft(synapsesInput,
 				previousVisibleToHiddenNeuronsActivation.getSynapsesActivation(), context);
@@ -225,7 +225,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 		return new RestrictedBoltzmannLayerActivationImpl(visibleNeuronsSynapseActivation,
 				new NeuronsActivationImpl(getVisibleNeurons(),
 						visibleNeuronsSynapseActivation.getOutput().getActivations(layerContext.getMatrixFactory()),
-						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
+						NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET),
 				previousVisibleToHiddenNeuronsActivation.getHiddenActivationProbabilities());
 	}
 

@@ -138,7 +138,7 @@ public class RestrictedBoltzmannMachineImpl implements RestrictedBoltzmannMachin
 							.getColumns(colIndexes);
 
 					NeuronsActivation batchDataActivations = new NeuronsActivationImpl(getLayer().getVisibleNeurons(),
-							dataBatch, trainingActivations.getFeatureOrientation());
+							dataBatch, trainingActivations.getFormat());
 					data = batchDataActivations;
 
 					lastReconstructions = trainOnBatch(data, trainingContext);

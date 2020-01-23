@@ -22,6 +22,7 @@ import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 import com.codepoetics.protonpack.StreamUtils;
 
@@ -70,25 +71,25 @@ public class FloatArrayDataBatchImpl extends DataBatchImpl<float[]> implements F
 
 	@Override
 	public NeuronsActivation toNeuronsActivation(MatrixFactory matrixFactory,
-			NeuronsActivationFeatureOrientation featureOrientation) {
+			NeuronsActivationFormat<?> format) {
 
-		Matrix dataMatrix = featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET
+		Matrix dataMatrix = format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET
 				? matrixFactory.createMatrix(featureCount, batchSize)
 				: matrixFactory.createMatrix(batchSize, featureCount);
 
 		Stream<float[]> floatStream = stream();
-		if (featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+		if (format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
 			StreamUtils.zipWithIndex(floatStream)
 					.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
 							matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
-			return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, featureOrientation);
+			return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, format);
 
 		} else {
 			StreamUtils.zipWithIndex(floatStream).forEach(e -> dataMatrix.asEditableMatrix().putRow((int) e.getIndex(),
 					matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
 
 			return new NeuronsActivationImpl(new Neurons(dataMatrix.getColumns(), false), dataMatrix,
-					featureOrientation);
+					format);
 
 		}
 

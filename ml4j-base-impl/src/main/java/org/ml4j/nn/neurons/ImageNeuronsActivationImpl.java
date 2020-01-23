@@ -7,6 +7,7 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.images.Images;
 import org.ml4j.images.MultiChannelImages;
 import org.ml4j.images.SingleChannelImages;
+import org.ml4j.nn.neurons.format.ImageNeuronsActivationFormat;
 
 public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 
@@ -14,22 +15,24 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 	private Images images;
 	private boolean immutable;
 	private Integer exampleCount;
+	private ImageNeuronsActivationFormat format;
 
 	public ImageNeuronsActivationImpl(Neurons3D neurons, Images images,
-			NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
+			ImageNeuronsActivationFormat format, boolean immutable) {
 		this.neurons = neurons;
 		this.images = images;
 		setImmutable(immutable);
-		if (featureOrientation == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-			throw new UnsupportedOperationException("Not yet supported");
+		if (!format.equals(ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT)) {
+			throw new UnsupportedOperationException("Format not yet supported:" + format);
 		}
 		this.exampleCount = images.getExamples();
+		this.format = format;
 	}
 
 	public ImageNeuronsActivationImpl(Matrix activations, Neurons3D neurons,
-			NeuronsActivationFeatureOrientation featureOrientation, boolean immutable) {
-		if (featureOrientation == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-			throw new UnsupportedOperationException("Not yet supported");
+			ImageNeuronsActivationFormat format, boolean immutable) {
+		if (!format.equals(ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT)) {
+			throw new UnsupportedOperationException("Format not yet supported:" + format);
 		}
 		this.neurons = neurons;
 		if (neurons.getDepth() == 1) {
@@ -41,6 +44,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		}
 		setImmutable(immutable);
 		this.exampleCount = images.getExamples();
+		this.format = format;
 	}
 
 	@Override
@@ -80,7 +84,10 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		if (neurons.equals(this.neurons)) {
 			return this;
 		} else {
-			throw new IllegalArgumentException();
+			System.out.println(this.neurons);
+			System.out.println(neurons);
+
+			throw new IllegalArgumentException("Neurons do not match");
 		}
 	}
 
@@ -95,7 +102,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 
 	@Override
 	public NeuronsActivation dup() {
-		return new ImageNeuronsActivationImpl(neurons, images.dup(), getFeatureOrientation(), false);
+		return new ImageNeuronsActivationImpl(neurons, images.dup(), getFormat(), false);
 	}
 
 	@Override
@@ -122,7 +129,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 
 	@Override
 	public NeuronsActivationFeatureOrientation getFeatureOrientation() {
-		return NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET;
+		return getFormat().getFeatureOrientation();
 	}
 
 	@Override
@@ -174,6 +181,11 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 		imageWithPadding.setPaddingHeight(paddingHeight);
 		imageWithPadding.setPaddingWidth(paddingWidth);
 		return imageWithPadding.im2colPoolExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
+	}
+
+	@Override
+	public ImageNeuronsActivationFormat getFormat() {
+		return format;
 	}
 
 }

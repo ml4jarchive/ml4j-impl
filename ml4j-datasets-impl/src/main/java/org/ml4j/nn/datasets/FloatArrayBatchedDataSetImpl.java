@@ -22,7 +22,7 @@ import org.ml4j.nn.datasets.floatarray.FloatArrayDataBatch;
 import org.ml4j.nn.datasets.floatarray.FloatArrayDataBatchImpl;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationDataSet;
 import org.ml4j.nn.datasets.neuronsactivation.NeuronsActivationDataSetImpl;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class FloatArrayBatchedDataSetImpl extends BatchedDataSetImpl<float[]> implements FloatArrayBatchedDataSet {
 
@@ -35,9 +35,9 @@ public class FloatArrayBatchedDataSetImpl extends BatchedDataSetImpl<float[]> im
 
 	@Override
 	public NeuronsActivationDataSet toNeuronsActivationDataSet(MatrixFactory matrixFactory,
-			NeuronsActivationFeatureOrientation featureOrientation) {
+			NeuronsActivationFormat<?> format) {
 		return new NeuronsActivationDataSetImpl(() -> stream().map(batch -> createFloatArrayDataBatch(batch))
-				.map(batch -> batch.toNeuronsActivation(matrixFactory, featureOrientation)));
+				.map(batch -> batch.toNeuronsActivation(matrixFactory, format)));
 	}
 
 	private FloatArrayDataBatch createFloatArrayDataBatch(DataBatch<float[]> batch) {
