@@ -24,16 +24,16 @@ import org.ml4j.Matrix;
  */
 public class SumSquaredErrorCostFunction implements CostFunction {
 
-  @Override
-  public float getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    Matrix e1 = desiredOutputs.sub(actualOutputs);
-    Matrix jpart = e1.asEditableMatrix().muli(e1);
-    return jpart.sum();
-  }
-  
-  @Override
-  public float getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    int m1 = desiredOutputs.getRows();
-    return getTotalCost(actualOutputs, actualOutputs) / m1;
-  }
+	@Override
+	public float getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
+		Matrix e1 = desiredOutputs.sub(actualOutputs);
+		Matrix jpart = e1.asEditableMatrix().muli(e1);
+		return jpart.sum();
+	}
+
+	@Override
+	public float getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
+		int m1 = desiredOutputs.getRows();
+		return getTotalCost(actualOutputs, actualOutputs) / m1;
+	}
 }

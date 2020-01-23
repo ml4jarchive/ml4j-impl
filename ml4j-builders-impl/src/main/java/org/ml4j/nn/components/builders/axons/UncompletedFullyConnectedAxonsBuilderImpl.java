@@ -20,7 +20,8 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.neurons.Neurons;
 
-public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsBuilder<?>> extends UncompletedAxonsBuilderImpl<Neurons, C> implements UncompletedFullyConnectedAxonsBuilder<C> {
+public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsStateBuilder<?>>
+		extends UncompletedAxonsBuilderImpl<Neurons, C> implements UncompletedFullyConnectedAxonsBuilder<C> {
 
 	public UncompletedFullyConnectedAxonsBuilderImpl(Supplier<C> previousBuilderSupplier, Neurons leftNeurons) {
 		super(previousBuilderSupplier, leftNeurons);
@@ -50,13 +51,12 @@ public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsBuilder<?>
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
 	}
-	
+
 	@Override
 	public UncompletedFullyConnectedAxonsBuilder<C> withAxonsContextConfigurer(
 			Consumer<AxonsContext> axonsContextConfigurer) {
 		this.axonsContextConfigurer = axonsContextConfigurer;
 		return this;
 	}
-
 
 }

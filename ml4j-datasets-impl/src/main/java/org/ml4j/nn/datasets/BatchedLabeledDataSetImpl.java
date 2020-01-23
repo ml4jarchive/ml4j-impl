@@ -28,7 +28,7 @@ public class BatchedLabeledDataSetImpl<E, L> extends BatchedDataSetImpl<LabeledD
 		implements BatchedLabeledDataSet<E, L> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BatchedLabeledDataSetImpl.class);
-	
+
 	public BatchedLabeledDataSetImpl(Supplier<Stream<DataBatch<LabeledData<E, L>>>> dataSupplier) {
 		super(dataSupplier);
 	}
@@ -36,26 +36,32 @@ public class BatchedLabeledDataSetImpl<E, L> extends BatchedDataSetImpl<LabeledD
 	@Override
 	public FloatArrayBatchedLabeledDataSet toFloatArrayBatchedLabeledDataSet(FeatureExtractor<E> featureExtractor,
 			FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
-		
-		return new FloatArrayBatchedLabeledDataSetImpl(() -> stream().map(batch -> extract(batch, featureExtractor, labelMapper, featureExtractionErrorMode)), featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
+
+		return new FloatArrayBatchedLabeledDataSetImpl(
+				() -> stream().map(batch -> extract(batch, featureExtractor, labelMapper, featureExtractionErrorMode)),
+				featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
 	}
 
-
-	private DataBatch<LabeledData<float[], float[]>> extract(DataBatch<LabeledData<E, L>> batch, FeatureExtractor<E> featureExtractor,
-			FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
-		Stream<LabeledData<float[], float[]>> s = batch.stream().map(l -> 
-		new LabeledDataImpl<Optional<float[]>, Optional<float[]>>(getFeatures(l.getData(), featureExtractor, featureExtractionErrorMode), getFeatures(l.getLabel(), labelMapper, featureExtractionErrorMode))).
-				filter(o -> o.getData().isPresent() && o.getLabel().isPresent()).map(o -> new LabeledDataImpl<>(o.getData().get(), o.getLabel().get()));
+	private DataBatch<LabeledData<float[], float[]>> extract(DataBatch<LabeledData<E, L>> batch,
+			FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper,
+			FeatureExtractionErrorMode featureExtractionErrorMode) {
+		Stream<LabeledData<float[], float[]>> s = batch.stream()
+				.map(l -> new LabeledDataImpl<Optional<float[]>, Optional<float[]>>(
+						getFeatures(l.getData(), featureExtractor, featureExtractionErrorMode),
+						getFeatures(l.getLabel(), labelMapper, featureExtractionErrorMode)))
+				.filter(o -> o.getData().isPresent() && o.getLabel().isPresent())
+				.map(o -> new LabeledDataImpl<>(o.getData().get(), o.getLabel().get()));
 		return new DataBatchImpl<LabeledData<float[], float[]>>(s, batch.size());
 	}
-	
-	private <T> Optional<float[]> getFeatures(T element, FeatureExtractor<T> featureExtractor, FeatureExtractionErrorMode featureExtractionErrorMode) {
+
+	private <T> Optional<float[]> getFeatures(T element, FeatureExtractor<T> featureExtractor,
+			FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
 			return Optional.of(featureExtractor.getFeatures(element));
 		} catch (FeatureExtractionException e) {
 			if (featureExtractionErrorMode == FeatureExtractionErrorMode.LOG_WARNING) {
 				LOGGER.warn("Ignoring data element due to feature extraction failure", e);
-			} else if (featureExtractionErrorMode  == FeatureExtractionErrorMode.RAISE_EXCEPTION) {
+			} else if (featureExtractionErrorMode == FeatureExtractionErrorMode.RAISE_EXCEPTION) {
 				throw new FeatureExtractionRuntimeException("Unable to obtain features", e);
 			}
 			return Optional.empty();

@@ -15,8 +15,6 @@ package org.ml4j.nn.components.onetoone;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.DirectedComponentActivationLifecycle;
@@ -29,7 +27,6 @@ import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponen
 import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainActivationBase;
 import org.ml4j.nn.costfunctions.CostFunctionGradient;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
 public class TrailingActivationFunctionDirectedComponentChainActivationImpl
 		extends DefaultDirectedComponentChainActivationBase<TrailingActivationFunctionDirectedComponentChain> implements TrailingActivationFunctionDirectedComponentChainActivation {

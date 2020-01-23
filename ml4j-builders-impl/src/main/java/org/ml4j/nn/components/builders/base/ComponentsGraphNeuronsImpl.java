@@ -21,14 +21,14 @@ public class ComponentsGraphNeuronsImpl<N extends Neurons> implements Components
 	private N currentNeurons;
 	private N rightNeurons;
 	private boolean hasBiasUnit;
-	
+
 	public ComponentsGraphNeuronsImpl(N currentNeurons) {
 		this.currentNeurons = currentNeurons;
 		if (currentNeurons == null) {
 			throw new IllegalArgumentException("Current neurons must not be null!");
 		}
 	}
-	
+
 	public ComponentsGraphNeuronsImpl(N currentNeurons, N rightNeurons) {
 		this.currentNeurons = currentNeurons;
 		this.rightNeurons = rightNeurons;
@@ -36,19 +36,22 @@ public class ComponentsGraphNeuronsImpl<N extends Neurons> implements Components
 			throw new IllegalArgumentException("Current neurons must not be null!");
 		}
 	}
-	
+
 	public N getCurrentNeurons() {
 		return currentNeurons;
 	}
+
 	public void setCurrentNeurons(N currentNeurons) {
 		if (currentNeurons == null) {
 			throw new IllegalArgumentException("Current neurons must not be null!");
 		}
 		this.currentNeurons = currentNeurons;
 	}
+
 	public N getRightNeurons() {
 		return rightNeurons;
 	}
+
 	public void setRightNeurons(N rightNeurons) {
 		this.rightNeurons = rightNeurons;
 	}
@@ -61,5 +64,5 @@ public class ComponentsGraphNeuronsImpl<N extends Neurons> implements Components
 	@Override
 	public void setHasBiasUnit(boolean hasBiasUnit) {
 		this.hasBiasUnit = hasBiasUnit;
-	}	
+	}
 }

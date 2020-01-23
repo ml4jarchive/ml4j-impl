@@ -17,70 +17,64 @@ package org.ml4j.nn.unsupervised;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.layers.UndirectedLayerContext;
 import org.ml4j.nn.layers.UndirectedLayerContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 
-public class RestrictedBoltzmannMachineContextImpl implements RestrictedBoltzmannMachineContext {
+public class RestrictedBoltzmannMachineContextImpl extends NeuronsActivationContextImpl implements RestrictedBoltzmannMachineContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private UndirectedLayerContext layerContext;
+	private UndirectedLayerContext layerContext;
 
-  private int trainingEpochs;
+	private int trainingEpochs;
 
-  private float trainingLearningRate;
+	private float trainingLearningRate;
 
-  private Integer trainingMiniBatchSize;
+	private Integer trainingMiniBatchSize;
 
-  public RestrictedBoltzmannMachineContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
-    this.layerContext = new UndirectedLayerContextImpl(0, matrixFactory, isTrainingContext);
-  }
+	public RestrictedBoltzmannMachineContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
+		super(matrixFactory, isTrainingContext);
+		this.layerContext = new UndirectedLayerContextImpl(0, matrixFactory, isTrainingContext);
+	}
 
+	public UndirectedLayerContext getLayerContext() {
+		return layerContext;
+	}
 
-  public UndirectedLayerContext getLayerContext() {
-	  return layerContext;
-  }
+	@Override
+	public int getTrainingEpochs() {
+		return trainingEpochs;
+	}
 
-  @Override
-  public int getTrainingEpochs() {
-    return trainingEpochs;
-  }
+	@Override
+	public float getTrainingLearningRate() {
+		return trainingLearningRate;
+	}
 
-  @Override
-  public float getTrainingLearningRate() {
-    return trainingLearningRate;
-  }
+	@Override
+	public Integer getTrainingMiniBatchSize() {
+		return trainingMiniBatchSize;
+	}
 
-  @Override
-  public Integer getTrainingMiniBatchSize() {
-    return trainingMiniBatchSize;
-  }
+	@Override
+	public void setTrainingEpochs(int trainingEpochs) {
+		this.trainingEpochs = trainingEpochs;
+	}
 
-  @Override
-  public void setTrainingEpochs(int trainingEpochs) {
-    this.trainingEpochs = trainingEpochs;
-  }
+	@Override
+	public void setTrainingLearningRate(float trainingLearningRate) {
+		this.trainingLearningRate = trainingLearningRate;
+	}
 
-  @Override
-  public void setTrainingLearningRate(float trainingLearningRate) {
-    this.trainingLearningRate = trainingLearningRate;
-  }
+	@Override
+	public void setTrainingMiniBatchSize(Integer trainingMiniBatchSize) {
+		this.trainingMiniBatchSize = trainingMiniBatchSize;
+	}
 
-  @Override
-  public void setTrainingMiniBatchSize(Integer trainingMiniBatchSize) {
-    this.trainingMiniBatchSize = trainingMiniBatchSize;
-  }
-
-  @Override
-  public MatrixFactory getMatrixFactory() {
-    return layerContext.getMatrixFactory();
-  }
-
-
-@Override
-public boolean isTrainingContext() {
-	// TODO
-	return true;
-}
+	@Override
+	public MatrixFactory getMatrixFactory() {
+		return layerContext.getMatrixFactory();
+	}
 }

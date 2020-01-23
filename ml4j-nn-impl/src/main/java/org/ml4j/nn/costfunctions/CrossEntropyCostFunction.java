@@ -32,7 +32,8 @@ public class CrossEntropyCostFunction implements CostFunction {
 
 		try (InterrimMatrix logOfActualOutputs = actualOutputs.log().asInterrimMatrix()) {
 			try (InterrimMatrix negativeOfDesiredOutputs = desiredOutputs.mul(-1).asInterrimMatrix()) {
-				try (InterrimMatrix negativeOfActualOutputsAddOne = actualOutputs.mul(-1).asEditableMatrix().addi(1).asInterrimMatrix()) {
+				try (InterrimMatrix negativeOfActualOutputsAddOne = actualOutputs.mul(-1).asEditableMatrix().addi(1)
+						.asInterrimMatrix()) {
 					try (InterrimMatrix first = negativeOfDesiredOutputs.mul(logOfActualOutputs).asInterrimMatrix()) {
 						try (InterrimMatrix second = negativeOfActualOutputsAddOne.logi().asInterrimMatrix()) {
 							try (InterrimMatrix third = negativeOfDesiredOutputs.asEditableMatrix().addi(1).muli(second)

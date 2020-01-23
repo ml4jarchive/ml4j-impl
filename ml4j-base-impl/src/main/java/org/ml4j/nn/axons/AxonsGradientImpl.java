@@ -27,12 +27,10 @@ public class AxonsGradientImpl implements AxonsGradient {
 	private Matrix rightToLeftBiasGradient;
 
 	/**
-	 * @param axons
-	 *            The TrainableAxons that generated this gradient.
-	 * @param weightsGradient
-	 *            The weights gradient.
-	 * @param leftToRightBiasGradient
-	 *            Left to right bias gradient.
+	 * @param axons                   The TrainableAxons that generated this
+	 *                                gradient.
+	 * @param weightsGradient         The weights gradient.
+	 * @param leftToRightBiasGradient Left to right bias gradient.
 	 */
 	public AxonsGradientImpl(TrainableAxons<?, ?, ?> axons, Matrix weightsGradient, Matrix leftToRightBiasGradient) {
 		super();
@@ -42,14 +40,11 @@ public class AxonsGradientImpl implements AxonsGradient {
 	}
 
 	/**
-	 * @param axons
-	 *            The TrainableAxons that generated this gradient.
-	 * @param weightsGradient
-	 *            The weights gradient.
-	 * @param leftToRightBiasGradient
-	 *            Left to right bias gradient.
-	 * @param rightToLeftBiasGradient
-	 *            Right to left bias gradient.
+	 * @param axons                   The TrainableAxons that generated this
+	 *                                gradient.
+	 * @param weightsGradient         The weights gradient.
+	 * @param leftToRightBiasGradient Left to right bias gradient.
+	 * @param rightToLeftBiasGradient Right to left bias gradient.
 	 */
 	public AxonsGradientImpl(TrainableAxons<?, ?, ?> axons, Matrix weightsGradient, Matrix leftToRightBiasGradient,
 			Matrix rightToLeftBiasGradient) {

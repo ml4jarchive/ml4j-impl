@@ -68,14 +68,15 @@ public class DataBatchImpl<E> implements DataBatch<E> {
 	public BatchedDataSet<E> toBatchedDataSet(int batchSize) {
 		return new BatchedDataSetImpl<E>(() -> StreamUtil.partition(stream(), batchSize));
 	}
-	
-	private Optional<float[]> getFeatures(E element, FeatureExtractor<E> featureExtractor, FeatureExtractionErrorMode featureExtractionErrorMode) {
+
+	private Optional<float[]> getFeatures(E element, FeatureExtractor<E> featureExtractor,
+			FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
-			 return Optional.of(featureExtractor.getFeatures(element));
+			return Optional.of(featureExtractor.getFeatures(element));
 		} catch (FeatureExtractionException e) {
 			if (featureExtractionErrorMode == FeatureExtractionErrorMode.LOG_WARNING) {
 				LOGGER.warn("Ignoring data element due to feature extraction failure", e);
-			} else if (featureExtractionErrorMode == FeatureExtractionErrorMode.RAISE_EXCEPTION){
+			} else if (featureExtractionErrorMode == FeatureExtractionErrorMode.RAISE_EXCEPTION) {
 				throw new FeatureExtractionRuntimeException("Unable to obtain features from element", e);
 			}
 			return Optional.empty();
@@ -83,8 +84,12 @@ public class DataBatchImpl<E> implements DataBatch<E> {
 	}
 
 	@Override
-	public FloatArrayDataBatch toFloatArrayDataBatch(FeatureExtractor<E> featureExtractor, FeatureExtractionErrorMode featureExtractionErrorMode) throws FeatureExtractionException {
-		return new FloatArrayDataBatchImpl(stream().map(e -> getFeatures(e, featureExtractor, featureExtractionErrorMode)).filter(Optional::isPresent).map(e -> e.get()), featureExtractor.getFeatureCount(), size());
+	public FloatArrayDataBatch toFloatArrayDataBatch(FeatureExtractor<E> featureExtractor,
+			FeatureExtractionErrorMode featureExtractionErrorMode) throws FeatureExtractionException {
+		return new FloatArrayDataBatchImpl(
+				stream().map(e -> getFeatures(e, featureExtractor, featureExtractionErrorMode))
+						.filter(Optional::isPresent).map(e -> e.get()),
+				featureExtractor.getFeatureCount(), size());
 	}
 
 }

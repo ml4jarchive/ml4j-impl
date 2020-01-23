@@ -23,7 +23,7 @@ import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	@Override
 	public A forwardPropagate(List<NeuronsActivation> input, DirectedComponentsContext context) {
 		
-		LOGGER.info(getComponentType().toString());
+		LOGGER.debug(getComponentType().toString());
 		
 		long startTime = new Date().getTime();
 		A activation =  delegated.forwardPropagate(input, context);
@@ -65,14 +65,14 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	public ManyToOneDirectedComponent<A> dup() {
 		return new ManyToOneDirectedComponentAdapter<A>(delegated.dup());
 	}
-
+	
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return delegated.supports();
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return delegated.isSupported(format);
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return delegated.optimisedFor();
 	}
 

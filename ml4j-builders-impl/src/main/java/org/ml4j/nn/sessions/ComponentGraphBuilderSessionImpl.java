@@ -22,21 +22,21 @@ import org.ml4j.nn.components.builders.initial.InitialComponentsGraphBuilderImpl
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
-import org.ml4j.nn.sessions.Session;
 
 /**
- * Default Session implementation for the creation of Neural Component graphs.
+ * Default ComponentGraphBuilderSession implementation for the creation of
+ * Neural Component graphs.
  * 
  * @author Michael Lavelle
  *
  * @param <T> The type of NeuralComponent within the session.
  */
-public class SessionImpl<T extends NeuralComponent> implements Session<T> {
+public class ComponentGraphBuilderSessionImpl<T extends NeuralComponent> implements ComponentGraphBuilderSession<T> {
 
 	private NeuralComponentFactory<T> neuralComponentFactory;
 	private DirectedComponentsContext directedComponentsContext;
-	
-	public SessionImpl(NeuralComponentFactory<T> neuralComponentFactory,
+
+	public ComponentGraphBuilderSessionImpl(NeuralComponentFactory<T> neuralComponentFactory,
 			DirectedComponentsContext directedComponentsContext) {
 		this.neuralComponentFactory = neuralComponentFactory;
 		this.directedComponentsContext = directedComponentsContext;
@@ -44,12 +44,14 @@ public class SessionImpl<T extends NeuralComponent> implements Session<T> {
 
 	@Override
 	public InitialComponents3DGraphBuilder<T> startWith3DNeurons(Neurons3D initialNeurons) {
-		return new InitialComponents3DGraphBuilderImpl<>(neuralComponentFactory, directedComponentsContext, initialNeurons) ;
+		return new InitialComponents3DGraphBuilderImpl<>(neuralComponentFactory, directedComponentsContext,
+				initialNeurons);
 	}
 
 	@Override
 	public InitialComponentsGraphBuilder<T> startWithNeurons(Neurons initialNeurons) {
-		return new InitialComponentsGraphBuilderImpl<>(neuralComponentFactory, directedComponentsContext, initialNeurons) ;
+		return new InitialComponentsGraphBuilderImpl<>(neuralComponentFactory, directedComponentsContext,
+				initialNeurons);
 	}
 
 	@Override

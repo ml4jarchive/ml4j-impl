@@ -22,9 +22,11 @@ import org.junit.Test;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.jblas.JBlasRowMajorMatrixFactory;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class NeuronsActivationTest {
 
@@ -39,8 +41,8 @@ public class NeuronsActivationTest {
   public void testConstructorColumnsSpanFeatureSet() {
 
     Matrix matrix = matrixFactory.createRand(10, 784);
-    NeuronsActivation neuronsActivation = new NeuronsActivationImpl(matrix,
-        NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
+    NeuronsActivation neuronsActivation = new NeuronsActivationImpl(new Neurons(784, false), matrix,
+    		NeuronsActivationFormat.COLUMNS_SPAN_FEATURE_SET);
     Matrix activations = neuronsActivation.getActivations(matrixFactory);
     Assert.assertEquals(matrix.getRows(), activations.getRows());
     Assert.assertEquals(matrix.getColumns(), activations.getColumns());
@@ -54,8 +56,8 @@ public class NeuronsActivationTest {
 
     Matrix matrix = matrixFactory.createRand(784, 10);
 
-    NeuronsActivation neuronsActivation = new NeuronsActivationImpl(matrix,
-        NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+    NeuronsActivation neuronsActivation = new NeuronsActivationImpl(new Neurons(784, false), matrix,
+    		NeuronsActivationFormat.ROWS_SPAN_FEATURE_SET);
     Matrix activations = neuronsActivation.getActivations(matrixFactory);
     Assert.assertEquals(matrix.getRows(), activations.getRows());
     Assert.assertEquals(matrix.getColumns(), activations.getColumns());

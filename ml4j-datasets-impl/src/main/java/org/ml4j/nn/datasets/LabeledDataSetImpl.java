@@ -27,12 +27,10 @@ import org.slf4j.LoggerFactory;
 
 import com.codepoetics.protonpack.StreamUtils;
 
-
 public class LabeledDataSetImpl<E, L> implements LabeledDataSet<E, L> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataBatchImpl.class);
 
-	
 	private Supplier<Stream<LabeledData<E, L>>> labeledDataSupplier;
 
 	public LabeledDataSetImpl(Supplier<Stream<LabeledData<E, L>>> labeledDataSupplier) {
@@ -71,28 +69,31 @@ public class LabeledDataSetImpl<E, L> implements LabeledDataSet<E, L> {
 
 		Stream<DataBatch<LabeledData<E, L>>> dataBatchStream = StreamUtil.partition(stream(), batchSize);
 
-		return new BatchedLabeledDataSetImpl<E, L>(() -> dataBatchStream
-				.map(batchOfLabeledData -> batchOfLabeledData));
+		return new BatchedLabeledDataSetImpl<E, L>(() -> dataBatchStream.map(batchOfLabeledData -> batchOfLabeledData));
 	}
-	
+
 	@Override
-	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper,
-			FeatureExtractionErrorMode featureExtractionErrorMode) {
-		return new FloatArrayLabeledDataSetImpl(() -> stream().map(l -> toLabeledFloatArray(featureExtractor, labelMapper, l, 
-				featureExtractionErrorMode))
-				.filter(Optional::isPresent).map(Optional::get), featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
+	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
+		return new FloatArrayLabeledDataSetImpl(
+				() -> stream()
+						.map(l -> toLabeledFloatArray(featureExtractor, labelMapper, l, featureExtractionErrorMode))
+						.filter(Optional::isPresent).map(Optional::get),
+				featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
 	}
-	
-	private Optional<LabeledData<float[], float[]>> toLabeledFloatArray(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper, 
-			LabeledData<E, L> labeledData, 
+
+	private Optional<LabeledData<float[], float[]>> toLabeledFloatArray(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, LabeledData<E, L> labeledData,
 			FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
-			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(labeledData.getData()), labelMapper.getFeatures(labeledData.getLabel())));
+			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(labeledData.getData()),
+					labelMapper.getFeatures(labeledData.getLabel())));
 		} catch (FeatureExtractionException e) {
 			if (featureExtractionErrorMode == FeatureExtractionErrorMode.LOG_WARNING) {
 				LOGGER.warn("Ignoring data element due to feature extraction failure", e);
 			} else if (featureExtractionErrorMode == FeatureExtractionErrorMode.RAISE_EXCEPTION) {
-				throw new FeatureExtractionRuntimeException("Unable to convert labeled data to labeled float arrays", e);
+				throw new FeatureExtractionRuntimeException("Unable to convert labeled data to labeled float arrays",
+						e);
 			}
 			return Optional.empty();
 		}

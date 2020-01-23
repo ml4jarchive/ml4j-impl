@@ -34,7 +34,7 @@ import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponen
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class TrailingActivationFunctionDirectedComponentChainImpl
 		implements TrailingActivationFunctionDirectedComponentChain {
@@ -109,8 +109,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	}
 
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext,
-			int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext) {
 		return directedComponentsContext;
 	}
 
@@ -149,12 +148,12 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	}
 	
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return NeuronsActivationFeatureOrientation.intersectLists(precedingChain.supports(), finalDifferentiableActivationFunctionComponent.supports());
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return precedingChain.isSupported(format) && finalDifferentiableActivationFunctionComponent.isSupported(format);
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
-		return NeuronsActivationFeatureOrientation.intersectOptionals(precedingChain.optimisedFor(), finalDifferentiableActivationFunctionComponent.optimisedFor());
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
+		return NeuronsActivationFormat.intersectOptionals(precedingChain.optimisedFor(), finalDifferentiableActivationFunctionComponent.optimisedFor());
 	}
 }

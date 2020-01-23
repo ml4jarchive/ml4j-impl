@@ -36,8 +36,8 @@ import org.ml4j.nn.definitions.Component3Dto3DGraphDefinition;
 import org.ml4j.nn.definitions.Component3DtoNon3DGraphDefinition;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public abstract class Components3DGraphBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent> extends Base3DGraphBuilderImpl<C, D, T> 
-implements Components3DGraphBuilder<C, D, T> {
+public abstract class Components3DGraphBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent>
+		extends Base3DGraphBuilderImpl<C, D, T> implements Components3DGraphBuilder<C, D, T> {
 
 	public Components3DGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
 			Base3DGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
@@ -48,12 +48,14 @@ implements Components3DGraphBuilder<C, D, T> {
 	@Override
 	public ParallelPathsBuilder<Components3DSubGraphBuilder<C, D, T>> withParallelPaths() {
 		addAxonsIfApplicable();
-		return new Components3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder, directedComponentsContext);
+		return new Components3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder,
+				directedComponentsContext);
 	}
 
 	@Override
 	public Components3DGraphSkipConnectionBuilder<C, D, T> withSkipConnection() {
-		return new Components3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new Components3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, directedComponentFactory,
+				builderState, directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
@@ -61,19 +63,18 @@ implements Components3DGraphBuilder<C, D, T> {
 		addActivationFunction(activationFunction);
 		return get3DBuilder();
 	}
-	
+
 	@Override
 	public C withActivationFunction(ActivationFunctionType activationFunctionType) {
 		addActivationFunction(activationFunctionType);
 		return get3DBuilder();
 	}
-	
 
 	@Override
-	public C withComponentDefinition(
-			Component3Dto3DGraphDefinition componentDefinition) {
+	public C withComponentDefinition(Component3Dto3DGraphDefinition componentDefinition) {
 		addAxonsIfApplicable();
-		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
+		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(
+				directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
 		addComponents(componentDefinition.createComponentGraph(builder, directedComponentFactory).getComponents());
 		builderState.getComponentsGraphNeurons().setRightNeurons(null);
 		builderState.getComponentsGraphNeurons().setCurrentNeurons(componentDefinition.getOutputNeurons());
@@ -85,7 +86,8 @@ implements Components3DGraphBuilder<C, D, T> {
 	@Override
 	public D withComponentDefinition(Component3DtoNon3DGraphDefinition componentDefinition) {
 		addAxonsIfApplicable();
-		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
+		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(
+				directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
 		addComponents(componentDefinition.createComponentGraph(builder, directedComponentFactory).getComponents());
 		builderState.getComponentsGraphNeurons().setRightNeurons(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
@@ -127,13 +129,13 @@ implements Components3DGraphBuilder<C, D, T> {
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
 		builderState.setConnectionWeights(null);
 		D nextBuilder = getBuilder();
-		nextBuilder.getComponentsGraphNeurons().setCurrentNeurons(componentsToAdd.get(componentsToAdd.size() - 1).getOutputNeurons());
+		nextBuilder.getComponentsGraphNeurons()
+				.setCurrentNeurons(componentsToAdd.get(componentsToAdd.size() - 1).getOutputNeurons());
 		return nextBuilder;
 	}
 
 	@Override
-	public C withComponents(Components3DGraphBuilder<?, ?, T> builder,
-			Neurons3D endNeurons) {
+	public C withComponents(Components3DGraphBuilder<?, ?, T> builder, Neurons3D endNeurons) {
 		addAxonsIfApplicable();
 		List<T> componentsToAdd = builder.getComponents();
 		addComponents(componentsToAdd);
@@ -142,7 +144,5 @@ implements Components3DGraphBuilder<C, D, T> {
 		builderState.setConnectionWeights(null);
 		return get3DBuilder();
 	}
-	
-	
-	
+
 }

@@ -54,6 +54,7 @@ import org.ml4j.nn.datasets.LabeledDataSet;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 	protected H initialisingComponentChain;
 	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain;
-	
+
 	protected GradientAccumulator gradientAccumulator;
 
 	private C lastEpochTrainingContext;
@@ -86,19 +87,21 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 * 
 	 * @param layers The layers
 	 */
-	public FeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory, H initialisingComponentChain) {
+	public FeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory,
+			H initialisingComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
-		this.trailingActivationFunctionComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory,
-				initialisingComponentChain.getComponents());
+		this.trailingActivationFunctionComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
+				directedComponentFactory, initialisingComponentChain.getComponents());
 		this.gradientAccumulator = new LocalGradientAccumulator();
 	}
-	
+
 	/**
 	 * Constructor for a multi-layer FeedForwardNeuralNetwork.
 	 * 
 	 * @param layers The layers
 	 */
-	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain, TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
+	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain,
+			TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.trailingActivationFunctionComponentChain = trailingActivationFunctionComponentChain;
 		this.gradientAccumulator = new LocalGradientAccumulator();
@@ -176,11 +179,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 									.getActivations(trainingContext.getMatrixFactory()).getColumns(columnsIndexes)
 									.asInterrimMatrix()) {
 
-						NeuronsActivation batchDataActivations = new NeuronsActivationImpl(dataBatch,
-								trainingDataActivations.getFeatureOrientation());
+						NeuronsActivation batchDataActivations = new NeuronsActivationImpl(getInputNeurons(), dataBatch,
+								trainingDataActivations.getFormat());
 
-						NeuronsActivation batchLabelActivations = new NeuronsActivationImpl(labelBatch,
-								trainingLabelActivations.getFeatureOrientation());
+						NeuronsActivation batchLabelActivations = new NeuronsActivationImpl(getInputNeurons(),
+								labelBatch, trainingLabelActivations.getFormat());
 
 						costAndGradients = getCostAndGradients(batchDataActivations, batchLabelActivations,
 								trainingContext);
@@ -217,7 +220,6 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	}
 
 	protected void train(LabeledDataSet<NeuronsActivation, NeuronsActivation> trainingDataSet, C trainingContext) {
-		
 
 		final int numberOfEpochs = trainingContext.getTrainingEpochs();
 
@@ -247,7 +249,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 						NeuronsActivation batchDataActivations = batch.getData();
 
 						NeuronsActivation batchLabelActivations = batch.getLabel();
-						
+
 						if (batchDataActivations
 								.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
 							throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
@@ -300,8 +302,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 		}
 	}
 
-	protected void train(Supplier<Stream<LabeledData<NeuronsActivation, NeuronsActivation>>> trainingDataSet, C trainingContext,
-			Consumer<Float> epochAverageCostHandler) {
+	protected void train(Supplier<Stream<LabeledData<NeuronsActivation, NeuronsActivation>>> trainingDataSet,
+			C trainingContext, Consumer<Float> epochAverageCostHandler) {
 
 		final int numberOfEpochs = trainingContext.getTrainingEpochs();
 
@@ -321,83 +323,79 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 			final int epochIndex2 = epochIndex;
 
-			try (Stream<LabeledData<NeuronsActivation, NeuronsActivation>> trainingDataStream = 
-					trainingDataSet.get();
-				) {
-				
+			try (Stream<LabeledData<NeuronsActivation, NeuronsActivation>> trainingDataStream = trainingDataSet
+					.get();) {
 
-			if (trainingContext.getTrainingMiniBatchSize() == null) {
+				if (trainingContext.getTrainingMiniBatchSize() == null) {
 
-				
-				trainingDataStream.forEach(batch -> {
+					trainingDataStream.forEach(batch -> {
 
-					NeuronsActivation batchDataActivations = batch.getData();
+						NeuronsActivation batchDataActivations = batch.getData();
 
-					NeuronsActivation batchLabelActivations = batch.getLabel();
-					
-					if (batchDataActivations
-							.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-						throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
-								+ "orientation supported currently");
-					}
+						NeuronsActivation batchLabelActivations = batch.getLabel();
 
-					if (batchLabelActivations
-							.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-						throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
-								+ "orientation supported currently");
-					}
-
-					CostAndGradients costAndGradients = getCostAndGradients(batchDataActivations, batchLabelActivations,
-							trainingContext);
-					
-					costAndGradientsList.add(costAndGradients);
-					
-
-					LOGGER.debug("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
-							+ costAndGradients.getAverageCost());
-					
-					Optional<Future<List<AxonsGradient>>> averageAxonsGradientsResult = gradientAccumulator.submitCostAndGradients(costAndGradients);
-		
-					if (averageAxonsGradientsResult.isPresent()) {
-	
-						List<AxonsGradient> averageTrainableAxonsGradients;
-						try {
-							averageTrainableAxonsGradients = averageAxonsGradientsResult.get().get();
-						
-							adjustConnectionWeights(trainingContext, averageTrainableAxonsGradients, epochIndex2,
-									batchIndex.get(), iterationIndex.get());
-		
-							for (AxonsGradient axonsGradient : averageTrainableAxonsGradients) {
-								axonsGradient.getWeightsGradient().close();
-								if (axonsGradient.getLeftToRightBiasGradient() != null) {
-									axonsGradient.getLeftToRightBiasGradient().close();
-								}
-								if (axonsGradient.getRightToLeftBiasGradient() != null) {
-									axonsGradient.getRightToLeftBiasGradient().close();
-								}
-							}
-						
-						} catch (InterruptedException e) {
-							LOGGER.error("Interrupted when waiting for response from gradient accumulator", e);
-						} catch (ExecutionException e) {
-							LOGGER.error("Execution exception when waiting for response from gradient accumulator", e);
+						if (batchDataActivations
+								.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+							throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
+									+ "orientation supported currently");
 						}
-					}
-					
-					batchDataActivations.close();
-					batchLabelActivations.close();
 
-					iterationIndex.addAndGet(1);
-					batchIndex.addAndGet(1);
-				});
-				
-			}
+						if (batchLabelActivations
+								.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+							throw new IllegalArgumentException("Only neurons actiavation with ROWS_SPAN_FEATURE_SET "
+									+ "orientation supported currently");
+						}
+
+						CostAndGradients costAndGradients = getCostAndGradients(batchDataActivations,
+								batchLabelActivations, trainingContext);
+
+						costAndGradientsList.add(costAndGradients);
+
+						LOGGER.debug("Epoch:" + epochIndex2 + " batch " + batchIndex + " Cost:"
+								+ costAndGradients.getAverageCost());
+
+						Optional<Future<List<AxonsGradient>>> averageAxonsGradientsResult = gradientAccumulator
+								.submitCostAndGradients(costAndGradients);
+
+						if (averageAxonsGradientsResult.isPresent()) {
+
+							List<AxonsGradient> averageTrainableAxonsGradients;
+							try {
+								averageTrainableAxonsGradients = averageAxonsGradientsResult.get().get();
+
+								adjustConnectionWeights(trainingContext, averageTrainableAxonsGradients, epochIndex2,
+										batchIndex.get(), iterationIndex.get());
+
+								for (AxonsGradient axonsGradient : averageTrainableAxonsGradients) {
+									axonsGradient.getWeightsGradient().close();
+									if (axonsGradient.getLeftToRightBiasGradient() != null) {
+										axonsGradient.getLeftToRightBiasGradient().close();
+									}
+									if (axonsGradient.getRightToLeftBiasGradient() != null) {
+										axonsGradient.getRightToLeftBiasGradient().close();
+									}
+								}
+
+							} catch (InterruptedException e) {
+								LOGGER.error("Interrupted when waiting for response from gradient accumulator", e);
+							} catch (ExecutionException e) {
+								LOGGER.error("Execution exception when waiting for response from gradient accumulator",
+										e);
+							}
+						}
+
+						batchDataActivations.close();
+						batchLabelActivations.close();
+
+						iterationIndex.addAndGet(1);
+						batchIndex.addAndGet(1);
+					});
+
+				}
 				CostAndGradients costAndGradients = costAndGradientsList.get(costAndGradientsList.size() - 1);
 				costAndGradientsList.clear();
-				epochAverageCostHandler
-						.accept(costAndGradients.getAverageCost());
-				LOGGER.debug("Epoch:" + epochIndex + " Cost:"
-						+ costAndGradients.getAverageCost());
+				epochAverageCostHandler.accept(costAndGradients.getAverageCost());
+				LOGGER.debug("Epoch:" + epochIndex + " Cost:" + costAndGradients.getAverageCost());
 				lastEpochTrainingContext = trainingContext;
 			}
 		}
@@ -480,14 +478,14 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 		float totalCostWithRegularisation = totalCost + totalRegularisationCost;
 
-		CostFunctionGradient costFunctionGradient = new DeltaRuleCostFunctionGradientImpl(trainingContext.getMatrixFactory(), costFunction,
-				desiredOutputActivations, forwardPropagation.getOutput());
-		//forwardPropagation.getOutput().close();
-
+		CostFunctionGradient costFunctionGradient = new DeltaRuleCostFunctionGradientImpl(
+				trainingContext.getMatrixFactory(), costFunction, desiredOutputActivations,
+				forwardPropagation.getOutput());
+		// forwardPropagation.getOutput().close();
 
 		// Back propagate the cost function gradient through the network
 		BackPropagation backPropagation = forwardPropagation.backPropagate(costFunctionGradient, trainingContext);
-	
+
 		backPropagation.getGradient().getOutput().close();
 
 		// Obtain the gradients of each set of Axons we wish to train - for this example
@@ -506,12 +504,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 				totalTrainableAxonsGradients.add(gradient);
 			}
 		}
-		
+
 		forwardPropagation.close(DirectedComponentActivationLifecycle.FORWARD_PROPAGATION);
 
-
 		LOGGER.debug("Gradient count:" + totalTrainableAxonsGradients.size());
-		
+
 		return new CostAndGradientsImpl(totalCostWithRegularisation, totalTrainableAxonsGradients,
 				numberOfTrainingExamples);
 
@@ -556,7 +553,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 			// scaled
 			// gradient matrices
 			Matrix weightsGradient = adjustedAxonsGradient.getWeightsGradient();
-			
+
 			try (InterrimMatrix weightsAdjustment = weightsGradient
 					.mul((float) getTrainingLearningRate(trainingContext, epochIndex, batchIndex, iterationIndex))
 					.asInterrimMatrix()) {
@@ -571,14 +568,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 					}
 				} else {
 					axonWeightsAdjustment = new AxonWeightsAdjustmentImpl(weightsAdjustment);
-					trainableAxons.adjustAxonWeights(axonWeightsAdjustment,
-							AxonWeightsAdjustmentDirection.SUBTRACTION);
+					trainableAxons.adjustAxonWeights(axonWeightsAdjustment, AxonWeightsAdjustmentDirection.SUBTRACTION);
 				}
-			
-			}
-				
 
-			
+			}
+
 			axonsIndex++;
 		}
 	}
@@ -607,8 +601,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	}
 
 	@Override
-	public Stream<ForwardPropagation> forwardPropagate(Stream<NeuronsActivation> inputActivation,
-			C context) {
+	public Stream<ForwardPropagation> forwardPropagate(Stream<NeuronsActivation> inputActivation, C context) {
 
 		// int endLayerIndex = context.getEndLayerIndex() == null ? (getNumberOfLayers()
 		// - 1) : context.getEndLayerIndex();
@@ -638,8 +631,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 */
 	protected CostFunction getCostFunction() {
 
-		ActivationFunctionType activationFunctionType = trailingActivationFunctionComponentChain
-				.getFinalComponent().getActivationFunctionType();
+		ActivationFunctionType activationFunctionType = trailingActivationFunctionComponentChain.getFinalComponent()
+				.getActivationFunctionType();
 
 		if (activationFunctionType == null) {
 			throw new UnsupportedOperationException(
@@ -664,19 +657,20 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	public C getLastEpochTrainingContext() {
 		return lastEpochTrainingContext;
 	}
-	
+
 	@Override
 	public NeuralComponentType<FeedForwardNeuralNetwork<C, N>> getComponentType() {
-		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK), "FEED_FORWARD");
-	}	
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK),
+				"FEED_FORWARD");
+	}
 	
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return trailingActivationFunctionComponentChain.supports();
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return trailingActivationFunctionComponentChain.isSupported(format);
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return trailingActivationFunctionComponentChain.optimisedFor();
 	}
 

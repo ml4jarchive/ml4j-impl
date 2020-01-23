@@ -36,43 +36,44 @@ import org.ml4j.nn.components.builders.synapses.SynapsesPermitted;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent> implements AxonsPermitted<C>, SynapsesPermitted<C, T>, AxonsBuilder<T> {
+public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+		implements AxonsPermitted<C>, SynapsesPermitted<C, T>, AxonsBuilder<T> {
 
 	protected NeuralComponentFactory<T> directedComponentFactory;
-	
+
 	protected BaseGraphBuilderState builderState;
-	
+
 	protected BaseGraphBuilderState initialBuilderState;
-	
+
 	protected DirectedComponentsContext directedComponentsContext;
-	
+
 	private List<T> chains;
 	private List<Neurons> endNeurons;
-	
+
 	protected List<T> components;
-	
-	
-	public BaseGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState, 
+
+	public BaseGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
 			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		this.builderState = builderState;
 		this.components = components;
 		this.directedComponentFactory = directedComponentFactory;
-		this.initialBuilderState = new 	BaseGraphBuilderStateImpl(builderState.getComponentsGraphNeurons().getCurrentNeurons());
+		this.initialBuilderState = new BaseGraphBuilderStateImpl(
+				builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		this.chains = new ArrayList<>();
 		this.endNeurons = new ArrayList<>();
 		this.directedComponentsContext = directedComponentsContext;
 	}
-	
+
 	@Override
 	public List<T> getComponents() {
 		return components;
 	}
-	
+
 	@Override
 	public ComponentsContainer<Neurons, T> getAxonsBuilder() {
 		return this;
 	}
-	
+
 	public BaseGraphBuilderState getBuilderState() {
 		return builderState;
 	}
@@ -91,42 +92,48 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 		builderState.setConnectionWeights(connectionWeights);
 		return this;
 	}
-	
+
 	public abstract C getBuilder();
 
 	public void addAxonsIfApplicable() {
-		if ((builderState.getFullyConnectedAxonsBuilder() != null) && builderState.getComponentsGraphNeurons().getRightNeurons() != null) {
+		if ((builderState.getFullyConnectedAxonsBuilder() != null)
+				&& builderState.getComponentsGraphNeurons().getRightNeurons() != null) {
 			Neurons leftNeurons = builderState.getComponentsGraphNeurons().getCurrentNeurons();
 			if (builderState.getComponentsGraphNeurons().hasBiasUnit() && !leftNeurons.hasBiasUnit()) {
-				leftNeurons = new Neurons(builderState.getComponentsGraphNeurons().getCurrentNeurons().getNeuronCountExcludingBias(), true);
+				leftNeurons = new Neurons(
+						builderState.getComponentsGraphNeurons().getCurrentNeurons().getNeuronCountExcludingBias(),
+						true);
 			}
 
-			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(leftNeurons, 
-					builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getConnectionWeights(), builderState.getBiases());
-					
+			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(leftNeurons,
+					builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getConnectionWeights(),
+					builderState.getBiases());
+
 			if (builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer() != null) {
 				// TODO
 				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
-					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent)axonsComponent).getContext(directedComponentsContext, 0);
+					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent) axonsComponent)
+							.getContext(directedComponentsContext);
 					builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
 				}
 			}
-			
+
 			components.add(axonsComponent);
-		
+
 			builderState.setFullyConnectedAxonsBuilder(null);
-			builderState.getComponentsGraphNeurons().setCurrentNeurons(builderState.getComponentsGraphNeurons().getRightNeurons());
+			builderState.getComponentsGraphNeurons()
+					.setCurrentNeurons(builderState.getComponentsGraphNeurons().getRightNeurons());
 			builderState.getComponentsGraphNeurons().setRightNeurons(null);
-		}	
+		}
 	}
-	
+
 	@Override
 	public UncompletedFullyConnectedAxonsBuilder<C> withFullyConnectedAxons() {
 		addAxonsIfApplicable();
 		builderState.setConnectionWeights(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
-		UncompletedFullyConnectedAxonsBuilder<C> axonsBuilder = 
-				new UncompletedFullyConnectedAxonsBuilderImpl<>(this::getBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
+		UncompletedFullyConnectedAxonsBuilder<C> axonsBuilder = new UncompletedFullyConnectedAxonsBuilderImpl<>(
+				this::getBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setFullyConnectedAxonsBuilder(axonsBuilder);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
 		return axonsBuilder;
@@ -135,21 +142,24 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 	@Override
 	public SynapsesAxonsGraphBuilder<C, T> withSynapses() {
 		addAxonsIfApplicable();
-		SynapsesAxonsGraphBuilder<C, T> synapsesBuilder = new SynapsesAxonsGraphBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		SynapsesAxonsGraphBuilder<C, T> synapsesBuilder = new SynapsesAxonsGraphBuilderImpl<>(this::getBuilder,
+				directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
 		builderState.setSynapsesBuilder(synapsesBuilder);
 		return synapsesBuilder;
 	}
-	
+
 	protected void addActivationFunction(DifferentiableActivationFunction activationFunction) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(
+				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
 	}
-	
+
 	protected void addActivationFunction(ActivationFunctionType activationFunctionType) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType));
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(
+				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType));
 	}
-	
+
 	public T getComponentChain() {
 		addAxonsIfApplicable();
 		return directedComponentFactory.createDirectedComponentChain(components);
@@ -159,17 +169,15 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
 	}
-	
+
 	@Override
-	public void addComponents(
-			List<T> components) {
+	public void addComponents(List<T> components) {
 		this.components.addAll(components);
 	}
 
 	@Override
-	public void addComponent(
-			T component) {
-		this.components.add(component);		
+	public void addComponent(T component) {
+		this.components.add(component);
 	}
 
 	public List<T> getChains() {
@@ -179,6 +187,5 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 	public List<Neurons> getEndNeurons() {
 		return endNeurons;
 	}
-	
-	
+
 }

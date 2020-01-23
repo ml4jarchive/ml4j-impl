@@ -24,25 +24,28 @@ import org.ml4j.nn.components.builders.componentsgraph.Components3DSubGraphBuild
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphBuilder;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class Components3DParallelPathsBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent> implements ParallelPathsBuilder<Components3DSubGraphBuilder<C, D, T>> {
+public class Components3DParallelPathsBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent>
+		implements ParallelPathsBuilder<Components3DSubGraphBuilder<C, D, T>> {
 
 	private NeuralComponentFactory<T> directedComponentFactory;
 	private Supplier<C> previousSupplier;
 	private Components3DSubGraphBuilder<C, D, T> currentPath;
 	private DirectedComponentsContext directedComponentsContext;
-	
-	public Components3DParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, Supplier<C> previousSupplier, DirectedComponentsContext directedComponentsContext) {
+
+	public Components3DParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
+			Supplier<C> previousSupplier, DirectedComponentsContext directedComponentsContext) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.previousSupplier = previousSupplier;
 		this.directedComponentsContext = directedComponentsContext;
 	}
-	
+
 	@Override
 	public Components3DSubGraphBuilder<C, D, T> withPath() {
 		if (currentPath != null) {
 			throw new UnsupportedOperationException("Multiple paths not yet supported");
 		}
-		currentPath = new Components3DSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory, previousSupplier.get().getBuilderState(), directedComponentsContext, new ArrayList<>());
+		currentPath = new Components3DSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory,
+				previousSupplier.get().getBuilderState(), directedComponentsContext, new ArrayList<>());
 		return currentPath;
 	}
 }

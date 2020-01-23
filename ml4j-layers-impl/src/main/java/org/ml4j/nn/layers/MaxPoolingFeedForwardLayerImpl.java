@@ -29,83 +29,99 @@ import org.ml4j.nn.neurons.Neurons3D;
  * 
  * @author Michael Lavelle
  */
-public class MaxPoolingFeedForwardLayerImpl 
-    extends FeedForwardLayerBase<MaxPoolingAxons, MaxPoolingFeedForwardLayer>
-    implements MaxPoolingFeedForwardLayer {
+public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPoolingAxons, MaxPoolingFeedForwardLayer>
+		implements MaxPoolingFeedForwardLayer {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  
-  private DifferentiableActivationFunctionFactory activationFunctionFactory;
- 
-  /**
-   * @param directedComponentFactory A factory implementation to create directed components.
-   * @param activationFunctionFactory A factory implementation to create activation functions.
-   * @param primaryAxons The max pooling axons
-   * @param matrixFactory The matrix factory.
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, MaxPoolingAxons primaryAxons, MatrixFactory matrixFactory, 
-      boolean withBatchNorm) {
-    super(directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
-  }
-  
-  /**
-   * @param directedComponentFactory A factory implementation to create directed components.
-   * @param axonsFactory A factory implementation to create axons.
-   * @param activationFunctionFactory A factory implementation to create activation functions.
-   * @param inputNeurons The input Neurons.
-   * @param outputNeurons The output Neurons
-   * @param matrixFactory The MatrixFactory to use to initialise the weights
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory,Neurons3D inputNeurons, 
-      Neurons3D outputNeurons, MatrixFactory matrixFactory, 
-      boolean withBatchNorm, int stride) {
-    super(
-        directedComponentFactory, axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, false, new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0).withPaddingHeight(0)),
-        activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
-  }
-  
-  /**
-   * @param directedComponentFactory A factory implementation to create directed components.
-   * @param axonsFactory A factory implementation to create axons.
-   * @param activationFunctionFactory A factory implementation to create activation functions.
-   * @param inputNeurons The input Neurons.
-   * @param outputNeurons The output Neurons
-   * @param matrixFactory The MatrixFactory to use to initialise the weights
-   * @param scaleOutputs Whether to scale outputs up by a factor equal to the reduction factor due
-   *        to only outputting max-elements.
-   * @param withBatchNorm Whether to enable batch norm.
-   */
-  public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons, 
-      Neurons3D outputNeurons, MatrixFactory matrixFactory, 
-      boolean scaleOutputs, boolean withBatchNorm, int stride) {
-    super(directedComponentFactory, axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, scaleOutputs, new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0).withPaddingHeight(0)),
-    activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public MaxPoolingFeedForwardLayer dup() {
-    return new MaxPoolingFeedForwardLayerImpl(directedComponentFactory, activationFunctionFactory, primaryAxons.dup(), matrixFactory, withBatchNorm);
-  }
-  
-  @Override
-  public int getFilterHeight() {
-    return getPrimaryAxons().getConfig().getFilterHeight();
-  }
+	private DifferentiableActivationFunctionFactory activationFunctionFactory;
 
-  @Override
-  public int getFilterWidth() {
-    return getPrimaryAxons().getConfig().getFilterWidth();
-  }
+	/**
+	 * @param directedComponentFactory  A factory implementation to create directed
+	 *                                  components.
+	 * @param activationFunctionFactory A factory implementation to create
+	 *                                  activation functions.
+	 * @param primaryAxons              The max pooling axons
+	 * @param matrixFactory             The matrix factory.
+	 * @param withBatchNorm             Whether to enable batch norm.
+	 */
+	public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+			DifferentiableActivationFunctionFactory activationFunctionFactory, MaxPoolingAxons primaryAxons,
+			MatrixFactory matrixFactory, boolean withBatchNorm) {
+		super(directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(),
+				matrixFactory, withBatchNorm);
+	}
 
-  @Override
-  public int getStride() {
-    return getPrimaryAxons().getConfig().getStrideWidth();
+	/**
+	 * @param directedComponentFactory  A factory implementation to create directed
+	 *                                  components.
+	 * @param axonsFactory              A factory implementation to create axons.
+	 * @param activationFunctionFactory A factory implementation to create
+	 *                                  activation functions.
+	 * @param inputNeurons              The input Neurons.
+	 * @param outputNeurons             The output Neurons
+	 * @param matrixFactory             The MatrixFactory to use to initialise the
+	 *                                  weights
+	 * @param withBatchNorm             Whether to enable batch norm.
+	 */
+	public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
+			DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons,
+			Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean withBatchNorm, int stride) {
+		super(directedComponentFactory,
+				axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, false,
+						new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0)
+								.withPaddingHeight(0)),
+				activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
+	}
 
-  }
+	/**
+	 * @param directedComponentFactory  A factory implementation to create directed
+	 *                                  components.
+	 * @param axonsFactory              A factory implementation to create axons.
+	 * @param activationFunctionFactory A factory implementation to create
+	 *                                  activation functions.
+	 * @param inputNeurons              The input Neurons.
+	 * @param outputNeurons             The output Neurons
+	 * @param matrixFactory             The MatrixFactory to use to initialise the
+	 *                                  weights
+	 * @param scaleOutputs              Whether to scale outputs up by a factor
+	 *                                  equal to the reduction factor due to only
+	 *                                  outputting max-elements.
+	 * @param withBatchNorm             Whether to enable batch norm.
+	 */
+	public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
+			DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons,
+			Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean scaleOutputs, boolean withBatchNorm,
+			int stride) {
+		super(directedComponentFactory,
+				axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, scaleOutputs,
+						new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0)
+								.withPaddingHeight(0)),
+				activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
+	}
+
+	@Override
+	public MaxPoolingFeedForwardLayer dup() {
+		return new MaxPoolingFeedForwardLayerImpl(directedComponentFactory, activationFunctionFactory,
+				primaryAxons.dup(), matrixFactory, withBatchNorm);
+	}
+
+	@Override
+	public int getFilterHeight() {
+		return getPrimaryAxons().getConfig().getFilterHeight();
+	}
+
+	@Override
+	public int getFilterWidth() {
+		return getPrimaryAxons().getConfig().getFilterWidth();
+	}
+
+	@Override
+	public int getStride() {
+		return getPrimaryAxons().getConfig().getStrideWidth();
+
+	}
 }

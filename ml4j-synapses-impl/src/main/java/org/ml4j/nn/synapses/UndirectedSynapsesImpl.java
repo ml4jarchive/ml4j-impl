@@ -27,106 +27,100 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Lavelle
  */
-public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons>
-    implements UndirectedSynapses<L, R> {
+public class UndirectedSynapsesImpl<L extends Neurons, R extends Neurons> implements UndirectedSynapses<L, R> {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UndirectedSynapsesImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UndirectedSynapsesImpl.class);
 
-  private Axons<? extends L, ? extends R, ?> axons;
-  private ActivationFunction<?, ?> leftActivationFunction;
-  private ActivationFunction<?, ?> rightActivationFunction;
+	private Axons<? extends L, ? extends R, ?> axons;
+	private ActivationFunction<?, ?> leftActivationFunction;
+	private ActivationFunction<?, ?> rightActivationFunction;
 
+	/**
+	 * Create a new implementation of DirectedSynapses.
+	 * 
+	 * @param axons                   The Axons within these synapses
+	 * @param leftActivationFunction  The activation function on the left hand side
+	 *                                of these synapses
+	 * @param rightActivationFunction The activation function on the right hand side
+	 *                                of these synapses
+	 */
+	public UndirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
+			ActivationFunction<?, ?> leftActivationFunction, ActivationFunction<?, ?> rightActivationFunction) {
+		this.axons = axons;
+		this.leftActivationFunction = leftActivationFunction;
+		this.rightActivationFunction = rightActivationFunction;
+	}
 
-  /**
-   * Create a new implementation of DirectedSynapses.
-   * 
-   * @param axons The Axons within these synapses
-   * @param leftActivationFunction The activation function on the left hand side of these synapses
-   * @param rightActivationFunction The activation function on the right hand side of these synapses
-   */
-  public UndirectedSynapsesImpl(Axons<? extends L, ? extends R, ?> axons,
-      ActivationFunction<?, ?> leftActivationFunction, 
-      ActivationFunction<?, ?> rightActivationFunction) {
-    this.axons = axons;
-    this.leftActivationFunction = leftActivationFunction;
-    this.rightActivationFunction = rightActivationFunction;
-  }
+	@Override
+	public Axons<? extends L, ? extends R, ?> getAxons() {
+		return axons;
+	}
 
-  @Override
-  public Axons<? extends L, ? extends R, ?> getAxons() {
-    return axons;
-  }
+	@Override
+	public UndirectedSynapses<L, R> dup() {
+		return new UndirectedSynapsesImpl<>(axons.dup(), leftActivationFunction, rightActivationFunction);
+	}
 
-  @Override
-  public UndirectedSynapses<L, R> dup() {
-    return new UndirectedSynapsesImpl<>(axons.dup(), leftActivationFunction,
-        rightActivationFunction);
-  }
+	@Override
+	public ActivationFunction<?, ?> getLeftActivationFunction() {
+		return leftActivationFunction;
+	}
 
+	@Override
+	public ActivationFunction<?, ?> getRightActivationFunction() {
+		return rightActivationFunction;
+	}
 
-  @Override
-  public ActivationFunction<?, ?> getLeftActivationFunction() {
-    return leftActivationFunction;
-  }
+	@Override
+	public UndirectedSynapsesActivation pushLeftToRight(UndirectedSynapsesInput input,
+			UndirectedSynapsesActivation previousRightToLeftActivation, UndirectedSynapsesContext synapsesContext) {
 
-  @Override
-  public ActivationFunction<?, ?> getRightActivationFunction() {
-    return rightActivationFunction;
-  }
+		NeuronsActivation inputNeuronsActivation = input.getInput();
 
+		LOGGER.debug("Pushing left to right through UndirectedSynapses");
+		AxonsActivation axonsActivation = axons.pushLeftToRight(inputNeuronsActivation, null,
+				synapsesContext.getAxonsContext(0, 0));
 
-  @Override
-  public UndirectedSynapsesActivation pushLeftToRight(UndirectedSynapsesInput input,
-      UndirectedSynapsesActivation previousRightToLeftActivation, 
-      UndirectedSynapsesContext synapsesContext) {
+		NeuronsActivation axonsOutputActivation = axonsActivation.getPostDropoutOutput();
 
-    NeuronsActivation inputNeuronsActivation = input.getInput();
+		NeuronsActivation outputNeuronsActivation = rightActivationFunction
+				.activate(axonsOutputActivation, synapsesContext).getOutput();
 
-    LOGGER.debug("Pushing left to right through UndirectedSynapses");
-    AxonsActivation axonsActivation =
-        axons.pushLeftToRight(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0, 0));
+		return new UndirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivation,
+				outputNeuronsActivation);
+	}
 
-    NeuronsActivation axonsOutputActivation = axonsActivation.getPostDropoutOutput();
+	@Override
+	public UndirectedSynapsesActivation pushRightToLeft(UndirectedSynapsesInput input,
+			UndirectedSynapsesActivation previousLeftToRightActivation, UndirectedSynapsesContext synapsesContext) {
 
-    NeuronsActivation outputNeuronsActivation =
-        rightActivationFunction.activate(axonsOutputActivation, synapsesContext).getOutput();
+		NeuronsActivation inputNeuronsActivation = input.getInput();
 
-    return new UndirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivation,
-        outputNeuronsActivation);
-  }
+		LOGGER.debug("Pushing right to left through UndirectedSynapses");
+		AxonsActivation axonsActivation = axons.pushRightToLeft(inputNeuronsActivation, null,
+				synapsesContext.getAxonsContext(0, 0));
 
-  @Override
-  public UndirectedSynapsesActivation pushRightToLeft(UndirectedSynapsesInput input,
-      UndirectedSynapsesActivation previousLeftToRightActivation,
-      UndirectedSynapsesContext synapsesContext) {
+		NeuronsActivation axonsOutputActivation = axonsActivation.getPostDropoutOutput();
 
-    NeuronsActivation inputNeuronsActivation = input.getInput();
+		NeuronsActivation outputNeuronsActivation = leftActivationFunction
+				.activate(axonsOutputActivation, synapsesContext).getOutput();
 
-    LOGGER.debug("Pushing right to left through UndirectedSynapses");
-    AxonsActivation axonsActivation =
-        axons.pushRightToLeft(inputNeuronsActivation, null, synapsesContext.getAxonsContext(0, 0));
+		return new UndirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivation,
+				outputNeuronsActivation);
+	}
 
-    NeuronsActivation axonsOutputActivation = axonsActivation.getPostDropoutOutput();
+	@Override
+	public L getLeftNeurons() {
+		return axons.getLeftNeurons();
+	}
 
-    NeuronsActivation outputNeuronsActivation =
-        leftActivationFunction.activate(axonsOutputActivation, synapsesContext).getOutput();
-
-    return new UndirectedSynapsesActivationImpl(this, inputNeuronsActivation, axonsActivation,
-        outputNeuronsActivation);
-  }
-
-  @Override
-  public L getLeftNeurons() {
-    return axons.getLeftNeurons();
-  }
-
-  @Override
-  public R getRightNeurons() {
-    return axons.getRightNeurons();
-  }
+	@Override
+	public R getRightNeurons() {
+		return axons.getRightNeurons();
+	}
 }

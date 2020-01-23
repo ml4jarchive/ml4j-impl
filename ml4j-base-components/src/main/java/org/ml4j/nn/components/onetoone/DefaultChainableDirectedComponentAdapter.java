@@ -22,13 +22,13 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +59,8 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public C getContext(DirectedComponentsContext directedComponentsContext, int componentIndex) {
-		return delegated.getContext(directedComponentsContext, componentIndex);
+	public C getContext(DirectedComponentsContext directedComponentsContext) {
+		return delegated.getContext(directedComponentsContext);
 	}
 	
 	public static void printTimes() {
@@ -97,7 +97,7 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 
 	@Override
 	public A forwardPropagate(NeuronsActivation input, C context) {
-		LOGGER.info(getComponentType().toString());
+		LOGGER.debug(getComponentType().toString());
 		long startTime = new Date().getTime();
 		A activation =delegated.forwardPropagate(input, context);
 		long endTime = new Date().getTime();
@@ -132,13 +132,18 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return delegated.supports();
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return delegated.isSupported(format);
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return delegated.optimisedFor();
+	}
+
+	@Override
+	public A forwardPropagate(NeuronsActivation input, DirectedComponentsContext context) {
+		return delegated.forwardPropagate(input, context);
 	}
 
 }

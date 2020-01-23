@@ -33,25 +33,27 @@ import org.ml4j.nn.components.builders.skipconnection.Components3DGraphSkipConne
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public abstract class ComponentsNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent> extends BaseNested3DGraphBuilderImpl<P, C, D, T> 
-implements Components3DGraphBuilder<C, D, T> {
-	
-	public ComponentsNested3DGraphBuilderImpl(Supplier<P> parent3DGraph, NeuralComponentFactory<T> directedComponentFactory,
-			Base3DGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
-			List<T> components) {
+public abstract class ComponentsNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent>
+		extends BaseNested3DGraphBuilderImpl<P, C, D, T> implements Components3DGraphBuilder<C, D, T> {
+
+	public ComponentsNested3DGraphBuilderImpl(Supplier<P> parent3DGraph,
+			NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
+			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(parent3DGraph, directedComponentFactory, builderState, directedComponentsContext, components);
-		
+
 	}
 
 	@Override
 	public ParallelPathsBuilder<Components3DSubGraphBuilder<C, D, T>> withParallelPaths() {
 		addAxonsIfApplicable();
-		return new Components3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder, directedComponentsContext);
+		return new Components3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder,
+				directedComponentsContext);
 	}
 
 	@Override
 	public Components3DGraphSkipConnectionBuilder<C, D, T> withSkipConnection() {
-		return new Components3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new Components3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, directedComponentFactory,
+				builderState, directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
@@ -59,7 +61,7 @@ implements Components3DGraphBuilder<C, D, T> {
 		addActivationFunction(activationFunction);
 		return get3DBuilder();
 	}
-	
+
 	@Override
 	public C withActivationFunction(ActivationFunctionType activationFunctionType) {
 		addActivationFunction(activationFunctionType);

@@ -24,12 +24,12 @@ public abstract class UncompletedAxonsBuilderImpl<N extends Neurons, C> implemen
 	protected Supplier<C> previousBuilderSupplier;
 	protected N leftNeurons;
 	protected Consumer<AxonsContext> axonsContextConfigurer;
-	
+
 	public UncompletedAxonsBuilderImpl(Supplier<C> previousBuilderSupplier, N leftNeurons) {
 		this.previousBuilderSupplier = previousBuilderSupplier;
 		this.leftNeurons = leftNeurons;
 	}
-	
+
 	public N getLeftNeurons() {
 		return leftNeurons;
 	}
@@ -37,5 +37,5 @@ public abstract class UncompletedAxonsBuilderImpl<N extends Neurons, C> implemen
 	public Consumer<AxonsContext> getAxonsContextConfigurer() {
 		return axonsContextConfigurer;
 	}
-		
+
 }

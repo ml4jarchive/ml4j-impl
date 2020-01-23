@@ -27,24 +27,36 @@ public class NeuronsActivationContextImpl implements NeuronsActivationContext {
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private MatrixFactory matrixFactory;
-	private boolean isTrainingContext;
-	
+
+	private ThreadLocal<MatrixFactory> matrixFactory;
+	private ThreadLocal<Boolean> isTrainingContext;
+
 	public NeuronsActivationContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
 		super();
-		this.matrixFactory = matrixFactory;
-		this.isTrainingContext = isTrainingContext;
+		this.matrixFactory = new ThreadLocal<MatrixFactory>();
+		this.matrixFactory.set(matrixFactory);
+		this.isTrainingContext = new ThreadLocal<Boolean>();
+		this.isTrainingContext.set(isTrainingContext);
 	}
 
 	@Override
-	public MatrixFactory getMatrixFactory() {
+	public ThreadLocal<MatrixFactory> getThreadLocalMatrixFactory() {
 		return matrixFactory;
 	}
 
 	@Override
-	public boolean isTrainingContext() {
+	public ThreadLocal<Boolean> getThreadLocalIsTrainingContext() {
 		return isTrainingContext;
+	}
+
+	@Override
+	public void setMatrixFactory(MatrixFactory matrixFactory) {
+		this.matrixFactory.set(matrixFactory);
+	}
+
+	@Override
+	public void setTrainingContext(Boolean trainingContext) {
+		this.isTrainingContext.set(trainingContext);
 	}
 
 }

@@ -26,46 +26,47 @@ import org.ml4j.Matrix;
  */
 public class MultiClassCrossEntropyCostFunction implements CostFunction {
 
-  @Override
-  public float getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
-   
-	    if (actualOutputs.getColumns() != desiredOutputs.getColumns()) {
-	    	 throw new IllegalArgumentException("Mismatched column count between desired and actual outputs");
-	    }
-	    if (actualOutputs.getRows() != desiredOutputs.getRows()) {
-	   	 throw new IllegalArgumentException("Mismatched row count between desired and actual outputs");
-	   }
-	  
+	@Override
+	public float getTotalCost(Matrix desiredOutputs, Matrix actualOutputs) {
+
+		if (actualOutputs.getColumns() != desiredOutputs.getColumns()) {
+			throw new IllegalArgumentException("Mismatched column count between desired and actual outputs");
+		}
+		if (actualOutputs.getRows() != desiredOutputs.getRows()) {
+			throw new IllegalArgumentException("Mismatched row count between desired and actual outputs");
+		}
+
 		try (InterrimMatrix limitLog = limitLog(actualOutputs).asInterrimMatrix()) {
 			try (InterrimMatrix negativeOfDesiredOutputs = desiredOutputs.mul(-1).asInterrimMatrix()) {
-				try (InterrimMatrix jpart = (negativeOfDesiredOutputs.asEditableMatrix().muli(limitLog)).rowSums().asInterrimMatrix()) {
+				try (InterrimMatrix jpart = (negativeOfDesiredOutputs.asEditableMatrix().muli(limitLog)).rowSums()
+						.asInterrimMatrix()) {
 					return jpart.sum();
 				}
 			}
 
 		}
-   
-  }
 
-  private double limit(float value) {
-	  // Removed 4 0's
-    value = Math.min(value, 1 - 0.00000000001f);
-    value = Math.max(value, 0.00000000001f);
-    return value;
-  }
+	}
 
-  private Matrix limitLog(Matrix matrix) {
-    EditableMatrix dupMatrix = matrix.dup().asEditableMatrix();
-    for (int r = 0; r < dupMatrix.getRows(); r++) {
-    	for (int c = 0; c < dupMatrix.getColumns(); c++) {
-    	      dupMatrix.put(r, c, (float) Math.log(limit(dupMatrix.get(r, c))));
-    	}
-    }
-    return dupMatrix;
-  }
+	private double limit(float value) {
+		// Removed 4 0's
+		value = Math.min(value, 1 - 0.00000000001f);
+		value = Math.max(value, 0.00000000001f);
+		return value;
+	}
 
-  @Override
-  public float getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
-    return getTotalCost(desiredOutputs, actualOutputs)/desiredOutputs.getRows();
-  }
+	private Matrix limitLog(Matrix matrix) {
+		EditableMatrix dupMatrix = matrix.dup().asEditableMatrix();
+		for (int r = 0; r < dupMatrix.getRows(); r++) {
+			for (int c = 0; c < dupMatrix.getColumns(); c++) {
+				dupMatrix.put(r, c, (float) Math.log(limit(dupMatrix.get(r, c))));
+			}
+		}
+		return dupMatrix;
+	}
+
+	@Override
+	public float getAverageCost(Matrix desiredOutputs, Matrix actualOutputs) {
+		return getTotalCost(desiredOutputs, actualOutputs) / desiredOutputs.getRows();
+	}
 }

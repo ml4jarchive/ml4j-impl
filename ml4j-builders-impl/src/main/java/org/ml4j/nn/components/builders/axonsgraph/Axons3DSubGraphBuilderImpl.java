@@ -35,12 +35,12 @@ public class Axons3DSubGraphBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, 
 	private AxonsSubGraphBuilder<Q, T> builder;
 	private Axons3DSubGraphBuilder<P, Q, T> currentPath;
 
-	public Axons3DSubGraphBuilderImpl(Supplier<P> parentGraph, Supplier<Q> parentNon3DGraph, NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
+	public Axons3DSubGraphBuilderImpl(Supplier<P> parentGraph, Supplier<Q> parentNon3DGraph,
+			NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
 			DirectedComponentsContext directedComponentsContext, List<T> components) {
 		super(parentGraph, directedComponentFactory, builderState, directedComponentsContext, components);
 		this.parentNon3DGraph = parentNon3DGraph;
 	}
-
 
 	@Override
 	public PathEnder<P, Axons3DSubGraphBuilder<P, Q, T>> endPath() {
@@ -59,7 +59,7 @@ public class Axons3DSubGraphBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, 
 			return builder;
 		} else {
 			parent3DGraph.get().addComponents(this.getComponents());
-			builder = new AxonsSubGraphBuilderImpl<>(parentNon3DGraph,  directedComponentFactory,
+			builder = new AxonsSubGraphBuilderImpl<>(parentNon3DGraph, directedComponentFactory,
 					builderState.getNon3DBuilderState(), directedComponentsContext, new ArrayList<>());
 			return builder;
 		}
@@ -67,22 +67,22 @@ public class Axons3DSubGraphBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, 
 
 	@Override
 	public ParallelPathsBuilder<Axons3DSubGraphBuilder<Axons3DSubGraphBuilder<P, Q, T>, AxonsSubGraphBuilder<Q, T>, T>> withParallelPaths() {
-		return new Axons3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder, this::getBuilder, directedComponentsContext);
+		return new Axons3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder, this::getBuilder,
+				directedComponentsContext);
 	}
-
 
 	@Override
 	public Axons3DGraphSkipConnectionBuilder<Axons3DSubGraphBuilder<P, Q, T>, AxonsSubGraphBuilder<Q, T>, T> withSkipConnection() {
-		return new Axons3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new Axons3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, this::getBuilder,
+				directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
 	}
-
 
 	@Override
 	protected Axons3DSubGraphBuilder<P, Q, T> createNewNestedGraphBuilder() {
-		return new Axons3DSubGraphBuilderImpl<>(parent3DGraph,
-				parentNon3DGraph, directedComponentFactory, initialBuilderState, directedComponentsContext, new ArrayList<>());
+		return new Axons3DSubGraphBuilderImpl<>(parent3DGraph, parentNon3DGraph, directedComponentFactory,
+				initialBuilderState, directedComponentsContext, new ArrayList<>());
 	}
-	
+
 	@Override
 	public Axons3DSubGraphBuilder<P, Q, T> withPath() {
 		if (currentPath != null) {

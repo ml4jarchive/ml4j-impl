@@ -29,24 +29,24 @@ import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, 
-		C extends Axons3DBuilder<T>, D extends AxonsBuilder<T>, T extends NeuralComponent> extends Base3DGraphBuilderImpl<C, D, T> {
-	
+public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Axons3DBuilder<T>, D extends AxonsBuilder<T>, T extends NeuralComponent>
+		extends Base3DGraphBuilderImpl<C, D, T> {
+
 	protected Supplier<P> parent3DGraph;
 	private boolean pathEnded;
 	private boolean pathsEnded;
-	
+
 	public BaseNested3DGraphBuilderImpl(Supplier<P> parent3DGraph, NeuralComponentFactory<T> directedComponentFactory,
 			Base3DGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
 			List<T> components) {
 		super(directedComponentFactory, builderState, directedComponentsContext, components);
 		this.parent3DGraph = parent3DGraph;
 	}
-	
+
 	protected abstract C createNewNestedGraphBuilder();
-	
+
 	protected void completeNestedGraph(boolean addSkipConnection) {
-		if (!pathEnded) {	
+		if (!pathEnded) {
 			Neurons3D initialNeurons = getComponentsGraphNeurons().getCurrentNeurons();
 			addAxonsIfApplicable();
 			Neurons3D endNeurons = getComponentsGraphNeurons().getCurrentNeurons();
@@ -55,32 +55,32 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 			this.parent3DGraph.get().getEndNeurons().add(getComponentsGraphNeurons().getCurrentNeurons());
 			if (addSkipConnection) {
 				if (initialNeurons.getNeuronCountIncludingBias() == endNeurons.getNeuronCountIncludingBias()) {
-					
-					T skipConnectionAxons =
-							directedComponentFactory.createPassThroughAxonsComponent(initialNeurons, endNeurons);
-					T
-					skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
+
+					T skipConnectionAxons = directedComponentFactory.createPassThroughAxonsComponent(initialNeurons,
+							endNeurons);
+					T skipConnection = directedComponentFactory
+							.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parent3DGraph.get().getChains().add(skipConnection);
 				} else {
-					
-					T skipConnectionAxons = 
-							directedComponentFactory.createFullyConnectedAxonsComponent(new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
-					T skipConnection = directedComponentFactory.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
+
+					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent(
+							new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
+					T skipConnection = directedComponentFactory
+							.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parent3DGraph.get().getChains().add(skipConnection);
 				}
 			}
 			pathEnded = true;
 		}
 	}
-	
+
 	protected void completeNestedGraphs(PathCombinationStrategy pathCombinationStrategy) {
 		if (!pathsEnded) {
-			if (pathCombinationStrategy ==  PathCombinationStrategy.FILTER_CONCAT) {
+			if (pathCombinationStrategy == PathCombinationStrategy.FILTER_CONCAT) {
 				Neurons3D previousNeurons = null;
 				int totalDepth = 0;
 				for (Neurons3D endNeuronsInstance : this.parent3DGraph.get().getEndNeurons()) {
-					if (previousNeurons != null)
-					{
+					if (previousNeurons != null) {
 						if (previousNeurons.getWidth() != endNeuronsInstance.getWidth()) {
 							throw new IllegalStateException("Width doesn't match");
 						}
@@ -91,22 +91,32 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 					totalDepth = totalDepth + endNeuronsInstance.getDepth();
 					previousNeurons = endNeuronsInstance;
 				}
-				parent3DGraph.get().getComponentsGraphNeurons().setCurrentNeurons(new Neurons3D(previousNeurons.getWidth(), previousNeurons.getHeight(), totalDepth, previousNeurons.hasBiasUnit()));
-				parent3DGraph.get().getComponentsGraphNeurons().setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
-				parent3DGraph.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
+				parent3DGraph.get().getComponentsGraphNeurons()
+						.setCurrentNeurons(new Neurons3D(previousNeurons.getWidth(), previousNeurons.getHeight(),
+								totalDepth, previousNeurons.hasBiasUnit()));
+				parent3DGraph.get().getComponentsGraphNeurons()
+						.setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
+				parent3DGraph.get().getComponentsGraphNeurons()
+						.setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 			} else {
-				parent3DGraph.get().getComponentsGraphNeurons().setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
-				parent3DGraph.get().getComponentsGraphNeurons().setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
-				parent3DGraph.get().getComponentsGraphNeurons().setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
+				parent3DGraph.get().getComponentsGraphNeurons()
+						.setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
+				parent3DGraph.get().getComponentsGraphNeurons()
+						.setRightNeurons(getComponentsGraphNeurons().getRightNeurons());
+				parent3DGraph.get().getComponentsGraphNeurons()
+						.setHasBiasUnit(getComponentsGraphNeurons().hasBiasUnit());
 			}
-			
+
 			List<T> chainsList = new ArrayList<>();
 			chainsList.addAll(this.parent3DGraph.get().getChains());
 			Neurons graphInputNeurons = chainsList.get(0).getInputNeurons();
-			//ComponentChainBatchDefinition batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
-			parent3DGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons, parent3DGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), chainsList, pathCombinationStrategy));
-					
-					
+			// ComponentChainBatchDefinition batch =
+			// directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+			parent3DGraph.get()
+					.addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons,
+							parent3DGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), chainsList,
+							pathCombinationStrategy));
+
 			parent3DGraph.get().getEndNeurons().clear();
 			parent3DGraph.get().getChains().clear();
 

@@ -15,18 +15,6 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 		return closed;
 	}
 
-	@Override
-	public I dup() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public I softDup() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public SingleChannelImageContainer(float[] data, int startIndex, int height, int width, int paddingHeight,
 			int paddingWidth, int examples) {
 		super(height, width, paddingHeight, paddingWidth, examples);
@@ -95,7 +83,7 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
-	
+
 	@Override
 	public void populateDataSubImageReverse(float[] data, int startIndex, int startHeight, int startWidth, int height,
 			int width, int strideHeight, int strideWidth, boolean forIm2col2) {
@@ -108,14 +96,18 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 					int widthToCopy = Math.min(width - paddingWidth + (forIm2col2 ? 0 : startWidth),
 							this.width - startW2);
 					int startW = Math.max(paddingWidth - startWidth, 0);
-					JavaBlas.raxpy(examples * widthToCopy, 1, data, startIndex + targetH * width * examples + startW * examples, 1, this.data, this.startIndex + sourceH * this.width * examples + startW2 * examples, 1);
+					JavaBlas.raxpy(examples * widthToCopy, 1, data,
+							startIndex + targetH * width * examples + startW * examples, 1, this.data,
+							this.startIndex + sourceH * this.width * examples + startW2 * examples, 1);
 				} else {
 					int widthToCopy = 1;
 					int startW2 = startWidth - paddingWidth;
 					int startW = Math.max(paddingWidth - startWidth, 0);
 					for (int w = startW2; w < this.width; w += strideWidth) {
 						if (w >= 0) {
-							JavaBlas.raxpy(examples * widthToCopy, 1, data, startIndex + targetH * width * examples + startW * examples, 1, this.data, this.startIndex + sourceH * this.width * examples + w * examples, 1);
+							JavaBlas.raxpy(examples * widthToCopy, 1, data,
+									startIndex + targetH * width * examples + startW * examples, 1, this.data,
+									this.startIndex + sourceH * this.width * examples + w * examples, 1);
 							startW = startW + 1;
 						}
 
@@ -124,7 +116,7 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
-	
+
 	@Override
 	public int getSubImageDataLength(int height, int width) {
 		return height * width * examples;
@@ -136,8 +128,8 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 	}
 
 	@Override
-	public void populateIm2colConvExport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
-			int strideWidth, int channels) {
+	public void populateIm2colConvExport(float[] data, int startIndex, int filterHeight, int filterWidth,
+			int strideHeight, int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
@@ -150,26 +142,26 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
-	
+
 	@Override
-	public void populateIm2colConvImport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
-			int strideWidth, int channels) {
+	public void populateIm2colConvImport(float[] data, int startIndex, int filterHeight, int filterWidth,
+			int strideHeight, int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		for (int h = 0; h < filterHeight; h++) {
 			for (int w = 0; w < filterWidth; w++) {
-				populateDataSubImageReverse(data, startIndex, h, w, windowHeight, windowWidth, strideHeight, strideWidth,
-						false);
+				populateDataSubImageReverse(data, startIndex, h, w, windowHeight, windowWidth, strideHeight,
+						strideWidth, false);
 				startIndex = startIndex + getSubImageDataLength(windowHeight, windowWidth);
 			}
 		}
 	}
 
 	@Override
-	public void populateIm2colPoolExport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
-			int strideWidth, int channels) {
+	public void populateIm2colPoolExport(float[] data, int startIndex, int filterHeight, int filterWidth,
+			int strideHeight, int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
@@ -182,18 +174,18 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
-	
+
 	@Override
-	public void populateIm2colPoolImport(float[] data, int startIndex, int filterHeight, int filterWidth, int strideHeight,
-			int strideWidth, int channels) {
+	public void populateIm2colPoolImport(float[] data, int startIndex, int filterHeight, int filterWidth,
+			int strideHeight, int strideWidth, int channels) {
 		int windowSpanWidth = width + 2 * paddingWidth - filterWidth + 1;
 		int windowSpanHeight = height + 2 * paddingHeight - filterHeight + 1;
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		for (int h = 0; h < filterHeight; h++) {
 			for (int w = 0; w < filterWidth; w++) {
-				populateDataSubImageReverse(data, startIndex, h, w, windowHeight, windowWidth, strideHeight, strideWidth,
-						true);
+				populateDataSubImageReverse(data, startIndex, h, w, windowHeight, windowWidth, strideHeight,
+						strideWidth, true);
 				startIndex = startIndex + getSubImageDataLength(windowHeight, windowWidth) * channels;
 			}
 		}

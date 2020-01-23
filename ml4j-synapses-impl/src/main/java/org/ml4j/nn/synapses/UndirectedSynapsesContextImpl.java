@@ -22,6 +22,7 @@ import java.util.Map;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 
 /**
  * Simple default implementation of DirectedSynapsesContext.
@@ -29,66 +30,54 @@ import org.ml4j.nn.axons.AxonsContextImpl;
  * @author Michael Lavelle
  * 
  */
-public class UndirectedSynapsesContextImpl implements UndirectedSynapsesContext {
+public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl implements UndirectedSynapsesContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
-  
-  /**
-   * The MatrixFactory we configure for this context.
-   */
-  private MatrixFactory matrixFactory;
-  private boolean withFreezeOut;
-  private boolean isTrainingContext;
-  private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
-  
-  /**
-   * Construct a new default DirectedSynapsesContext.
-   * 
-   * @param matrixFactory The MatrixFactory we configure for this context
-   * @param withFreezeOut Whether to freeze out these Synapses.
-   */
-  public UndirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext, boolean withFreezeOut) {
-    this.matrixFactory = matrixFactory;
-    this.withFreezeOut = withFreezeOut;
-    this.isTrainingContext = isTrainingContext;
-    this.axonsContextsByAxonsIndex = new HashMap<>();
-  }
- 
-  @Override
-  public MatrixFactory getMatrixFactory() {
-    return matrixFactory;
-  }
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
-    
-    AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
-    if (axonsContext == null) {
-      axonsContext = new AxonsContextImpl(matrixFactory, isTrainingContext,  withFreezeOut);
-      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
-    }
-    if (axonsContext.isWithFreezeOut() != withFreezeOut) {
-      axonsContext.withFreezeOut(withFreezeOut);
-      axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
-    }
-    return axonsContext;
-  }
+	/**
+	 * The MatrixFactory we configure for this context.
+	 */
+	private boolean withFreezeOut;
+	private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
 
-  @Override
-  public boolean isWithFreezeOut() {
-    return withFreezeOut;
-  }
+	/**
+	 * Construct a new default DirectedSynapsesContext.
+	 * 
+	 * @param matrixFactory The MatrixFactory we configure for this context
+	 * @param withFreezeOut Whether to freeze out these Synapses.
+	 */
+	public UndirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext,
+			boolean withFreezeOut) {
+		super(matrixFactory, isTrainingContext);
+		this.withFreezeOut = withFreezeOut;
+		this.axonsContextsByAxonsIndex = new HashMap<>();
+	}
 
-  @Override
-  public void setWithFreezeOut(boolean withFreezeOut) {
-    this.withFreezeOut = withFreezeOut;
-  }
+	@Override
+	public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
 
-@Override
-public boolean isTrainingContext() {
-	return isTrainingContext;
-}
+		AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
+		if (axonsContext == null) {
+			axonsContext = new AxonsContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
+			axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+		}
+		if (axonsContext.isWithFreezeOut() != withFreezeOut) {
+			axonsContext.withFreezeOut(withFreezeOut);
+			axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
+		}
+		return axonsContext;
+	}
+
+	@Override
+	public boolean isWithFreezeOut() {
+		return withFreezeOut;
+	}
+
+	@Override
+	public void setWithFreezeOut(boolean withFreezeOut) {
+		this.withFreezeOut = withFreezeOut;
+	}
 }

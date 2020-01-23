@@ -20,35 +20,36 @@ import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>> extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedBatchNormAxonsBuilder<C> {
+public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
+		extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedBatchNormAxonsBuilder<C> {
 
 	private Matrix gamma;
 	private Matrix beta;
 	private Matrix mean;
 	private Matrix variance;
-	
+
 	public UncompletedBatchNormAxonsBuilderImpl(Supplier<C> previousBuilderSupplier, Neurons3D leftNeurons) {
 		super(previousBuilderSupplier, leftNeurons);
 	}
-	
+
 	@Override
 	public UncompletedBatchNormAxonsBuilder<C> withGamma(Matrix gamma) {
 		this.gamma = gamma;
 		return this;
 	}
-	
+
 	@Override
 	public UncompletedBatchNormAxonsBuilder<C> withBeta(Matrix beta) {
 		this.beta = beta;
 		return this;
 	}
-	
+
 	@Override
 	public UncompletedBatchNormAxonsBuilder<C> withMean(Matrix mean) {
 		this.mean = mean;
 		return this;
 	}
-	
+
 	@Override
 	public UncompletedBatchNormAxonsBuilder<C> withVariance(Matrix variance) {
 		this.variance = variance;
@@ -99,9 +100,10 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>> e
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
 	}
-	
+
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withAxonsContextConfigurer(Consumer<AxonsContext> axonsContextConfigurer) {
+	public UncompletedBatchNormAxonsBuilder<C> withAxonsContextConfigurer(
+			Consumer<AxonsContext> axonsContextConfigurer) {
 		this.axonsContextConfigurer = axonsContextConfigurer;
 		return this;
 	}

@@ -25,14 +25,19 @@ import org.ml4j.nn.components.builders.componentsgraph.InitialComponentsGraphBui
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public class InitialComponentsGraphBuilderImpl<T extends NeuralComponent> extends ComponentsGraphBuilderImpl<InitialComponentsGraphBuilder<T>, T> implements InitialComponentsGraphBuilder<T> {
+public class InitialComponentsGraphBuilderImpl<T extends NeuralComponent> extends
+		ComponentsGraphBuilderImpl<InitialComponentsGraphBuilder<T>, T> implements InitialComponentsGraphBuilder<T> {
 
-	public InitialComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,List<T> components) {
+	public InitialComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
+			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			List<T> components) {
 		super(directedComponentFactory, builderState, directedComponentsContext, components);
 	}
-	
-	public InitialComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, DirectedComponentsContext directedComponentsContext,Neurons initialNeurons) {
-		super(directedComponentFactory, new BaseGraphBuilderStateImpl(initialNeurons), directedComponentsContext, new ArrayList<>());
+
+	public InitialComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
+			DirectedComponentsContext directedComponentsContext, Neurons initialNeurons) {
+		super(directedComponentFactory, new BaseGraphBuilderStateImpl(initialNeurons), directedComponentsContext,
+				new ArrayList<>());
 	}
 
 	@Override

@@ -13,17 +13,13 @@
  */
 package org.ml4j.nn.datasets.floatarray;
 
-import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.datasets.DataBatch;
 import org.ml4j.nn.datasets.LabeledData;
 import org.ml4j.nn.datasets.LabeledDataBatchImpl;
 import org.ml4j.nn.datasets.LabeledDataImpl;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
-import org.ml4j.nn.neurons.NeuronsActivationImpl;
-
-import com.codepoetics.protonpack.StreamUtils;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[], float[]>
 		implements FloatArrayLabeledDataBatch {
@@ -44,10 +40,9 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 		}
 		this.labelFeatureCount = labelFeatureCount;
 	}
-	
-	
 
-	public FloatArrayLabeledDataBatchImpl(DataBatch<float[]> dataBatch, DataBatch<float[]> labelBatch, int featureCount, int labelFeatureCount) {
+	public FloatArrayLabeledDataBatchImpl(DataBatch<float[]> dataBatch, DataBatch<float[]> labelBatch, int featureCount,
+			int labelFeatureCount) {
 		super(dataBatch, labelBatch);
 		this.featureCount = featureCount;
 		this.batchSize = dataBatch.size();
@@ -64,6 +59,7 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 		this.labelFeatureCount = labelFeatureCount;
 	}
 
+	/*
 	public LabeledData<NeuronsActivation, NeuronsActivation> getNeuronActivations(MatrixFactory matrixFactory) {
 
 		Matrix data = matrixFactory.createMatrix(batchSize, featureCount);
@@ -73,20 +69,26 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 				d.getValue().getData(), d.getValue().getLabel(), (int) d.getIndex()));
 
 		return new LabeledDataImpl<>(
-				new NeuronsActivationImpl(data.transpose(), NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
-				new NeuronsActivationImpl(labels.transpose(),
-						NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET));
+				new NeuronsActivationImpl(new Neurons(data.getColumns(), false), data.transpose(),
+						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET),
+				new NeuronsActivationImpl(new Neurons(labels.getRows(), false), labels.transpose(),
+						NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET));
 	}
+	*/
 
+	/*
 	private void addToMatrices(MatrixFactory matrixFactory, Matrix dataMatrix, Matrix labelsMatrix, float[] data,
 			float[] labels, int row) {
 		addToMatrix(matrixFactory, dataMatrix, data, featureCount, row);
 		addToMatrix(matrixFactory, labelsMatrix, labels, labelFeatureCount, row);
 	}
+	*/
 
+	/*
 	private void addToMatrix(MatrixFactory matrixFactory, Matrix matrix, float[] data, int featureCount, int row) {
 		matrix.asEditableMatrix().putRow(row, matrixFactory.createMatrixFromRowsByRowsArray(1, featureCount, data));
 	}
+	*/
 
 	@Override
 	public FloatArrayDataBatch getDataSet() {
@@ -101,12 +103,12 @@ public class FloatArrayLabeledDataBatchImpl extends LabeledDataBatchImpl<float[]
 		super.getLabelsSet().stream().forEach(f -> dataBatch.add(f));
 		return dataBatch;
 	}
-	
-	
+
 	@Override
-	public LabeledData<NeuronsActivation, NeuronsActivation> toNeuronsActivations(MatrixFactory matrixFactory) {
-		return new LabeledDataImpl<>(getDataSet().toNeuronsActivation(matrixFactory),
-				getLabelsSet().toNeuronsActivation(matrixFactory));
+	public LabeledData<NeuronsActivation, NeuronsActivation> toNeuronsActivations(MatrixFactory matrixFactory,
+			NeuronsActivationFormat<?> format) {
+		return new LabeledDataImpl<>(getDataSet().toNeuronsActivation(matrixFactory, format),
+				getLabelsSet().toNeuronsActivation(matrixFactory, format));
 	}
 
 }

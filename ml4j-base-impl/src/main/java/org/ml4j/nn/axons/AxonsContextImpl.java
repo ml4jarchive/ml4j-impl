@@ -22,26 +22,20 @@ package org.ml4j.nn.axons;
  * @author Michael Lavelle
  */
 import org.ml4j.MatrixFactory;
+import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 
-public class AxonsContextImpl implements AxonsContext {
+public class AxonsContextImpl extends NeuronsActivationContextImpl implements AxonsContext {
 
 	/**
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The MatrixFactory we configure for this context.
-	 */
-	private MatrixFactory matrixFactory;
-
 	private boolean withFreezeOut;
 
 	private float regularisationLambda;
 
 	private float leftHandInputDropoutKeepProbability;
-
-	private boolean trainingContext;
 
 	/**
 	 * Construct a new AxonsContext.
@@ -50,15 +44,9 @@ public class AxonsContextImpl implements AxonsContext {
 	 * @param withFreezeOut Whether to freeze out these Axons.
 	 */
 	public AxonsContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext, boolean withFreezeOut) {
-		this.matrixFactory = matrixFactory;
+		super(matrixFactory, isTrainingContext);
 		this.leftHandInputDropoutKeepProbability = 1f;
 		this.withFreezeOut = withFreezeOut;
-		this.trainingContext = isTrainingContext;
-	}
-
-	@Override
-	public MatrixFactory getMatrixFactory() {
-		return matrixFactory;
 	}
 
 	@Override
@@ -95,16 +83,9 @@ public class AxonsContextImpl implements AxonsContext {
 	}
 
 	@Override
-	public boolean isTrainingContext() {
-		return trainingContext;
+	public String toString() {
+		return "AxonsContextImpl [withFreezeOut=" + withFreezeOut + ", regularisationLambda=" + regularisationLambda
+				+ ", leftHandInputDropoutKeepProbability=" + leftHandInputDropoutKeepProbability + "]";
 	}
 
-	@Override
-	public String toString() {
-		return "AxonsContextImpl [matrixFactory=" + matrixFactory + ", withFreezeOut=" + withFreezeOut
-				+ ", regularisationLambda=" + regularisationLambda + ", leftHandInputDropoutKeepProbability="
-				+ leftHandInputDropoutKeepProbability + ", trainingContext=" + trainingContext + "]";
-	}
-	
-	
 }

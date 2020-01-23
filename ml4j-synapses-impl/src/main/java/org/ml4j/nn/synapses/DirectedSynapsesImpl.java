@@ -17,7 +17,6 @@
 package org.ml4j.nn.synapses;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,6 +39,7 @@ import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	private DefaultDirectedComponentBipoleGraph axonsGraph;
 
 	private DirectedComponentFactory directedComponentFactory;
-	
+
 	private L leftNeurons;
 	private R rightNeurons;
 
@@ -77,8 +77,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param activationFunction
 	 */
 	protected DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory, L leftNeurons, R rightNeurons,
-			DefaultDirectedComponentBipoleGraph axonsGraph,
-			DifferentiableActivationFunction activationFunction) {
+			DefaultDirectedComponentBipoleGraph axonsGraph, DifferentiableActivationFunction activationFunction) {
 		super();
 		this.activationFunction = activationFunction;
 		this.activationFunctionComponent = directedComponentFactory
@@ -99,25 +98,25 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param primaryAxons             The primary Axons within these synapses
 	 * @param activationFunction       The activation function within these synapses
 	 */
-	public  DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory,
-			Axons<L, R, ?> primaryAxons, DifferentiableActivationFunction activationFunction) {
-		this(directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), createGraph(directedComponentFactory, primaryAxons),
-				activationFunction);
+	public DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory, Axons<L, R, ?> primaryAxons,
+			DifferentiableActivationFunction activationFunction) {
+		this(directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(),
+				createGraph(directedComponentFactory, primaryAxons), activationFunction);
 		this.directedComponentFactory = directedComponentFactory;
 	}
 
-	private static DefaultDirectedComponentBipoleGraph createGraph(
-			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons) {
-		List<DefaultChainableDirectedComponent<?,  ?>> components = new ArrayList<>();
+	private static DefaultDirectedComponentBipoleGraph createGraph(DirectedComponentFactory directedComponentFactory,
+			Axons<?, ?, ?> primaryAxons) {
+		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
 		components.add(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
-	
-		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components
-				);
+
+		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components);
 		List<DefaultChainableDirectedComponent<?, ?>> chainsList = new ArrayList<>();
 		chainsList.add(chain);
-		//DefaultDirectedComponentChainBatch batch = directedComponentFactory.createDirectedComponentChainBatch(chainsList);
-		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(), chainsList,
-				PathCombinationStrategy.ADDITION);
+		// DefaultDirectedComponentChainBatch batch =
+		// directedComponentFactory.createDirectedComponentChainBatch(chainsList);
+		return directedComponentFactory.createDirectedComponentBipoleGraph(primaryAxons.getLeftNeurons(),
+				primaryAxons.getRightNeurons(), chainsList, PathCombinationStrategy.ADDITION);
 	}
 
 	/**
@@ -151,8 +150,9 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
 
-		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent.forwardPropagate(totalAxonsOutputActivation,
-				new NeuronsActivationContextImpl(directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
+		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent
+				.forwardPropagate(totalAxonsOutputActivation, new NeuronsActivationContextImpl(
+						directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
 
 		NeuronsActivation outputNeuronsActivation = actAct.getOutput();
 
@@ -173,25 +173,24 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	@Override
-	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext,
-			int componentIndex) {
+	public DirectedComponentsContext getContext(DirectedComponentsContext directedComponentsContext) {
 		return directedComponentsContext;
 	}
 
 	@Override
 	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-		
-		List<DefaultChainableDirectedComponent<?, ?>> components = 
-				new ArrayList<>();
+
+		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
 		components.addAll(axonsGraph.decompose().stream().collect(Collectors.toList()));
 		components.addAll(activationFunctionComponent.decompose());
 		return components;
 	}
 
-	  @Override
-	  public NeuralComponentType<DirectedSynapses<L, R>> getComponentType() {
-			return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.SYNAPSES), DirectedSynapses.class.getName()) ;
-	  }
+	@Override
+	public NeuralComponentType<DirectedSynapses<L, R>> getComponentType() {
+		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.SYNAPSES),
+				DirectedSynapses.class.getName());
+	}
 
 	@Override
 	public Neurons getInputNeurons() {
@@ -204,12 +203,12 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return Arrays.asList(NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET.equals(format.getFeatureOrientation());
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return Optional.empty();
 	}
 

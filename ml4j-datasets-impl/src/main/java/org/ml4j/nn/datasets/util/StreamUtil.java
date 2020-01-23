@@ -130,39 +130,36 @@ public class StreamUtil {
 				}), Stream.generate(() -> currentBatch.get(0).isEmpty() ? null : currentBatch.get(0)).limit(1))
 				.filter(Objects::nonNull);
 	}
-	
-	
+
 	public static <T> Stream<T> toStream(final ObjectInputStream stream, final Class<T> cls) {
-		return Stream.generate(() -> cls.cast(readObject(stream))).onClose(() -> close(stream)).takeWhile(e -> e != null);
+		return Stream.generate(() -> cls.cast(readObject(stream))).onClose(() -> close(stream))
+				.takeWhile(e -> e != null);
 	}
-	
+
 	private static Object readObject(ObjectInputStream stream) {
-	    try {
-	        Object o = stream.readObject();
-	        if (o == null) {
-	        	throw new IllegalStateException("Objects in the input stream cannot be null");
-	        }
-	        return o;
-	        
-	    } catch (EOFException e) {
-	        return null;
-	    }
-	    catch (IOException e) {
-	        throw new UncheckedIOException(e);
-	    }
-	    catch (ClassNotFoundException e) {
-	        throw new RuntimeException(e);
-	    }
+		try {
+			Object o = stream.readObject();
+			if (o == null) {
+				throw new IllegalStateException("Objects in the input stream cannot be null");
+			}
+			return o;
+
+		} catch (EOFException e) {
+			return null;
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private static void close(Closeable c) {
-	    try {
-	        c.close();
-	    } catch (IOException e) {
-	    	// TODO
-	        // logger.log(Level.WARNING, "Couldn't close " + c, e);
-	    }
+		try {
+			c.close();
+		} catch (IOException e) {
+			// TODO
+			// logger.log(Level.WARNING, "Couldn't close " + c, e);
+		}
 	}
 
-	
 }

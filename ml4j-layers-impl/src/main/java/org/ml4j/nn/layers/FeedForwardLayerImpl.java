@@ -22,28 +22,27 @@ import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 
 /**
- * Default FeedForwardLayer implementation which can be passed any type of Axons.
+ * Default FeedForwardLayer implementation which can be passed any type of
+ * Axons.
  * 
  * @author Michael Lavelle
  *
  */
-public class FeedForwardLayerImpl extends FeedForwardLayerBase<Axons<?, ?, ?>, 
-    FeedForwardLayerImpl> {
+public class FeedForwardLayerImpl extends FeedForwardLayerBase<Axons<?, ?, ?>, FeedForwardLayerImpl> {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  protected FeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons,
-      DifferentiableActivationFunction activationFunction, 
-      MatrixFactory matrixFactory, boolean withBatchNorm) {
-    super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
-  }
+	protected FeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons,
+			DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, boolean withBatchNorm) {
+		super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
+	}
 
-  @Override
-  public FeedForwardLayerImpl dup() {
-    return new FeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(), 
-        primaryActivationFunction, matrixFactory, withBatchNorm);
-  }
+	@Override
+	public FeedForwardLayerImpl dup() {
+		return new FeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(), primaryActivationFunction,
+				matrixFactory, withBatchNorm);
+	}
 }

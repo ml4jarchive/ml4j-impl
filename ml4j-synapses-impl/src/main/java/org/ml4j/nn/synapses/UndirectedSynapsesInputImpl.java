@@ -25,17 +25,17 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  */
 public class UndirectedSynapsesInputImpl implements UndirectedSynapsesInput {
 
-  /**
-   * The input activation on the left hand Neurons of the UndirectedSynapses.
-   */
-  private NeuronsActivation input;
+	/**
+	 * The input activation on the left hand Neurons of the UndirectedSynapses.
+	 */
+	private NeuronsActivation input;
 
-  public UndirectedSynapsesInputImpl(NeuronsActivation input) {
-    this.input = input;
-  }
+	public UndirectedSynapsesInputImpl(NeuronsActivation input) {
+		this.input = input;
+	}
 
-  @Override
-  public NeuronsActivation getInput() {
-    return input;
-  }
+	@Override
+	public NeuronsActivation getInput() {
+		return input;
+	}
 }

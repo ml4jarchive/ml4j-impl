@@ -30,24 +30,26 @@ import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnect
 import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent> extends BaseGraphBuilderImpl<C, T> implements ComponentsGraphBuilder<C, T>{
-	
-	
+public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+		extends BaseGraphBuilderImpl<C, T> implements ComponentsGraphBuilder<C, T> {
+
 	public ComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
 			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
 			List<T> components) {
-			super(directedComponentFactory, builderState, directedComponentsContext, components);
+		super(directedComponentFactory, builderState, directedComponentsContext, components);
 	}
 
 	@Override
 	public ParallelPathsBuilder<ComponentsSubGraphBuilder<C, T>> withParallelPaths() {
 		addAxonsIfApplicable();
-		return new ComponentsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder, directedComponentsContext);
+		return new ComponentsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder,
+				directedComponentsContext);
 	}
 
 	@Override
 	public ComponentsGraphSkipConnectionBuilder<C, T> withSkipConnection() {
-		return new ComponentsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+		return new ComponentsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState,
+				directedComponentsContext, new ArrayList<>());
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T ex
 		addActivationFunction(activationFunction);
 		return getBuilder();
 	}
-	
+
 	@Override
 	public C withActivationFunction(ActivationFunctionType activationFunctionType) {
 		addActivationFunction(activationFunctionType);

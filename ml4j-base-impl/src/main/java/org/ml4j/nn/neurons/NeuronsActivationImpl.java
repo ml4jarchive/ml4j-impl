@@ -1,17 +1,3 @@
-/*
- * Copyright 2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
-
 package org.ml4j.nn.neurons;
 
 import org.ml4j.EditableMatrix;
@@ -20,137 +6,38 @@ import org.ml4j.FloatPredicate;
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ml4j.nn.neurons.format.ImageNeuronsActivationFormat;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
+import org.ml4j.nn.neurons.format.features.ImageFeaturesFormat;
 
-/**
- * Encapsulates the activation activities of a set of Neurons.
- * 
- * @author Michael Lavelle
- */
 public class NeuronsActivationImpl implements NeuronsActivation {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(NeuronsActivationImpl.class);
-
-	/**
-	 * The matrix of activations.
-	 */
 	protected Matrix activations;
 	private boolean immutable;
-	protected String stackTrace;
-	@SuppressWarnings("unused")
-	private boolean softDup;		
-	/**
-	 * Defines whether the features of the activations are represented by the
-	 * columns or the rows of the activations Matrix.
-	 */
-	private NeuronsActivationFeatureOrientation featureOrientation;
+	private NeuronsActivationFormat<?> format;
+	private Neurons neurons;
 
-	public Neurons getNeurons() {
-		return null;
-	}
-
-	public void setImmutable(boolean immutable) {
+	public NeuronsActivationImpl(Neurons neurons, Matrix activations,
+			NeuronsActivationFormat<?> format, boolean immutable) {
+		this.neurons = neurons;
+		this.activations = activations;
+		this.format = format;
 		this.immutable = immutable;
-		this.activations.setImmutable(immutable);
+
+		if (neurons == null) {
+			throw new IllegalArgumentException();
+		}
 	}
 
-	public boolean isImmutable() {
-		return immutable;
+	public NeuronsActivationImpl(Neurons neurons, Matrix activations,
+			NeuronsActivationFormat<?> format) {
+		this(neurons, activations, format, false);
 	}
 
 	@Override
-	public void close() {
-		if (activations != null && !activations.isClosed()) {
-			activations.close();
-			activations = null;
-		}
-	}
-
-	public Matrix getActivations(MatrixFactory matrixFactory) {
-		if (activations == null) {
-			throw new IllegalStateException("NeuronsActivation has been closed");
-		}
-		if (!activations.isImmutable()) {
-			activations.setImmutable(immutable);
-		}
-		return activations;
-	}
-
-	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
-		EditableMatrix editableActivations = activations.asEditableMatrix();
-		for (int i = 0; i < activations.getLength(); i++) {
-			if (condition.test(activations.get(i))) {
-				editableActivations.put(i, modifier.acceptAndModify(activations.get(i)));
-			}
-		}
-	}
-
-	public void applyValueModifier(FloatModifier modifier) {
-		EditableMatrix editableActivations = activations.asEditableMatrix();
-		for (int i = 0; i < activations.getLength(); i++) {
-			editableActivations.put(i, modifier.acceptAndModify(activations.get(i)));
-		}
-	}
-
-	/**
-	 * Constructs a NeuronsActivation instance from a matrix of activations.
-	 * 
-	 * @param activations        A matrix of activations
-	 * @param featureOrientation The orientation of the features of the activation
-	 *                           matrix
-	 */
-	public NeuronsActivationImpl(Matrix activations, NeuronsActivationFeatureOrientation featureOrientation) {
-		this(activations, featureOrientation, activations.isImmutable());
-	}
-
-	/**
-	 * Constructs a NeuronsActivation instance from a matrix of activations.
-	 * 
-	 * @param activations        A matrix of activations
-	 * @param featureOrientation The orientation of the features of the activation
-	 *                           matrix
-	 */
-	public NeuronsActivationImpl(Matrix activations, NeuronsActivationFeatureOrientation featureOrientation,
-			boolean immutable) {
-		LOGGER.debug("Creating new NeuronsActivation");
-		this.activations = activations;
-		this.featureOrientation = featureOrientation;
-		this.immutable = immutable;
-		if (activations != null && activations.isImmutable()) {
-			if (!immutable) {
-				throw new IllegalArgumentException();
-			}
-		} else if (activations != null) {
-			activations.setImmutable(immutable);
-		}
-	}
-
-	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
-		if (other.getFeatureOrientation() != featureOrientation) {
-			throw new IllegalArgumentException("Incompatible orientations");
-		}
-		if (featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
-			activations = activations.appendVertically(other.getActivations(matrixFactory));
-		} else {
-			try (InterrimMatrix previousActivations = this.activations.asInterrimMatrix()) {
-				this.activations = previousActivations.appendHorizontally(other.getActivations(matrixFactory));
-			}
-		}
-	}
-
-	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
-		
-		// TODO
-		ImageNeuronsActivation imageNeuronsActivation =  new ImageNeuronsActivationImpl(activations, neurons, featureOrientation, activations.isImmutable());		
-		softDup = true;
-
-		return imageNeuronsActivation;
-	}
-
 	public void addInline(MatrixFactory matrixFactory, NeuronsActivation other) {
 		EditableMatrix editableActivations = activations.asEditableMatrix();
-		if (other.getFeatureOrientation() != featureOrientation) {
+		if (!other.getFormat().equals(format)) {
 			throw new IllegalArgumentException("Incompatible orientations");
 		}
 		if (other.getFeatureCount() != getFeatureCount()) {
@@ -162,71 +49,109 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		editableActivations.addi(other.getActivations(matrixFactory));
 	}
 
-	/**
-	 * Obtain the feature orientation of the Matrix representing the activations -
-	 * whether the features are represented by the rows or the columns.
-	 * 
-	 * @return the feature orientation of the Matrix representing the activations -
-	 *         whether the features are represented by the rows or the columns
-	 */
-	public NeuronsActivationFeatureOrientation getFeatureOrientation() {
-		return featureOrientation;
-	}
-
-	public NeuronsActivation dup() {
-		return new NeuronsActivationImpl(activations.dup(), featureOrientation);
-	}
-	
-	public int getRows() {
-		return activations.getRows();
-	}
-
-	public int getColumns() {
-		return activations.getColumns();
-	}
-
-	public NeuronsActivation filterActivationsByFeatureIndexRange(int startIndex, int endIndex) {
-		int num = endIndex - startIndex;
-		int[] indexes = new int[num];
-		for (int j = 0; j < indexes.length; j++) {
-			indexes[j] = j + startIndex;
+	@Override
+	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
+		if (!other.getFormat().equals(format)) {
+			throw new IllegalArgumentException("Incompatible orientations");
 		}
-		return new NeuronsActivationImpl(featureOrientation == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET
-				? activations.getRows(indexes)
-				: activations.getColumns(indexes), featureOrientation);
-	}
-
-	public NeuronsActivation transpose() {
-		if (featureOrientation == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-			return new NeuronsActivationImpl(activations.transpose(),
-					NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+		if (format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+			activations = activations.appendVertically(other.getActivations(matrixFactory));
 		} else {
-			return new NeuronsActivationImpl(activations.transpose(),
-					NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET);
-		}
-	}
-
-	/**
-	 * Obtain the number of features ( including any bias ) represented by this
-	 * NeuronsActivation.
-	 * 
-	 * @return the number of features ( including any bias ) represented by this
-	 *         NeuronsActivation.
-	 */
-	public int getFeatureCount() {
-
-		if (featureOrientation == NeuronsActivationFeatureOrientation.COLUMNS_SPAN_FEATURE_SET) {
-			int featureCount = activations.getColumns();
-			return featureCount;
-		} else {
-			int featureCount = activations.getRows();
-			return featureCount;
+			try (InterrimMatrix previousActivations = this.activations.asInterrimMatrix()) {
+				this.activations = previousActivations.appendHorizontally(other.getActivations(matrixFactory));
+			}
 		}
 	}
 
 	@Override
+	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
+		EditableMatrix editableActivations = activations.asEditableMatrix();
+		for (int i = 0; i < activations.getLength(); i++) {
+			if (condition.test(activations.get(i))) {
+				editableActivations.put(i, modifier.acceptAndModify(activations.get(i)));
+			}
+		}
+	}
+
+	@Override
+	public void applyValueModifier(FloatModifier modifier) {
+		EditableMatrix editableActivations = activations.asEditableMatrix();
+		for (int i = 0; i < activations.getLength(); i++) {
+			editableActivations.put(i, modifier.acceptAndModify(activations.get(i)));
+		}
+	}
+
+	@Override
+	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
+		if (neurons.getNeuronCountIncludingBias() != neurons.getNeuronCountIncludingBias()) {
+			throw new IllegalArgumentException();
+		}
+		if (format.getFeaturesFormat() instanceof ImageFeaturesFormat) {
+			ImageNeuronsActivationFormat imageFeaturesFormat = new ImageNeuronsActivationFormat(getFeatureOrientation(), (ImageFeaturesFormat)format.getFeaturesFormat(), format.getExampleDimensions());
+			return new ImageNeuronsActivationImpl(activations, neurons, imageFeaturesFormat,
+					activations.isImmutable() || immutable);
+		} else {
+			throw new IllegalStateException("Format is not a known image format");
+		}
+		
+	}
+
+	@Override
+	public void close() {
+		if (activations != null && !activations.isClosed()) {
+			activations.close();
+			activations = null;
+		}
+	}
+
+	@Override
+	public NeuronsActivation dup() {
+		return new NeuronsActivationImpl(neurons, activations.dup(), format, false);
+	}
+
+	@Override
+	public Matrix getActivations(MatrixFactory matrixFactory) {
+		if (activations == null || activations.isClosed()) {
+			throw new IllegalStateException("Matrix has been closed");
+		}
+		return activations;
+	}
+
+	@Override
+	public int getColumns() {
+		return activations.getColumns();
+	}
+
+	@Override
 	public int getExampleCount() {
-		return getColumns();
+		return format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? getColumns()
+				: getRows();
+	}
+
+	@Override
+	public int getFeatureCount() {
+		return format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET ? getRows()
+				: getColumns();
+	}
+
+	@Override
+	public NeuronsActivationFeatureOrientation getFeatureOrientation() {
+		return format.getFeatureOrientation();
+	}
+
+	@Override
+	public Neurons getNeurons() {
+		return neurons;
+	}
+
+	@Override
+	public int getRows() {
+		return activations.getRows();
+	}
+
+	@Override
+	public boolean isImmutable() {
+		return immutable;
 	}
 
 	@Override
@@ -234,8 +159,22 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 		if (this.immutable) {
 			throw new IllegalStateException();
 		}
-		activations.asEditableMatrix().reshape(featureCount, exampleCount);		
+		if (format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+			activations.asEditableMatrix().reshape(featureCount, exampleCount);
+		} else {
+			activations.asEditableMatrix().reshape(exampleCount, featureCount);
+		}
 	}
 
-	
+	@Override
+	public void setImmutable(boolean immutable) {
+		this.immutable = immutable;
+		this.activations.setImmutable(immutable);
+	}
+
+	@Override
+	public NeuronsActivationFormat<?> getFormat() {
+		return format;
+	}
+
 }

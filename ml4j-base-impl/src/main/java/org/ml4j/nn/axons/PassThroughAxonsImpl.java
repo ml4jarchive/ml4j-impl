@@ -13,13 +13,11 @@
  */
 package org.ml4j.nn.axons;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 /**
  * Pass through (no-op) Axons implementation.
@@ -28,75 +26,73 @@ import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
  */
 public class PassThroughAxonsImpl<N extends Neurons> implements Axons<N, N, PassThroughAxonsImpl<N>> {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private N leftNeurons;
-  private N rightNeurons;
+	private N leftNeurons;
+	private N rightNeurons;
 
-  /**
-   * @param leftNeurons The left neurons.
-   * @param rightNeurons The right neurons.
-   */
-  public PassThroughAxonsImpl(N leftNeurons, N rightNeurons) {
-    this.leftNeurons = leftNeurons;
-    this.rightNeurons = rightNeurons;
-    
-    if (leftNeurons.getNeuronCountExcludingBias() != rightNeurons.getNeuronCountExcludingBias()) {
-      throw new IllegalArgumentException("Left neuron and right neurons counts must be the same"
-          + leftNeurons.getNeuronCountIncludingBias() + ":"
-          + rightNeurons.getNeuronCountIncludingBias());
-    }
-    if (leftNeurons.hasBiasUnit() != rightNeurons.hasBiasUnit()) {
-      throw new IllegalArgumentException(
-          "Left neuron and right neurons bias unit presence must be the same");
-    }
-    if (leftNeurons.hasBiasUnit()) {
-      throw new IllegalArgumentException("Left neurons with bias unit not supported");
-    }
-  }
+	/**
+	 * @param leftNeurons  The left neurons.
+	 * @param rightNeurons The right neurons.
+	 */
+	public PassThroughAxonsImpl(N leftNeurons, N rightNeurons) {
+		this.leftNeurons = leftNeurons;
+		this.rightNeurons = rightNeurons;
 
-  @Override
-  public PassThroughAxonsImpl<N> dup() {
-    return new PassThroughAxonsImpl<N>(leftNeurons, rightNeurons);
-  }
+		if (leftNeurons.getNeuronCountExcludingBias() != rightNeurons.getNeuronCountExcludingBias()) {
+			throw new IllegalArgumentException("Left neuron and right neurons counts must be the same"
+					+ leftNeurons.getNeuronCountIncludingBias() + ":" + rightNeurons.getNeuronCountIncludingBias());
+		}
+		if (leftNeurons.hasBiasUnit() != rightNeurons.hasBiasUnit()) {
+			throw new IllegalArgumentException("Left neuron and right neurons bias unit presence must be the same");
+		}
+		if (leftNeurons.hasBiasUnit()) {
+			throw new IllegalArgumentException("Left neurons with bias unit not supported");
+		}
+	}
 
-  @Override
-  public N getLeftNeurons() {
-    return leftNeurons;
-  }
+	@Override
+	public PassThroughAxonsImpl<N> dup() {
+		return new PassThroughAxonsImpl<N>(leftNeurons, rightNeurons);
+	}
 
-  @Override
-  public N getRightNeurons() {
-    return rightNeurons;
-  }
+	@Override
+	public N getLeftNeurons() {
+		return leftNeurons;
+	}
 
-  @Override
-  public boolean isTrainable(AxonsContext context) {
-    return false;
-  }
+	@Override
+	public N getRightNeurons() {
+		return rightNeurons;
+	}
 
-  @Override
-  public AxonsActivation pushLeftToRight(NeuronsActivation input, AxonsActivation arg1,
-      AxonsContext arg2) {
-    return new AxonsActivationImpl(this, null, () -> input, input, leftNeurons, rightNeurons);
-  }
+	@Override
+	public boolean isTrainable(AxonsContext context) {
+		return false;
+	}
 
-  @Override
-  public AxonsActivation pushRightToLeft(NeuronsActivation input, AxonsActivation arg1,
-      AxonsContext arg2) {
-    return new AxonsActivationImpl(this, null, () -> input, input, leftNeurons, rightNeurons);
-  }
+	@Override
+	public AxonsActivation pushLeftToRight(NeuronsActivation input, AxonsActivation arg1, AxonsContext arg2) {
+		return new AxonsActivationImpl(this, null, () -> input, input, leftNeurons, rightNeurons);
+	}
 
-  @Override
-  public List<NeuronsActivationFeatureOrientation> supports() {
-	  return Arrays.asList(NeuronsActivationFeatureOrientation.values());
-  }
+	@Override
+	public AxonsActivation pushRightToLeft(NeuronsActivation input, AxonsActivation arg1, AxonsContext arg2) {
+		return new AxonsActivationImpl(this, null, () -> input, input, leftNeurons, rightNeurons);
+	}
+	
+	
 
-  @Override
-  public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
-	  return Optional.empty();
-  }
+	@Override
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
+		return Optional.empty();
+	}
+
+	@Override
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return true;
+	}
 }

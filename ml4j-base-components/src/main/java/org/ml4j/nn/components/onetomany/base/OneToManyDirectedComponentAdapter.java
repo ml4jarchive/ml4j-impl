@@ -14,7 +14,6 @@
 package org.ml4j.nn.components.onetomany.base;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -23,7 +22,7 @@ import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +46,7 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	@Override
 	public A forwardPropagate(NeuronsActivation input, DirectedComponentsContext context) {
 		
-		LOGGER.info(getComponentType().toString());
+		LOGGER.debug(getComponentType().toString());
 		
 		long startTime = new Date().getTime();
 		A activation =  delegated.forwardPropagate(input, context);
@@ -68,13 +67,12 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	}
 
 	@Override
-	public List<NeuronsActivationFeatureOrientation> supports() {
-		return delegated.supports();
+	public boolean isSupported(NeuronsActivationFormat<?> format) {
+		return delegated.isSupported(format);
 	}
 
 	@Override
-	public Optional<NeuronsActivationFeatureOrientation> optimisedFor() {
+	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return delegated.optimisedFor();
 	}
-
 }

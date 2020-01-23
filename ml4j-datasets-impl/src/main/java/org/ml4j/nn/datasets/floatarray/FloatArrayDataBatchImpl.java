@@ -18,9 +18,11 @@ import java.util.stream.Stream;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.datasets.DataBatchImpl;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.NeuronsActivationImpl;
+import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 import com.codepoetics.protonpack.StreamUtils;
 
@@ -66,21 +68,31 @@ public class FloatArrayDataBatchImpl extends DataBatchImpl<float[]> implements F
 	private void addToMatrix(MatrixFactory matrixFactory, Matrix matrix, float[] data, int featureCount, int row) {
 		matrix.asEditableMatrix().putRow(row, matrixFactory.createMatrixFromRowsByRowsArray(1, featureCount, data));
 	}
-	
-	
+
 	@Override
-	public NeuronsActivation toNeuronsActivation(MatrixFactory matrixFactory) {
+	public NeuronsActivation toNeuronsActivation(MatrixFactory matrixFactory,
+			NeuronsActivationFormat<?> format) {
 
-		Matrix dataMatrix = matrixFactory.createMatrix(featureCount, batchSize);
-		
+		Matrix dataMatrix = format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET
+				? matrixFactory.createMatrix(featureCount, batchSize)
+				: matrixFactory.createMatrix(batchSize, featureCount);
+
 		Stream<float[]> floatStream = stream();
+		if (format.getFeatureOrientation() == NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
+			StreamUtils.zipWithIndex(floatStream)
+					.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
+							matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
+			return new NeuronsActivationImpl(new Neurons(dataMatrix.getRows(), false), dataMatrix, format);
 
-		StreamUtils.zipWithIndex(floatStream)
-				.forEach(e -> dataMatrix.asEditableMatrix().putColumn((int) e.getIndex(),
-						matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
+		} else {
+			StreamUtils.zipWithIndex(floatStream).forEach(e -> dataMatrix.asEditableMatrix().putRow((int) e.getIndex(),
+					matrixFactory.createMatrixFromRowsByRowsArray(featureCount, 1, e.getValue())));
 
-		return new NeuronsActivationImpl(dataMatrix, NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET);
+			return new NeuronsActivationImpl(new Neurons(dataMatrix.getColumns(), false), dataMatrix,
+					format);
+
+		}
+
 	}
-	
-	
+
 }

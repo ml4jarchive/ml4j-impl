@@ -27,67 +27,65 @@ import org.ml4j.nn.layers.DirectedLayerContextImpl;
  * @author Michael Lavelle
  * 
  */
-public class LayeredFeedForwardNeuralNetworkContextImpl extends FeedForwardNeuralNetworkContextImpl implements LayeredFeedForwardNeuralNetworkContext {
+public class LayeredFeedForwardNeuralNetworkContextImpl extends FeedForwardNeuralNetworkContextImpl
+		implements LayeredFeedForwardNeuralNetworkContext {
 
-  /**
-   * Default serialization id.
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private int startLayerIndex;
+	private int startLayerIndex;
 
-  private Integer endLayerIndex;
-  
-  private HashMap<Integer, DirectedLayerContext> directedLayerContexts;
-  
-  private boolean isTrainingContext;
-  
-  /**
-   * 
-   * @param matrixFactory
-   * @param startLayerIndex
-   * @param endLayerIndex
-   */
-  public LayeredFeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
-	      Integer endLayerIndex, boolean isTrainingContext) {
-	  super(matrixFactory, isTrainingContext);
-	  this.isTrainingContext = isTrainingContext;
-	  this.startLayerIndex = startLayerIndex;
-	  this.endLayerIndex = endLayerIndex;
-	
-	    if (endLayerIndex != null && startLayerIndex > endLayerIndex) {
-	      throw new IllegalArgumentException(
-	          "Start layer index cannot be greater " + "than end layer index");
-	    }
+	private Integer endLayerIndex;
 
-	    this.directedLayerContexts = new HashMap<>();
-  }
+	private HashMap<Integer, DirectedLayerContext> directedLayerContexts;
 
- 
-  @Override
-  public DirectedLayerContext getLayerContext(int layerIndex) {
+	private boolean isTrainingContext;
 
-    DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
-    if (layerContext == null) {
-      layerContext = new DirectedLayerContextImpl(layerIndex, getMatrixFactory(), isTrainingContext);
-      directedLayerContexts.put(layerIndex, layerContext);
-    }
+	/**
+	 * 
+	 * @param matrixFactory
+	 * @param startLayerIndex
+	 * @param endLayerIndex
+	 */
+	public LayeredFeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
+			Integer endLayerIndex, boolean isTrainingContext) {
+		super(matrixFactory, isTrainingContext);
+		this.isTrainingContext = isTrainingContext;
+		this.startLayerIndex = startLayerIndex;
+		this.endLayerIndex = endLayerIndex;
 
-    return layerContext;
-  }
+		if (endLayerIndex != null && startLayerIndex > endLayerIndex) {
+			throw new IllegalArgumentException("Start layer index cannot be greater " + "than end layer index");
+		}
 
-  public boolean isTrainingContext() {
-	  return isTrainingContext;
-  }
+		this.directedLayerContexts = new HashMap<>();
+	}
 
+	@Override
+	public DirectedLayerContext getLayerContext(int layerIndex) {
 
-  @Override
-  public int getStartLayerIndex() {
-    return startLayerIndex;
-  }
+		DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
+		if (layerContext == null) {
+			layerContext = new DirectedLayerContextImpl(getMatrixFactory(), isTrainingContext);
+			directedLayerContexts.put(layerIndex, layerContext);
+		}
 
-  @Override
-  public Integer getEndLayerIndex() {
-    return endLayerIndex;
-  }
+		return layerContext;
+	}
+
+	public boolean isTrainingContext() {
+		return isTrainingContext;
+	}
+
+	@Override
+	public int getStartLayerIndex() {
+		return startLayerIndex;
+	}
+
+	@Override
+	public Integer getEndLayerIndex() {
+		return endLayerIndex;
+	}
 }

@@ -36,8 +36,9 @@ public class FloatArrayLabeledDataSetImpl implements FloatArrayLabeledDataSet {
 	private int featureCount;
 	private int labelFeatureCount;
 	private Supplier<Stream<LabeledData<float[], float[]>>> streamSupplier;
-	
-	public FloatArrayLabeledDataSetImpl(Supplier<Stream<LabeledData<float[], float[]>>> streamSupplier, int featureCount, int labelFeatureCount) {
+
+	public FloatArrayLabeledDataSetImpl(Supplier<Stream<LabeledData<float[], float[]>>> streamSupplier,
+			int featureCount, int labelFeatureCount) {
 		this.streamSupplier = streamSupplier;
 		this.featureCount = featureCount;
 		this.labelFeatureCount = labelFeatureCount;
@@ -48,7 +49,7 @@ public class FloatArrayLabeledDataSetImpl implements FloatArrayLabeledDataSet {
 			throw new IllegalArgumentException();
 		}
 	}
-	
+
 	@Override
 	public DataSet<float[]> getDataSet() {
 		return new DataSetImpl<>(() -> stream().map(l -> l.getData()));
@@ -72,29 +73,35 @@ public class FloatArrayLabeledDataSetImpl implements FloatArrayLabeledDataSet {
 	@Override
 	public FloatArrayLabeledDataSet toFloatArrayLabeledDataSet(FeatureExtractor<float[]> featureExtractor,
 			FeatureExtractor<float[]> labelMapper, FeatureExtractionErrorMode featureExtractionErrorMode) {
-		return new FloatArrayLabeledDataSetImpl(() -> stream().map(l -> toLabeledFloatArray(featureExtractor, labelMapper, l, featureExtractionErrorMode)).filter(Optional::isPresent).map(Optional::get), featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
+		return new FloatArrayLabeledDataSetImpl(
+				() -> stream()
+						.map(l -> toLabeledFloatArray(featureExtractor, labelMapper, l, featureExtractionErrorMode))
+						.filter(Optional::isPresent).map(Optional::get),
+				featureExtractor.getFeatureCount(), labelMapper.getFeatureCount());
 	}
-	
-	private <E, L> Optional<LabeledData<float[], float[]>> toLabeledFloatArray(FeatureExtractor<E> featureExtractor, FeatureExtractor<L> labelMapper, 
-			LabeledData<E, L> labeledData, 
+
+	private <E, L> Optional<LabeledData<float[], float[]>> toLabeledFloatArray(FeatureExtractor<E> featureExtractor,
+			FeatureExtractor<L> labelMapper, LabeledData<E, L> labeledData,
 			FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
-			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(labeledData.getData()), labelMapper.getFeatures(labeledData.getLabel())));
+			return Optional.of(new LabeledDataImpl<>(featureExtractor.getFeatures(labeledData.getData()),
+					labelMapper.getFeatures(labeledData.getLabel())));
 		} catch (FeatureExtractionException e) {
 			if (featureExtractionErrorMode == FeatureExtractionErrorMode.LOG_WARNING) {
 				LOGGER.warn("Ignoring data element due to feature extraction failure", e);
 			} else if (featureExtractionErrorMode == FeatureExtractionErrorMode.RAISE_EXCEPTION) {
-				throw new FeatureExtractionRuntimeException("Unable to convert labeled data to labeled float arrays", e);
+				throw new FeatureExtractionRuntimeException("Unable to convert labeled data to labeled float arrays",
+						e);
 			}
 			return Optional.empty();
 		}
 	}
 
-	
-
 	@Override
-	public FloatArrayBatchedLabeledDataSet toBatchedLabeledDataSet(int batchSize) {			
-		return new FloatArrayBatchedLabeledDataSetImpl(() -> StreamUtil.partition(stream().map(l -> new LabeledDataImpl<>(l.getData(), l.getLabel())), batchSize), featureCount, labelFeatureCount);
+	public FloatArrayBatchedLabeledDataSet toBatchedLabeledDataSet(int batchSize) {
+		return new FloatArrayBatchedLabeledDataSetImpl(() -> StreamUtil
+				.partition(stream().map(l -> new LabeledDataImpl<>(l.getData(), l.getLabel())), batchSize),
+				featureCount, labelFeatureCount);
 	}
 
 }

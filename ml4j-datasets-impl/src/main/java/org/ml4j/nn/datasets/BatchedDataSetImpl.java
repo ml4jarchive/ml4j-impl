@@ -28,13 +28,18 @@ public class BatchedDataSetImpl<E> extends DataSetImpl<DataBatch<E>> implements 
 	}
 
 	@Override
-	public FloatArrayBatchedDataSet toFloatArrayBatchedDataSet(FeatureExtractor<E> featureExtractor, FeatureExtractionErrorMode featureExtractionErrorMode) {
-		return new FloatArrayBatchedDataSetImpl(transform(batchStream -> batchStream.map(batch -> createFloatArrayDataBatch(batch, featureExtractor, featureExtractionErrorMode))), featureExtractor.getFeatureCount());
+	public FloatArrayBatchedDataSet toFloatArrayBatchedDataSet(FeatureExtractor<E> featureExtractor,
+			FeatureExtractionErrorMode featureExtractionErrorMode) {
+		return new FloatArrayBatchedDataSetImpl(
+				transform(batchStream -> batchStream
+						.map(batch -> createFloatArrayDataBatch(batch, featureExtractor, featureExtractionErrorMode))),
+				featureExtractor.getFeatureCount());
 	}
-	
-	private FloatArrayDataBatch createFloatArrayDataBatch(DataBatch<E> batch, FeatureExtractor<E> featureExtractor, FeatureExtractionErrorMode featureExtractionErrorMode) {
+
+	private FloatArrayDataBatch createFloatArrayDataBatch(DataBatch<E> batch, FeatureExtractor<E> featureExtractor,
+			FeatureExtractionErrorMode featureExtractionErrorMode) {
 		try {
-			FloatArrayDataBatch dataBatch =  batch.toFloatArrayDataBatch(featureExtractor, featureExtractionErrorMode);	
+			FloatArrayDataBatch dataBatch = batch.toFloatArrayDataBatch(featureExtractor, featureExtractionErrorMode);
 			return dataBatch;
 		} catch (FeatureExtractionException e) {
 			throw new FeatureExtractionRuntimeException("Unable to convert batch to float array batch", e);
