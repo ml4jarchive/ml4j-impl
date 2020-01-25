@@ -2,6 +2,7 @@ package org.ml4j.images;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChannelConcatImage extends ChannelConcatImageContainer<Image> implements Image {
 
@@ -37,5 +38,11 @@ public class ChannelConcatImage extends ChannelConcatImageContainer<Image> imple
 		}
 		List<Image> subImages = channelConcatImages.subList(channelRangeStart, channelRangeEnd);
 		return new ChannelConcatImage(subImages, height, width, paddingHeight, paddingWidth);
+	}
+
+	@Override
+	public Images asImages() {
+		return new ChannelConcatImages(channelConcatImages.stream()
+				.map(i -> i.asImages()).collect(Collectors.toList()), height, width, paddingHeight, paddingWidth, examples);
 	}
 }

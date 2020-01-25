@@ -45,4 +45,9 @@ public class MultiChannelImage extends MultiChannelImageContainer<Image> impleme
 		List<Image> subImage = channelConcatImage.subList(channelRangeStart, channelRangeEnd);
 		return new ChannelConcatImage(subImage, height, width, paddingHeight, paddingWidth);
 	}
+
+	@Override
+	public Images asImages() {
+		return new MultiChannelImages(getData(), channels, height, width, paddingHeight, paddingWidth, examples);
+	}
 }

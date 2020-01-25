@@ -53,7 +53,7 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 
 	@Override
 	public NeuronsActivationContext getContext(DirectedComponentsContext context) {
-		return new NeuronsActivationContextImpl(context.getMatrixFactory(), context.isTrainingContext());
+		return context.getContext(this, () -> new NeuronsActivationContextImpl(context.getMatrixFactory(), context.isTrainingContext()));
 	}
 
 	@Override

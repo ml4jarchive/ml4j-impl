@@ -72,6 +72,16 @@ public class FeedForwardNeuralNetworkContextImpl extends NeuronsActivationContex
 		this.directedComponentsContext = new DirectedComponentsContextImpl(matrixFactory, isTrainingContext);
 	}
 	
+	/**
+	 * Construct a default AutoEncoderContext.
+	 * 
+	 * @param matrixFactory The MatrixFactory we configure for this context
+	 */
+	public FeedForwardNeuralNetworkContextImpl(DirectedComponentsContext directedComponentsContext, boolean isTrainingContext) {
+		super(directedComponentsContext.getMatrixFactory(), isTrainingContext);
+		this.directedComponentsContext = directedComponentsContext;
+	}
+	
 	/*
 	 * @Override public DirectedLayerContext getLayerContext(int layerIndex) {
 	 * 
