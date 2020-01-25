@@ -6,6 +6,11 @@ public class SingleChannelImage extends SingleChannelImageContainer<Image> imple
 			int paddingWidth) {
 		super(data, startIndex, height, width, paddingHeight, paddingWidth, 1);
 	}
+	
+	@Override
+	public Images asImages() {
+		return new SingleChannelImages(getData(), startIndex, height, width, paddingHeight, paddingWidth, examples);
+	}
 
 	@Override
 	public SingleChannelImage dup() {

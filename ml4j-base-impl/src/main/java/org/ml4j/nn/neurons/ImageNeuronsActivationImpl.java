@@ -4,6 +4,7 @@ import org.ml4j.FloatModifier;
 import org.ml4j.FloatPredicate;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
+import org.ml4j.images.Image;
 import org.ml4j.images.Images;
 import org.ml4j.images.MultiChannelImages;
 import org.ml4j.images.SingleChannelImages;
@@ -21,6 +22,18 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 			ImageNeuronsActivationFormat format, boolean immutable) {
 		this.neurons = neurons;
 		this.images = images;
+		setImmutable(immutable);
+		if (!format.equals(ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT)) {
+			throw new UnsupportedOperationException("Format not yet supported:" + format);
+		}
+		this.exampleCount = images.getExamples();
+		this.format = format;
+	}
+	
+	public ImageNeuronsActivationImpl(Neurons3D neurons, Image image,
+			ImageNeuronsActivationFormat format, boolean immutable) {
+		this.neurons = neurons;
+		this.images = image.asImages();
 		setImmutable(immutable);
 		if (!format.equals(ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT)) {
 			throw new UnsupportedOperationException("Format not yet supported:" + format);
