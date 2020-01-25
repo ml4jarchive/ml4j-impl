@@ -33,4 +33,9 @@ public class LabeledDataImpl<E, L> implements LabeledData<E, L> {
 		return label;
 	}
 
+	@Override
+	public String toString() {
+		return "LabeledDataImpl [data=" + data + ", label=" + label + "]";
+	}
+
 }

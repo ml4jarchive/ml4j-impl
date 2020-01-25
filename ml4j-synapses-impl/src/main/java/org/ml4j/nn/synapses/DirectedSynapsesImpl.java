@@ -37,7 +37,6 @@ import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivat
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.slf4j.Logger;
@@ -151,8 +150,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		NeuronsActivation totalAxonsOutputActivation = axonsActivationGraph.getOutput();
 
 		DifferentiableActivationFunctionComponentActivation actAct = activationFunctionComponent
-				.forwardPropagate(totalAxonsOutputActivation, new NeuronsActivationContextImpl(
-						directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
+				.forwardPropagate(totalAxonsOutputActivation, directedComponentsContext);
 
 		NeuronsActivation outputNeuronsActivation = actAct.getOutput();
 

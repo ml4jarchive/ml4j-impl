@@ -33,7 +33,6 @@ import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponen
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
-import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 
 public class TrailingActivationFunctionDirectedComponentChainImpl
@@ -102,7 +101,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 				context);
 		DifferentiableActivationFunctionComponentActivation activationFunctionComponentActivation = finalDifferentiableActivationFunctionComponent
 				.forwardPropagate(precedingChainActivation.getOutput(),
-						new NeuronsActivationContextImpl(context.getMatrixFactory(), false));
+						context);
 		// activationFunctionActivation.getInput().close();
 		return new TrailingActivationFunctionDirectedComponentChainActivationImpl(this, precedingChainActivation,
 				activationFunctionComponentActivation);
