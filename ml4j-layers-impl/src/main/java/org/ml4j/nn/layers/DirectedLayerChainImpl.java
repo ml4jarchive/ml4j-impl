@@ -57,4 +57,9 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>>
 		return new DirectedLayerChainActivationImpl(activations);
 	}
 
+	@Override
+	public String getName() {
+		return getComponentType().getId();
+	}
+
 }

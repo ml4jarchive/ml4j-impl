@@ -54,9 +54,9 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	 * @param encodingLayer The encoding Layer
 	 * @param decodingLayer The decoding Layer
 	 */
-	public AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> encodingLayer,
+	public AutoEncoderImpl(String name, DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> encodingLayer,
 			FeedForwardLayer<?, ?> decodingLayer) {
-		this(directedComponentFactory, new DirectedLayerChainImpl<>(Arrays.asList(encodingLayer, decodingLayer)));
+		this(name, directedComponentFactory, new DirectedLayerChainImpl<>(Arrays.asList(encodingLayer, decodingLayer)));
 	}
 
 	/**
@@ -64,18 +64,18 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	 * 
 	 * @param layers The layers
 	 */
-	public AutoEncoderImpl(DirectedComponentFactory directedComponentFactory, List<FeedForwardLayer<?, ?>> layers) {
-		this(directedComponentFactory, new DirectedLayerChainImpl<>(layers));
+	public AutoEncoderImpl(String name, DirectedComponentFactory directedComponentFactory, List<FeedForwardLayer<?, ?>> layers) {
+		this(name, directedComponentFactory, new DirectedLayerChainImpl<>(layers));
 	}
 
-	protected AutoEncoderImpl(DirectedComponentFactory directedComponentFactory,
+	protected AutoEncoderImpl(String name,DirectedComponentFactory directedComponentFactory,
 			DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
-		super(directedComponentFactory, initialisingComponentChain);
+		super(name, directedComponentFactory, initialisingComponentChain);
 	}
 
 	@Override
 	public AutoEncoder dup() {
-		return new AutoEncoderImpl(directedComponentFactory, this.initialisingComponentChain);
+		return new AutoEncoderImpl(name, directedComponentFactory, this.initialisingComponentChain);
 	}
 
 	@Override

@@ -30,8 +30,8 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 	private Integer filterWidth;
 	private Integer filterHeight;
 
-	public UncompletedConvolutionalAxonsBuilderImpl(Supplier<C> previousBuilder, Neurons3D leftNeurons) {
-		super(previousBuilder, leftNeurons);
+	public UncompletedConvolutionalAxonsBuilderImpl(String name, Supplier<C> previousBuilder, Neurons3D leftNeurons) {
+		super(name, previousBuilder, leftNeurons);
 	}
 
 	@Override

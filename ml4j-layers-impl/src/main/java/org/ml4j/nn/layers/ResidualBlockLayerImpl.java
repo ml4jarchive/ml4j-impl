@@ -39,10 +39,10 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 	 * @param layer2
 	 * @param matrixFactory
 	 */
-	public ResidualBlockLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
+	public ResidualBlockLayerImpl(String name, DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
 			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2, MatrixFactory matrixFactory) {
-		super(directedComponentFactory,
-				createComponentChain(directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
+		super(name, directedComponentFactory,
+				createComponentChain(name, directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
 				matrixFactory);
 		this.layer1 = layer1;
 		this.layer2 = layer2;
@@ -50,7 +50,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		this.axonsFactory = axonsFactory;
 	}
 
-	private static DefaultDirectedComponentChain createPrecedingChain(DirectedComponentFactory directedComponentFactory,
+	private static DefaultDirectedComponentChain createPrecedingChain(String name, DirectedComponentFactory directedComponentFactory,
 			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2) {
 
 		// Start with all components
@@ -65,7 +65,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		}
 
 		// Create an axons only component from the last synapses
-		DirectedAxonsComponent<?, ?, ?> axonsComponent = directedComponentFactory.createDirectedAxonsComponent(
+		DirectedAxonsComponent<?, ?, ?> axonsComponent = directedComponentFactory.createDirectedAxonsComponent(name + ":PrimaryAxons",
 				(Axons<? extends Neurons, ? extends Neurons, ?>) layer2.getPrimaryAxons());
 		preceedingComponents.add(axonsComponent);
 
@@ -75,17 +75,17 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 	}
 
-	private static DefaultDirectedComponentChain createComponentChain(DirectedComponentFactory directedComponentFactory,
+	private static DefaultDirectedComponentChain createComponentChain(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2,
 			MatrixFactory matrixFactory) {
 
 		// Final activation function component
 		DifferentiableActivationFunctionComponent finalActivationFunctionComponent = directedComponentFactory
-				.createDifferentiableActivationFunctionComponent(layer2.getOutputNeurons(),
+				.createDifferentiableActivationFunctionComponent(name + ":DifferentiableActivationFunction", layer2.getOutputNeurons(),
 						layer2.getPrimaryActivationFunction());
 
 		// Chain of components before the final activation function component
-		DefaultDirectedComponentChain precedingChain = createPrecedingChain(directedComponentFactory, layer1, layer2);
+		DefaultDirectedComponentChain precedingChain = createPrecedingChain(name, directedComponentFactory, layer1, layer2);
 
 		List<DefaultChainableDirectedComponent<?, ?>> matchingAxonsList = new ArrayList<>();
 
@@ -96,7 +96,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 			FullyConnectedAxons matchingAxons = axonsFactory.createFullyConnectedAxons(
 					layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons(), null, null);
 			DirectedAxonsComponent<Neurons, Neurons, ?> matchingComponent = directedComponentFactory
-					.createDirectedAxonsComponent((matchingAxons));
+					.createDirectedAxonsComponent(name + ":MatchingAxons", (matchingAxons));
 			matchingAxonsList.add(matchingComponent);
 		}
 
@@ -153,7 +153,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 	@Override
 	public ResidualBlockLayerImpl dup() {
-		return new ResidualBlockLayerImpl(directedComponentFactory, axonsFactory, layer1.dup(), layer2.dup(),
+		return new ResidualBlockLayerImpl(name, directedComponentFactory, axonsFactory, layer1.dup(), layer2.dup(),
 				matrixFactory);
 	}
 

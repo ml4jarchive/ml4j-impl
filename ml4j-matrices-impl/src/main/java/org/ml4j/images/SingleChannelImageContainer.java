@@ -190,6 +190,30 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
+	
+	@Override
+	public void populateSpaceToDepthExport(float[] data, int startIndex, int heightFactor, int widthFactor) {
+		
+		for (int h = 0; h < heightFactor; h++) {
+			for (int w = 0; w < widthFactor; w++) {
+				populateDataSubImage(data, startIndex, h, w, height/heightFactor, width/widthFactor, heightFactor, widthFactor,
+						true);
+				startIndex = startIndex + getSubImageDataLength(height/heightFactor, width/widthFactor) * getChannels();
+			}
+		}
+	}
+
+	@Override
+	public void populateSpaceToDepthImport(float[] data, int startIndex, int heightFactor, int widthFactor) {
+		
+		for (int h = 0; h < heightFactor; h++) {
+			for (int w = 0; w < widthFactor; w++) {
+				populateDataSubImageReverse(data, startIndex, h, w, height/heightFactor, width/widthFactor, heightFactor, widthFactor,
+						true);
+				startIndex = startIndex + getSubImageDataLength(height/heightFactor, width/widthFactor) * getChannels();
+			}
+		}
+	}
 
 	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {

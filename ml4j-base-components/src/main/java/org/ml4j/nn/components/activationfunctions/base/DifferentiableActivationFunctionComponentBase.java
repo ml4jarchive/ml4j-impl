@@ -40,10 +40,12 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	
 	protected ActivationFunctionType activationFunctionType;
 	protected Neurons neurons;
+	protected String name;
 	
-	public DifferentiableActivationFunctionComponentBase(Neurons neurons, ActivationFunctionType activationFunctionType){
+	public DifferentiableActivationFunctionComponentBase(String name, Neurons neurons, ActivationFunctionType activationFunctionType){
 		this.activationFunctionType = activationFunctionType;
 		this.neurons = neurons;
+		this.name = name;
 	}
 
 	@Override
@@ -76,5 +78,12 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	public Neurons getOutputNeurons() {
 		return neurons;
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	
 	
 }

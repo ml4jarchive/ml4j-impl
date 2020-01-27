@@ -65,6 +65,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 	private L leftNeurons;
 	private R rightNeurons;
+	private String name;
 
 	/**
 	 * Create a new implementation of DirectedSynapses.
@@ -75,17 +76,18 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param axonsGraph
 	 * @param activationFunction
 	 */
-	protected DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory, L leftNeurons, R rightNeurons,
+	protected DirectedSynapsesImpl(String name, DirectedComponentFactory directedComponentFactory, L leftNeurons, R rightNeurons,
 			DefaultDirectedComponentBipoleGraph axonsGraph, DifferentiableActivationFunction activationFunction) {
 		super();
 		this.activationFunction = activationFunction;
 		this.activationFunctionComponent = directedComponentFactory
-				.createDifferentiableActivationFunctionComponent(rightNeurons, activationFunction);
+				.createDifferentiableActivationFunctionComponent(name + ":ActivationFunction", rightNeurons, activationFunction);
 		this.axonsGraph = axonsGraph;
 		this.directedComponentFactory = directedComponentFactory;
 		this.leftNeurons = leftNeurons;
 		this.rightNeurons = rightNeurons;
 		Objects.requireNonNull(axonsGraph, "axonsGraph");
+		this.name = name;
 
 	}
 
@@ -97,17 +99,18 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param primaryAxons             The primary Axons within these synapses
 	 * @param activationFunction       The activation function within these synapses
 	 */
-	public DirectedSynapsesImpl(DirectedComponentFactory directedComponentFactory, Axons<L, R, ?> primaryAxons,
+	public DirectedSynapsesImpl(String name,DirectedComponentFactory directedComponentFactory, Axons<L, R, ?> primaryAxons,
 			DifferentiableActivationFunction activationFunction) {
-		this(directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(),
-				createGraph(directedComponentFactory, primaryAxons), activationFunction);
+		this(name, directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(),
+				createGraph(name, directedComponentFactory, primaryAxons), activationFunction);
 		this.directedComponentFactory = directedComponentFactory;
+		this.name = name;
 	}
 
-	private static DefaultDirectedComponentBipoleGraph createGraph(DirectedComponentFactory directedComponentFactory,
+	private static DefaultDirectedComponentBipoleGraph createGraph(String name, DirectedComponentFactory directedComponentFactory,
 			Axons<?, ?, ?> primaryAxons) {
 		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
-		components.add(directedComponentFactory.createDirectedAxonsComponent(primaryAxons));
+		components.add(directedComponentFactory.createDirectedAxonsComponent(name + ":PrimaryAxons", primaryAxons));
 
 		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components);
 		List<DefaultChainableDirectedComponent<?, ?>> chainsList = new ArrayList<>();
@@ -127,7 +130,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 	@Override
 	public DirectedSynapses<L, R> dup() {
-		return new DirectedSynapsesImpl<>(directedComponentFactory, leftNeurons, rightNeurons, axonsGraph.dup(),
+		return new DirectedSynapsesImpl<>(name, directedComponentFactory, leftNeurons, rightNeurons, axonsGraph.dup(),
 				activationFunction);
 	}
 
@@ -208,6 +211,11 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	@Override
 	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return Optional.empty();
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

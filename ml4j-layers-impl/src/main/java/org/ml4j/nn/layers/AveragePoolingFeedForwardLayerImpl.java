@@ -49,10 +49,10 @@ public class AveragePoolingFeedForwardLayerImpl
 	 * @param matrixFactory             The matrix factory.
 	 * @param withBatchNorm             Whether to enable batch norm
 	 */
-	public AveragePoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public AveragePoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			DifferentiableActivationFunctionFactory activationFunctionFactory, AveragePoolingAxons primaryAxons,
 			MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(),
+		super(name, directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(),
 				matrixFactory, withBatchNorm);
 		this.activationFunctionFactory = activationFunctionFactory;
 	}
@@ -70,17 +70,17 @@ public class AveragePoolingFeedForwardLayerImpl
 	 *                                  weights
 	 * @param withBatchNorm             Whether to enable batch norm
 	 */
-	public AveragePoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public AveragePoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory,
 			Neurons3D inputNeurons, Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(directedComponentFactory,
+		super(name, directedComponentFactory,
 				axonsFactory.createAveragePoolingAxons(inputNeurons, outputNeurons, new Axons3DConfig()),
 				activationFunctionFactory.createLinearActivationFunction(), matrixFactory, withBatchNorm);
 	}
 
 	@Override
 	public AveragePoolingFeedForwardLayer dup() {
-		return new AveragePoolingFeedForwardLayerImpl(directedComponentFactory, activationFunctionFactory,
+		return new AveragePoolingFeedForwardLayerImpl(name, directedComponentFactory, activationFunctionFactory,
 				primaryAxons.dup(), matrixFactory, withBatchNorm);
 	}
 

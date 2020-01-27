@@ -47,14 +47,14 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
+	public LayeredSupervisedFeedForwardNeuralNetworkImpl(String name, DirectedComponentFactory directedComponentFactory,
 			DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
-		super(directedComponentFactory, initialisingComponentChain);
+		super(name, directedComponentFactory, initialisingComponentChain);
 	}
 
-	public LayeredSupervisedFeedForwardNeuralNetworkImpl(DirectedComponentFactory directedComponentFactory,
+	public LayeredSupervisedFeedForwardNeuralNetworkImpl(String name, DirectedComponentFactory directedComponentFactory,
 			List<FeedForwardLayer<?, ?>> layers) {
-		super(directedComponentFactory, new DirectedLayerChainImpl<>(layers));
+		super(name, directedComponentFactory, new DirectedLayerChainImpl<>(layers));
 	}
 
 	@Override

@@ -35,14 +35,14 @@ public class FeedForwardLayerImpl extends FeedForwardLayerBase<Axons<?, ?, ?>, F
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected FeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons,
+	protected FeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons,
 			DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
+		super(name, directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
 	}
 
 	@Override
 	public FeedForwardLayerImpl dup() {
-		return new FeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(), primaryActivationFunction,
+		return new FeedForwardLayerImpl(name, directedComponentFactory, primaryAxons.dup(), primaryActivationFunction,
 				matrixFactory, withBatchNorm);
 	}
 }

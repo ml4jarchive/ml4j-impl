@@ -75,4 +75,9 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	public DefaultDirectedComponentBatch getEdges() {
 		return parallelComponentBatch;
 	}
+	
+	@Override
+	public String getName() {
+		return getComponentType().getId();
+	}
 }

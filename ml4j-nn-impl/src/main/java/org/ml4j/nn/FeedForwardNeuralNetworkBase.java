@@ -76,6 +76,8 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	protected GradientAccumulator gradientAccumulator;
 
 	private C lastEpochTrainingContext;
+	
+	protected String name;
 
 	/**
 	 * Default serialization id.
@@ -87,8 +89,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 * 
 	 * @param layers The layers
 	 */
-	public FeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory,
+	public FeedForwardNeuralNetworkBase(String name, DirectedComponentFactory directedComponentFactory,
 			H initialisingComponentChain) {
+		this.name = name;
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.trailingActivationFunctionComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
 				directedComponentFactory, initialisingComponentChain.getComponents());
@@ -100,9 +103,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	 * 
 	 * @param layers The layers
 	 */
-	protected FeedForwardNeuralNetworkBase(H initialisingComponentChain,
+	protected FeedForwardNeuralNetworkBase(String name,H initialisingComponentChain,
 			TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain) {
 		this.initialisingComponentChain = initialisingComponentChain;
+		this.name = name;
 		this.trailingActivationFunctionComponentChain = trailingActivationFunctionComponentChain;
 		this.gradientAccumulator = new LocalGradientAccumulator();
 	}
@@ -672,6 +676,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	@Override
 	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return trailingActivationFunctionComponentChain.optimisedFor();
+	}
+	
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

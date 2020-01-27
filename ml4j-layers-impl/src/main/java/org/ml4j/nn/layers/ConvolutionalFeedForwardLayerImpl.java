@@ -47,10 +47,10 @@ public class ConvolutionalFeedForwardLayerImpl
 	 * @param matrixFactory            The matrix factory.
 	 * @param withBatchNorm            Whether to enable batch norm for this Layer.
 	 */
-	public ConvolutionalFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			ConvolutionalAxons primaryAxons, DifferentiableActivationFunction activationFunction,
 			MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
+		super(name, directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
 	}
 
 	/**
@@ -66,11 +66,11 @@ public class ConvolutionalFeedForwardLayerImpl
 	 *                                  weights
 	 * @param withBatchNorm             Whether to enable batch norm for this Layer.
 	 */
-	public ConvolutionalFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons, int stride, int zeroPadding,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
 			boolean withBatchNorm) {
-		super(directedComponentFactory,
+		super(name, directedComponentFactory,
 				axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons,
 						new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride)
 								.withPaddingWidth(zeroPadding).withPaddingHeight(zeroPadding),
@@ -92,11 +92,11 @@ public class ConvolutionalFeedForwardLayerImpl
 	 * @param connectionWeights         The connectionWeights
 	 * @param withBatchNorm             Whether to enable batch norm for this Layer.
 	 */
-	public ConvolutionalFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
 			Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
-		this(directedComponentFactory, axonsFactory, inputNeurons, outputNeurons, 1, 0, primaryActivationFunction,
+		this(name, directedComponentFactory, axonsFactory, inputNeurons, outputNeurons, 1, 0, primaryActivationFunction,
 				matrixFactory, connectionWeights, biases, withBatchNorm);
 	}
 
@@ -114,11 +114,11 @@ public class ConvolutionalFeedForwardLayerImpl
 	 * @param connectionWeights         The connectionWeights
 	 * @param withBatchNorm             Whether to enable batch norm for this Layer.
 	 */
-	public ConvolutionalFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons, int stride, int zeroPadding,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
 			Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
-		super(directedComponentFactory, axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons,
+		super(name, directedComponentFactory, axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons,
 				new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(zeroPadding)
 						.withPaddingHeight(zeroPadding),
 				connectionWeights, biases), primaryActivationFunction, matrixFactory, withBatchNorm);
@@ -126,7 +126,7 @@ public class ConvolutionalFeedForwardLayerImpl
 
 	@Override
 	public ConvolutionalFeedForwardLayer dup() {
-		return new ConvolutionalFeedForwardLayerImpl(directedComponentFactory, primaryAxons.dup(),
+		return new ConvolutionalFeedForwardLayerImpl(name, directedComponentFactory, primaryAxons.dup(),
 				primaryActivationFunction, matrixFactory, withBatchNorm);
 	}
 

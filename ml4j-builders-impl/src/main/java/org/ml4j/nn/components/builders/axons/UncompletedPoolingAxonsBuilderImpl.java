@@ -28,8 +28,8 @@ public class UncompletedPoolingAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 	private Integer filterHeight;
 	private boolean scaleOutputs;
 
-	public UncompletedPoolingAxonsBuilderImpl(Supplier<C> previousBuilder, Neurons3D leftNeurons) {
-		super(previousBuilder, leftNeurons);
+	public UncompletedPoolingAxonsBuilderImpl(String name, Supplier<C> previousBuilder, Neurons3D leftNeurons) {
+		super(name, previousBuilder, leftNeurons);
 	}
 
 	@Override

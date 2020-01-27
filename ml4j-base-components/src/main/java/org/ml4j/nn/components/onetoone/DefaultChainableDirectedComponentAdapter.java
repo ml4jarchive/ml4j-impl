@@ -146,4 +146,9 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 		return delegated.forwardPropagate(input, context);
 	}
 
+	@Override
+	public String getName() {
+		return delegated.getName();
+	}
+
 }
