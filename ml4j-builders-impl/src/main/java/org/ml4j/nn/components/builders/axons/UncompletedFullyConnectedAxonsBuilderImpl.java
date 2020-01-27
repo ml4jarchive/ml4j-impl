@@ -23,8 +23,8 @@ import org.ml4j.nn.neurons.Neurons;
 public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsStateBuilder<?>>
 		extends UncompletedAxonsBuilderImpl<Neurons, C> implements UncompletedFullyConnectedAxonsBuilder<C> {
 
-	public UncompletedFullyConnectedAxonsBuilderImpl(Supplier<C> previousBuilderSupplier, Neurons leftNeurons) {
-		super(previousBuilderSupplier, leftNeurons);
+	public UncompletedFullyConnectedAxonsBuilderImpl(String name, Supplier<C> previousBuilderSupplier, Neurons leftNeurons) {
+		super(name, previousBuilderSupplier, leftNeurons);
 	}
 
 	@Override

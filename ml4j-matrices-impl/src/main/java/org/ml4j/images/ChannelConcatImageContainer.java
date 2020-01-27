@@ -152,6 +152,24 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 	}
 
 	@Override
+	public void populateSpaceToDepthExport(float[] data, int startIndex, int heightFactor, int widthFactor) {
+		for (ImageContainer<?> subImage : channelConcatImages) {
+			subImage.populateSpaceToDepthExport(data, startIndex, heightFactor, widthFactor);
+			startIndex = startIndex + 
+					subImage.getSubImageDataLength(height/heightFactor, width/widthFactor) * heightFactor * widthFactor;
+		}
+	}
+
+	@Override
+	public void populateSpaceToDepthImport(float[] data, int startIndex, int heightFactor, int widthFactor) {
+		for (ImageContainer<?> subImage : channelConcatImages) {
+			subImage.populateSpaceToDepthImport(data, startIndex, heightFactor, widthFactor);
+			startIndex = startIndex + 
+					subImage.getSubImageDataLength(height/heightFactor, width/widthFactor) * heightFactor * widthFactor;
+		}
+	}
+
+	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
 		channelConcatImages.forEach(image -> image.applyValueModifier(condition, modifier));
 	}

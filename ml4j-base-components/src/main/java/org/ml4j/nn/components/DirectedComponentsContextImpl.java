@@ -104,7 +104,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 
 	@Override
 	public DirectedComponentsContext asTrainingContext() {
-		return new DirectedComponentsContextImpl(contexts, matrixFactory, isTraining);
+		return new DirectedComponentsContextImpl(contexts, matrixFactory, true);
 	}
 
 	@Override

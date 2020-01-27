@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -56,14 +57,14 @@ public abstract class ComponentsNestedGraphBuilderImpl<P extends ComponentsConta
 	}
 
 	@Override
-	public C withActivationFunction(DifferentiableActivationFunction activationFunction) {
-		addActivationFunction(activationFunction);
+	public C withActivationFunction(String name, DifferentiableActivationFunction activationFunction) {
+		addActivationFunction(name, activationFunction);
 		return getBuilder();
 	}
 
 	@Override
-	public C withActivationFunction(ActivationFunctionType activationFunctionType) {
-		addActivationFunction(activationFunctionType);
+	public C withActivationFunction(String name, ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
+		addActivationFunction(name, activationFunctionType, activationFunctionProperties);
 		return getBuilder();
 	}
 }

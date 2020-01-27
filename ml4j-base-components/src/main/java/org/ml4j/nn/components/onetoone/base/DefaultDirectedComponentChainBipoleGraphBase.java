@@ -74,4 +74,9 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	public DefaultDirectedComponentChainBatch getEdges() {
 		return parallelComponentChainsBatch;
 	}
+
+	@Override
+	public String getName() {
+		return getComponentType().getId();
+	}
 }

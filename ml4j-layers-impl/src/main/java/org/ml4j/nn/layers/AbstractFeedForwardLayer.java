@@ -57,6 +57,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFeedForwardLayer.class);
 
 	protected MatrixFactory matrixFactory;
+	protected String name;
 
 	protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
 	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionDirectedComponentChain;
@@ -67,7 +68,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	 * @param matrixFactory      The matrix factory
 	 * @param withBatchNorm      Whether to enable batch norm.
 	 */
-	protected AbstractFeedForwardLayer(DirectedComponentFactory directedComponentFactory,
+	protected AbstractFeedForwardLayer(String name, DirectedComponentFactory directedComponentFactory,
 			DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain,
 			MatrixFactory matrixFactory) {
 		this.componentChain = componentChain;
@@ -78,6 +79,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 		this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
 				directedComponentFactory, chainableComponents);
 		this.matrixFactory = matrixFactory;
+		this.name = name;
 	}
 
 	@Override
@@ -120,4 +122,11 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return Optional.empty();
 	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	
 }

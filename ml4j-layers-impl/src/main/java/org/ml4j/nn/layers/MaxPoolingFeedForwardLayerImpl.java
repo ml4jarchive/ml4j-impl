@@ -48,10 +48,10 @@ public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPool
 	 * @param matrixFactory             The matrix factory.
 	 * @param withBatchNorm             Whether to enable batch norm.
 	 */
-	public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory,
+	public MaxPoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			DifferentiableActivationFunctionFactory activationFunctionFactory, MaxPoolingAxons primaryAxons,
 			MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(),
+		super(name, directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(),
 				matrixFactory, withBatchNorm);
 	}
 
@@ -67,10 +67,10 @@ public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPool
 	 *                                  weights
 	 * @param withBatchNorm             Whether to enable batch norm.
 	 */
-	public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
+	public MaxPoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
 			DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons,
 			Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean withBatchNorm, int stride) {
-		super(directedComponentFactory,
+		super(name, directedComponentFactory,
 				axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, false,
 						new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0)
 								.withPaddingHeight(0)),
@@ -92,11 +92,11 @@ public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPool
 	 *                                  outputting max-elements.
 	 * @param withBatchNorm             Whether to enable batch norm.
 	 */
-	public MaxPoolingFeedForwardLayerImpl(DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
+	public MaxPoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
 			DifferentiableActivationFunctionFactory activationFunctionFactory, Neurons3D inputNeurons,
 			Neurons3D outputNeurons, MatrixFactory matrixFactory, boolean scaleOutputs, boolean withBatchNorm,
 			int stride) {
-		super(directedComponentFactory,
+		super(name, directedComponentFactory,
 				axonsFactory.createMaxPoolingAxons(inputNeurons, outputNeurons, scaleOutputs,
 						new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(0)
 								.withPaddingHeight(0)),
@@ -105,7 +105,7 @@ public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPool
 
 	@Override
 	public MaxPoolingFeedForwardLayer dup() {
-		return new MaxPoolingFeedForwardLayerImpl(directedComponentFactory, activationFunctionFactory,
+		return new MaxPoolingFeedForwardLayerImpl(name, directedComponentFactory, activationFunctionFactory,
 				primaryAxons.dup(), matrixFactory, withBatchNorm);
 	}
 

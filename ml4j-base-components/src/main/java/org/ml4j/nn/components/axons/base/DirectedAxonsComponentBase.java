@@ -51,11 +51,14 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 
 	protected A axons;
 	
+	protected String name;
+	
 	/**
 	 * @param axons The axons instance wrapped by this DirectedAxonsComponent.
 	 */
-	public DirectedAxonsComponentBase(A axons) {
+	public DirectedAxonsComponentBase(String name, A axons) {
 		this.axons = axons;
+		this.name = name;
 	}
 
 	@Override
@@ -89,4 +92,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 		return axons.getRightNeurons();
 	}
 
+	public String getName() {
+		return name;
+	}
 }

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -74,15 +75,15 @@ public class Components3DSubGraphBuilderImpl<P extends Components3DGraphBuilder<
 	}
 
 	@Override
-	public Components3DSubGraphBuilder<P, Q, T> withActivationFunction(
+	public Components3DSubGraphBuilder<P, Q, T> withActivationFunction(String name,
 			DifferentiableActivationFunction activationFunction) {
-		addActivationFunction(activationFunction);
+		addActivationFunction(name, activationFunction);
 		return this;
 	}
 
 	@Override
-	public Components3DSubGraphBuilder<P, Q, T> withActivationFunction(ActivationFunctionType activationFunctionType) {
-		addActivationFunction(activationFunctionType);
+	public Components3DSubGraphBuilder<P, Q, T> withActivationFunction(String name, ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
+		addActivationFunction(name, activationFunctionType, activationFunctionProperties);
 		return this;
 	}
 

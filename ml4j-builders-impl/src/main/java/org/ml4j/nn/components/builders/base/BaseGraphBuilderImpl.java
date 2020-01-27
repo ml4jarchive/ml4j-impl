@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ml4j.Matrix;
+import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsContext;
@@ -105,7 +106,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 						true);
 			}
 
-			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(leftNeurons,
+			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(builderState.getFullyConnectedAxonsBuilder().getName(), leftNeurons,
 					builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getConnectionWeights(),
 					builderState.getBiases());
 
@@ -128,11 +129,11 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 	}
 
 	@Override
-	public UncompletedFullyConnectedAxonsBuilder<C> withFullyConnectedAxons() {
+	public UncompletedFullyConnectedAxonsBuilder<C> withFullyConnectedAxons(String name) {
 		addAxonsIfApplicable();
 		builderState.setConnectionWeights(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
-		UncompletedFullyConnectedAxonsBuilder<C> axonsBuilder = new UncompletedFullyConnectedAxonsBuilderImpl<>(
+		UncompletedFullyConnectedAxonsBuilder<C> axonsBuilder = new UncompletedFullyConnectedAxonsBuilderImpl<>(name, 
 				this::getBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setFullyConnectedAxonsBuilder(axonsBuilder);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
@@ -148,16 +149,16 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 		return synapsesBuilder;
 	}
 
-	protected void addActivationFunction(DifferentiableActivationFunction activationFunction) {
+	protected void addActivationFunction(String name, DifferentiableActivationFunction activationFunction) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(name,
 				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
 	}
 
-	protected void addActivationFunction(ActivationFunctionType activationFunctionType) {
+	protected void addActivationFunction(String name, ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(
-				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType));
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(name, 
+				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType, activationFunctionProperties));
 	}
 
 	public T getComponentChain() {

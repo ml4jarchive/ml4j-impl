@@ -14,9 +14,9 @@ public abstract class DifferentiableActivationFunctionComponentAdapterBase
 	
 	protected DifferentiableActivationFunction activationFunction;
 
-	public DifferentiableActivationFunctionComponentAdapterBase(Neurons neurons,
+	public DifferentiableActivationFunctionComponentAdapterBase(String name, Neurons neurons,
 			DifferentiableActivationFunction activationFunction) {
-		super(neurons, activationFunction.getActivationFunctionType());
+		super(name, neurons, activationFunction.getActivationFunctionType());
 		this.activationFunction = activationFunction;
 	}
 
