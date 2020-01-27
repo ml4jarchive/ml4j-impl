@@ -91,4 +91,6 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return NeuronsActivationFormat.intersectOptionals(sequentialComponents.stream().map(c -> c.optimisedFor()).collect(Collectors.toList()));
 	}
+	
+	
 }

@@ -155,4 +155,9 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	public Optional<NeuronsActivationFormat<?>> optimisedFor() {
 		return NeuronsActivationFormat.intersectOptionals(precedingChain.optimisedFor(), finalDifferentiableActivationFunctionComponent.optimisedFor());
 	}
+
+	@Override
+	public String getName() {
+		return precedingChain.getName() + ":" + finalDifferentiableActivationFunctionComponent.getName();
+	}
 }

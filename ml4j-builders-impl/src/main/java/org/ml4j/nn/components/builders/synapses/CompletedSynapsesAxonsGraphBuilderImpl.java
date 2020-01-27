@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -56,14 +57,14 @@ public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder<T>, T
 	}
 
 	@Override
-	public SynapsesEnder<P> withActivationFunction(DifferentiableActivationFunction activationFunction) {
-		addActivationFunction(activationFunction);
+	public SynapsesEnder<P> withActivationFunction(String name,DifferentiableActivationFunction activationFunction) {
+		addActivationFunction(name, activationFunction);
 		return this;
 	}
 
 	@Override
-	public SynapsesEnder<P> withActivationFunction(ActivationFunctionType activationFunctionType) {
-		addActivationFunction(activationFunctionType);
+	public SynapsesEnder<P> withActivationFunction(String name, ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
+		addActivationFunction(name, activationFunctionType, activationFunctionProperties);
 		return this;
 	}
 

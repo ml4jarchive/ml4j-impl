@@ -32,11 +32,13 @@ public class NeuralComponentAdapter<L extends Neurons, R extends Neurons> implem
 	private NeuralComponentType<?> neuralComponentType;
 	private L inputNeurons;
 	private R outputNeurons;
+	private String name;
 	
-	public NeuralComponentAdapter(NeuralComponentType<?> neuralComponentType, L inputNeurons, R outputNeurons) {
+	public NeuralComponentAdapter(String name, NeuralComponentType<?> neuralComponentType, L inputNeurons, R outputNeurons) {
 		this.inputNeurons = inputNeurons;
 		this.outputNeurons = outputNeurons;
 		this.neuralComponentType = neuralComponentType;
+		this.name = name;
 	}
 
 	@Override
@@ -52,6 +54,11 @@ public class NeuralComponentAdapter<L extends Neurons, R extends Neurons> implem
 	@Override
 	public Neurons getOutputNeurons() {
 		return outputNeurons;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 }

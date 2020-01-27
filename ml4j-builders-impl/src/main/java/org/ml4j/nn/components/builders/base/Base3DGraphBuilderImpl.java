@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
+import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
@@ -144,7 +145,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 					.withPaddingWidth(builderState.getConvolutionalAxonsBuilder().getPaddingWidth())
 					.withPaddingHeight(builderState.getConvolutionalAxonsBuilder().getPaddingHeight());
 
-			T axonsComponent = directedComponentFactory.createConvolutionalAxonsComponent(leftNeurons,
+			T axonsComponent = directedComponentFactory.createConvolutionalAxonsComponent(builderState.getConvolutionalAxonsBuilder().getName(), leftNeurons,
 					builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig,
 					builderState.getConnectionWeights(), builderState.getBiases());
 
@@ -172,7 +173,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 					.withStrideHeight(builderState.getMaxPoolingAxonsBuilder().getStrideHeight())
 					.withPaddingWidth(builderState.getMaxPoolingAxonsBuilder().getPaddingWidth())
 					.withPaddingHeight(builderState.getMaxPoolingAxonsBuilder().getPaddingHeight());
-			T axonsComponent = directedComponentFactory.createMaxPoolingAxonsComponent(
+			T axonsComponent = directedComponentFactory.createMaxPoolingAxonsComponent(builderState.getMaxPoolingAxonsBuilder().getName(),
 					builderState.getComponentsGraphNeurons().getCurrentNeurons(),
 					builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig,
 					builderState.getMaxPoolingAxonsBuilder().isScaleOutputs());
@@ -192,7 +193,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 						builderState.getComponentsGraphNeurons().getCurrentNeurons().getDepth(), true);
 			}
 
-			T axonsComponent = directedComponentFactory.createConvolutionalBatchNormAxonsComponent(leftNeurons,
+			T axonsComponent = directedComponentFactory.createConvolutionalBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),leftNeurons, 
 					builderState.getComponentsGraphNeurons().getRightNeurons(),
 					builderState.getBatchNormAxonsBuilder().getGamma(),
 					builderState.getBatchNormAxonsBuilder().getBeta(),
@@ -222,7 +223,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 					.withStrideHeight(builderState.getAveragePoolingAxonsBuilder().getStrideHeight())
 					.withPaddingWidth(builderState.getAveragePoolingAxonsBuilder().getPaddingWidth())
 					.withPaddingHeight(builderState.getAveragePoolingAxonsBuilder().getPaddingHeight());
-			T axonsComponent = directedComponentFactory.createAveragePoolingAxonsComponent(
+			T axonsComponent = directedComponentFactory.createAveragePoolingAxonsComponent(builderState.getAveragePoolingAxonsBuilder().getName(),
 					builderState.getComponentsGraphNeurons().getCurrentNeurons(),
 					builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig);
 			this.components.add(axonsComponent);
@@ -240,20 +241,20 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 
 	@Override
-	public UncompletedFullyConnectedAxonsBuilder<D> withFullyConnectedAxons() {
+	public UncompletedFullyConnectedAxonsBuilder<D> withFullyConnectedAxons(String name) {
 		addAxonsIfApplicable();
 		builderState.setConnectionWeights(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);
-		UncompletedFullyConnectedAxonsBuilder<D> axonsBuilder = new UncompletedFullyConnectedAxonsBuilderImpl<>(
+		UncompletedFullyConnectedAxonsBuilder<D> axonsBuilder = new UncompletedFullyConnectedAxonsBuilderImpl<>(name, 
 				this::getBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setFullyConnectedAxonsBuilder(axonsBuilder);
 		return axonsBuilder;
 	}
 
 	@Override
-	public UncompletedPoolingAxonsBuilder<C> withMaxPoolingAxons() {
+	public UncompletedPoolingAxonsBuilder<C> withMaxPoolingAxons(String name) {
 		addAxonsIfApplicable();
-		UncompletedPoolingAxonsBuilder<C> axonsBuilder = new UncompletedPoolingAxonsBuilderImpl<>(this::get3DBuilder,
+		UncompletedPoolingAxonsBuilder<C> axonsBuilder = new UncompletedPoolingAxonsBuilderImpl<>(name, this::get3DBuilder,
 				builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setMaxPoolingAxonsBuilder(axonsBuilder);
 		builderState.setConnectionWeights(null);
@@ -262,9 +263,9 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 
 	@Override
-	public UncompletedPoolingAxonsBuilder<C> withAveragePoolingAxons() {
+	public UncompletedPoolingAxonsBuilder<C> withAveragePoolingAxons(String name) {
 		addAxonsIfApplicable();
-		UncompletedPoolingAxonsBuilder<C> axonsBuilder = new UncompletedPoolingAxonsBuilderImpl<>(this::get3DBuilder,
+		UncompletedPoolingAxonsBuilder<C> axonsBuilder = new UncompletedPoolingAxonsBuilderImpl<>(name, this::get3DBuilder,
 				builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setAveragePoolingAxonsBuilder(axonsBuilder);
 		builderState.setConnectionWeights(null);
@@ -273,9 +274,9 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withBatchNormAxons() {
+	public UncompletedBatchNormAxonsBuilder<C> withBatchNormAxons(String name) {
 		addAxonsIfApplicable();
-		UncompletedBatchNormAxonsBuilder<C> axonsBuilder = new UncompletedBatchNormAxonsBuilderImpl<>(
+		UncompletedBatchNormAxonsBuilder<C> axonsBuilder = new UncompletedBatchNormAxonsBuilderImpl<>(name,
 				this::get3DBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setBatchNormAxonsBuilder(axonsBuilder);
 		builderState.setConnectionWeights(null);
@@ -284,9 +285,9 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 
 	@Override
-	public UncompletedConvolutionalAxonsBuilder<C> withConvolutionalAxons() {
+	public UncompletedConvolutionalAxonsBuilder<C> withConvolutionalAxons(String name) {
 		addAxonsIfApplicable();
-		UncompletedConvolutionalAxonsBuilder<C> axonsBuilder = new UncompletedConvolutionalAxonsBuilderImpl<>(
+		UncompletedConvolutionalAxonsBuilder<C> axonsBuilder = new UncompletedConvolutionalAxonsBuilderImpl<>(name, 
 				this::get3DBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setConvolutionalAxonsBuilder(axonsBuilder);
 		builderState.setConnectionWeights(null);
@@ -303,16 +304,16 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 		return synapsesBuilder;
 	}
 
-	public void addActivationFunction(DifferentiableActivationFunction activationFunction) {
+	public void addActivationFunction(String name, DifferentiableActivationFunction activationFunction) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(name,
 				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunction));
 	}
 
-	public void addActivationFunction(ActivationFunctionType activationFunctionType) {
+	public void addActivationFunction(String name, ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
 		addAxonsIfApplicable();
-		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(
-				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType));
+		components.add(directedComponentFactory.createDifferentiableActivationFunctionComponent(name,
+				this.builderState.getComponentsGraphNeurons().getCurrentNeurons(), activationFunctionType, activationFunctionProperties));
 	}
 
 	public T getComponentChain() {

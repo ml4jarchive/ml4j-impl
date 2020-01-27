@@ -99,6 +99,21 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 		float[] data = matrix.getRowByRowArray();
 		populateIm2colConvImport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 	}
+	
+
+	@Override
+	public Matrix spaceToDepthExport(MatrixFactory matrixFactory, int heightFactor, int widthFactor) {
+		float[] data = new float[getDataLength()];
+		populateSpaceToDepthExport(data, 0, heightFactor, widthFactor);
+		return matrixFactory.createMatrixFromRowsByRowsArray(getDataLength() / examples,
+				examples, data);
+	}
+
+	@Override
+	public void spaceToDepthImport(MatrixFactory matrixFactory, Matrix matrix, int heightFactor, int widthFactor) {
+		float[] data = matrix.getRowByRowArray();
+		populateSpaceToDepthImport(data, 0, heightFactor, widthFactor);
+	}
 
 	@Override
 	public Matrix im2colPoolExport(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,

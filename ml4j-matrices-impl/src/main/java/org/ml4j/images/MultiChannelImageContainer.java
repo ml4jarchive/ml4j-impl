@@ -141,6 +141,26 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 			startIndex = startIndex + examples * subImage.getChannels() * windowWidth * windowHeight;
 		}
 	}
+	
+	
+	@Override
+	public void populateSpaceToDepthExport(float[] data, int startIndex, int heightFactor, int widthFactor) {
+		for (ImageContainer<?> subImage : getChannelConcatImages()) {
+			subImage.populateSpaceToDepthExport(data, startIndex, heightFactor, widthFactor);
+			startIndex = startIndex + 
+					subImage.getSubImageDataLength(height/heightFactor, width/widthFactor) * subImage.getChannels() * heightFactor * widthFactor;
+		}
+	}
+	
+
+	@Override
+	public void populateSpaceToDepthImport(float[] data, int startIndex, int heightFactor, int widthFactor) {
+		for (ImageContainer<?> subImage : getChannelConcatImages()) {
+			subImage.populateSpaceToDepthImport(data, startIndex, heightFactor, widthFactor);
+			startIndex = startIndex + 
+					subImage.getSubImageDataLength(height/heightFactor, width/widthFactor) * subImage.getChannels() * heightFactor * widthFactor;
+		}
+	}
 
 	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {

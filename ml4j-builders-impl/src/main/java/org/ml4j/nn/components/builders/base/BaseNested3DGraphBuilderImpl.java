@@ -16,6 +16,7 @@ package org.ml4j.nn.components.builders.base;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.ml4j.nn.components.DirectedComponentsContext;
@@ -56,14 +57,14 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 			if (addSkipConnection) {
 				if (initialNeurons.getNeuronCountIncludingBias() == endNeurons.getNeuronCountIncludingBias()) {
 
-					T skipConnectionAxons = directedComponentFactory.createPassThroughAxonsComponent(initialNeurons,
+					T skipConnectionAxons = directedComponentFactory.createPassThroughAxonsComponent("SkipConnection-" + UUID.randomUUID().toString(), initialNeurons,
 							endNeurons);
 					T skipConnection = directedComponentFactory
 							.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parent3DGraph.get().getChains().add(skipConnection);
 				} else {
 
-					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent(
+					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent("SkipConnection-" + UUID.randomUUID().toString(),
 							new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
 					T skipConnection = directedComponentFactory
 							.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));

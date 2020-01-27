@@ -28,8 +28,8 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 	private Matrix mean;
 	private Matrix variance;
 
-	public UncompletedBatchNormAxonsBuilderImpl(Supplier<C> previousBuilderSupplier, Neurons3D leftNeurons) {
-		super(previousBuilderSupplier, leftNeurons);
+	public UncompletedBatchNormAxonsBuilderImpl(String name, Supplier<C> previousBuilderSupplier, Neurons3D leftNeurons) {
+		super(name, previousBuilderSupplier, leftNeurons);
 	}
 
 	@Override

@@ -14,9 +14,9 @@ public class DefaultSupervisedFeedForwardNeuralNetworkFactory implements Supervi
 	}
 
 	@Override
-	public SupervisedFeedForwardNeuralNetwork createSupervisedFeedForwardNeuralNetwork(
+	public SupervisedFeedForwardNeuralNetwork createSupervisedFeedForwardNeuralNetwork(String name,
 			List<DefaultChainableDirectedComponent<?, ?>> componentChain) {
-		return new SupervisedFeedForwardNeuralNetworkImpl(directedComponentFactory, componentChain);
+		return new SupervisedFeedForwardNeuralNetworkImpl(name, directedComponentFactory, componentChain);
 	}
 
 }

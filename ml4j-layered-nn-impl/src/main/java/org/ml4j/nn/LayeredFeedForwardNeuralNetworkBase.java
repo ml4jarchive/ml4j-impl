@@ -34,9 +34,9 @@ public abstract class LayeredFeedForwardNeuralNetworkBase<C extends LayeredFeedF
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public LayeredFeedForwardNeuralNetworkBase(DirectedComponentFactory directedComponentFactory,
+	public LayeredFeedForwardNeuralNetworkBase(String name, DirectedComponentFactory directedComponentFactory,
 			DirectedLayerChain<FeedForwardLayer<?, ?>> initialisingComponentChain) {
-		super(directedComponentFactory, initialisingComponentChain);
+		super(name, directedComponentFactory, initialisingComponentChain);
 	}
 
 	@Override
