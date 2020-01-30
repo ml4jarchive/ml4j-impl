@@ -192,25 +192,23 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 	}
 	
 	@Override
-	public void populateSpaceToDepthExport(float[] data, int startIndex, int heightFactor, int widthFactor) {
-		
-		for (int h = 0; h < heightFactor; h++) {
-			for (int w = 0; w < widthFactor; w++) {
-				populateDataSubImage(data, startIndex, h, w, height/heightFactor, width/widthFactor, heightFactor, widthFactor,
-						true);
-				startIndex = startIndex + getSubImageDataLength(height/heightFactor, width/widthFactor) * getChannels();
+	public void populateSpaceToDepthExport(float[] data, int startIndex, int blockHeight, int blockWidth) {
+		for (int h = 0; h < blockHeight; h++) {
+			for (int w = 0; w < blockWidth; w++) {
+				populateDataSubImage(data, startIndex, h, w, height/blockHeight, width/blockWidth, blockHeight, blockWidth,
+								true);
+				startIndex = startIndex + getSubImageDataLength(height/blockHeight, width/blockWidth);
 			}
 		}
 	}
 
 	@Override
-	public void populateSpaceToDepthImport(float[] data, int startIndex, int heightFactor, int widthFactor) {
-		
-		for (int h = 0; h < heightFactor; h++) {
-			for (int w = 0; w < widthFactor; w++) {
-				populateDataSubImageReverse(data, startIndex, h, w, height/heightFactor, width/widthFactor, heightFactor, widthFactor,
-						true);
-				startIndex = startIndex + getSubImageDataLength(height/heightFactor, width/widthFactor) * getChannels();
+	public void populateSpaceToDepthImport(float[] data, int startIndex, int blockHeight, int blockWidth) {
+		for (int h = 0; h < blockHeight; h++) {
+			for (int w = 0; w < blockWidth; w++) {
+				populateDataSubImageReverse(data, startIndex, h, w, height/blockHeight, width/blockWidth, blockHeight, blockWidth,
+								true);
+				startIndex = startIndex + getSubImageDataLength(height/blockHeight, width/blockWidth);
 			}
 		}
 	}
