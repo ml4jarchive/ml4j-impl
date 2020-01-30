@@ -102,9 +102,9 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 	
 
 	@Override
-	public Matrix spaceToDepthExport(MatrixFactory matrixFactory, int heightFactor, int widthFactor) {
+	public Matrix spaceToDepthExport(MatrixFactory matrixFactory, int blockHeight, int blockWidth) {
 		float[] data = new float[getDataLength()];
-		populateSpaceToDepthExport(data, 0, heightFactor, widthFactor);
+		populateSpaceToDepthExport(data, 0, blockHeight, blockHeight);
 		return matrixFactory.createMatrixFromRowsByRowsArray(getDataLength() / examples,
 				examples, data);
 	}

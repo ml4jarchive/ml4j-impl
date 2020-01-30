@@ -144,21 +144,25 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 	
 	
 	@Override
-	public void populateSpaceToDepthExport(float[] data, int startIndex, int heightFactor, int widthFactor) {
-		for (ImageContainer<?> subImage : getChannelConcatImages()) {
-			subImage.populateSpaceToDepthExport(data, startIndex, heightFactor, widthFactor);
-			startIndex = startIndex + 
-					subImage.getSubImageDataLength(height/heightFactor, width/widthFactor) * subImage.getChannels() * heightFactor * widthFactor;
+	public void populateSpaceToDepthExport(float[] data, int startIndex, int blockHeight, int blockWidth) {
+		for (int h = 0; h < blockHeight; h++) {
+			for (int w = 0; w < blockWidth; w++) {
+				populateDataSubImage(data, startIndex, h, w, height/blockHeight, width/blockWidth, blockHeight, blockWidth,
+								true);
+				startIndex = startIndex + getSubImageDataLength(height/blockHeight, width/blockWidth);
+			}
 		}
 	}
 	
 
 	@Override
-	public void populateSpaceToDepthImport(float[] data, int startIndex, int heightFactor, int widthFactor) {
-		for (ImageContainer<?> subImage : getChannelConcatImages()) {
-			subImage.populateSpaceToDepthImport(data, startIndex, heightFactor, widthFactor);
-			startIndex = startIndex + 
-					subImage.getSubImageDataLength(height/heightFactor, width/widthFactor) * subImage.getChannels() * heightFactor * widthFactor;
+	public void populateSpaceToDepthImport(float[] data, int startIndex, int blockHeight, int blockWidth) {
+		for (int h = 0; h < blockHeight; h++) {
+			for (int w = 0; w < blockWidth; w++) {
+				populateDataSubImageReverse(data, startIndex, h, w, height/blockHeight, width/blockWidth, blockHeight, blockWidth,
+								true);
+				startIndex = startIndex + getSubImageDataLength(height/blockHeight, width/blockWidth);
+			}
 		}
 	}
 
