@@ -59,9 +59,9 @@ public class BufferedImageFeatureExtractor implements FeatureExtractor<BufferedI
 		float[] data = new float[width * height * 3];
 
 		int ind = 0;
+		for (int h = 0; h < image.getHeight(); h++) {
 		for (int w = 0; w < image.getWidth(); w++) {
-			for (int h = 0; h < image.getHeight(); h++) {
-				int color = image.getRGB(h, w);
+				int color = image.getRGB(w, h);
 
 				// extract each color component
 				int red = (color >>> 16) & 0xFF;
