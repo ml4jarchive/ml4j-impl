@@ -50,6 +50,7 @@ import org.ml4j.nn.costfunctions.DeltaRuleCostFunctionGradientImpl;
 import org.ml4j.nn.costfunctions.MultiClassCrossEntropyCostFunction;
 import org.ml4j.nn.costfunctions.SumSquaredErrorCostFunction;
 import org.ml4j.nn.datasets.LabeledData;
+import org.ml4j.nn.datasets.LabeledDataImpl;
 import org.ml4j.nn.datasets.LabeledDataSet;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
@@ -589,19 +590,51 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 		// - 1) : context.getEndLayerIndex();
 
 		LOGGER.debug("Forward propagating through FeedForwardNeuralNetwork");
+		
+		inputActivation.setImmutable(true);
 
 		// Forward propagate through the layers
 		TrailingActivationFunctionDirectedComponentChainActivation activation = trailingActivationFunctionComponentChain
 				.forwardPropagate(inputActivation, context.getDirectedComponentsContext());
 
 		// Construct a forward propagation
-		ForwardPropagation forwardPropagation = new ForwardPropagationImpl(activation);
+		ForwardPropagation forwardPropagation = new ForwardPropagationImpl(inputActivation, activation);
 
 		if (context.getForwardPropagationListener() != null) {
 			context.getForwardPropagationListener().onForwardPropagation(forwardPropagation);
 		}
 
 		return forwardPropagation;
+	}
+	
+	@Override
+	public <L> Stream<LabeledData<ForwardPropagation, L>> forwardPropagateWithLabels(Stream<LabeledData<NeuronsActivation, L>> labeledInputActivation, C context) {
+
+		// int endLayerIndex = context.getEndLayerIndex() == null ? (getNumberOfLayers()
+		// - 1) : context.getEndLayerIndex();
+
+		return labeledInputActivation.map(act -> {
+			
+			NeuronsActivation inputActivation = act.getData();
+
+			LOGGER.debug("Forward propagating through FeedForwardNeuralNetwork");
+
+			inputActivation.setImmutable(true);
+			
+			// Forward propagate through the layers
+			TrailingActivationFunctionDirectedComponentChainActivation activation = trailingActivationFunctionComponentChain
+					.forwardPropagate(inputActivation, context.getDirectedComponentsContext());
+
+			// Construct a forward propagation
+			ForwardPropagation forwardPropagation = new ForwardPropagationImpl(inputActivation, activation);
+
+			if (context.getForwardPropagationListener() != null) {
+				context.getForwardPropagationListener().onForwardPropagation(forwardPropagation);
+			}
+
+			return new LabeledDataImpl<>(forwardPropagation, act.getLabel());
+
+		});
 	}
 
 	@Override
@@ -614,12 +647,14 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 			LOGGER.debug("Forward propagating through FeedForwardNeuralNetwork");
 
+			act.setImmutable(true);
+			
 			// Forward propagate through the layers
 			TrailingActivationFunctionDirectedComponentChainActivation activation = trailingActivationFunctionComponentChain
 					.forwardPropagate(act, context.getDirectedComponentsContext());
 
 			// Construct a forward propagation
-			ForwardPropagation forwardPropagation = new ForwardPropagationImpl(activation);
+			ForwardPropagation forwardPropagation = new ForwardPropagationImpl(act, activation);
 
 			if (context.getForwardPropagationListener() != null) {
 				context.getForwardPropagationListener().onForwardPropagation(forwardPropagation);

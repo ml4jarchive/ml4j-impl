@@ -137,7 +137,7 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
 	@Override
 	public ForwardPropagation forwardPropagate(NeuronsActivation inputActivation,
 			LayeredFeedForwardNeuralNetworkContext context) {
-		return new ForwardPropagationImpl(trailingActivationFunctionComponentChain.forwardPropagate(inputActivation,
+		return new ForwardPropagationImpl(inputActivation, trailingActivationFunctionComponentChain.forwardPropagate(inputActivation,
 				context.getDirectedComponentsContext()));
 	}
 
