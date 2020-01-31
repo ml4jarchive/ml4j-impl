@@ -34,19 +34,21 @@ import org.ml4j.nn.neurons.NeuronsActivation;
  */
 public class ForwardPropagationImpl implements ForwardPropagation {
 
+	private NeuronsActivation input;
 	private TrailingActivationFunctionDirectedComponentChainActivation activationChain;
 
 	/**
 	 * Create a new ForwardPropagation from the output activations at the right hand
 	 * side of a DirectedNeuralNetwork after a forward propagation.
 	 * 
+	 * @param input				The input of the ForwardPropagation.
 	 * @param activations       All the DirectedLayerActivation instaces generated
 	 *                          by the forward propagation.
 	 * @param outputActivations The output activations at the right hand side of a
 	 *                          DirectedNeuralNetwork after a forward propagation.
 	 */
-	public ForwardPropagationImpl(TrailingActivationFunctionDirectedComponentChainActivation activationChain) {
-		super();
+	public ForwardPropagationImpl(NeuronsActivation input, TrailingActivationFunctionDirectedComponentChainActivation activationChain) {
+		this.input = input;
 		this.activationChain = activationChain;
 	}
 
@@ -97,6 +99,11 @@ public class ForwardPropagationImpl implements ForwardPropagation {
 	@Override
 	public void close(DirectedComponentActivationLifecycle completedLifeCycleStage) {
 		activationChain.close(completedLifeCycleStage);
+	}
+
+	@Override
+	public NeuronsActivation getInput() {
+		return input;
 	}
 
 }
