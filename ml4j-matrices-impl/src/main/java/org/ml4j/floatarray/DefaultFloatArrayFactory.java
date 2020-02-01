@@ -11,4 +11,9 @@ public class DefaultFloatArrayFactory implements FloatArrayFactory {
 	public float[] createFloatArray(int length) {
 		return new float[length];
 	}
+
+	@Override
+	public float[][] createFloatArray(int rows, int columns) {
+		return new float[rows][columns];
+	}
 }

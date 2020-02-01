@@ -19,6 +19,7 @@ import org.jblas.MatrixFunctions;
 import org.ml4j.EditableMatrix;
 import org.ml4j.InterrimMatrix;
 import org.ml4j.Matrix;
+import org.ml4j.floatarray.FloatArrayFactory;
 import org.ml4j.floatmatrix.FloatMatrixFactory;
 
 /**
@@ -35,12 +36,17 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 
 	public FloatMatrix matrix;
 	private FloatMatrixFactory floatMatrixFactory;
+	private FloatArrayFactory floatArrayFactory;
 	private boolean immutable;
+	private JBlasRowMajorMatrixFactory jblasRowMajorMatrixFactory;
 
-	public JBlasRowMajorMatrix(FloatMatrixFactory floatMatrixFactory, FloatMatrix matrix, boolean immutable) {
+	public JBlasRowMajorMatrix(JBlasRowMajorMatrixFactory jblasRowMajorMatrixFactory, FloatMatrixFactory floatMatrixFactory, FloatArrayFactory floatArrayFactory, 
+			FloatMatrix matrix, boolean immutable) {
 		this.matrix = matrix;
 		this.floatMatrixFactory = floatMatrixFactory;
 		this.immutable = immutable;
+		this.floatArrayFactory = floatArrayFactory;
+		this.jblasRowMajorMatrixFactory = jblasRowMajorMatrixFactory;
 	}
 
 	private FloatMatrix getFloatMatrix() {
@@ -62,7 +68,7 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	}
 
 	protected Matrix createJBlasMatrix(FloatMatrix matrix, boolean immutable) {
-		return new JBlasRowMajorMatrix(floatMatrixFactory, matrix, immutable);
+		return jblasRowMajorMatrixFactory.createJBlasMatrix(matrix, immutable);
 	}
 
 	@Override
@@ -238,12 +244,15 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	}
 
 	@Override
-	public Matrix mmul(Matrix other) {
+	public Matrix mmul(Matrix other)  {
+		
 		FloatMatrix o = createJBlasFloatMatrix(other);
 		FloatMatrix t = getMatrix();
 
 		return createJBlasMatrix(o.mmuli(t, floatMatrixFactory.create(other.getColumns(), getRows())), false);
+
 	}
+	
 
 	@Override
 	public Matrix mul(float value) {
@@ -408,7 +417,7 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	}
 
 	public float[][] toArray2() {
-		float[][] result = new float[getRows()][getColumns()];
+		float[][] result = floatArrayFactory.createFloatArray(getRows(), getColumns());
 		for (int r = 0; r < getRows(); r++) {
 			for (int c = 0; c < getColumns(); c++) {
 				result[r][c] = get(r, c);
@@ -492,7 +501,7 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	}
 
 	public float[] toColumnByColumnArray() {
-		float[] result = new float[getRows() * getColumns()];
+		float[] result = floatArrayFactory.createFloatArray(getRows() * getColumns());
 		int index = 0;
 		for (int c = 0; c < getColumns(); c++) {
 			for (int r = 0; r < getRows(); r++) {
