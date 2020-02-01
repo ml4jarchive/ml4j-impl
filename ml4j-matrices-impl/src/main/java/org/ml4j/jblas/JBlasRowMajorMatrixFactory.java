@@ -17,6 +17,8 @@ package org.ml4j.jblas;
 import org.jblas.FloatMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
+import org.ml4j.floatarray.DefaultFloatArrayFactory;
+import org.ml4j.floatarray.FloatArrayFactory;
 import org.ml4j.floatmatrix.FloatMatrixFactory;
 
 /**
@@ -32,41 +34,43 @@ public class JBlasRowMajorMatrixFactory implements MatrixFactory {
 	private static final long serialVersionUID = 1L;
 
 	private FloatMatrixFactory floatMatrixFactory;
+	private FloatArrayFactory floatArrayFactory;
 
 	public JBlasRowMajorMatrixFactory() {
 		this.floatMatrixFactory = new DefaultFloatMatrixFactory();
+		this.floatArrayFactory = new DefaultFloatArrayFactory();
 	}
 
 	@Override
 	public Matrix createOnes(int rows, int columns) {
-		return createJBlasMatrix(FloatMatrix.ones(columns, rows));
+		return createJBlasMatrix(FloatMatrix.ones(columns, rows), false);
 	}
 
 	@Override
 	public Matrix createOnes(int length) {
-		return createJBlasMatrix(FloatMatrix.ones(length));
+		return createJBlasMatrix(FloatMatrix.ones(length), false);
 	}
 
 	@Override
 	public Matrix createMatrixFromRows(float[][] data) {
-		float[][] translatedData = new float[data[0].length][data.length];
+		float[][] translatedData = floatArrayFactory.createFloatArray(data[0].length, data.length);
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[0].length; j++) {
 				translatedData[j][i] = data[i][j];
 			}
 		}
-		return createJBlasMatrix(floatMatrixFactory.create(translatedData));
+		return createJBlasMatrix(floatMatrixFactory.create(translatedData), false);
 	}
 
 	@Override
 	public Matrix createMatrix() {
-		return createJBlasMatrix(new FloatMatrix());
+		return createJBlasMatrix(new FloatMatrix(), false);
 	}
 
 	@Override
 	public Matrix createMatrixFromColumnsByColumnsArray(int rows, int cols, float[] data) {
 
-		float[] targetData = new float[rows * cols];
+		float[] targetData = floatArrayFactory.createFloatArray(rows * cols);
 		for (int c = 0; c < cols; c++) {
 			for (int r = 0; r < rows; r++) {
 				int sourceDataIndex = r * cols + c;
@@ -74,22 +78,22 @@ public class JBlasRowMajorMatrixFactory implements MatrixFactory {
 				targetData[sourceDataIndex] = data[targetDataIndex];
 			}
 		}
-		return createJBlasMatrix(new FloatMatrix(cols, rows, targetData));
+		return createJBlasMatrix(new FloatMatrix(cols, rows, targetData), false);
 	}
 
 	@Override
 	public Matrix createMatrix(int rows, int cols) {
-		return createJBlasMatrix(floatMatrixFactory.create(cols, rows));
+		return createJBlasMatrix(floatMatrixFactory.create(cols, rows), false);
 	}
 
 	@Override
 	public Matrix createZeros(int rows, int cols) {
-		return createJBlasMatrix(floatMatrixFactory.create(cols, rows));
+		return createJBlasMatrix(floatMatrixFactory.create(cols, rows), false);
 	}
 
 	@Override
 	public Matrix createRandn(int rows, int cols) {
-		return createJBlasMatrix(FloatMatrix.randn(cols, rows));
+		return createJBlasMatrix(FloatMatrix.randn(cols, rows), false);
 	}
 
 	@Override
@@ -99,31 +103,26 @@ public class JBlasRowMajorMatrixFactory implements MatrixFactory {
 
 	@Override
 	public Matrix createRand(int rows, int cols) {
-		return createJBlasMatrix(FloatMatrix.rand(cols, rows));
+		return createJBlasMatrix(FloatMatrix.rand(cols, rows), false);
 	}
 
 	@Override
 	public Matrix createVerticalConcatenation(Matrix first, Matrix second) {
 		return first.appendVertically(second);
 	}
-
-	protected Matrix createJBlasMatrix(FloatMatrix matrix) {
-		return new JBlasRowMajorMatrix(floatMatrixFactory, matrix, false);
-	}
-
-	protected Matrix createInterrimJBlasMatrix(FloatMatrix matrix) {
-		return new JBlasRowMajorMatrix(floatMatrixFactory, matrix, false);
+	
+	protected Matrix createJBlasMatrix(FloatMatrix matrix, boolean immutable) {
+		return new JBlasRowMajorMatrix(this, floatMatrixFactory, floatArrayFactory, matrix, immutable);
 	}
 
 	@Override
 	public Matrix createMatrixFromRowsByRowsArray(int rows, int cols, float[] data) {
-		return createJBlasMatrix(new FloatMatrix(cols, rows, data));
+		return createJBlasMatrix(new FloatMatrix(cols, rows, data), false);
 	}
 
 	@Override
 	public Matrix createMatrix(float[] data) {
-		return createJBlasMatrix(new FloatMatrix(data));
+		return createJBlasMatrix(new FloatMatrix(data), false);
 
 	}
-
 }
