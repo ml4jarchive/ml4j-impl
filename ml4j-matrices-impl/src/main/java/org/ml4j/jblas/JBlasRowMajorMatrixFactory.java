@@ -33,8 +33,8 @@ public class JBlasRowMajorMatrixFactory implements MatrixFactory {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private FloatMatrixFactory floatMatrixFactory;
-	private FloatArrayFactory floatArrayFactory;
+	protected FloatMatrixFactory floatMatrixFactory;
+	protected FloatArrayFactory floatArrayFactory;
 
 	public JBlasRowMajorMatrixFactory() {
 		this.floatMatrixFactory = new DefaultFloatMatrixFactory();

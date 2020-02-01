@@ -34,11 +34,11 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public FloatMatrix matrix;
-	private FloatMatrixFactory floatMatrixFactory;
-	private FloatArrayFactory floatArrayFactory;
-	private boolean immutable;
-	private JBlasRowMajorMatrixFactory jblasRowMajorMatrixFactory;
+	protected FloatMatrix matrix;
+	protected FloatMatrixFactory floatMatrixFactory;
+	protected FloatArrayFactory floatArrayFactory;
+	protected boolean immutable;
+	protected JBlasRowMajorMatrixFactory jblasRowMajorMatrixFactory;
 
 	public JBlasRowMajorMatrix(JBlasRowMajorMatrixFactory jblasRowMajorMatrixFactory, FloatMatrixFactory floatMatrixFactory, FloatArrayFactory floatArrayFactory, 
 			FloatMatrix matrix, boolean immutable) {
@@ -59,7 +59,7 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 	 * @param matrix The matrix we want to convert to a FloatMatrix.
 	 * @return The resulting FloatMatrix.
 	 */
-	private FloatMatrix createJBlasFloatMatrix(Matrix matrix) {
+	protected FloatMatrix createJBlasFloatMatrix(Matrix matrix) {
 		if (matrix instanceof JBlasRowMajorMatrix) {
 			return ((JBlasRowMajorMatrix) matrix).getFloatMatrix();
 		} else {
