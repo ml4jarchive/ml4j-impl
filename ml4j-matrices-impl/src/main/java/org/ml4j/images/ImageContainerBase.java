@@ -20,6 +20,8 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 		this.paddingWidth = paddingWidth;
 		this.examples = examples;
 	}
+	
+	protected abstract int getStartIndex();
 
 	public abstract void populateData(float[] data, int startIndex);
 
@@ -88,7 +90,7 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
-		populateIm2colConvExport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
+		populateIm2colConvExport(data, getStartIndex(), filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 		return matrixFactory.createMatrixFromRowsByRowsArray(getChannels() * filterWidth * filterHeight,
 				windowWidth * windowHeight * examples, data);
 	}
@@ -104,7 +106,7 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 	@Override
 	public Matrix spaceToDepthExport(MatrixFactory matrixFactory, int blockHeight, int blockWidth) {
 		float[] data = new float[getDataLength()];
-		populateSpaceToDepthExport(data, 0, blockHeight, blockHeight);
+		populateSpaceToDepthExport(data, getStartIndex(), blockHeight, blockHeight);
 		return matrixFactory.createMatrixFromRowsByRowsArray(getDataLength() / examples,
 				examples, data);
 	}
@@ -123,7 +125,7 @@ public abstract class ImageContainerBase<I extends ImageContainer<I>> implements
 		int windowWidth = strideWidth == 1 ? windowSpanWidth : (windowSpanWidth + 1) / strideWidth;
 		int windowHeight = strideHeight == 1 ? windowSpanHeight : (windowSpanHeight + 1) / strideHeight;
 		float[] data = new float[getChannels() * filterWidth * filterHeight * windowWidth * windowHeight * examples];
-		populateIm2colPoolExport(data, 0, filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
+		populateIm2colPoolExport(data, getStartIndex(), filterHeight, filterWidth, strideHeight, strideWidth, getChannels());
 		return matrixFactory.createMatrixFromRowsByRowsArray(filterWidth * filterHeight,
 				windowWidth * windowHeight * examples * getChannels(), data);
 	}
