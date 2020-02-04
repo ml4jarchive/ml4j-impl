@@ -34,6 +34,11 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			populateDataSubImage(data, startIndex, 0, 0, height, width, 1, 1, false);
 		}
 	}
+	
+	@Override
+	protected int getStartIndex() {
+		return startIndex;
+	}
 
 	@Override
 	public float[] getData() {
@@ -41,7 +46,7 @@ public abstract class SingleChannelImageContainer<I extends ImageContainer<I>> e
 			return data;
 		} else {
 			float[] populatedData = new float[getDataLength()];
-			populateData(populatedData, startIndex);
+			populateData(populatedData, 0);
 			return populatedData;
 		}
 	}

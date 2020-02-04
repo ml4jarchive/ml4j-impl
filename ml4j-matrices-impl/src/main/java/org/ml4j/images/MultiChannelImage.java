@@ -5,26 +5,30 @@ import java.util.List;
 
 public class MultiChannelImage extends MultiChannelImageContainer<Image> implements Image {
 
+	public MultiChannelImage(float[] data, int startIndex, int channels, int height, int width, int paddingHeight, int paddingWidth) {
+		super(data, startIndex, channels, height, width, paddingHeight, paddingWidth, 1);
+	}
+	
 	public MultiChannelImage(float[] data, int channels, int height, int width, int paddingHeight, int paddingWidth) {
-		super(data, channels, height, width, paddingHeight, paddingWidth, 1);
+		super(data, 0, channels, height, width, paddingHeight, paddingWidth, 1);
 	}
 
 	@Override
 	public MultiChannelImage dup() {
-		float[] dataDup = new float[data.length];
-		System.arraycopy(data, 0, dataDup, 0, dataDup.length);
-		return new MultiChannelImage(dataDup, channels, height, width, paddingHeight, paddingWidth);
+		float[] dataDup = new float[getDataLength()];
+		populateData(dataDup, 0);
+		return new MultiChannelImage(dataDup, 0, channels, height, width, paddingHeight, paddingWidth);
 	}
 
 	@Override
 	public MultiChannelImage softDup() {
-		return new MultiChannelImage(data, channels, height, width, paddingHeight, paddingWidth);
+		return new MultiChannelImage(data, startIndex, channels, height, width, paddingHeight, paddingWidth);
 	}
 
 	@Override
 	protected List<Image> getChannelConcatImages() {
 		List<Image> channelConcatImage = new ArrayList<>();
-		int sourceStartIndex = 0;
+		int sourceStartIndex = this.startIndex;
 		for (int c = 0; c < channels; c++) {
 			Image channelImage = new SingleChannelImage(data, sourceStartIndex, height, width, paddingHeight,
 					paddingWidth);

@@ -8,6 +8,7 @@ import org.ml4j.FloatPredicate;
 public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> extends ImageContainerBase<I> {
 
 	protected float[] data;
+	protected int startIndex;
 	protected int channels;
 
 	protected boolean closed;
@@ -17,19 +18,25 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 		return closed;
 	}
 
-	public MultiChannelImageContainer(float[] data, int channels, int height, int width, int paddingHeight,
+	public MultiChannelImageContainer(float[] data, int startIndex, int channels, int height, int width, int paddingHeight,
 			int paddingWidth, int examples) {
 		super(height, width, paddingHeight, paddingWidth, examples);
 		this.data = data;
+		this.startIndex = startIndex;
 		this.channels = channels;
 		if (data == null) {
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	@Override
+	protected int getStartIndex() {
+		return startIndex;
+	}
 
 	public void populateData(float[] data, int startIndex) {
-		if (paddingHeight == 0 && paddingWidth == 0) {
-			System.arraycopy(this.data, 0, data, startIndex, getDataLength());
+		if (paddingHeight == 0 && paddingWidth == 0 && startIndex == 0) {
+			System.arraycopy(this.data, this.startIndex, data, startIndex, getDataLength());
 		} else {
 			populateDataSubImage(data, startIndex, 0, 0, height, width, 1, 1, false);
 		}
@@ -37,7 +44,7 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	@Override
 	public float[] getData() {
-		if (paddingHeight == 0 && paddingWidth == 0 && data.length == getDataLength()) {
+		if (paddingHeight == 0 && paddingWidth == 0 && startIndex == 0 && data.length == getDataLength()) {
 			return data;
 		} else {
 			float[] populatedData = new float[getDataLength()];
@@ -168,7 +175,7 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
-		for (int i = 0; i < getDataLength(); i++) {
+		for (int i = startIndex; i < getDataLength() + startIndex; i++) {
 			float v = data[i];
 			if (condition.test(v)) {
 				data[i] = modifier.acceptAndModify(data[i]);
@@ -178,7 +185,7 @@ public abstract class MultiChannelImageContainer<I extends ImageContainer<I>> ex
 
 	@Override
 	public void applyValueModifier(FloatModifier modifier) {
-		for (int i = 0; i < getDataLength(); i++) {
+		for (int i = startIndex; i < getDataLength() + startIndex; i++) {
 			data[i] = modifier.acceptAndModify(data[i]);
 		}
 	}

@@ -16,7 +16,6 @@ package org.ml4j.nn.axons;
 
 import java.util.function.Supplier;
 
-import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.NeuronsActivationFeatureOrientation;
 
@@ -39,8 +38,7 @@ public class AxonsActivationImpl implements AxonsActivation {
 	 * @param outputActivations The output.
 	 */
 	public AxonsActivationImpl(Axons<?, ?, ?> axons, AxonsDropoutMask dropoutMask,
-			Supplier<NeuronsActivation> postDropoutInput, NeuronsActivation outputActivations, Neurons leftNeurons,
-			Neurons rightNeurons) {
+			Supplier<NeuronsActivation> postDropoutInput, NeuronsActivation outputActivations) {
 		this.outputActivations = outputActivations;
 		this.dropoutMask = dropoutMask;
 		this.postDropoutInput = postDropoutInput;

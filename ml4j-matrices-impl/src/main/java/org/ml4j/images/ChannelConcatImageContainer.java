@@ -33,6 +33,11 @@ public abstract class ChannelConcatImageContainer<I extends ImageContainer<I>> e
 			}
 		}
 	}
+	
+	@Override
+	protected int getStartIndex() {
+		return 0;
+	}
 
 	@Override
 	public void setPaddingHeight(int paddingHeight) {
