@@ -76,12 +76,12 @@ public class PassThroughAxonsImpl<N extends Neurons> implements Axons<N, N, Pass
 
 	@Override
 	public AxonsActivation pushLeftToRight(NeuronsActivation input, AxonsActivation arg1, AxonsContext arg2) {
-		return new AxonsActivationImpl(this, null, () -> input, input, leftNeurons, rightNeurons);
+		return new AxonsActivationImpl(this, null, () -> input, input);
 	}
 
 	@Override
 	public AxonsActivation pushRightToLeft(NeuronsActivation input, AxonsActivation arg1, AxonsContext arg2) {
-		return new AxonsActivationImpl(this, null, () -> input, input, leftNeurons, rightNeurons);
+		return new AxonsActivationImpl(this, null, () -> input, input);
 	}
 	
 	
