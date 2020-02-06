@@ -16,11 +16,11 @@ package org.ml4j.nn.components.builders.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
@@ -85,11 +85,11 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 	}
 
 	@Override
-	public Matrix getConnectionWeights() {
+	public WeightsMatrix getConnectionWeights() {
 		return builderState.getConnectionWeights();
 	}
 
-	public AxonsBuilder<T> withConnectionWeights(Matrix connectionWeights) {
+	public AxonsBuilder<T> withConnectionWeights(WeightsMatrix connectionWeights) {
 		builderState.setConnectionWeights(connectionWeights);
 		return this;
 	}

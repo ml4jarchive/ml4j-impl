@@ -8,6 +8,7 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.neurons.format.ImageNeuronsActivationFormat;
 import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
+import org.ml4j.nn.neurons.format.features.DimensionScope;
 import org.ml4j.nn.neurons.format.features.ImageFeaturesFormat;
 
 public class NeuronsActivationImpl implements NeuronsActivation {
@@ -82,16 +83,24 @@ public class NeuronsActivationImpl implements NeuronsActivation {
 	}
 
 	@Override
-	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
+	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons, DimensionScope dimensionScope) {
 		if (neurons.getNeuronCountIncludingBias() != neurons.getNeuronCountIncludingBias()) {
 			throw new IllegalArgumentException();
 		}
+		// TODO scope
 		if (format.getFeaturesFormat() instanceof ImageFeaturesFormat) {
 			ImageNeuronsActivationFormat imageFeaturesFormat = new ImageNeuronsActivationFormat(getFeatureOrientation(), (ImageFeaturesFormat)format.getFeaturesFormat(), format.getExampleDimensions());
 			return new ImageNeuronsActivationImpl(activations, neurons, imageFeaturesFormat,
 					activations.isImmutable() || immutable);
 		} else {
-			throw new IllegalStateException("Format is not a known image format");
+			if (ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT
+					.isEquivalentFormat(format, dimensionScope)) {
+				return new ImageNeuronsActivationImpl(activations, neurons, ImageNeuronsActivationFormat.ML4J_DEFAULT_IMAGE_FORMAT,
+						activations.isImmutable() || immutable);
+				
+			} else {
+				throw new IllegalStateException("Format is not a compatible image format:" + format);
+			}
 		}
 		
 	}

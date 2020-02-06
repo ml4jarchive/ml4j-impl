@@ -171,7 +171,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 			throw new UnsupportedOperationException("Axons do not have connection weights");
 		}
 		Matrix weightsOnly = ((TrainableAxons<?, ?, ?>) getPrimaryAxons()).getDetachedAxonWeights()
-				.getConnectionWeights();
+				.getConnectionWeights().getWeights();
 
 		int countJ = weightsOnly.getColumns(); // - (getPrimaryAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0);
 		float[] maximisingInputFeatures = new float[countJ];

@@ -13,7 +13,8 @@
  */
 package org.ml4j.nn.components.builders.base;
 
-import org.ml4j.Matrix;
+import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.UncompletedFullyConnectedAxonsBuilder;
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphNeurons;
@@ -23,8 +24,8 @@ import org.ml4j.nn.neurons.Neurons;
 public class BaseGraphBuilderStateImpl implements BaseGraphBuilderState {
 
 	protected ComponentsGraphNeurons<Neurons> componentsGraphNeurons;
-	protected Matrix connectionWeights;
-	protected Matrix biases;
+	protected WeightsMatrix connectionWeights;
+	protected BiasMatrix biases;
 	protected UncompletedFullyConnectedAxonsBuilder<?> fullyConnectedAxonsBuilder;
 	protected SynapsesAxonsGraphBuilder<?, ?> synapsesBuilder;
 
@@ -45,22 +46,22 @@ public class BaseGraphBuilderStateImpl implements BaseGraphBuilderState {
 	}
 
 	@Override
-	public Matrix getConnectionWeights() {
+	public WeightsMatrix getConnectionWeights() {
 		return connectionWeights;
 	}
 
 	@Override
-	public void setConnectionWeights(Matrix connectionWeights) {
+	public void setConnectionWeights(WeightsMatrix connectionWeights) {
 		this.connectionWeights = connectionWeights;
 	}
 
 	@Override
-	public Matrix getBiases() {
+	public BiasMatrix getBiases() {
 		return biases;
 	}
 
 	@Override
-	public void setBiases(Matrix biases) {
+	public void setBiases(BiasMatrix biases) {
 		this.biases = biases;
 	}
 

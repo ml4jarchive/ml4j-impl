@@ -22,6 +22,8 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.Axons3DConfig;
+import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.BatchNormDirectedAxonsComponent;
@@ -50,7 +52,7 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	
 	@Override
 	public DirectedAxonsComponent<Neurons, Neurons, ?> createFullyConnectedAxonsComponent(String name, Neurons leftNeurons,
-			Neurons rightNeurons, Matrix connectionWeights, Matrix biases) {
+			Neurons rightNeurons, WeightsMatrix connectionWeights, BiasMatrix biases) {
 		return new DirectedAxonsComponentAdapter<>(delegated.createFullyConnectedAxonsComponent(name, leftNeurons, 
 				rightNeurons, connectionWeights, biases));
 	}
@@ -58,7 +60,7 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	@Override
 	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createConvolutionalAxonsComponent(String name, Neurons3D leftNeurons,
 			Neurons3D rightNeurons, Axons3DConfig config,
-			Matrix connectionWeights, Matrix biases) {
+			WeightsMatrix connectionWeights, BiasMatrix biases) {
 		return new DirectedAxonsComponentAdapter<>(delegated.createConvolutionalAxonsComponent(name, leftNeurons, rightNeurons, config,
 				connectionWeights, biases));
 	}
@@ -86,7 +88,7 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 
 	@Override
 	public <N extends Neurons> BatchNormDirectedAxonsComponent<N, ?> createBatchNormAxonsComponent(String name, N leftNeurons,
-			N rightNeurons, Matrix gamma, Matrix beta, Matrix mean, Matrix stddev) {
+			N rightNeurons, WeightsMatrix gamma, BiasMatrix beta, Matrix mean, Matrix stddev) {
 		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createBatchNormAxonsComponent(name, leftNeurons, rightNeurons, gamma, beta, mean, stddev));
 	}
 
@@ -98,7 +100,7 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 
 	@Override
 	public BatchNormDirectedAxonsComponent<Neurons3D, ?> createConvolutionalBatchNormAxonsComponent(String name,
-			Neurons3D leftNeurons, Neurons3D rightNeurons, Matrix gamma, Matrix beta, Matrix mean, Matrix stddev) {
+			Neurons3D leftNeurons, Neurons3D rightNeurons, WeightsMatrix gamma, BiasMatrix beta, Matrix mean, Matrix stddev) {
 		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createConvolutionalBatchNormAxonsComponent(name, leftNeurons, rightNeurons, gamma, beta, mean, stddev));
 	}
 

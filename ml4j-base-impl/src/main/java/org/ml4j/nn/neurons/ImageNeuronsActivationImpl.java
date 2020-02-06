@@ -9,6 +9,7 @@ import org.ml4j.images.Images;
 import org.ml4j.images.MultiChannelImages;
 import org.ml4j.images.SingleChannelImages;
 import org.ml4j.nn.neurons.format.ImageNeuronsActivationFormat;
+import org.ml4j.nn.neurons.format.features.DimensionScope;
 
 public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 
@@ -69,19 +70,7 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 	public void combineFeaturesInline(NeuronsActivation other, MatrixFactory matrixFactory) {
 		throw new UnsupportedOperationException();
 	}
-
-	/*
-	 * private ImageNeuronsActivation combineFeatures(ImageNeuronsActivation other)
-	 * { if (other.getFeatureOrientation() != getFeatureOrientation()) { throw new
-	 * IllegalArgumentException(); } Images channelConcatImages = new
-	 * ChannelConcatImages(Arrays.asList(images, other.getImages()),
-	 * neurons.getHeight(), neurons.getWidth(), 0, 0, exampleCount); Neurons3D
-	 * channelConcatNeurons = new Neurons3D(neurons.getWidth(), neurons.getHeight(),
-	 * neurons.getDepth() + other.getNeurons().getDepth(), false); return new
-	 * ImageNeuronsActivationImpl(channelConcatNeurons, channelConcatImages,
-	 * getFeatureOrientation(), other.isImmutable() || isImmutable()); }
-	 */
-
+	
 	@Override
 	public void applyValueModifier(FloatPredicate condition, FloatModifier modifier) {
 		getImages().applyValueModifier(condition, modifier);
@@ -93,13 +82,11 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 	}
 
 	@Override
-	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons) {
+	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons, DimensionScope scope) {
 		if (neurons.equals(this.neurons)) {
+			// TODO - scope
 			return this;
 		} else {
-			System.out.println(this.neurons);
-			System.out.println(neurons);
-
 			throw new IllegalArgumentException("Neurons do not match");
 		}
 	}
