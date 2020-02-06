@@ -16,8 +16,9 @@ package org.ml4j.nn.components.builders.axons;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.neurons.Neurons;
 
 public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsStateBuilder<?>>
@@ -34,7 +35,7 @@ public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsStateBuild
 	}
 
 	@Override
-	public UncompletedFullyConnectedAxonsBuilder<C> withConnectionWeights(Matrix connectionWeights) {
+	public UncompletedFullyConnectedAxonsBuilder<C> withConnectionWeights(WeightsMatrix connectionWeights) {
 		previousBuilderSupplier.get().getBuilderState().setConnectionWeights(connectionWeights);
 		return this;
 	}
@@ -46,7 +47,7 @@ public class UncompletedFullyConnectedAxonsBuilderImpl<C extends AxonsStateBuild
 	}
 
 	@Override
-	public UncompletedFullyConnectedAxonsBuilder<C> withBiases(Matrix biases) {
+	public UncompletedFullyConnectedAxonsBuilder<C> withBiases(BiasMatrix biases) {
 		previousBuilderSupplier.get().getBuilderState().setBiases(biases);
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;

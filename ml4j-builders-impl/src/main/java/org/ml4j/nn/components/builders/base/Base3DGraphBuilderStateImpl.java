@@ -13,7 +13,8 @@
  */
 package org.ml4j.nn.components.builders.base;
 
-import org.ml4j.Matrix;
+import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxonsBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedConvolutionalAxonsBuilder;
@@ -35,8 +36,8 @@ public class Base3DGraphBuilderStateImpl implements Base3DGraphBuilderState {
 	protected UncompletedBatchNormAxonsBuilder<?> batchNormAxonsBuilder;
 
 	protected SynapsesAxons3DGraphBuilder<?, ?, ?> synapsesBuilder;
-	private Matrix connectionWeights;
-	private Matrix biases;
+	private WeightsMatrix connectionWeights;
+	private BiasMatrix biases;
 
 	public Base3DGraphBuilderStateImpl() {
 	}
@@ -96,22 +97,22 @@ public class Base3DGraphBuilderStateImpl implements Base3DGraphBuilderState {
 	}
 
 	@Override
-	public Matrix getConnectionWeights() {
+	public WeightsMatrix getConnectionWeights() {
 		return connectionWeights;
 	}
 
 	@Override
-	public void setConnectionWeights(Matrix connectionWeights) {
+	public void setConnectionWeights(WeightsMatrix connectionWeights) {
 		this.connectionWeights = connectionWeights;
 	}
 
 	@Override
-	public Matrix getBiases() {
+	public BiasMatrix getBiases() {
 		return biases;
 	}
 
 	@Override
-	public void setBiases(Matrix biases) {
+	public void setBiases(BiasMatrix biases) {
 		this.biases = biases;
 	}
 

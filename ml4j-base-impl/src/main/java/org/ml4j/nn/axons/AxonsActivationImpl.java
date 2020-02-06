@@ -48,9 +48,14 @@ public class AxonsActivationImpl implements AxonsActivation {
 		}
 
 		this.axons = axons;
-
 	}
-
+	
+	
+	@Override
+	public void setDropoutMask(AxonsDropoutMask dropoutMask) {
+		this.dropoutMask = dropoutMask;
+	}
+	
 	@Override
 	public NeuronsActivation getPostDropoutOutput() {
 		return outputActivations;

@@ -127,7 +127,6 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 
 	@Override
 	public Neurons getInputNeurons() {
-		// TODO Auto-generated method stub
 		return trailingActivationFunctionComponentChain.getInputNeurons();
 	}
 

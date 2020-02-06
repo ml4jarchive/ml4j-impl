@@ -18,13 +18,15 @@ import java.util.function.Supplier;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.neurons.Neurons3D;
 
 public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 		extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedBatchNormAxonsBuilder<C> {
 
-	private Matrix gamma;
-	private Matrix beta;
+	private WeightsMatrix gamma;
+	private BiasMatrix beta;
 	private Matrix mean;
 	private Matrix variance;
 
@@ -33,13 +35,13 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withGamma(Matrix gamma) {
+	public UncompletedBatchNormAxonsBuilder<C> withGamma(WeightsMatrix gamma) {
 		this.gamma = gamma;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withBeta(Matrix beta) {
+	public UncompletedBatchNormAxonsBuilder<C> withBeta(BiasMatrix beta) {
 		this.beta = beta;
 		return this;
 	}
@@ -57,12 +59,12 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 	}
 
 	@Override
-	public Matrix getGamma() {
+	public WeightsMatrix getGamma() {
 		return gamma;
 	}
 
 	@Override
-	public Matrix getBeta() {
+	public BiasMatrix getBeta() {
 		return beta;
 	}
 
@@ -83,7 +85,7 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withConnectionWeights(Matrix connectionWeights) {
+	public UncompletedBatchNormAxonsBuilder<C> withConnectionWeights(WeightsMatrix connectionWeights) {
 		previousBuilderSupplier.get().getBuilderState().setConnectionWeights(connectionWeights);
 		return this;
 	}
@@ -95,7 +97,7 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withBiases(Matrix biases) {
+	public UncompletedBatchNormAxonsBuilder<C> withBiases(BiasMatrix biases) {
 		previousBuilderSupplier.get().getBuilderState().setBiases(biases);
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;

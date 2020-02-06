@@ -16,11 +16,12 @@
 
 package org.ml4j.nn.layers;
 
-import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
+import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.ConvolutionalAxons;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
@@ -95,7 +96,7 @@ public class ConvolutionalFeedForwardLayerImpl
 	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-			Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
+			WeightsMatrix connectionWeights, BiasMatrix biases, boolean withBatchNorm) {
 		this(name, directedComponentFactory, axonsFactory, inputNeurons, outputNeurons, 1, 0, primaryActivationFunction,
 				matrixFactory, connectionWeights, biases, withBatchNorm);
 	}
@@ -117,7 +118,7 @@ public class ConvolutionalFeedForwardLayerImpl
 	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons, int stride, int zeroPadding,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-			Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
+			WeightsMatrix connectionWeights, BiasMatrix biases, boolean withBatchNorm) {
 		super(name, directedComponentFactory, axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons,
 				new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(zeroPadding)
 						.withPaddingHeight(zeroPadding),

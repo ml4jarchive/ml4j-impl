@@ -8,6 +8,9 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.FullyConnectedAxons;
+import org.ml4j.nn.axons.WeightsFormatImpl;
+import org.ml4j.nn.axons.WeightsMatrixImpl;
+import org.ml4j.nn.axons.WeightsMatrixOrientation;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
@@ -19,6 +22,7 @@ import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
+import org.ml4j.nn.neurons.format.features.Dimension;
 
 public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?, ?>, ResidualBlockLayerImpl> {
 
@@ -94,7 +98,9 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		if (layer1.getInputNeuronCount() != (layer2.getOutputNeuronCount() + 1)) {
 
 			FullyConnectedAxons matchingAxons = axonsFactory.createFullyConnectedAxons(
-					layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons(), null, null);
+					layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons(), 
+					new WeightsMatrixImpl(null, new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), 
+							Arrays.asList(Dimension.OUTPUT_FEATURE),WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)),  null);
 			DirectedAxonsComponent<Neurons, Neurons, ?> matchingComponent = directedComponentFactory
 					.createDirectedAxonsComponent(name + ":MatchingAxons", (matchingAxons));
 			matchingAxonsList.add(matchingComponent);

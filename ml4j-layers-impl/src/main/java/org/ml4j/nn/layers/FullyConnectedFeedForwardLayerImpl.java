@@ -16,13 +16,20 @@
 
 package org.ml4j.nn.layers;
 
-import org.ml4j.Matrix;
+import java.util.Arrays;
+
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.FullyConnectedAxons;
+import org.ml4j.nn.axons.WeightsFormatImpl;
+import org.ml4j.nn.axons.WeightsMatrix;
+import org.ml4j.nn.axons.WeightsMatrixImpl;
+import org.ml4j.nn.axons.WeightsMatrixOrientation;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.format.features.Dimension;
 
 /**
  * Default implementation of a FullyConnectedFeedForwardLayer.
@@ -68,7 +75,10 @@ public class FullyConnectedFeedForwardLayerImpl
 			AxonsFactory axonsFactory, Neurons inputNeurons, Neurons outputNeurons,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
 			boolean withBatchNorm) {
-		super(name, directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, null, null),
+		super(name, directedComponentFactory, axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, 
+				new WeightsMatrixImpl(null, 
+				new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), Arrays.asList(Dimension.OUTPUT_FEATURE),
+						WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)) , null),
 				primaryActivationFunction, matrixFactory, withBatchNorm);
 	}
 
@@ -87,9 +97,11 @@ public class FullyConnectedFeedForwardLayerImpl
 	public FullyConnectedFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, Neurons inputNeurons, Neurons outputNeurons,
 			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-			Matrix connectionWeights, Matrix biases, boolean withBatchNorm) {
+			WeightsMatrix connectionWeights, BiasMatrix biases, boolean withBatchNorm) {
 		super(name, directedComponentFactory,
-				axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, connectionWeights, biases),
+				axonsFactory.createFullyConnectedAxons(inputNeurons, outputNeurons, 
+						connectionWeights,
+						biases),
 				primaryActivationFunction, matrixFactory, withBatchNorm);
 	}
 

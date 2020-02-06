@@ -16,13 +16,13 @@ package org.ml4j.nn.components.builders.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ml4j.InterrimMatrix;
-import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
@@ -36,8 +36,8 @@ import org.ml4j.nn.components.builders.axons.UncompletedConvolutionalAxonsBuilde
 import org.ml4j.nn.components.builders.axons.UncompletedConvolutionalAxonsBuilderImpl;
 import org.ml4j.nn.components.builders.axons.UncompletedFullyConnectedAxonsBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedFullyConnectedAxonsBuilderImpl;
-import org.ml4j.nn.components.builders.axons.UncompletedPoolingAxonsBuilderImpl;
 import org.ml4j.nn.components.builders.axons.UncompletedPoolingAxonsBuilder;
+import org.ml4j.nn.components.builders.axons.UncompletedPoolingAxonsBuilderImpl;
 import org.ml4j.nn.components.builders.common.ComponentsContainer;
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphNeurons;
 import org.ml4j.nn.components.builders.synapses.Synapses3DPermitted;
@@ -72,20 +72,20 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 		return builderState;
 	}
 
-	public Matrix getConnectionWeights() {
+	public WeightsMatrix getConnectionWeights() {
 		return builderState.getConnectionWeights();
 	}
 
-	public Axons3DBuilder<T> withConnectionWeights(InterrimMatrix connectionWeights) {
+	public Axons3DBuilder<T> withConnectionWeights(WeightsMatrix connectionWeights) {
 		builderState.setConnectionWeights(connectionWeights);
 		return this;
 	}
 
-	public Matrix getBiases() {
+	public BiasMatrix getBiases() {
 		return builderState.getBiases();
 	}
 
-	public Axons3DBuilder<T> withBiases(InterrimMatrix biases) {
+	public Axons3DBuilder<T> withBiases(BiasMatrix biases) {
 		builderState.setBiases(biases);
 		return this;
 	}
