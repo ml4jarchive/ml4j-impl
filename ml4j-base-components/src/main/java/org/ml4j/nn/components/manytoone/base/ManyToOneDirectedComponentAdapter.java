@@ -57,7 +57,7 @@ public class ManyToOneDirectedComponentAdapter<A extends ManyToOneDirectedCompon
 	}
 
 	@Override
-	public NeuralComponentType<?> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return delegated.getComponentType();
 	}
 

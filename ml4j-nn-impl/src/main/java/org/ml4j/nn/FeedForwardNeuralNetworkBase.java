@@ -73,9 +73,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 	protected H initialisingComponentChain;
 	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionComponentChain;
-
-	protected GradientAccumulator gradientAccumulator;
-
+	
 	private C lastEpochTrainingContext;
 	
 	protected String name;
@@ -96,7 +94,6 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.trailingActivationFunctionComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
 				directedComponentFactory, initialisingComponentChain.getComponents());
-		this.gradientAccumulator = new LocalGradientAccumulator();
 	}
 
 	/**
@@ -109,7 +106,6 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 		this.initialisingComponentChain = initialisingComponentChain;
 		this.name = name;
 		this.trailingActivationFunctionComponentChain = trailingActivationFunctionComponentChain;
-		this.gradientAccumulator = new LocalGradientAccumulator();
 	}
 
 	// TODO - Refactor these methods
@@ -309,6 +305,9 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 
 	protected void train(Supplier<Stream<LabeledData<NeuronsActivation, NeuronsActivation>>> trainingDataSet,
 			C trainingContext, Consumer<Float> epochAverageCostHandler) {
+		
+		
+		GradientAccumulator gradientAccumulator = new LocalGradientAccumulator();
 
 		final int numberOfEpochs = trainingContext.getTrainingEpochs();
 
@@ -698,7 +697,7 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	}
 
 	@Override
-	public NeuralComponentType<FeedForwardNeuralNetwork<C, N>> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.NETWORK),
 				"FEED_FORWARD");
 	}

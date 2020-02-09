@@ -1,20 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <modelVersion>4.0.0</modelVersion>
-        <groupId>org.ml4j</groupId>
-        <artifactId>ml4j-impl</artifactId>
-        <version>2.0</version>
-        <packaging>pom</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.ml4j</groupId>
+	<artifactId>ml4j-impl</artifactId>
+	<version>2.0</version>
+	<packaging>pom</packaging>
 	<modules>
-                <module>ml4j-matrices-impl</module>
+		<module>ml4j-matrices-impl</module>
 		<module>ml4j-base-impl</module>
 		<module>ml4j-builders-impl</module>
 		<module>ml4j-datasets-impl</module>
 		<module>ml4j-base-components</module>
 		<module>ml4j-synapses-impl</module>
-		<module>ml4j-layers-impl</module>	
+		<module>ml4j-layers-impl</module>
 		<module>ml4j-nn-impl</module>
-      		<module>ml4j-layered-nn-impl</module> 
-		<module>ml4j-sessions-impl</module>	
-	 </modules>
+		<module>ml4j-layered-nn-impl</module>
+		<module>ml4j-sessions-impl</module>
+	</modules>
+	<build></build>
 </project>

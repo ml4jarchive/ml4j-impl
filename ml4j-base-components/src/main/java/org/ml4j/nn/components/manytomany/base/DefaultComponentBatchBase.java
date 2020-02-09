@@ -47,7 +47,7 @@ public abstract class DefaultComponentBatchBase implements DefaultDirectedCompon
 	}
 
 	@Override
-	public NeuralComponentType<?> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_BATCH);
 	}
 

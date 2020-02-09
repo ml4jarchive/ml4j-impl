@@ -56,7 +56,7 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 		return context;
 	}
 	@Override
-	public NeuralComponentType<DefaultDirectedComponentChainBipoleGraph> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN_BIPOLE_GRAPH), DefaultDirectedComponentChainBipoleGraph.class.getName());
 	}
 
