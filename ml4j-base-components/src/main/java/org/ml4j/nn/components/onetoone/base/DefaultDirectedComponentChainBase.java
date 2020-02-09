@@ -45,7 +45,7 @@ public abstract class DefaultDirectedComponentChainBase
 	}
 	
 	@Override
-	public NeuralComponentType<DefaultDirectedComponentChain> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN), DefaultDirectedComponentChain.class.getName());
 	}
 	

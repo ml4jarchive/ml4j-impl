@@ -64,7 +64,7 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	}
 
 	@Override
-	public NeuralComponentType<DifferentiableActivationFunctionComponent> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentBaseType.ACTIVATION_FUNCTION, 
 				activationFunctionType.getQualifiedId());
 	}

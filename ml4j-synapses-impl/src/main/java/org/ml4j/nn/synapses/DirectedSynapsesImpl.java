@@ -188,7 +188,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	@Override
-	public NeuralComponentType<DirectedSynapses<L, R>> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.SYNAPSES),
 				DirectedSynapses.class.getName());
 	}

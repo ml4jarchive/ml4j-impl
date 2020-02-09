@@ -32,7 +32,7 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>>
 	}
 
 	@Override
-	public NeuralComponentType<DirectedLayerChain<L>> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.LAYER_CHAIN),
 				getClass().getName());
 	}

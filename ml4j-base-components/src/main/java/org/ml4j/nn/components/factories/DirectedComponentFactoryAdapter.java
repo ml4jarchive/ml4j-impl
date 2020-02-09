@@ -14,7 +14,6 @@
 package org.ml4j.nn.components.factories;
 
 import java.util.List;
-import java.util.function.IntSupplier;
 
 import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
@@ -34,6 +33,7 @@ import org.ml4j.nn.components.manytoone.ManyToOneDirectedComponent;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.manytoone.base.ManyToOneDirectedComponentAdapter;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
+import org.ml4j.nn.components.onetomany.SerializableIntSupplier;
 import org.ml4j.nn.components.onetomany.base.OneToManyDirectedComponentAdapter;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
@@ -43,6 +43,11 @@ import org.ml4j.nn.neurons.Neurons3D;
 
 public class DirectedComponentFactoryAdapter implements DirectedComponentFactory {
 
+	/**
+	 * Default serialization id.
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	protected DirectedComponentFactory delegated;
 	
 	
@@ -117,7 +122,7 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public OneToManyDirectedComponent<?> createOneToManyDirectedComponent(IntSupplier targetComponentsCount) {
+	public OneToManyDirectedComponent<?> createOneToManyDirectedComponent(SerializableIntSupplier targetComponentsCount) {
 		return new OneToManyDirectedComponentAdapter<>(delegated.createOneToManyDirectedComponent(targetComponentsCount));
 	}
 
@@ -158,8 +163,8 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public <S extends DefaultChainableDirectedComponent<?, ?>> DefaultChainableDirectedComponent<?, ?> createComponent(String name, 
-			Neurons leftNeurons, Neurons rightNeurons, NeuralComponentType<S> neuralComponentType) {
+	public DefaultChainableDirectedComponent<?, ?> createComponent(String name, 
+			Neurons leftNeurons, Neurons rightNeurons, NeuralComponentType neuralComponentType) {
 		return delegated.createComponent(name, leftNeurons, rightNeurons, neuralComponentType);
 	}
 

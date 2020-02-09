@@ -77,7 +77,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	}
 
 	@Override
-	public NeuralComponentType<DirectedAxonsComponent<L, R, A>> getComponentType() {
+	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.AXONS), 
 				DIRECTED_AXONS_SUBTYPE_NAME), axons.getClass().getSimpleName());
 	}
