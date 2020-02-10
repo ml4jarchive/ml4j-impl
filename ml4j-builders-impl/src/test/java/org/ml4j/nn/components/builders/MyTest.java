@@ -90,7 +90,7 @@ public class MyTest {
 		session.startWith3DNeurons(new Neurons3D(28, 28, 3, false)).withSkipConnection()
 			.withActivationFunction("relu", ActivationFunctionType.getBaseType(ActivationFunctionBaseType.RELU), 
 					new ActivationFunctionProperties())
-			.endSkipConnection();
+			.endSkipConnection("skip_connection");
 	}
 	
 	@Test
@@ -103,7 +103,7 @@ public class MyTest {
 
 		session.startWith3DNeurons(new Neurons3D(28, 28, 3, false)).withSkipConnection()
 			.withFullyConnectedAxons("fullyConnected").withConnectionToNeurons(new Neurons3D(20, 20, 6, false))
-			.endSkipConnection();
+			.endSkipConnection("skip_connection");
 	}
 	
 	@Test
@@ -116,7 +116,7 @@ public class MyTest {
 
 		session.startWith3DNeurons(new Neurons3D(28, 28, 3, false)).withSkipConnection()
 			.withFullyConnectedAxons("fullyConnected").withConnectionToNeurons(new Neurons(400, false))
-			.endSkipConnection().withFullyConnectedAxons("fullyConnected2")
+			.endSkipConnection("skip_connection").withFullyConnectedAxons("fullyConnected2")
 			.withConnectionToNeurons(new Neurons(20, false)).withActivationFunction("relu", ActivationFunctionType.getBaseType(ActivationFunctionBaseType.RELU), 
 					new ActivationFunctionProperties());
 	}

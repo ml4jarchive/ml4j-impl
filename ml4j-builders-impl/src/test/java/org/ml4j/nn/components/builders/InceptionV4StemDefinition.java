@@ -139,7 +139,7 @@ public class InceptionV4StemDefinition implements Component3Dto3DGraphDefinition
 							.withConnectionToNeurons(new Neurons3D(73, 73, 96, false))
 							.withActivationFunction("relu_4", ActivationFunctionType.getBaseType(ActivationFunctionBaseType.RELU), new ActivationFunctionProperties())
 						.endPath()
-				.endParallelPaths(PathCombinationStrategy.FILTER_CONCAT)
+				.endParallelPaths("concat_1", PathCombinationStrategy.FILTER_CONCAT)
 				.withParallelPaths()
 					.withPath()
 						.withConvolutionalAxons("conv2d_5")
@@ -252,7 +252,7 @@ public class InceptionV4StemDefinition implements Component3Dto3DGraphDefinition
 						.withConnectionToNeurons(new Neurons3D(71, 71, 96, false))
 						.withActivationFunction("relu_10", ActivationFunctionType.getBaseType(ActivationFunctionBaseType.RELU), new ActivationFunctionProperties())
 					.endPath()
-				.endParallelPaths(PathCombinationStrategy.FILTER_CONCAT)
+				.endParallelPaths("concat_1", PathCombinationStrategy.FILTER_CONCAT)
 				.withParallelPaths()
 					.withPath()
 						.withConvolutionalAxons("conv2d_11")
@@ -280,7 +280,7 @@ public class InceptionV4StemDefinition implements Component3Dto3DGraphDefinition
 						.withValidPadding()
 					.withConnectionToNeurons(new Neurons3D(35, 35, 192, false))
 				.endPath()
-			.endParallelPaths(PathCombinationStrategy.FILTER_CONCAT);
+			.endParallelPaths("concat_2", PathCombinationStrategy.FILTER_CONCAT);
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		// Parallel Chain Graph of preceding chain and skip connection
 		// TODO - remove nulls
 		DefaultDirectedComponentBipoleGraph parallelGraph = directedComponentFactory
-				.createDirectedComponentBipoleGraph(null, null, parallelChains, PathCombinationStrategy.ADDITION);
+				.createDirectedComponentBipoleGraph(null, null, null, parallelChains, PathCombinationStrategy.ADDITION);
 
 		// Residual block component list is composed of the parallel chain graph
 		// followed by the final activation function

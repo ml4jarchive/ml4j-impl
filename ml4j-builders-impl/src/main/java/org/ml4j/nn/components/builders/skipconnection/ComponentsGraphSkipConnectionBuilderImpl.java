@@ -36,9 +36,9 @@ public class ComponentsGraphSkipConnectionBuilderImpl<P extends ComponentsContai
 	}
 
 	@Override
-	public P endSkipConnection() {
+	public P endSkipConnection(String name) {
 		completeNestedGraph(true);
-		completeNestedGraphs(PathCombinationStrategy.ADDITION);
+		completeNestedGraphs(name, PathCombinationStrategy.ADDITION);
 		return parentGraph.get();
 	}
 

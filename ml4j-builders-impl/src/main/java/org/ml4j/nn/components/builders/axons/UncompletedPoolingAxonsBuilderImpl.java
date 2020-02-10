@@ -120,4 +120,14 @@ public class UncompletedPoolingAxonsBuilderImpl<C extends Axons3DBuilder<?>>
 		return this;
 	}
 
+	@Override
+	public Integer getFilterHeight() {
+		return filterHeight;
+	}
+
+	@Override
+	public Integer getFilterWidth() {
+		return filterWidth;
+	}
+
 }

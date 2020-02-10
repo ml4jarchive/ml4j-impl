@@ -19,11 +19,13 @@ import java.util.List;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
+import org.ml4j.nn.axons.AxonsType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.neurons.Neurons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +81,16 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	@Override
 	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.AXONS), 
-				DIRECTED_AXONS_SUBTYPE_NAME), axons.getClass().getSimpleName());
+				DIRECTED_AXONS_SUBTYPE_NAME), getAxonsType().getQualifiedId());
+	}
+	
+	protected AxonsType getAxonsType() {
+		return axons.getAxonsType();
+	}
+	
+	@Override
+	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+		return visitor.visitComponent(this);
 	}
 
 	@Override

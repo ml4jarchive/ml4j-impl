@@ -397,7 +397,7 @@ public class YOLOv2Definition implements Component3Dto3DGraphDefinition {
 					// leaky_re_lu_20
 					.withActivationFunction("leaky_re_lu_20", LEAKY_RELU_ACTIVATION_FUNCTION_TYPE, new ActivationFunctionProperties().withAlpha(0.1f))
 				.endPath()
-				.endParallelPaths(PathCombinationStrategy.FILTER_CONCAT)
+				.endParallelPaths("concat_1", PathCombinationStrategy.FILTER_CONCAT)
 				// conv2d_22
 				.withConvolutionalAxons("conv2d_22")
 				.withFilterSize(3, 3)

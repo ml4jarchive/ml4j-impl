@@ -13,10 +13,16 @@
  */
 package org.ml4j.nn.components.onetoone.base;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainBipoleGraph;
 import org.ml4j.nn.neurons.Neurons;
 
@@ -37,6 +43,8 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 
 	protected Neurons inputNeurons;
 	protected Neurons outputNeurons;
+	protected PathCombinationStrategy pathCombinationStrategy;
+	protected String name;
 	
 	/**
 	 * @param inputNeurons The input neurons of this graph.
@@ -44,11 +52,13 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	 * @param parallelComponentChainsBatch The batch of parallel edges within this graph, connecting
 	 * the input neurons to the output neurons.
 	 */
-	public DefaultDirectedComponentChainBipoleGraphBase(Neurons inputNeurons, Neurons outputNeurons,
-			DefaultDirectedComponentChainBatch parallelComponentChainsBatch) {
+	public DefaultDirectedComponentChainBipoleGraphBase(String name, Neurons inputNeurons, Neurons outputNeurons,
+			DefaultDirectedComponentChainBatch parallelComponentChainsBatch, PathCombinationStrategy pathCombinationStrategy) {
 		this.parallelComponentChainsBatch = parallelComponentChainsBatch;
 		this.inputNeurons = inputNeurons;
 		this.outputNeurons = outputNeurons;
+		this.pathCombinationStrategy = pathCombinationStrategy;
+		this.name = name;
 	}
 	
 	@Override
@@ -58,6 +68,14 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	@Override
 	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_CHAIN_BIPOLE_GRAPH), DefaultDirectedComponentChainBipoleGraph.class.getName());
+	}
+	
+	@Override
+	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+		
+		List<DefaultChainableDirectedComponent<?, ?>> parallelComponents = new ArrayList<>();
+		parallelComponents.addAll(parallelComponentChainsBatch.getComponents());
+		return visitor.visitParallelComponentBatch(name, parallelComponents, pathCombinationStrategy);
 	}
 
 	@Override
@@ -77,6 +95,6 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 
 	@Override
 	public String getName() {
-		return getComponentType().getId();
+		return name;
 	}
 }
