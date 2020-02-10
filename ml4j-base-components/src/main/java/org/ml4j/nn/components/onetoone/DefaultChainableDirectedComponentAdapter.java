@@ -26,6 +26,7 @@ import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivation;
 import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
@@ -149,6 +150,11 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	@Override
 	public String getName() {
 		return delegated.getName();
+	}
+
+	@Override
+	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+		return visitor.visitComponent(delegated);
 	}
 
 }

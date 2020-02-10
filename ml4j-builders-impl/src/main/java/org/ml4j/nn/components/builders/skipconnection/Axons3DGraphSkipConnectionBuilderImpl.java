@@ -49,9 +49,9 @@ public class Axons3DGraphSkipConnectionBuilderImpl<P extends Axons3DGraphBuilder
 	}
 
 	@Override
-	public P endSkipConnection() {
+	public P endSkipConnection(String name) {
 		completeNestedGraph(true);
-		completeNestedGraphs(PathCombinationStrategy.ADDITION);
+		completeNestedGraphs(name, PathCombinationStrategy.ADDITION);
 		return parent3DGraph.get();
 	}
 

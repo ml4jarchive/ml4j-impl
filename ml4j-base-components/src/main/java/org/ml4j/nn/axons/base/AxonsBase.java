@@ -14,6 +14,7 @@
 package org.ml4j.nn.axons.base;
 
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.AxonsType;
 import org.ml4j.nn.neurons.Neurons;
 
 public abstract class AxonsBase<L extends Neurons, R extends Neurons, A extends Axons<L, R, A>> implements Axons<L, R, A>{
@@ -25,11 +26,13 @@ public abstract class AxonsBase<L extends Neurons, R extends Neurons, A extends 
 	
 	protected L leftNeurons;
 	protected R rightNeurons;
+	protected AxonsType axonsType;
 	
 	
-	public AxonsBase(L leftNeurons, R rightNeurons) {
+	public AxonsBase(AxonsType axonsType, L leftNeurons, R rightNeurons) {
 		this.leftNeurons = leftNeurons;
 		this.rightNeurons = rightNeurons;
+		this.axonsType = axonsType;
 	}
 
 	@Override
@@ -41,4 +44,9 @@ public abstract class AxonsBase<L extends Neurons, R extends Neurons, A extends 
 	public R getRightNeurons() {
 		return rightNeurons;
 	}
+
+	public AxonsType getAxonsType() {
+		return axonsType;
+	}
+
 }

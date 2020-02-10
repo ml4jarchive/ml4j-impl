@@ -143,4 +143,14 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 	public int getPaddingHeight() {
 		return paddingHeight;
 	}
+
+	@Override
+	public Integer getFilterWidth() {
+		return filterWidth;
+	}
+
+	@Override
+	public Integer getFilterHeight() {
+		return filterHeight;
+	}
 }

@@ -157,9 +157,9 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public DefaultDirectedComponentBipoleGraph createDirectedComponentBipoleGraph(Neurons arg0, Neurons arg1,
+	public DefaultDirectedComponentBipoleGraph createDirectedComponentBipoleGraph(String name, Neurons arg0, Neurons arg1,
 			List<DefaultChainableDirectedComponent<?, ?>> parallelComponents, PathCombinationStrategy arg3) {
-		return delegated.createDirectedComponentBipoleGraph(arg0, arg1, parallelComponents, arg3);
+		return delegated.createDirectedComponentBipoleGraph(name, arg0, arg1, parallelComponents, arg3);
 	}
 
 	@Override

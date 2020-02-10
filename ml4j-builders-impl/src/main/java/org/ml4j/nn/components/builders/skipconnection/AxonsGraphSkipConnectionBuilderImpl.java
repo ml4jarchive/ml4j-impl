@@ -60,9 +60,9 @@ public class AxonsGraphSkipConnectionBuilderImpl<C extends ComponentsContainer<N
 	}
 
 	@Override
-	public C endSkipConnection() {
+	public C endSkipConnection(String name) {
 		completeNestedGraph(true);
-		completeNestedGraphs(PathCombinationStrategy.ADDITION);
+		completeNestedGraphs(name, PathCombinationStrategy.ADDITION);
 		return parentGraph.get();
 	}
 

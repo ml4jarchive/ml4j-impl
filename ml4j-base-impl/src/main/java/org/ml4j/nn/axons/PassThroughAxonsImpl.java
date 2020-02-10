@@ -95,4 +95,9 @@ public class PassThroughAxonsImpl<N extends Neurons> implements Axons<N, N, Pass
 	public boolean isSupported(NeuronsActivationFormat<?> format) {
 		return true;
 	}
+
+	@Override
+	public AxonsType getAxonsType() {
+		return AxonsType.getBaseType(AxonsBaseType.PASS_THROUGH);
+	}
 }

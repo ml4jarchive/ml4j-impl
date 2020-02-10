@@ -75,7 +75,7 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 		}
 	}
 
-	protected void completeNestedGraphs(PathCombinationStrategy pathCombinationStrategy) {
+	protected void completeNestedGraphs(String name, PathCombinationStrategy pathCombinationStrategy) {
 		if (!pathsEnded) {
 			if (pathCombinationStrategy == PathCombinationStrategy.FILTER_CONCAT) {
 				Neurons3D previousNeurons = null;
@@ -114,7 +114,7 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 			// ComponentChainBatchDefinition batch =
 			// directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 			parent3DGraph.get()
-					.addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(graphInputNeurons,
+					.addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(name, graphInputNeurons,
 							parent3DGraph.get().getComponentsGraphNeurons().getCurrentNeurons(), chainsList,
 							pathCombinationStrategy));
 
@@ -125,9 +125,9 @@ public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer
 		}
 	}
 
-	public P endParallelPaths(PathCombinationStrategy pathCombinationStrategy) {
+	public P endParallelPaths(String name, PathCombinationStrategy pathCombinationStrategy) {
 		completeNestedGraph(false);
-		completeNestedGraphs(pathCombinationStrategy);
+		completeNestedGraphs(name, pathCombinationStrategy);
 		return parent3DGraph.get();
 	}
 

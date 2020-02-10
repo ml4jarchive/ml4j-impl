@@ -40,6 +40,7 @@ import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
@@ -716,5 +717,11 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	public String getName() {
 		return name;
 	}
+	
+	@Override
+	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+		return visitor.visitSequentialComponentChain(trailingActivationFunctionComponentChain.getComponents());
+	}
+
 
 }

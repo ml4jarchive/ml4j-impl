@@ -17,6 +17,8 @@ import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentBatch;
+import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.neurons.Neurons;
 
@@ -37,6 +39,8 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 
 	protected Neurons inputNeurons;
 	protected Neurons outputNeurons;
+	protected PathCombinationStrategy pathCombinationStrategy;
+	protected String name;
 	
 	/**
 	 * @param inputNeurons The input neurons of this graph.
@@ -44,11 +48,13 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	 * @param parallelComponentChainsBatch The batch of parallel edges within this graph, connecting
 	 * the input neurons to the output neurons.
 	 */
-	public DefaultDirectedComponentBipoleGraphBase(Neurons inputNeurons, Neurons outputNeurons,
-			DefaultDirectedComponentBatch parallelComponentBatch) {
+	public DefaultDirectedComponentBipoleGraphBase(String name, Neurons inputNeurons, Neurons outputNeurons,
+			DefaultDirectedComponentBatch parallelComponentBatch, PathCombinationStrategy pathCombinationStrategy) {
 		this.parallelComponentBatch = parallelComponentBatch;
 		this.inputNeurons = inputNeurons;
 		this.outputNeurons = outputNeurons;
+		this.pathCombinationStrategy = pathCombinationStrategy;
+		this.name = name;
 	}
 	
 	@Override
@@ -59,6 +65,11 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	@Override
 	public NeuralComponentType getComponentType() {
 		return NeuralComponentType.createSubType(NeuralComponentType.getBaseType(NeuralComponentBaseType.COMPONENT_BIPOLE_GRAPH), DefaultDirectedComponentBipoleGraph.class.getName());
+	}
+	
+	@Override
+	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+		return visitor.visitParallelComponentBatch(name, parallelComponentBatch.getComponents(), pathCombinationStrategy);
 	}
 
 	@Override
@@ -78,6 +89,6 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	
 	@Override
 	public String getName() {
-		return getComponentType().getId();
+		return name;
 	}
 }

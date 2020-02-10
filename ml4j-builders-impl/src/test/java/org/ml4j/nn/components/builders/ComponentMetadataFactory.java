@@ -70,9 +70,9 @@ public class ComponentMetadataFactory implements NeuralComponentFactory<Componen
 	}
 
 	@Override
-	public ComponentMetadata createDirectedComponentBipoleGraph(Neurons arg0, Neurons arg1,
+	public ComponentMetadata createDirectedComponentBipoleGraph(String name, Neurons arg0, Neurons arg1,
 			List<ComponentMetadata> arg2, PathCombinationStrategy arg3) {
-		return new ComponentMetadata("BipoleGraph", arg0, arg1, "Bipole Graph with strategy:" + arg3);
+		return new ComponentMetadata(name, arg0, arg1, "Bipole Graph with strategy:" + arg3);
 	}
 
 	@Override

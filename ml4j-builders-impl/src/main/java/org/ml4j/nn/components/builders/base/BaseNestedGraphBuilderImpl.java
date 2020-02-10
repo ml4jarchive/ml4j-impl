@@ -77,7 +77,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 		}
 	}
 
-	protected void completeNestedGraphs(PathCombinationStrategy pathCombinationStrategy) {
+	protected void completeNestedGraphs(String name, PathCombinationStrategy pathCombinationStrategy) {
 		if (!pathsEnded) {
 			parentGraph.get().getComponentsGraphNeurons()
 					.setCurrentNeurons(getComponentsGraphNeurons().getCurrentNeurons());
@@ -90,7 +90,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 			// directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 			Neurons graphInputNeurons = chainsList.get(0).getInputNeurons();
 			Neurons graphOutputNeurons = parentGraph.get().getComponentsGraphNeurons().getCurrentNeurons();
-			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(
+			parentGraph.get().addComponent(directedComponentFactory.createDirectedComponentBipoleGraph(name,
 					graphInputNeurons,
 					new Neurons(graphOutputNeurons.getNeuronCountExcludingBias(), graphOutputNeurons.hasBiasUnit()),
 					chainsList, pathCombinationStrategy));
@@ -101,9 +101,9 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 	}
 
 	@Override
-	public P endParallelPaths(PathCombinationStrategy pathCombinationStrategy) {
+	public P endParallelPaths(String name,PathCombinationStrategy pathCombinationStrategy) {
 		completeNestedGraph(false);
-		completeNestedGraphs(pathCombinationStrategy);
+		completeNestedGraphs(name, pathCombinationStrategy);
 		return parentGraph.get();
 	}
 
