@@ -37,7 +37,7 @@ import org.ml4j.nn.components.builders.synapses.SynapsesPermitted;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		implements AxonsPermitted<C>, SynapsesPermitted<C, T>, AxonsBuilder<T> {
 
 	protected NeuralComponentFactory<T> directedComponentFactory;
@@ -113,7 +113,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 			if (builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer() != null) {
 				// TODO
 				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
-					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent) axonsComponent)
+					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent<?>) axonsComponent)
 							.getContext(directedComponentsContext);
 					builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
 				}

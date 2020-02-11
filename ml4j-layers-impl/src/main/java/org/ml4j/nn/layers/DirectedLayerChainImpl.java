@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetoone.base.DefaultDirectedComponentChainBaseParent;
 import org.ml4j.nn.neurons.NeuronsActivation;
@@ -60,6 +61,13 @@ public class DirectedLayerChainImpl<L extends DirectedLayer<?, ?>>
 	@Override
 	public String getName() {
 		return getComponentType().getId();
+	}
+
+	@Override
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
+		List<DefaultChainableDirectedComponent<?, ?>> chain = new ArrayList<>();
+		chain.addAll(this.sequentialComponents);
+		return visitor.visitSequentialComponentChain(chain);
 	}
 
 }

@@ -22,7 +22,7 @@ import org.ml4j.nn.neurons.Neurons;
  * @param <L> The type of Neurons on the LHS of this component.
  * @param <R> The type of Neurons on the RHS of this component.
  */
-public class NeuralComponentAdapter<L extends Neurons, R extends Neurons> implements NeuralComponent {
+public abstract class NeuralComponentAdapter<L extends Neurons, R extends Neurons, T extends NeuralComponent<T>> implements NeuralComponent<T> {
 
 	/**
 	 * Default serialization id.

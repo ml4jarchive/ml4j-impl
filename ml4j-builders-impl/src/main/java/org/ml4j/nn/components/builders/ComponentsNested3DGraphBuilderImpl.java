@@ -34,7 +34,7 @@ import org.ml4j.nn.components.builders.skipconnection.Components3DGraphSkipConne
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public abstract class ComponentsNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent>
+public abstract class ComponentsNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent<?>>
 		extends BaseNested3DGraphBuilderImpl<P, C, D, T> implements Components3DGraphBuilder<C, D, T> {
 
 	public ComponentsNested3DGraphBuilderImpl(Supplier<P> parent3DGraph,

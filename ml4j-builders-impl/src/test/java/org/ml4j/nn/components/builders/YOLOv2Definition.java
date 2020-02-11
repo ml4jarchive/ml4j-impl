@@ -39,7 +39,7 @@ public class YOLOv2Definition implements Component3Dto3DGraphDefinition {
 	}
 
 	@Override
-	public <T extends NeuralComponent> InitialComponents3DGraphBuilder<T> createComponentGraph(
+	public <T extends NeuralComponent<?>> InitialComponents3DGraphBuilder<T> createComponentGraph(
 			InitialComponents3DGraphBuilder<T> start, NeuralComponentFactory<T> neuralComponentFactory) {
 		
 		NeuralComponentType spaceToDepthComponentType

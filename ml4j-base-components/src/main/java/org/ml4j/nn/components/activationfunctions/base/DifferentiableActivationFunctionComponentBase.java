@@ -20,9 +20,9 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.NeuronsActivationContext;
 import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
@@ -71,7 +71,7 @@ public abstract class DifferentiableActivationFunctionComponentBase implements D
 	}
 	
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitComponent(this);
 	}
 

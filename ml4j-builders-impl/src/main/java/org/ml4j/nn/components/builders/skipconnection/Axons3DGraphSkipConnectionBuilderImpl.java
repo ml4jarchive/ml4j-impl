@@ -32,7 +32,7 @@ import org.ml4j.nn.components.builders.common.PathEnder;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 
-public class Axons3DGraphSkipConnectionBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, Q extends AxonsGraphBuilder<Q, T>, T extends NeuralComponent>
+public class Axons3DGraphSkipConnectionBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, Q extends AxonsGraphBuilder<Q, T>, T extends NeuralComponent<?>>
 		extends
 		BaseNested3DGraphBuilderImpl<P, Axons3DGraphSkipConnectionBuilder<P, Q, T>, AxonsGraphSkipConnectionBuilder<Q, T>, T>
 		implements Axons3DGraphSkipConnectionBuilder<P, Q, T>,

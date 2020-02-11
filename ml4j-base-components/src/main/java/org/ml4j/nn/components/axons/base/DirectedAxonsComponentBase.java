@@ -23,9 +23,9 @@ import org.ml4j.nn.axons.AxonsType;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.neurons.Neurons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	}
 	
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitComponent(this);
 	}
 

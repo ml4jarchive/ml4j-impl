@@ -2,6 +2,7 @@ package org.ml4j.nn.components.builders;
 
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.neurons.Neurons;
 
 /**
@@ -12,7 +13,7 @@ import org.ml4j.nn.neurons.Neurons;
  * 
  * @author Michael Lavelle
  */
-public class ComponentMetadata implements NeuralComponent {
+public class ComponentMetadata implements NeuralComponent<ComponentMetadata> {
 	
 	/**
 	 * Default serialization id.
@@ -56,5 +57,10 @@ public class ComponentMetadata implements NeuralComponent {
 	@Override
 	public String getName() {
 		return description;
+	}
+
+	@Override
+	public String accept(NeuralComponentVisitor<ComponentMetadata> visitor) {
+		return null;
 	}
 }

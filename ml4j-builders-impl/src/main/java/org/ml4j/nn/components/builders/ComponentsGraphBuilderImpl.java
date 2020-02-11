@@ -31,7 +31,7 @@ import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnect
 import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends BaseGraphBuilderImpl<C, T> implements ComponentsGraphBuilder<C, T> {
 
 	public ComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,

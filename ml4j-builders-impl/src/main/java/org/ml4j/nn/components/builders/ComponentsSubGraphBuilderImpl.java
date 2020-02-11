@@ -25,7 +25,7 @@ import org.ml4j.nn.components.builders.componentsgraph.ComponentsSubGraphBuilder
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, T extends NeuralComponent<?>>
 		extends ComponentsNestedGraphBuilderImpl<P, ComponentsSubGraphBuilder<P, T>, T>
 		implements ComponentsSubGraphBuilder<P, T>, PathEnder<P, ComponentsSubGraphBuilder<P, T>> {
 

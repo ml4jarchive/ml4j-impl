@@ -27,7 +27,7 @@ import org.ml4j.nn.components.builders.common.PathEnder;
 import org.ml4j.nn.components.builders.skipconnection.Axons3DGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class Axons3DSubGraphBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, Q extends AxonsGraphBuilder<Q, T>, T extends NeuralComponent>
+public class Axons3DSubGraphBuilderImpl<P extends Axons3DGraphBuilder<P, Q, T>, Q extends AxonsGraphBuilder<Q, T>, T extends NeuralComponent<?>>
 		extends BaseNested3DGraphBuilderImpl<P, Axons3DSubGraphBuilder<P, Q, T>, AxonsSubGraphBuilder<Q, T>, T>
 		implements Axons3DSubGraphBuilder<P, Q, T>, PathEnder<P, Axons3DSubGraphBuilder<P, Q, T>> {
 

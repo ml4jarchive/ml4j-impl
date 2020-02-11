@@ -19,7 +19,7 @@ import org.ml4j.nn.components.builders.initial.InitialComponents3DGraphBuilderIm
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public class DefaultComponents3DGraphBuilderFactory<T extends NeuralComponent>
+public class DefaultComponents3DGraphBuilderFactory<T extends NeuralComponent<?>>
 		implements Components3DGraphBuilderFactory<T> {
 
 	private NeuralComponentFactory<T> directedComponentFactory;

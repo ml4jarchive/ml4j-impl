@@ -19,10 +19,10 @@ import java.util.List;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentChainBatch;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainBipoleGraph;
 import org.ml4j.nn.neurons.Neurons;
 
@@ -71,7 +71,7 @@ public abstract class DefaultDirectedComponentChainBipoleGraphBase implements De
 	}
 	
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		
 		List<DefaultChainableDirectedComponent<?, ?>> parallelComponents = new ArrayList<>();
 		parallelComponents.addAll(parallelComponentChainsBatch.getComponents());

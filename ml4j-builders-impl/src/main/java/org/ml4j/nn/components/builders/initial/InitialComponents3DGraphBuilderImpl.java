@@ -24,7 +24,7 @@ import org.ml4j.nn.components.builders.componentsgraph.InitialComponentsGraphBui
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public class InitialComponents3DGraphBuilderImpl<T extends NeuralComponent>
+public class InitialComponents3DGraphBuilderImpl<T extends NeuralComponent<?>>
 		extends Components3DGraphBuilderImpl<InitialComponents3DGraphBuilder<T>, InitialComponentsGraphBuilder<T>, T>
 		implements InitialComponents3DGraphBuilder<T> {
 

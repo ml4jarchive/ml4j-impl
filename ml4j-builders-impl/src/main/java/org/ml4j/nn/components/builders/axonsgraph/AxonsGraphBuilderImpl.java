@@ -27,7 +27,7 @@ import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public abstract class AxonsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+public abstract class AxonsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends BaseGraphBuilderImpl<C, T> implements AxonsGraphBuilder<C, T> {
 
 	protected Supplier<C> previousSupplier;

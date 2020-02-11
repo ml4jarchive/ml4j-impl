@@ -23,7 +23,7 @@ import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsSubGraphBuilder;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class ComponentsParallelPathsBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent>
+public class ComponentsParallelPathsBuilderImpl<C extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		implements ParallelPathsBuilder<ComponentsSubGraphBuilder<C, T>> {
 
 	private NeuralComponentFactory<T> directedComponentFactory;
