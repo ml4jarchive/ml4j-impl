@@ -86,12 +86,12 @@ public class AveragePoolingFeedForwardLayerImpl
 
 	@Override
 	public int getFilterHeight() {
-		return getPrimaryAxons().getConfig().getFilterHeight();
+		return getPrimaryAxons().getConfig().getFilterHeight(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons());
 	}
 
 	@Override
 	public int getFilterWidth() {
-		return getPrimaryAxons().getConfig().getFilterWidth();
+		return getPrimaryAxons().getConfig().getFilterWidth(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons());
 	}
 
 	@Override
