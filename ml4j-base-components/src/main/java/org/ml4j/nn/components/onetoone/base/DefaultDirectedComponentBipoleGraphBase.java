@@ -16,9 +16,10 @@ package org.ml4j.nn.components.onetoone.base;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.manytomany.DefaultDirectedComponentBatch;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
+import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.neurons.Neurons;
 
@@ -68,8 +69,8 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	}
 	
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
-		return visitor.visitParallelComponentBatch(name, parallelComponentBatch.getComponents(), pathCombinationStrategy);
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
+		return visitor.visitComponent(this);
 	}
 
 	@Override

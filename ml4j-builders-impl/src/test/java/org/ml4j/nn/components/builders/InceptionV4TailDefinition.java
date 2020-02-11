@@ -57,7 +57,7 @@ public class InceptionV4TailDefinition implements Component3DtoNon3DGraphDefinit
 		return new Neurons(1001, false);
 	}
 
-	public <T extends NeuralComponent> InitialComponentsGraphBuilder<T> createComponentGraph(
+	public <T extends NeuralComponent<?>> InitialComponentsGraphBuilder<T> createComponentGraph(
 			InitialComponents3DGraphBuilder<T> start, NeuralComponentFactory<T> neuralComponentFactory) {
 		return start
 					.withAveragePoolingAxons("average_pooling_5")

@@ -23,11 +23,11 @@ import org.ml4j.nn.components.ChainableDirectedComponentActivation;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
@@ -163,7 +163,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	}
 
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
-		return visitor.visitSequentialComponentChain(components);
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
+		return visitor.visitComponent(this);
 	}
 }

@@ -28,7 +28,7 @@ import org.ml4j.nn.sessions.SessionImpl;
  *
  * @param <T> The type of NeuralComponent within the Session.
  */
-public class SessionFactoryImpl<T extends NeuralComponent> implements SessionFactory<T> {
+public class SessionFactoryImpl<T extends NeuralComponent<?>> implements SessionFactory<T> {
 
 	private NeuralComponentFactory<T> neuralComponentFactory;
 	private MatrixFactory matrixFactory;

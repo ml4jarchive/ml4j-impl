@@ -30,7 +30,7 @@ import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.Axons3DGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class SynapsesAxons3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D extends AxonsBuilder<T>, T extends NeuralComponent>
+public class SynapsesAxons3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends
 		BaseNested3DGraphBuilderImpl<C, CompletedSynapsesAxons3DGraphBuilder<C, D, T>, CompletedSynapsesAxonsGraphBuilder<D, T>, T>
 		implements SynapsesAxons3DGraphBuilder<C, D, T> {

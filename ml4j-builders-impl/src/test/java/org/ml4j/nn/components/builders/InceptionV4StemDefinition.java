@@ -54,7 +54,7 @@ public class InceptionV4StemDefinition implements Component3Dto3DGraphDefinition
 		return new Neurons3D(35, 35, 384, false);
 	}
 
-	public <T extends NeuralComponent> InitialComponents3DGraphBuilder<T> createComponentGraph(
+	public <T extends NeuralComponent<?>> InitialComponents3DGraphBuilder<T> createComponentGraph(
 			InitialComponents3DGraphBuilder<T> start, NeuralComponentFactory<T> neuralComponentFactory) {
 		return start
 				.withConvolutionalAxons("conv2d_1")

@@ -37,7 +37,7 @@ import org.ml4j.nn.definitions.Component3Dto3DGraphDefinition;
 import org.ml4j.nn.definitions.Component3DtoNon3DGraphDefinition;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public abstract class Components3DGraphBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent>
+public abstract class Components3DGraphBuilderImpl<C extends Components3DGraphBuilder<C, D, T>, D extends ComponentsGraphBuilder<D, T>, T extends NeuralComponent<?>>
 		extends Base3DGraphBuilderImpl<C, D, T> implements Components3DGraphBuilder<C, D, T> {
 
 	public Components3DGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,

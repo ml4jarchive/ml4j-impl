@@ -29,7 +29,7 @@ import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
 
-public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, C extends AxonsBuilder<T>, T extends NeuralComponent>
+public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, C extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends BaseGraphBuilderImpl<C, T> implements PathEnder<P, C> {
 
 	protected Supplier<P> parentGraph;

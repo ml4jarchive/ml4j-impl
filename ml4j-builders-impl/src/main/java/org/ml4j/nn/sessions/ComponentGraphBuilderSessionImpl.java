@@ -31,7 +31,7 @@ import org.ml4j.nn.neurons.Neurons3D;
  *
  * @param <T> The type of NeuralComponent within the session.
  */
-public class ComponentGraphBuilderSessionImpl<T extends NeuralComponent> implements ComponentGraphBuilderSession<T> {
+public class ComponentGraphBuilderSessionImpl<T extends NeuralComponent<?>> implements ComponentGraphBuilderSession<T> {
 
 	private NeuralComponentFactory<T> neuralComponentFactory;
 	private DirectedComponentsContext directedComponentsContext;

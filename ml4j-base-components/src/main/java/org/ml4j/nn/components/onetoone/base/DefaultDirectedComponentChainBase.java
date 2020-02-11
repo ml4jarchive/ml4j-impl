@@ -19,9 +19,9 @@ import java.util.List;
 
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChainActivation;
 
@@ -56,8 +56,8 @@ public abstract class DefaultDirectedComponentChainBase
 	}
 	
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
-		return visitor.visitSequentialComponentChain(sequentialComponents);
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
+		return visitor.visitComponent(this);
 	}
 
 }

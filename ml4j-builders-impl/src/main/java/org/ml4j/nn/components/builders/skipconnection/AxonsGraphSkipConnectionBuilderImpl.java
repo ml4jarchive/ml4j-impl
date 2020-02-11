@@ -30,7 +30,7 @@ import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
 
-public class AxonsGraphSkipConnectionBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+public class AxonsGraphSkipConnectionBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent<?>>
 		extends BaseNestedGraphBuilderImpl<C, AxonsGraphSkipConnectionBuilder<C, T>, T>
 		implements AxonsGraphSkipConnectionBuilder<C, T>, SkipConnectionEnder<C> {
 

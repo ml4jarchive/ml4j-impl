@@ -30,7 +30,7 @@ import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 
-public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Axons3DBuilder<T>, D extends AxonsBuilder<T>, T extends NeuralComponent>
+public abstract class BaseNested3DGraphBuilderImpl<P extends ComponentsContainer<Neurons3D, T>, C extends Axons3DBuilder<T>, D extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends Base3DGraphBuilderImpl<C, D, T> {
 
 	protected Supplier<P> parent3DGraph;

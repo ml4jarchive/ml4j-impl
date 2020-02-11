@@ -29,7 +29,7 @@ import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBu
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent>
+public class AxonsSubGraphBuilderImpl<C extends ComponentsContainer<Neurons, T>, T extends NeuralComponent<?>>
 		extends BaseNestedGraphBuilderImpl<C, AxonsSubGraphBuilder<C, T>, T>
 		implements AxonsSubGraphBuilder<C, T>, PathEnder<C, AxonsSubGraphBuilder<C, T>> {
 

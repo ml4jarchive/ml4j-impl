@@ -27,12 +27,12 @@ import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponentActivation;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.manytoone.PathCombinationStrategy;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraph;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentBipoleGraphActivation;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
@@ -220,7 +220,7 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitParallelComponentBatch(name, axonsGraph.getEdges().getComponents(), PathCombinationStrategy.ADDITION);
 	}
 

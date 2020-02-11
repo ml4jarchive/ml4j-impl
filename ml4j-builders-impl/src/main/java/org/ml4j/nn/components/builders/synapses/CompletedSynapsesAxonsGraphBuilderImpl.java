@@ -32,7 +32,7 @@ import org.ml4j.nn.components.builders.common.ParallelPathsBuilder;
 import org.ml4j.nn.components.builders.skipconnection.AxonsGraphSkipConnectionBuilderImpl;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 
-public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder<T>, T extends NeuralComponent>
+public class CompletedSynapsesAxonsGraphBuilderImpl<P extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends BaseGraphBuilderImpl<CompletedSynapsesAxonsGraphBuilder<P, T>, T>
 		implements CompletedSynapsesAxonsGraphBuilder<P, T>, SynapsesEnder<P> {
 

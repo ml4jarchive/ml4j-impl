@@ -34,7 +34,7 @@ import org.ml4j.nn.components.builders.skipconnection.ComponentsGraphSkipConnect
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 
-public abstract class ComponentsNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, C extends AxonsBuilder<T>, T extends NeuralComponent>
+public abstract class ComponentsNestedGraphBuilderImpl<P extends ComponentsContainer<Neurons, T>, C extends AxonsBuilder<T>, T extends NeuralComponent<?>>
 		extends BaseNestedGraphBuilderImpl<P, C, T> implements ComponentsGraphBuilder<C, T> {
 
 	public ComponentsNestedGraphBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory,

@@ -27,10 +27,10 @@ import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
-import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentVisitor;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
@@ -130,7 +130,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	
 
 	@Override
-	public String accept(DefaultChainableDirectedComponentVisitor visitor) {
+	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitSequentialComponentChain(getComponents());
 	}
 }
