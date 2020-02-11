@@ -8,6 +8,7 @@ import org.ml4j.images.Image;
 import org.ml4j.images.Images;
 import org.ml4j.images.MultiChannelImages;
 import org.ml4j.images.SingleChannelImages;
+import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.neurons.format.ImageNeuronsActivationFormat;
 import org.ml4j.nn.neurons.format.features.DimensionScope;
 
@@ -166,21 +167,21 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 	}
 
 	@Override
-	public Matrix im2ColConv(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
-			int strideWidth, int paddingHeight, int paddingWidth) {
+	public Matrix im2ColConv(MatrixFactory matrixFactory, Axons3DConfig config) {
 		Images imageWithPadding = getImages().softDup();
-		imageWithPadding.setPaddingHeight(paddingHeight);
-		imageWithPadding.setPaddingWidth(paddingWidth);
-		return imageWithPadding.im2colConvExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
+		imageWithPadding.setPaddingHeight(config.getPaddingHeight());
+		imageWithPadding.setPaddingWidth(config.getPaddingWidth());
+		return imageWithPadding.im2colConvExport(matrixFactory, config.getFilterHeight(), 
+				config.getFilterWidth(), config.getStrideHeight(), config.getStrideWidth());
 	}
 
 	@Override
-	public Matrix im2ColPool(MatrixFactory matrixFactory, int filterHeight, int filterWidth, int strideHeight,
-			int strideWidth, int paddingHeight, int paddingWidth) {
+	public Matrix im2ColPool(MatrixFactory matrixFactory,Axons3DConfig config) {
 		Images imageWithPadding = getImages().softDup();
-		imageWithPadding.setPaddingHeight(paddingHeight);
-		imageWithPadding.setPaddingWidth(paddingWidth);
-		return imageWithPadding.im2colPoolExport(matrixFactory, filterHeight, filterWidth, strideHeight, strideWidth);
+		imageWithPadding.setPaddingHeight(config.getPaddingHeight());
+		imageWithPadding.setPaddingWidth(config.getPaddingWidth());
+		return imageWithPadding.im2colPoolExport(matrixFactory, config.getFilterHeight(), config.getFilterWidth(), 
+				config.getStrideHeight(), config.getStrideWidth());
 	}
 
 	@Override
