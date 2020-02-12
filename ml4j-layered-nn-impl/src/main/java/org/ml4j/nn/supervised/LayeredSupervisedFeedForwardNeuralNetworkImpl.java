@@ -111,7 +111,7 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
 	}
 
 	@Override
-	public LayeredSupervisedFeedForwardNeuralNetwork dup() {
+	public LayeredSupervisedFeedForwardNeuralNetwork dup(DirectedComponentFactory directedComponentFactory) {
 		throw new UnsupportedOperationException("Not yet implemented");
 		// return new SupervisedFeedForwardNeuralNetworkImpl2(getLayer(0), getLayer(1));
 	}

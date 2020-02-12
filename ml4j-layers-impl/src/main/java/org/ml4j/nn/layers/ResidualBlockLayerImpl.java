@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.axons.FullyConnectedAxons;
+import org.ml4j.nn.axons.AxonsConfig;
 import org.ml4j.nn.axons.WeightsFormatImpl;
 import org.ml4j.nn.axons.WeightsMatrixImpl;
 import org.ml4j.nn.axons.WeightsMatrixOrientation;
-import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.activationfunctions.DifferentiableActivationFunctionComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponent;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -33,8 +31,6 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 	private FeedForwardLayer<?, ?> layer1;
 	private FeedForwardLayer<?, ?> layer2;
-	private DirectedComponentFactory directedComponentFactory;
-	private AxonsFactory axonsFactory;
 
 	/**
 	 * @param directedComponentFactory
@@ -43,15 +39,12 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 	 * @param layer2
 	 * @param matrixFactory
 	 */
-	public ResidualBlockLayerImpl(String name, DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
-			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2, MatrixFactory matrixFactory) {
+	public ResidualBlockLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
+			FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2) {
 		super(name, directedComponentFactory,
-				createComponentChain(name, directedComponentFactory, axonsFactory, layer1, layer2, matrixFactory),
-				matrixFactory);
+				createComponentChain(name, directedComponentFactory, layer1, layer2));
 		this.layer1 = layer1;
 		this.layer2 = layer2;
-		this.directedComponentFactory = directedComponentFactory;
-		this.axonsFactory = axonsFactory;
 	}
 
 	private static DefaultDirectedComponentChain createPrecedingChain(String name, DirectedComponentFactory directedComponentFactory,
@@ -62,7 +55,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		allComponents.addAll(layer1.getComponents());
 		allComponents.addAll(layer2.getComponents());
 
-		// Set preceedingComponents list to have all but the last synapses
+		// Set precedingComponents list to have all but the last synapses
 		List<DefaultChainableDirectedComponent<?, ?>> preceedingComponents = new ArrayList<>();
 		for (DefaultChainableDirectedComponent<?, ?> comp : allComponents.subList(0, allComponents.size() - 1)) {
 			preceedingComponents.add(comp);
@@ -79,9 +72,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 
 	}
 
-	private static DefaultDirectedComponentChain createComponentChain(String name, DirectedComponentFactory directedComponentFactory,
-			AxonsFactory axonsFactory, FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2,
-			MatrixFactory matrixFactory) {
+	private static DefaultDirectedComponentChain createComponentChain(String name, DirectedComponentFactory directedComponentFactory, FeedForwardLayer<?, ?> layer1, FeedForwardLayer<?, ?> layer2) {
 
 		// Final activation function component
 		DifferentiableActivationFunctionComponent finalActivationFunctionComponent = directedComponentFactory
@@ -97,12 +88,10 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 		// add to matchingAxonsList
 		if (layer1.getInputNeuronCount() != (layer2.getOutputNeuronCount() + 1)) {
 
-			FullyConnectedAxons matchingAxons = axonsFactory.createFullyConnectedAxons(
-					layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons(), 
+			DirectedAxonsComponent<Neurons, Neurons, ?> matchingComponent =  directedComponentFactory.createFullyConnectedAxonsComponent(name + ":MatchingAxons",
+					new AxonsConfig<>(layer1.getPrimaryAxons().getLeftNeurons(), layer2.getPrimaryAxons().getRightNeurons()),
 					new WeightsMatrixImpl(null, new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), 
-							Arrays.asList(Dimension.OUTPUT_FEATURE),WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)),  null);
-			DirectedAxonsComponent<Neurons, Neurons, ?> matchingComponent = directedComponentFactory
-					.createDirectedAxonsComponent(name + ":MatchingAxons", (matchingAxons));
+					Arrays.asList(Dimension.OUTPUT_FEATURE),WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)), null);
 			matchingAxonsList.add(matchingComponent);
 		}
 
@@ -158,9 +147,8 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 	}
 
 	@Override
-	public ResidualBlockLayerImpl dup() {
-		return new ResidualBlockLayerImpl(name, directedComponentFactory, axonsFactory, layer1.dup(), layer2.dup(),
-				matrixFactory);
+	public ResidualBlockLayerImpl dup(DirectedComponentFactory directedComponentFactory) {
+		return new ResidualBlockLayerImpl(name, directedComponentFactory, layer1.dup(directedComponentFactory), layer2.dup(directedComponentFactory));
 	}
 
 	@Override
@@ -171,7 +159,7 @@ public class ResidualBlockLayerImpl extends AbstractFeedForwardLayer<Axons<?, ?,
 	@Override
 	public List<DefaultChainableDirectedComponent<?, ?>> getComponents() {
 		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
-		components.addAll(componentChain.getComponents());
+		components.addAll(this.trailingActivationFunctionDirectedComponentChain.getComponents());
 		return components;
 	}
 

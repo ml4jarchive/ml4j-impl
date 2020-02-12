@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.ml4j.Matrix;
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.TrainableAxons;
@@ -66,24 +65,27 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 
 	protected boolean withBatchNorm;
 
-	protected DirectedComponentFactory directedComponentFactory;
-	
 	/**
 	 * @param primaryAxons       The primary Axons
 	 * @param activationFunction The primary activation function
 	 * @param matrixFactory      The matrix factory
 	 * @param withBatchNorm      Whether to enable batch norm.
 	 */
+	
+	/**
+	 * @param name The name of the layer.
+	 * @param directedComponentFactory The directed component factory.
+	 * @param primaryAxons The primary Axons.
+	 * @param activationFunction The primary activation function.
+	 * @param withBatchNorm Whether to enable batch norm for this layer.
+	 */
 	protected FeedForwardLayerBase(String name, DirectedComponentFactory directedComponentFactory, A primaryAxons,
-			DifferentiableActivationFunction activationFunction, MatrixFactory matrixFactory, boolean withBatchNorm) {
+			DifferentiableActivationFunction activationFunction, boolean withBatchNorm) {
 		super(name, directedComponentFactory, directedComponentFactory.createDirectedComponentChain(
-				getSynapses(name, directedComponentFactory, matrixFactory, primaryAxons, activationFunction, withBatchNorm)),
-				matrixFactory);
+				getSynapses(name, directedComponentFactory, primaryAxons, activationFunction, withBatchNorm)));
 		this.primaryAxons = primaryAxons;
 		this.primaryActivationFunction = activationFunction;
-		this.matrixFactory = matrixFactory;
 		this.withBatchNorm = withBatchNorm;
-		this.directedComponentFactory = directedComponentFactory;
 	}
 
 	@Override
@@ -107,7 +109,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 	}
 
 	protected static List<DefaultChainableDirectedComponent<?, ?>> getSynapses(String name, 
-			DirectedComponentFactory directedComponentFactory, MatrixFactory matrixFactory, Axons<?, ?, ?> primaryAxons,
+			DirectedComponentFactory directedComponentFactory, Axons<?, ?, ?> primaryAxons,
 			DifferentiableActivationFunction primaryActivationFunction, boolean withBatchNorm) {
 		Objects.requireNonNull(primaryAxons, "primaryAxons");
 		List<DefaultChainableDirectedComponent<?, ?>> synapses = new ArrayList<>();
@@ -119,19 +121,10 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		return synapses;
 	}
 
-	@Override
-	public List<DefaultChainableDirectedComponent<?, ?>> getComponents() {
-		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
-		Objects.requireNonNull(primaryAxons, "primaryAxons");
-		components.addAll(getSynapses(name, directedComponentFactory, matrixFactory, primaryAxons, primaryActivationFunction,
-				withBatchNorm));
-		return components;
-	}
-
-	protected TrailingActivationFunctionDirectedComponentChain createChain() {
+	protected TrailingActivationFunctionDirectedComponentChain createChain(DirectedComponentFactory directedComponentFactory) {
 
 		DefaultDirectedComponentChain synapseChain = directedComponentFactory.createDirectedComponentChain(getSynapses(name, 
-				directedComponentFactory, matrixFactory, primaryAxons, primaryActivationFunction, withBatchNorm));
+				directedComponentFactory, primaryAxons, primaryActivationFunction, withBatchNorm));
 
 		List<DefaultChainableDirectedComponent<? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?>> chainableComponents = new ArrayList<>();
 		chainableComponents.addAll(synapseChain.decompose());
@@ -146,7 +139,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		DirectedComponentsContext componentsContext = new DirectedComponentsContextImpl(
 				directedLayerContext.getMatrixFactory(), directedLayerContext.isTrainingContext());
 
-		TrailingActivationFunctionDirectedComponentChainActivation activation = createChain()
+		TrailingActivationFunctionDirectedComponentChainActivation activation = this.trailingActivationFunctionDirectedComponentChain
 				.forwardPropagate(inputNeuronsActivation, componentsContext);
 
 		return new DirectedLayerActivationImpl(this, activation, directedLayerContext);
@@ -155,7 +148,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 	@Override
 	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext) {
 		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(
-				matrixFactory, directedComponentsContext.isTrainingContext()));
+				directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
 	}
 
 	@Override

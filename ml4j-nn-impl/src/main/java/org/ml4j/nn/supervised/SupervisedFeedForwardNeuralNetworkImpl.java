@@ -165,9 +165,9 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	}
 
 	@Override
-	public SupervisedFeedForwardNeuralNetwork dup() {
-		return new SupervisedFeedForwardNeuralNetworkImpl(name, initialisingComponentChain.dup(),
-				trailingActivationFunctionComponentChain.dup());
+	public SupervisedFeedForwardNeuralNetwork dup(DirectedComponentFactory directedComponentFactory) {
+		return new SupervisedFeedForwardNeuralNetworkImpl(name, initialisingComponentChain.dup(directedComponentFactory),
+				trailingActivationFunctionComponentChain.dup(directedComponentFactory));
 	}
 
 	@Override

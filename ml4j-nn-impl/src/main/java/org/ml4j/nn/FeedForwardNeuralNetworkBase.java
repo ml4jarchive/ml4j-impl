@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Lavelle
  */
-public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNetworkContext, H extends DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?>, N extends FeedForwardNeuralNetwork<C, N>>
+public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNetworkContext, H extends DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?, DirectedComponentFactory>, N extends FeedForwardNeuralNetwork<C, N>>
 		implements FeedForwardNeuralNetwork<C, N> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedForwardNeuralNetworkBase.class);

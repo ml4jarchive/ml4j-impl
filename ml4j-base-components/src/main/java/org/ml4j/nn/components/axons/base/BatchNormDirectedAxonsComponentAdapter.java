@@ -18,6 +18,7 @@ import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.components.axons.BatchNormDirectedAxonsComponent;
 import org.ml4j.nn.components.axons.DirectedAxonsComponentActivation;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
 import org.ml4j.nn.neurons.Neurons;
 
@@ -42,8 +43,8 @@ public class BatchNormDirectedAxonsComponentAdapter<N extends Neurons> extends D
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public BatchNormDirectedAxonsComponentAdapter<N> dup() {
-		return new BatchNormDirectedAxonsComponentAdapter<N>( (BatchNormDirectedAxonsComponent<N, ?>) delegated.dup());
+	public BatchNormDirectedAxonsComponentAdapter<N> dup(DirectedComponentFactory directedComponentFactory) {
+		return new BatchNormDirectedAxonsComponentAdapter<>( (BatchNormDirectedAxonsComponent<N, ?>) delegated.dup(directedComponentFactory));
 	}
 
 	@SuppressWarnings("unchecked")

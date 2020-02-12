@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
@@ -29,8 +28,8 @@ import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.NeuralComponentVisitor;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
-import org.ml4j.nn.components.generic.DirectedComponentChain;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChain;
 import org.ml4j.nn.components.onetone.TrailingActivationFunctionDirectedComponentChainActivation;
 import org.ml4j.nn.components.onetoone.TrailingActivationFunctionDirectedComponentChainImpl;
@@ -56,31 +55,34 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFeedForwardLayer.class);
 
-	protected MatrixFactory matrixFactory;
 	protected String name;
 
-	protected DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain;
 	protected TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionDirectedComponentChain;
+	
+	/**
+	 * @param name The name of the layer.
+	 * @param trailingActivationFunctionDirectedComponentChain The chain of components, ending with an activation function.
+	 */
+	protected AbstractFeedForwardLayer(String name,
+			TrailingActivationFunctionDirectedComponentChain trailingActivationFunctionDirectedComponentChain) {
+		this.name = name;
+		this.trailingActivationFunctionDirectedComponentChain = trailingActivationFunctionDirectedComponentChain;
+	}
 
 	/**
-	 * @param primaryAxons       The primary Axons
-	 * @param activationFunction The primary activation function
-	 * @param matrixFactory      The matrix factory
-	 * @param withBatchNorm      Whether to enable batch norm.
+	 * 
+	 * @param name The name of the layer.
+	 * @param directedComponentFactory The directed component factory.
+	 * @param componentChain The initialising component chain.
 	 */
 	protected AbstractFeedForwardLayer(String name, DirectedComponentFactory directedComponentFactory,
-			DirectedComponentChain<NeuronsActivation, ? extends DefaultChainableDirectedComponent<?, ?>, ?, ?> componentChain,
-			MatrixFactory matrixFactory) {
-		this.componentChain = componentChain;
-		List<DefaultChainableDirectedComponent<?, ?>> chainableComponents = new ArrayList<>();
-		for (DefaultChainableDirectedComponent<?, ?> component : componentChain.getComponents()) {
-			chainableComponents.addAll(component.decompose());
-		}
+			DefaultDirectedComponentChain componentChain) {
 		this.trailingActivationFunctionDirectedComponentChain = new TrailingActivationFunctionDirectedComponentChainImpl(
-				directedComponentFactory, chainableComponents);
-		this.matrixFactory = matrixFactory;
+				directedComponentFactory, componentChain.decompose());
 		this.name = name;
 	}
+	
+	
 
 	@Override
 	public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
@@ -99,7 +101,7 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	@Override
 	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext) {
 		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(
-				matrixFactory, directedComponentsContext.isTrainingContext()));
+				directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
 	}
 
 	@Override
@@ -127,7 +129,13 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	public String getName() {
 		return name;
 	}
-	
+
+	@Override
+	public List<DefaultChainableDirectedComponent<?, ?>> getComponents() {
+		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
+		components.addAll(trailingActivationFunctionDirectedComponentChain.getComponents());
+		return components;
+	}
 
 	@Override
 	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {

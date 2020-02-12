@@ -44,9 +44,9 @@ public abstract class ScaleAndShiftAxonsTestBase {
     int featureCount = 10;
     Matrix scaleRowVector = matrixFactory.createRandn(1, featureCount);
     Matrix shiftRowVector = matrixFactory.createRandn(1, featureCount);
-    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(scaleRowVector, shiftRowVector);
     Neurons leftNeurons = new Neurons(featureCount, false);
     Neurons rightNeurons = new Neurons(featureCount, false);
+    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(leftNeurons, rightNeurons, scaleRowVector, shiftRowVector);
 
     createAxons(leftNeurons, rightNeurons, config);
   }
@@ -57,9 +57,9 @@ public abstract class ScaleAndShiftAxonsTestBase {
     int featureCount = 10;
     Matrix scaleColumnVector = matrixFactory.createRandn(featureCount, 1);
     Matrix shiftColumnVector = matrixFactory.createRandn(featureCount, 1);
-    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(scaleColumnVector, shiftColumnVector);
     Neurons leftNeurons = new Neurons(featureCount, true);
     Neurons rightNeurons = new Neurons(featureCount, false);
+    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(leftNeurons, rightNeurons, scaleColumnVector, shiftColumnVector);
 
     ScaleAndShiftAxons<?> axons = createAxons(leftNeurons, rightNeurons, config);
 
@@ -97,9 +97,9 @@ public abstract class ScaleAndShiftAxonsTestBase {
     int featureCount = 10;
     Matrix scaleRowVector = matrixFactory.createRandn(1, featureCount);
     Matrix shiftRowVector = matrixFactory.createRandn(1, featureCount);
-    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(scaleRowVector, shiftRowVector);
     Neurons leftNeurons = new Neurons(featureCount, true);
     Neurons rightNeurons = new Neurons(featureCount, true);
+    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(leftNeurons, rightNeurons, scaleRowVector, shiftRowVector);
 
     createAxons(leftNeurons, rightNeurons, config);
   }
@@ -110,9 +110,9 @@ public abstract class ScaleAndShiftAxonsTestBase {
 	  int featureCount = 10;
 	    Matrix scaleColumnVector = matrixFactory.createRandn(featureCount, 1);
 	    Matrix shiftColumnVector = matrixFactory.createRandn(featureCount, 1);
-	    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(scaleColumnVector, shiftColumnVector);
 	    Neurons leftNeurons = new Neurons(featureCount, true);
 	    Neurons rightNeurons = new Neurons(featureCount, false);
+	    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(leftNeurons, rightNeurons, scaleColumnVector, shiftColumnVector);
 
 	    ScaleAndShiftAxons<?> axons = createAxons(leftNeurons, rightNeurons, config);
 
@@ -146,9 +146,9 @@ public abstract class ScaleAndShiftAxonsTestBase {
     int featureCount = 10;
     Matrix scaleColumnVector = matrixFactory.createRandn(featureCount, 1);
     Matrix shiftColumnVector = matrixFactory.createRandn(featureCount, 1);
-    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(scaleColumnVector, shiftColumnVector);
     Neurons leftNeurons = new Neurons(featureCount, true);
     Neurons rightNeurons = new Neurons(featureCount, false);
+    ScaleAndShiftAxonsConfig config = new ScaleAndShiftAxonsConfig(leftNeurons, rightNeurons, scaleColumnVector, shiftColumnVector);
 
     ScaleAndShiftAxons<?> axons = createAxons(leftNeurons, rightNeurons, config);
 

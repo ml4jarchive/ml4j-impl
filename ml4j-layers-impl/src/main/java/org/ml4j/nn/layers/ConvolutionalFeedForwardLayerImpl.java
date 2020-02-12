@@ -16,15 +16,15 @@
 
 package org.ml4j.nn.layers;
 
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.ConvolutionalAxons;
+import org.ml4j.nn.axons.WeightsFormat;
 import org.ml4j.nn.axons.WeightsMatrix;
+import org.ml4j.nn.axons.WeightsMatrixImpl;
 import org.ml4j.nn.axons.factories.AxonsFactory;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
-import org.ml4j.nn.neurons.Neurons3D;
 
 /**
  * Default implementation of a ConvolutionalFeedForwardLayer.
@@ -41,104 +41,76 @@ public class ConvolutionalFeedForwardLayerImpl
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * @param name					   The name of this layer.
 	 * @param directedComponentFactory A factory implementation to create directed
 	 *                                 components.
 	 * @param primaryAxons             The primary Axons.
 	 * @param activationFunction       The primary activation function.
-	 * @param matrixFactory            The matrix factory.
 	 * @param withBatchNorm            Whether to enable batch norm for this Layer.
 	 */
 	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			ConvolutionalAxons primaryAxons, DifferentiableActivationFunction activationFunction,
-			MatrixFactory matrixFactory, boolean withBatchNorm) {
-		super(name, directedComponentFactory, primaryAxons, activationFunction, matrixFactory, withBatchNorm);
+			ConvolutionalAxons primaryAxons, DifferentiableActivationFunction activationFunction, boolean withBatchNorm) {
+		super(name, directedComponentFactory, primaryAxons, activationFunction, withBatchNorm);
 	}
-
+	
 	/**
+	 * 
+	 * @param name	The name of the layer.
 	 * @param directedComponentFactory  A factory implementation to create directed
 	 *                                  components.
 	 * @param axonsFactory              A factory implementation to create axons.
-	 * @param inputNeurons              The input Neurons.
-	 * @param outputNeurons             The output Neurons
-	 * @param stride                    The stride.
-	 * @param zeroPadding               The amount of zero padding.
-	 * @param primaryActivationFunction The primary activation function.
-	 * @param matrixFactory             The MatrixFactory to use to initialise the
-	 *                                  weights
-	 * @param withBatchNorm             Whether to enable batch norm for this Layer.
+	 * @param axonsConfig				The config of the convolutional axons.
+	 * @param weightsFormat				The weights format
+	 * @param primaryActivationFunction The primary activation function of this layer.
+	 * @param withBatchNorm				Whether to enable batch norm.s
 	 */
 	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons, int stride, int zeroPadding,
-			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
+			AxonsFactory axonsFactory, Axons3DConfig axonsConfig, WeightsFormat weightsFormat,
+			DifferentiableActivationFunction primaryActivationFunction,
 			boolean withBatchNorm) {
 		super(name, directedComponentFactory,
-				axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons,
-						new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride)
-								.withPaddingWidth(zeroPadding).withPaddingHeight(zeroPadding),
-						null, null),
-				primaryActivationFunction, matrixFactory, withBatchNorm);
+				axonsFactory.createConvolutionalAxons(axonsConfig,
+						new WeightsMatrixImpl(null, weightsFormat), null),
+				primaryActivationFunction, withBatchNorm);
 	}
-
+	
 	/**
-	 * Constructor for use with stride of 1 and no padding.
 	 * 
+	 * @param name	The name of the layer.
 	 * @param directedComponentFactory  A factory implementation to create directed
-	 *                                  components.
+	 *                                  components.	
 	 * @param axonsFactory              A factory implementation to create axons.
-	 * @param inputNeurons              The input Neurons.
-	 * @param outputNeurons             The output Neurons
-	 * @param primaryActivationFunction The primary activation function.
-	 * @param matrixFactory             The MatrixFactory to use to initialise the
-	 *                                  weights
-	 * @param connectionWeights         The connectionWeights
-	 * @param withBatchNorm             Whether to enable batch norm for this Layer.
+	 * @param axonsConfig				The config of the convolutional axons.
+	 * @param weightsMatrix				The weights matrix
+	 * @param biasMatrix				The bias matrix - only required if the left neurons of the axons config have a bias unit
+	 * 									specified - may be null otherwise.
+	 * @param primaryActivationFunction The primary activation function of this layer.
+	 * @param withBatchNorm				Whether to enable batch norm.s
 	 */
 	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons,
-			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-			WeightsMatrix connectionWeights, BiasMatrix biases, boolean withBatchNorm) {
-		this(name, directedComponentFactory, axonsFactory, inputNeurons, outputNeurons, 1, 0, primaryActivationFunction,
-				matrixFactory, connectionWeights, biases, withBatchNorm);
+			AxonsFactory axonsFactory, Axons3DConfig axonsConfig, WeightsMatrix weightsMatrix, BiasMatrix biasMatrix, 
+			DifferentiableActivationFunction primaryActivationFunction,
+			boolean withBatchNorm) {
+		super(name, directedComponentFactory,
+				axonsFactory.createConvolutionalAxons(axonsConfig,
+						weightsMatrix, biasMatrix),
+				primaryActivationFunction, withBatchNorm);
 	}
-
-	/**
-	 * @param directedComponentFactory  A factory implementation to create directed
-	 *                                  components.
-	 * @param axonsFactory              A factory implementation to create axons.
-	 * @param inputNeurons              The input Neurons.
-	 * @param outputNeurons             The output Neurons
-	 * @param stride                    The stride.
-	 * @param zeroPadding               The amount of zero padding.
-	 * @param primaryActivationFunction The primary activation function.
-	 * @param matrixFactory             The MatrixFactory to use to initialise the
-	 *                                  weights
-	 * @param connectionWeights         The connectionWeights
-	 * @param withBatchNorm             Whether to enable batch norm for this Layer.
-	 */
-	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			AxonsFactory axonsFactory, Neurons3D inputNeurons, Neurons3D outputNeurons, int stride, int zeroPadding,
-			DifferentiableActivationFunction primaryActivationFunction, MatrixFactory matrixFactory,
-			WeightsMatrix connectionWeights, BiasMatrix biases, boolean withBatchNorm) {
-		super(name, directedComponentFactory, axonsFactory.createConvolutionalAxons(inputNeurons, outputNeurons,
-				new Axons3DConfig().withStrideWidth(stride).withStrideHeight(stride).withPaddingWidth(zeroPadding)
-						.withPaddingHeight(zeroPadding),
-				connectionWeights, biases), primaryActivationFunction, matrixFactory, withBatchNorm);
-	}
-
+	
 	@Override
-	public ConvolutionalFeedForwardLayer dup() {
-		return new ConvolutionalFeedForwardLayerImpl(name, directedComponentFactory, primaryAxons.dup(),
-				primaryActivationFunction, matrixFactory, withBatchNorm);
+	public ConvolutionalFeedForwardLayer dup(DirectedComponentFactory directedComponentFactory) {
+		return new ConvolutionalFeedForwardLayerImpl(name, 
+				directedComponentFactory,  this.primaryAxons.dup(), this.primaryActivationFunction, withBatchNorm);
 	}
 
 	@Override
 	public int getFilterHeight() {
-		return getPrimaryAxons().getConfig().getFilterHeight(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons());
+		return getPrimaryAxons().getConfig().getFilterHeight();
 	}
 
 	@Override
 	public int getFilterWidth() {
-		return getPrimaryAxons().getConfig().getFilterWidth(primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons());
+		return getPrimaryAxons().getConfig().getFilterWidth();
 	}
 
 	@Override

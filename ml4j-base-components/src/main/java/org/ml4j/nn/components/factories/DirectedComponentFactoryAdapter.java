@@ -21,6 +21,7 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.Axons3DConfig;
+import org.ml4j.nn.axons.AxonsConfig;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.NeuralComponentType;
@@ -56,32 +57,27 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 	
 	@Override
-	public DirectedAxonsComponent<Neurons, Neurons, ?> createFullyConnectedAxonsComponent(String name, Neurons leftNeurons,
-			Neurons rightNeurons, WeightsMatrix connectionWeights, BiasMatrix biases) {
-		return new DirectedAxonsComponentAdapter<>(delegated.createFullyConnectedAxonsComponent(name, leftNeurons, 
-				rightNeurons, connectionWeights, biases));
+	public DirectedAxonsComponent<Neurons, Neurons, ?> createFullyConnectedAxonsComponent(String name, AxonsConfig<Neurons, Neurons> axonsConfig, WeightsMatrix connectionWeights, BiasMatrix biases) {
+		return new DirectedAxonsComponentAdapter<>(delegated.createFullyConnectedAxonsComponent(name, axonsConfig, connectionWeights, biases));
 	}
 
 	@Override
-	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createConvolutionalAxonsComponent(String name, Neurons3D leftNeurons,
-			Neurons3D rightNeurons, Axons3DConfig config,
+	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createConvolutionalAxonsComponent(String name,Axons3DConfig config,
 			WeightsMatrix connectionWeights, BiasMatrix biases) {
-		return new DirectedAxonsComponentAdapter<>(delegated.createConvolutionalAxonsComponent(name, leftNeurons, rightNeurons, config,
+		return new DirectedAxonsComponentAdapter<>(delegated.createConvolutionalAxonsComponent(name, config,
 				connectionWeights, biases));
 	}
 
 	@Override
-	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createMaxPoolingAxonsComponent(String name, Neurons3D leftNeurons,
-			Neurons3D rightNeurons, Axons3DConfig config,
+	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createMaxPoolingAxonsComponent(String name, Axons3DConfig config,
 			boolean scaleOutputs) {
-		return new DirectedAxonsComponentAdapter<>(delegated.createMaxPoolingAxonsComponent(name, leftNeurons, rightNeurons, 
+		return new DirectedAxonsComponentAdapter<>(delegated.createMaxPoolingAxonsComponent(name,  
 				config, scaleOutputs));
 	}
 
 	@Override
-	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createAveragePoolingAxonsComponent(String name, Neurons3D leftNeurons,
-			Neurons3D rightNeurons, Axons3DConfig config) {
-		return new DirectedAxonsComponentAdapter<>(delegated.createAveragePoolingAxonsComponent(name, leftNeurons, rightNeurons, 
+	public DirectedAxonsComponent<Neurons3D, Neurons3D, ?> createAveragePoolingAxonsComponent(String name,  Axons3DConfig config) {
+		return new DirectedAxonsComponentAdapter<>(delegated.createAveragePoolingAxonsComponent(name,
 				config));
 	}
 

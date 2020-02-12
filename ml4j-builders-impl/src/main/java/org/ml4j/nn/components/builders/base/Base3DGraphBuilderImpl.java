@@ -139,7 +139,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 						builderState.getComponentsGraphNeurons().getCurrentNeurons().getDepth(), true);
 			}
 
-			Axons3DConfig axons3DConfig = new Axons3DConfig()
+			Axons3DConfig axons3DConfig = new Axons3DConfig(leftNeurons, builderState.getComponentsGraphNeurons().getRightNeurons())
 					.withStrideWidth(builderState.getConvolutionalAxonsBuilder().getStrideWidth())
 					.withStrideHeight(builderState.getConvolutionalAxonsBuilder().getStrideHeight())
 					.withPaddingWidth(builderState.getConvolutionalAxonsBuilder().getPaddingWidth())
@@ -153,8 +153,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 				axons3DConfig = axons3DConfig.withFilterWidth(builderState.getConvolutionalAxonsBuilder().getFilterWidth());
 			}
 
-			T axonsComponent = directedComponentFactory.createConvolutionalAxonsComponent(builderState.getConvolutionalAxonsBuilder().getName(), leftNeurons,
-					builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig,
+			T axonsComponent = directedComponentFactory.createConvolutionalAxonsComponent(builderState.getConvolutionalAxonsBuilder().getName(), axons3DConfig,
 					builderState.getConnectionWeights(), builderState.getBiases());
 
 			if (builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer() != null) {
@@ -176,7 +175,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 		}
 		if ((builderState.getMaxPoolingAxonsBuilder() != null)
 				&& builderState.getComponentsGraphNeurons().getRightNeurons() != null) {
-			Axons3DConfig axons3DConfig = new Axons3DConfig()
+			Axons3DConfig axons3DConfig = new Axons3DConfig(builderState.getComponentsGraphNeurons().getCurrentNeurons(), builderState.getComponentsGraphNeurons().getRightNeurons())
 					.withStrideWidth(builderState.getMaxPoolingAxonsBuilder().getStrideWidth())
 					.withStrideHeight(builderState.getMaxPoolingAxonsBuilder().getStrideHeight())
 					.withPaddingWidth(builderState.getMaxPoolingAxonsBuilder().getPaddingWidth())
@@ -191,8 +190,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 			}
 			
 			T axonsComponent = directedComponentFactory.createMaxPoolingAxonsComponent(builderState.getMaxPoolingAxonsBuilder().getName(),
-					builderState.getComponentsGraphNeurons().getCurrentNeurons(),
-					builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig,
+					axons3DConfig,
 					builderState.getMaxPoolingAxonsBuilder().isScaleOutputs());
 			this.components.add(axonsComponent);
 			builderState.setMaxPoolingAxonsBuilder(null);
@@ -235,7 +233,8 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 		}
 		if ((builderState.getAveragePoolingAxonsBuilder() != null)
 				&& builderState.getComponentsGraphNeurons().getRightNeurons() != null) {
-			Axons3DConfig axons3DConfig = new Axons3DConfig()
+			Axons3DConfig axons3DConfig = new Axons3DConfig(builderState.getComponentsGraphNeurons().getCurrentNeurons(),
+					builderState.getComponentsGraphNeurons().getRightNeurons())
 					.withStrideWidth(builderState.getAveragePoolingAxonsBuilder().getStrideWidth())
 					.withStrideHeight(builderState.getAveragePoolingAxonsBuilder().getStrideHeight())
 					.withPaddingWidth(builderState.getAveragePoolingAxonsBuilder().getPaddingWidth())
@@ -250,8 +249,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 			}
 			
 			T axonsComponent = directedComponentFactory.createAveragePoolingAxonsComponent(builderState.getAveragePoolingAxonsBuilder().getName(),
-					builderState.getComponentsGraphNeurons().getCurrentNeurons(),
-					builderState.getComponentsGraphNeurons().getRightNeurons(), axons3DConfig);
+					axons3DConfig);
 			this.components.add(axonsComponent);
 			builderState.setAveragePoolingAxonsBuilder(null);
 			builderState.getComponentsGraphNeurons()

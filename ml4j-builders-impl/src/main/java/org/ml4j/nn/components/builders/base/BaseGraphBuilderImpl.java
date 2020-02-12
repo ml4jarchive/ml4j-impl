@@ -19,6 +19,7 @@ import java.util.List;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
+import org.ml4j.nn.axons.AxonsConfig;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
@@ -106,8 +107,9 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 						true);
 			}
 
-			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(builderState.getFullyConnectedAxonsBuilder().getName(), leftNeurons,
-					builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getConnectionWeights(),
+			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(builderState.getFullyConnectedAxonsBuilder().getName(), 
+					new AxonsConfig<>(leftNeurons,
+					builderState.getComponentsGraphNeurons().getRightNeurons()), builderState.getConnectionWeights(),
 					builderState.getBiases());
 
 			if (builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer() != null) {
