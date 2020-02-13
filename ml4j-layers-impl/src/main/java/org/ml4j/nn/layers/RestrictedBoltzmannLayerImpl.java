@@ -22,6 +22,7 @@ import org.ml4j.EditableMatrix;
 import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.ActivationFunction;
+import org.ml4j.nn.axons.AxonsConfig;
 import org.ml4j.nn.axons.BiasMatrixImpl;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.axons.WeightsFormatImpl;
@@ -78,7 +79,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 	public RestrictedBoltzmannLayerImpl(AxonsFactory axonsFactory, Neurons visibleNeurons, Neurons hiddenNeurons,
 			ActivationFunction<?, ?> visibleActivationFunction, ActivationFunction<?, ?> hiddenActivationFunction,
 			MatrixFactory matrixFactory) {
-		this.axons = axonsFactory.createFullyConnectedAxons(visibleNeurons, hiddenNeurons, 
+		this.axons = axonsFactory.createFullyConnectedAxons(new AxonsConfig<>(visibleNeurons, hiddenNeurons), 
 				new WeightsMatrixImpl(null, new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), 
 						Arrays.asList(Dimension.OUTPUT_FEATURE), WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)), null);
 		this.synapses = new UndirectedSynapsesImpl<Neurons, Neurons>(axons, visibleActivationFunction,
@@ -98,7 +99,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 			ActivationFunction<?, ?> visibleActivationFunction, ActivationFunction<?, ?> hiddenActivationFunction,
 			MatrixFactory matrixFactory, Matrix initialWeights, Matrix initialLeftToRightBiases,
 			Matrix initialRightToLeftBiases) {
-		this.axons = axonsFactory.createFullyConnectedAxons(visibleNeurons, hiddenNeurons, 
+		this.axons = axonsFactory.createFullyConnectedAxons(new AxonsConfig<>(visibleNeurons, hiddenNeurons), 
 				new WeightsMatrixImpl(initialWeights,
 						new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), Arrays.asList(Dimension.OUTPUT_FEATURE),
 								WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)),

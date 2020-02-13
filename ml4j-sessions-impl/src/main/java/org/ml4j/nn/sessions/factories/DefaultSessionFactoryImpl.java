@@ -17,8 +17,10 @@ import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
+import org.ml4j.nn.layers.DirectedLayerFactory;
 import org.ml4j.nn.sessions.DefaultSession;
 import org.ml4j.nn.sessions.DefaultSessionImpl;
+import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetworkFactory;
 
 /**
  * Factory implementation for Sessions with DefaultChainableDirectedComponent components
@@ -28,17 +30,23 @@ import org.ml4j.nn.sessions.DefaultSessionImpl;
  */
 public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 
-	private DirectedComponentFactory directedComponentFactory;
-	private MatrixFactory matrixFactory;
+	protected DirectedComponentFactory directedComponentFactory;
+	protected MatrixFactory matrixFactory;
+	protected DirectedLayerFactory directedLayerFactory;
+	protected SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory;
 
-	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory) {
+	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
+			DirectedLayerFactory directedLayerFactory, SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.matrixFactory = matrixFactory;
+		this.directedLayerFactory = directedLayerFactory;
+		this.supervisedFeedForwardNeuralNetworkFactory = supervisedFeedForwardNeuralNetworkFactory;
 	}
 
 	@Override
 	public DefaultSession createSession(DirectedComponentsContext directedComponentsContext) {
-		return new DefaultSessionImpl(directedComponentFactory, directedComponentsContext);
+		return new DefaultSessionImpl(directedComponentFactory, directedLayerFactory, 
+				supervisedFeedForwardNeuralNetworkFactory, directedComponentsContext);
 	}
 
 	@Override
@@ -48,6 +56,6 @@ public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 
 	@Override
 	public DefaultSession createSession() {
-		return new DefaultSessionImpl(directedComponentFactory, new DirectedComponentsContextImpl(matrixFactory, false));
+		return new DefaultSessionImpl(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, new DirectedComponentsContextImpl(matrixFactory, false));
 	}
 }

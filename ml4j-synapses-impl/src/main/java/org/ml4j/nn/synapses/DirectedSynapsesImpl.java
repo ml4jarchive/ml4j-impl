@@ -57,16 +57,23 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DirectedSynapsesImpl.class);
 
-	private DifferentiableActivationFunction activationFunction;
-	private DifferentiableActivationFunctionComponent activationFunctionComponent;
-
-	private DefaultDirectedComponentBipoleGraph axonsGraph;
-
-	private DirectedComponentFactory directedComponentFactory;
-
+	private String name;
 	private L leftNeurons;
 	private R rightNeurons;
-	private String name;
+	private DefaultDirectedComponentBipoleGraph axonsGraph;
+	private DifferentiableActivationFunction activationFunction;
+	private DifferentiableActivationFunctionComponent activationFunctionComponent;
+	
+	public DirectedSynapsesImpl(String name, L leftNeurons, R rightNeurons,
+			DefaultDirectedComponentBipoleGraph axonsGraph, DifferentiableActivationFunction activationFunction,
+			DifferentiableActivationFunctionComponent activationFunctionComponent) {
+		this.name = name;
+		this.leftNeurons = leftNeurons;
+		this.rightNeurons = rightNeurons;
+		this.axonsGraph = axonsGraph;
+		this.activationFunction = activationFunction;
+		this.activationFunctionComponent = activationFunctionComponent;
+	}
 
 	/**
 	 * Create a new implementation of DirectedSynapses.
@@ -84,7 +91,6 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 		this.activationFunctionComponent = directedComponentFactory
 				.createDifferentiableActivationFunctionComponent(name + ":ActivationFunction", rightNeurons, activationFunction);
 		this.axonsGraph = axonsGraph;
-		this.directedComponentFactory = directedComponentFactory;
 		this.leftNeurons = leftNeurons;
 		this.rightNeurons = rightNeurons;
 		Objects.requireNonNull(axonsGraph, "axonsGraph");
@@ -100,11 +106,10 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	 * @param primaryAxons             The primary Axons within these synapses
 	 * @param activationFunction       The activation function within these synapses
 	 */
-	public DirectedSynapsesImpl(String name,DirectedComponentFactory directedComponentFactory, Axons<L, R, ?> primaryAxons,
+	public DirectedSynapsesImpl(String name, DirectedComponentFactory directedComponentFactory, Axons<L, R, ?> primaryAxons,
 			DifferentiableActivationFunction activationFunction) {
 		this(name, directedComponentFactory, primaryAxons.getLeftNeurons(), primaryAxons.getRightNeurons(),
 				createGraph(name, directedComponentFactory, primaryAxons), activationFunction);
-		this.directedComponentFactory = directedComponentFactory;
 		this.name = name;
 	}
 
@@ -112,12 +117,9 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 			Axons<?, ?, ?> primaryAxons) {
 		List<DefaultChainableDirectedComponent<?, ?>> components = new ArrayList<>();
 		components.add(directedComponentFactory.createDirectedAxonsComponent(name + ":PrimaryAxons", primaryAxons));
-
 		DefaultDirectedComponentChain chain = directedComponentFactory.createDirectedComponentChain(components);
 		List<DefaultChainableDirectedComponent<?, ?>> chainsList = new ArrayList<>();
 		chainsList.add(chain);
-		// DefaultDirectedComponentChainBatch batch =
-		// directedComponentFactory.createDirectedComponentChainBatch(chainsList);
 		return directedComponentFactory.createDirectedComponentBipoleGraph(name, primaryAxons.getLeftNeurons(),
 				primaryAxons.getRightNeurons(), chainsList, PathCombinationStrategy.ADDITION);
 	}
@@ -130,9 +132,9 @@ public class DirectedSynapsesImpl<L extends Neurons, R extends Neurons> implemen
 	}
 
 	@Override
-	public DirectedSynapses<L, R> dup() {
-		return new DirectedSynapsesImpl<>(name, directedComponentFactory, leftNeurons, rightNeurons, axonsGraph.dup(),
-				activationFunction);
+	public DirectedSynapses<L, R> dup(DirectedComponentFactory directedComponentFactory) {
+		return new DirectedSynapsesImpl<>(name, leftNeurons, rightNeurons, axonsGraph.dup(directedComponentFactory),
+				activationFunction, activationFunctionComponent.dup(directedComponentFactory));
 	}
 
 	@Override

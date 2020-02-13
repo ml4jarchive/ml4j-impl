@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.ml4j.nn.axons.AxonsConfig;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
@@ -67,7 +68,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 					this.parentGraph.get().getChains().add(skipConnection);
 				} else {
 					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent("SkipConnection-" + UUID.randomUUID().toString(),
-							new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons, null, null);
+							new AxonsConfig<>(new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons), null, null);
 					T skipConnection = directedComponentFactory
 							.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parentGraph.get().getChains().add(skipConnection);

@@ -16,6 +16,8 @@ package org.ml4j.nn.sessions;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.layers.DirectedLayerFactory;
+import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetworkFactory;
 
 /**
  * Implementation of SessionImpl for computation graphs formed of DefaultChainableDirectedComponent<?, ?>
@@ -25,15 +27,31 @@ import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 public class DefaultSessionImpl extends SessionImpl<DefaultChainableDirectedComponent<?, ?>> implements DefaultSession {
 
 	private DirectedComponentFactory directedComponentFactory;
+	private DirectedLayerFactory directedLayerFactory;
+	private SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardLayerFactory;
 	
 	public DefaultSessionImpl(DirectedComponentFactory directedComponentFactory,
+			DirectedLayerFactory directedLayerFactory,
+			 SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardLayerFactory,
 			DirectedComponentsContext directedComponentsContext) {
 		super(directedComponentFactory, directedComponentsContext);
 		this.directedComponentFactory = directedComponentFactory;
+		this.directedLayerFactory = directedLayerFactory;
+		this.supervisedFeedForwardLayerFactory = supervisedFeedForwardLayerFactory;
 	}
 	
 	@Override
 	public DirectedComponentFactory getNeuralComponentFactory() {
 		return directedComponentFactory;
+	}
+
+	@Override
+	public DirectedLayerFactory getDirectedLayerFactory() {
+		return directedLayerFactory;
+	}
+
+	@Override
+	public SupervisedFeedForwardNeuralNetworkFactory getSupervisedFeedForwardNeuralNetworkFactory() {
+		return supervisedFeedForwardLayerFactory;
 	}
 }

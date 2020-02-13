@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.NeuralComponentVisitor;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponentActivation;
 import org.ml4j.nn.neurons.Neurons;
@@ -113,8 +114,8 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	}
 
 	@Override
-	public DefaultChainableDirectedComponent<A, C> dup() {
-		return new DefaultChainableDirectedComponentAdapter<>(delegated.dup(), name);
+	public DefaultChainableDirectedComponent<A, C> dup(DirectedComponentFactory directedComponentFactory) {
+		return new DefaultChainableDirectedComponentAdapter<>(delegated.dup(directedComponentFactory), name);
 	}
 
 	@Override
@@ -154,7 +155,7 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 
 	@Override
 	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
-		return visitor.visitComponent(this);
+		return delegated.accept(visitor);
 	}
 
 }

@@ -46,8 +46,6 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AutoEncoderImpl.class);
 
-	private DirectedComponentFactory directedComponentFactory;
-
 	/**
 	 * Constructor for a simple 2-layer AutoEncoder.
 	 * 
@@ -74,7 +72,7 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	}
 
 	@Override
-	public AutoEncoder dup() {
+	public AutoEncoder dup(DirectedComponentFactory directedComponentFactory) {
 		return new AutoEncoderImpl(name, directedComponentFactory, this.initialisingComponentChain);
 	}
 

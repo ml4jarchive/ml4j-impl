@@ -16,6 +16,7 @@ package org.ml4j.nn.components.builders.base;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
+import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxonsBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedFullyConnectedAxonsBuilder;
 import org.ml4j.nn.components.builders.componentsgraph.ComponentsGraphNeurons;
 import org.ml4j.nn.components.builders.synapses.SynapsesAxonsGraphBuilder;
@@ -27,6 +28,7 @@ public class BaseGraphBuilderStateImpl implements BaseGraphBuilderState {
 	protected WeightsMatrix connectionWeights;
 	protected BiasMatrix biases;
 	protected UncompletedFullyConnectedAxonsBuilder<?> fullyConnectedAxonsBuilder;
+	protected UncompletedBatchNormAxonsBuilder<Neurons, ?> batchNormAxonsBuilder;
 	protected SynapsesAxonsGraphBuilder<?, ?> synapsesBuilder;
 
 	public BaseGraphBuilderStateImpl(Neurons initialNeurons) {
@@ -83,5 +85,15 @@ public class BaseGraphBuilderStateImpl implements BaseGraphBuilderState {
 	@Override
 	public void setSynapsesBuilder(SynapsesAxonsGraphBuilder<?, ?> synapsesBuilder) {
 		this.synapsesBuilder = synapsesBuilder;
+	}
+
+	@Override
+	public UncompletedBatchNormAxonsBuilder<Neurons, ?> getBatchNormAxonsBuilder() {
+		return batchNormAxonsBuilder;
+	}
+
+	@Override
+	public void setBatchNormAxonsBuilder(UncompletedBatchNormAxonsBuilder<Neurons, ?> batchNormAxonsBuilder) {
+		this.batchNormAxonsBuilder = batchNormAxonsBuilder;
 	}
 }

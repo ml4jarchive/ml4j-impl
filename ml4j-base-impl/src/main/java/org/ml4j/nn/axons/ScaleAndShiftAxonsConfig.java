@@ -17,6 +17,7 @@
 package org.ml4j.nn.axons;
 
 import org.ml4j.Matrix;
+import org.ml4j.nn.neurons.Neurons;
 
 /**
  * The configuration for ScaleAndShiftAxons.
@@ -24,7 +25,7 @@ import org.ml4j.Matrix;
  * @author Michael Lavelle
  *
  */
-public class ScaleAndShiftAxonsConfig extends AxonsConfig {
+public class ScaleAndShiftAxonsConfig extends AxonsConfig<Neurons, Neurons> {
 
 	/**
 	 * Default serialization id.
@@ -42,8 +43,8 @@ public class ScaleAndShiftAxonsConfig extends AxonsConfig {
 	 * @param initialShiftRowVector A row vector consisting of the shifts for each
 	 *                              output neuron.
 	 */
-	public ScaleAndShiftAxonsConfig(Matrix initialScaleColumnVector, Matrix initialShiftColumnVector) {
-		super();
+	public ScaleAndShiftAxonsConfig(Neurons leftNeurons, Neurons rightNeurons, Matrix initialScaleColumnVector, Matrix initialShiftColumnVector) {
+		super(leftNeurons, rightNeurons);
 		this.initialScaleColumnVector = initialScaleColumnVector;
 		this.initialShiftColumnVector = initialShiftColumnVector;
 	}

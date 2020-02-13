@@ -26,7 +26,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
-	private Map<DirectedComponent<?, ?, ?>, ComponentContext<?>> contexts;
+	private Map<DirectedComponent<?, ?, ?, ?>, ComponentContext<?>> contexts;
 	private MatrixFactory matrixFactory;
 	private boolean isTraining;
 
@@ -36,7 +36,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 		this.isTraining = isTraining;
 	}
 
-	private DirectedComponentsContextImpl(Map<DirectedComponent<?, ?, ?>, ComponentContext<?>> contexts,
+	private DirectedComponentsContextImpl(Map<DirectedComponent<?, ?, ?, ?>, ComponentContext<?>> contexts,
 			MatrixFactory matrixFactory, boolean isTraining) {
 		super();
 		this.contexts = contexts;
@@ -46,7 +46,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <C extends Serializable> C getContext(DirectedComponent<?, ?, C> component,
+	public <C extends Serializable> C getContext(DirectedComponent<?, ?, C, ?> component,
 			Supplier<C> defaultContextSupplier) {
 		ComponentContext<C> existingContext = (ComponentContext<C>) contexts.get(component);
 
@@ -69,15 +69,15 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 		 * Default serialization id.
 		 */
 		private static final long serialVersionUID = 1L;
-		private DirectedComponent<?, ?, C> component;
+		private DirectedComponent<?, ?, C, ?> component;
 		private C context;
 
-		public ComponentContext(DirectedComponent<?, ?, C> component, C context) {
+		public ComponentContext(DirectedComponent<?, ?, C, ?> component, C context) {
 			this.component = component;
 			this.context = context;
 		}
 
-		public DirectedComponent<?, ?, C> getComponent() {
+		public DirectedComponent<?, ?, C, ?> getComponent() {
 			return component;
 		}
 
@@ -93,7 +93,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	}
 
 	@Override
-	public <C extends Serializable> void setContext(DirectedComponent<?, ?, C> component, C context) {
+	public <C extends Serializable> void setContext(DirectedComponent<?, ?, C, ?> component, C context) {
 		this.contexts.put(component, new ComponentContext<C>(component, context));
 	}
 

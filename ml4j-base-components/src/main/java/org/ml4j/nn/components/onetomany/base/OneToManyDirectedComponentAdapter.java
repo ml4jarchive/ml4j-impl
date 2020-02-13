@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponentType;
+import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponent;
 import org.ml4j.nn.components.onetomany.OneToManyDirectedComponentActivation;
 import org.ml4j.nn.components.onetoone.DefaultChainableDirectedComponentAdapter;
@@ -62,8 +63,8 @@ public class OneToManyDirectedComponentAdapter<A extends OneToManyDirectedCompon
 	}
 
 	@Override
-	public OneToManyDirectedComponent<A> dup() {
-		return new OneToManyDirectedComponentAdapter<A>(delegated.dup());
+	public OneToManyDirectedComponent<A> dup(DirectedComponentFactory directedComponentFactory) {
+		return new OneToManyDirectedComponentAdapter<A>(delegated.dup(directedComponentFactory));
 	}
 
 	@Override

@@ -47,7 +47,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 	private List<DefaultChainableDirectedComponent<?, ?>> components;
 	private DifferentiableActivationFunctionComponent finalDifferentiableActivationFunctionComponent;
 	private DefaultDirectedComponentChain precedingChain;
-	private DirectedComponentFactory directedComponentFactory;
+
 
 	public DifferentiableActivationFunctionComponent getFinalComponent() {
 		return finalDifferentiableActivationFunctionComponent;
@@ -57,7 +57,6 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 			List<? extends DefaultChainableDirectedComponent<?, ?>> components) {
 		this.components = new ArrayList<>();
 		this.components.addAll(components);
-		this.directedComponentFactory = directedComponentFactory;
 		List<DefaultChainableDirectedComponent<?, ?>> decomposedList = new ArrayList<>();
 		for (DefaultChainableDirectedComponent<?, ?> component : decompose()) {
 			decomposedList.add(component);
@@ -65,7 +64,7 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		if (components.isEmpty()) {
 			throw new IllegalArgumentException("Component list must contain at least one component");
 		} else {
-			ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?> finalComponent = decomposedList
+			ChainableDirectedComponent<NeuronsActivation, ? extends ChainableDirectedComponentActivation<NeuronsActivation>, ?, DirectedComponentFactory> finalComponent = decomposedList
 					.get(decomposedList.size() - 1);
 			if (NeuralComponentBaseType.ACTIVATION_FUNCTION.equals(finalComponent.getComponentType().getBaseType())) {
 				finalDifferentiableActivationFunctionComponent = (DifferentiableActivationFunctionComponent) finalComponent;
@@ -115,19 +114,19 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 
 	@Override
 	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
-		List<DefaultChainableDirectedComponent<?, ?>> allComponents = new ArrayList<>();
-		allComponents.addAll(components);
-		return directedComponentFactory.createDirectedComponentChain(allComponents).decompose();
+		
+		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
+
 	}
 
 	@Override
-	public TrailingActivationFunctionDirectedComponentChain dup() {
+	public TrailingActivationFunctionDirectedComponentChain dup(DirectedComponentFactory directedComponentFactory) {
 
-		List<DefaultChainableDirectedComponent<?, ?>> dupComponents = components.stream().map(c -> c.dup())
+		List<DefaultChainableDirectedComponent<?, ?>> dupComponents = components.stream().map(c -> c.dup(directedComponentFactory))
 				.collect(Collectors.toList());
 
 		return new TrailingActivationFunctionDirectedComponentChainImpl(dupComponents,
-				finalDifferentiableActivationFunctionComponent.dup(), precedingChain.dup());
+				finalDifferentiableActivationFunctionComponent.dup(directedComponentFactory), precedingChain.dup(directedComponentFactory));
 	}
 
 	@Override
