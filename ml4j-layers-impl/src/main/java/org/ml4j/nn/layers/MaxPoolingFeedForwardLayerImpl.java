@@ -48,10 +48,10 @@ public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPool
 	 */
 	public MaxPoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory, AxonsFactory axonsFactory,
 			Axons3DConfig axons3DConfig, 
-			DifferentiableActivationFunctionFactory activationFunctionFactory, boolean scaleOutputs, boolean withBatchNorm) {
+			DifferentiableActivationFunctionFactory activationFunctionFactory, boolean scaleOutputs) {
 		super(name, directedComponentFactory,
 				axonsFactory.createMaxPoolingAxons(axons3DConfig, scaleOutputs),
-				activationFunctionFactory.createLinearActivationFunction(), withBatchNorm);
+				activationFunctionFactory.createLinearActivationFunction(), null);
 	}
 	
 	/**
@@ -62,13 +62,13 @@ public class MaxPoolingFeedForwardLayerImpl extends FeedForwardLayerBase<MaxPool
 	 * @param withBatchNorm Whether to enable batch norm.
 	 */
 	public MaxPoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			MaxPoolingAxons primaryAxons, DifferentiableActivationFunction activationFunction, boolean withBatchNorm) {
-		super(name, directedComponentFactory, primaryAxons, activationFunction, withBatchNorm);
+			MaxPoolingAxons primaryAxons, DifferentiableActivationFunction activationFunction) {
+		super(name, directedComponentFactory, primaryAxons, activationFunction, null);
 	}
 
 	@Override
 	public MaxPoolingFeedForwardLayer dup(DirectedComponentFactory directedComponentFactory) {
-		return new MaxPoolingFeedForwardLayerImpl(name, directedComponentFactory, primaryAxons.dup(), this.primaryActivationFunction, withBatchNorm);
+		return new MaxPoolingFeedForwardLayerImpl(name, directedComponentFactory, primaryAxons.dup(), this.primaryActivationFunction);
 	}
 
 	@Override

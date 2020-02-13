@@ -46,10 +46,9 @@ public class AveragePoolingFeedForwardLayerImpl
 	 * @param withBatchNorm Whether to enable batch norm.
 	 */
 	public AveragePoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			AveragePoolingAxons primaryAxons, DifferentiableActivationFunction primaryActivationFunction,
-			boolean withBatchNorm) {
+			AveragePoolingAxons primaryAxons, DifferentiableActivationFunction primaryActivationFunction) {
 		super(name, directedComponentFactory, primaryAxons, primaryActivationFunction,
-				withBatchNorm);
+				null);
 	}
 	
 	/**
@@ -61,8 +60,8 @@ public class AveragePoolingFeedForwardLayerImpl
 	 * @param withBatchNorm Whether to enable batch norm.
 	 */
 	public AveragePoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			DifferentiableActivationFunctionFactory activationFunctionFactory, AveragePoolingAxons primaryAxons, boolean withBatchNorm) {
-		super(name, directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(), withBatchNorm);
+			DifferentiableActivationFunctionFactory activationFunctionFactory, AveragePoolingAxons primaryAxons) {
+		super(name, directedComponentFactory, primaryAxons, activationFunctionFactory.createLinearActivationFunction(), null);
 	}
 	
 	/**
@@ -75,17 +74,17 @@ public class AveragePoolingFeedForwardLayerImpl
 	 * @param withBatchNorm	Whether to enable batch norm.
 	 */
 	public AveragePoolingFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, Axons3DConfig config, boolean withBatchNorm) {
+			AxonsFactory axonsFactory, DifferentiableActivationFunctionFactory activationFunctionFactory, Axons3DConfig config) {
 		super(name, directedComponentFactory,
 				axonsFactory.createAveragePoolingAxons(config),
-				activationFunctionFactory.createLinearActivationFunction(), withBatchNorm);
+				activationFunctionFactory.createLinearActivationFunction(), null);
 	}
 	
 
 	@Override
 	public AveragePoolingFeedForwardLayer dup(DirectedComponentFactory directedComponentFactory) {
 		return new AveragePoolingFeedForwardLayerImpl(name, directedComponentFactory,
-				primaryAxons.dup(), this.primaryActivationFunction, withBatchNorm);
+				primaryAxons.dup(), this.primaryActivationFunction);
 	}
 
 	@Override

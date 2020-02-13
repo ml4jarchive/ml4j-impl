@@ -21,40 +21,40 @@ import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.BatchNormConfig.BatchNormDimension;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.WeightsMatrix;
-import org.ml4j.nn.neurons.Neurons;
+import org.ml4j.nn.neurons.Neurons3D;
 
-public class UncompletedBatchNormAxonsBuilderImpl<C extends AxonsBuilder<?>>
-		extends UncompletedAxonsBuilderImpl<Neurons, C> implements UncompletedBatchNormAxonsBuilder<Neurons, C> {
+public class UncompletedBatchNormAxons3DBuilderImpl<C extends Axons3DBuilder<?>>
+		extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedBatchNormAxons3DBuilder<C> {
 
 	private WeightsMatrix gamma;
 	private BiasMatrix beta;
 	private Matrix mean;
 	private Matrix variance;
 
-	public UncompletedBatchNormAxonsBuilderImpl(String name, Supplier<C> previousBuilderSupplier, Neurons neurons) {
-		super(name, previousBuilderSupplier, neurons);
+	public UncompletedBatchNormAxons3DBuilderImpl(String name, Supplier<C> previousBuilderSupplier, Neurons3D leftNeurons) {
+		super(name, previousBuilderSupplier, leftNeurons);
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withGamma(WeightsMatrix gamma) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withGamma(WeightsMatrix gamma) {
 		this.gamma = gamma;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withBeta(BiasMatrix beta) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBeta(BiasMatrix beta) {
 		this.beta = beta;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withMean(Matrix mean) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withMean(Matrix mean) {
 		this.mean = mean;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withVariance(Matrix variance) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withVariance(Matrix variance) {
 		this.variance = variance;
 		return this;
 	}
@@ -80,32 +80,32 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends AxonsBuilder<?>>
 	}
 
 	@Override
-	public C withConnectionToNeurons(Neurons neurons) {
+	public C withConnectionToNeurons(Neurons3D neurons) {
 		previousBuilderSupplier.get().getComponentsGraphNeurons().setRightNeurons(neurons);
 		return previousBuilderSupplier.get();
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withConnectionWeights(WeightsMatrix connectionWeights) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withConnectionWeights(WeightsMatrix connectionWeights) {
 		previousBuilderSupplier.get().getBuilderState().setConnectionWeights(connectionWeights);
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withBiasUnit() {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBiasUnit() {
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withBiases(BiasMatrix biases) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBiases(BiasMatrix biases) {
 		previousBuilderSupplier.get().getBuilderState().setBiases(biases);
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons, C> withAxonsContextConfigurer(
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withAxonsContextConfigurer(
 			Consumer<AxonsContext> axonsContextConfigurer) {
 		this.axonsContextConfigurer = axonsContextConfigurer;
 		return this;
@@ -113,6 +113,6 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends AxonsBuilder<?>>
 
 	@Override
 	public BatchNormDimension getBatchNormDimension() {
-		return BatchNormDimension.INPUT_FEATURE;
+		return BatchNormDimension.CHANNEL;
 	}
 }

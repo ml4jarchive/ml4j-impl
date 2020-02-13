@@ -21,6 +21,7 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.BatchNormConfig;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
@@ -30,8 +31,8 @@ import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.Axons3DBuilder;
 import org.ml4j.nn.components.builders.axons.Axons3DPermitted;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
-import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxonsBuilder;
-import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxonsBuilderImpl;
+import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxons3DBuilder;
+import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxons3DBuilderImpl;
 import org.ml4j.nn.components.builders.axons.UncompletedConvolutionalAxonsBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedConvolutionalAxonsBuilderImpl;
 import org.ml4j.nn.components.builders.axons.UncompletedFullyConnectedAxonsBuilder;
@@ -208,12 +209,12 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 						builderState.getComponentsGraphNeurons().getCurrentNeurons().getDepth(), true);
 			}
 
-			T axonsComponent = directedComponentFactory.createConvolutionalBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),leftNeurons, 
-					builderState.getComponentsGraphNeurons().getRightNeurons(),
-					builderState.getBatchNormAxonsBuilder().getGamma(),
-					builderState.getBatchNormAxonsBuilder().getBeta(),
-					builderState.getBatchNormAxonsBuilder().getMean(),
-					builderState.getBatchNormAxonsBuilder().getVariance());
+			T axonsComponent = directedComponentFactory.createBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),
+					new BatchNormConfig<>(builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
+					.withGammaColumnVector(builderState.getBatchNormAxonsBuilder().getGamma())
+					.withBetaColumnVector(builderState.getBatchNormAxonsBuilder().getBeta())
+					.withMeanColumnVector(builderState.getBatchNormAxonsBuilder().getMean())
+					.withVarianceColumnVector(builderState.getBatchNormAxonsBuilder().getVariance()));
 
 			if (builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer() != null) {
 				// TODO
@@ -298,9 +299,9 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<C> withBatchNormAxons(String name) {
+	public UncompletedBatchNormAxons3DBuilder<C> withBatchNormAxons(String name) {
 		addAxonsIfApplicable();
-		UncompletedBatchNormAxonsBuilder<C> axonsBuilder = new UncompletedBatchNormAxonsBuilderImpl<>(name,
+		UncompletedBatchNormAxons3DBuilder<C> axonsBuilder = new UncompletedBatchNormAxons3DBuilderImpl<>(name,
 				this::get3DBuilder, builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		builderState.setBatchNormAxonsBuilder(axonsBuilder);
 		builderState.setConnectionWeights(null);

@@ -15,13 +15,13 @@ package org.ml4j.nn.components.factories;
 
 import java.util.List;
 
-import org.ml4j.Matrix;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.AxonsConfig;
+import org.ml4j.nn.axons.BatchNormConfig;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.NeuralComponentType;
@@ -82,27 +82,8 @@ public class DirectedComponentFactoryAdapter implements DirectedComponentFactory
 	}
 
 	@Override
-	public <N extends Neurons> BatchNormDirectedAxonsComponent<N, ?> createBatchNormAxonsComponent(String name, N leftNeurons,
-			N rightNeurons) {
-		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createBatchNormAxonsComponent(name, leftNeurons, rightNeurons));
-	}
-
-	@Override
-	public <N extends Neurons> BatchNormDirectedAxonsComponent<N, ?> createBatchNormAxonsComponent(String name, N leftNeurons,
-			N rightNeurons, WeightsMatrix gamma, BiasMatrix beta, Matrix mean, Matrix stddev) {
-		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createBatchNormAxonsComponent(name, leftNeurons, rightNeurons, gamma, beta, mean, stddev));
-	}
-
-	@Override
-	public BatchNormDirectedAxonsComponent<Neurons3D, ?> createConvolutionalBatchNormAxonsComponent(String name,
-			Neurons3D leftNeurons, Neurons3D rightNeurons) {
-		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createConvolutionalBatchNormAxonsComponent(name, leftNeurons, rightNeurons));
-	}
-
-	@Override
-	public BatchNormDirectedAxonsComponent<Neurons3D, ?> createConvolutionalBatchNormAxonsComponent(String name,
-			Neurons3D leftNeurons, Neurons3D rightNeurons, WeightsMatrix gamma, BiasMatrix beta, Matrix mean, Matrix stddev) {
-		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createConvolutionalBatchNormAxonsComponent(name, leftNeurons, rightNeurons, gamma, beta, mean, stddev));
+	public <N extends Neurons> BatchNormDirectedAxonsComponent<N, ?> createBatchNormAxonsComponent(String name, BatchNormConfig<N> batchNormConfig) {
+		return new BatchNormDirectedAxonsComponentAdapter<>(delegated.createBatchNormAxonsComponent(name, batchNormConfig));
 	}
 
 	@Override

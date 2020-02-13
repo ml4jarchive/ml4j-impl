@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsConfig;
+import org.ml4j.nn.axons.BatchNormConfig;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.axons.WeightsFormatImpl;
@@ -51,11 +52,11 @@ public class FullyConnectedFeedForwardLayerImpl
 	 *                                 components.
 	 * @param primaryAxons             The primary Axons
 	 * @param activationFunction       The primary activation function.
-	 * @param withBatchNorm            Whether to enable batch norm.
+	 * @param batchNormConfig          The batch norm config for this layer, or null if no batch norm.
 	 */
 	public FullyConnectedFeedForwardLayerImpl(String name,DirectedComponentFactory directedComponentFactory,
-			FullyConnectedAxons primaryAxons, DifferentiableActivationFunction activationFunction, boolean withBatchNorm) {
-		super(name, directedComponentFactory, primaryAxons, activationFunction, withBatchNorm);
+			FullyConnectedAxons primaryAxons, DifferentiableActivationFunction activationFunction, BatchNormConfig<?> batchNormConfig) {
+		super(name, directedComponentFactory, primaryAxons, activationFunction, batchNormConfig);
 	}
 
 	/**
@@ -66,17 +67,17 @@ public class FullyConnectedFeedForwardLayerImpl
 	 * @param axonsFactory              A factory implementation to create axons.
 	 * @param axonsConfig               The input/output neurons config for the axons of this layer.
 	 * @param primaryActivationFunction The primary activation function.
-	 * @param withBatchNorm             Whether to enable batch norm.
+	 * @param batchNormConfig          The batch norm config for this layer, or null if no batch norm.
 	 */
 	public FullyConnectedFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, AxonsConfig<Neurons, Neurons> axonsConfig, 
 			DifferentiableActivationFunction primaryActivationFunction, 
-			boolean withBatchNorm) {
+			BatchNormConfig<?> batchNormConfig) {
 		super(name, directedComponentFactory, axonsFactory.createFullyConnectedAxons(axonsConfig, 
 				new WeightsMatrixImpl(null, 
 				new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), Arrays.asList(Dimension.OUTPUT_FEATURE),
 						WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)) , null),
-				primaryActivationFunction, withBatchNorm);
+				primaryActivationFunction, batchNormConfig);
 	}
 
 	/**
@@ -90,21 +91,21 @@ public class FullyConnectedFeedForwardLayerImpl
 	 * @param biases					The biases for this layer - only required if the axons config has a left neurons
 	 * 									with bias unit - may be null otherwise.
 	 * @param primaryActivationFunction The primary activation function.
-	 * @param withBatchNorm             Whether to enable batch norm.
+	 * @param batchNormConfig          The batch norm config for this layer, or null if no batch norm.
 	 */
 	public FullyConnectedFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, AxonsConfig<Neurons, Neurons> axonsConfig, 
-			WeightsMatrix connectionWeights, BiasMatrix biases, DifferentiableActivationFunction primaryActivationFunction, boolean withBatchNorm) {
+			WeightsMatrix connectionWeights, BiasMatrix biases, DifferentiableActivationFunction primaryActivationFunction, BatchNormConfig<?> batchNormConfig) {
 		super(name, directedComponentFactory,
 				axonsFactory.createFullyConnectedAxons(axonsConfig, 
 						connectionWeights,
 						biases),
-				primaryActivationFunction, withBatchNorm);
+				primaryActivationFunction, batchNormConfig);
 	}
 
 	@Override
 	public FullyConnectedFeedForwardLayer dup(DirectedComponentFactory directedComponentFactory) {
 		return new FullyConnectedFeedForwardLayerImpl(name, directedComponentFactory, 
-				this.primaryAxons.dup(), primaryActivationFunction, withBatchNorm);
+				this.primaryAxons.dup(), primaryActivationFunction, batchNormConfig.dup());
 	}
 }

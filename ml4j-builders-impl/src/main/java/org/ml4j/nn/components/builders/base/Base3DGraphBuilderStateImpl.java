@@ -16,7 +16,7 @@ package org.ml4j.nn.components.builders.base;
 import org.ml4j.nn.axons.BiasMatrix;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
-import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxonsBuilder;
+import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxons3DBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedConvolutionalAxonsBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedFullyConnectedAxonsBuilder;
 import org.ml4j.nn.components.builders.axons.UncompletedPoolingAxonsBuilder;
@@ -33,7 +33,7 @@ public class Base3DGraphBuilderStateImpl implements Base3DGraphBuilderState {
 
 	protected UncompletedPoolingAxonsBuilder<?> maxPoolingAxonsBuilder;
 	protected UncompletedPoolingAxonsBuilder<?> averagePoolingAxonsBuilder;
-	protected UncompletedBatchNormAxonsBuilder<?> batchNormAxonsBuilder;
+	protected UncompletedBatchNormAxons3DBuilder<?> batchNormAxonsBuilder;
 
 	protected SynapsesAxons3DGraphBuilder<?, ?, ?> synapsesBuilder;
 	private WeightsMatrix connectionWeights;
@@ -137,12 +137,12 @@ public class Base3DGraphBuilderStateImpl implements Base3DGraphBuilderState {
 	}
 
 	@Override
-	public void setBatchNormAxonsBuilder(UncompletedBatchNormAxonsBuilder<?> axonsBuilder) {
+	public void setBatchNormAxonsBuilder(UncompletedBatchNormAxons3DBuilder<?> axonsBuilder) {
 		this.batchNormAxonsBuilder = axonsBuilder;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<?> getBatchNormAxonsBuilder() {
+	public UncompletedBatchNormAxons3DBuilder<?> getBatchNormAxonsBuilder() {
 		return batchNormAxonsBuilder;
 	}
 

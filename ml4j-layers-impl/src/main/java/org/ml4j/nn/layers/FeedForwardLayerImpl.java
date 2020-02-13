@@ -18,6 +18,7 @@ package org.ml4j.nn.layers;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.BatchNormConfig;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 
 /**
@@ -39,16 +40,16 @@ public class FeedForwardLayerImpl extends FeedForwardLayerBase<Axons<?, ?, ?>, F
 	 * @param directedComponentFactory The directed component factory.
 	 * @param primaryAxons The primary axons for this layer.
 	 * @param activationFunction The primary activation function of this layer.
-	 * @param withBatchNorm Whether to enable batch norm for this layer.
+	 * @param batchNormConfig The batch norm config for this layer, or null if no batch norm.
 	 */
 	public FeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			Axons<?, ?, ?> primaryAxons, DifferentiableActivationFunction activationFunction, boolean withBatchNorm) {
-		super(name, directedComponentFactory, primaryAxons, activationFunction, withBatchNorm);
+			Axons<?, ?, ?> primaryAxons, DifferentiableActivationFunction activationFunction, BatchNormConfig<?> batchNormConfig) {
+		super(name, directedComponentFactory, primaryAxons, activationFunction, batchNormConfig);
 	}
 
 	@Override
 	public FeedForwardLayerImpl dup(DirectedComponentFactory directedComponentFactory) {
 		return new FeedForwardLayerImpl(name, 
-				directedComponentFactory, this.primaryAxons.dup(), this.primaryActivationFunction, withBatchNorm);
+				directedComponentFactory, this.primaryAxons.dup(), this.primaryActivationFunction, batchNormConfig);
 	}
 }
