@@ -28,14 +28,13 @@ public class NeuronsActivationContextImpl implements NeuronsActivationContext {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private InheritableThreadLocal<MatrixFactory> matrixFactory;
-	private InheritableThreadLocal<Boolean> isTrainingContext;
+	private transient InheritableThreadLocal<MatrixFactory> matrixFactory;
+	private transient InheritableThreadLocal<Boolean> isTrainingContext;
 
 	public NeuronsActivationContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
-		super();
-		this.matrixFactory = new InheritableThreadLocal<MatrixFactory>();
+		this.matrixFactory = new InheritableThreadLocal<>();
 		this.matrixFactory.set(matrixFactory);
-		this.isTrainingContext = new InheritableThreadLocal<Boolean>();
+		this.isTrainingContext = new InheritableThreadLocal<>();
 		this.isTrainingContext.set(isTrainingContext);
 	}
 

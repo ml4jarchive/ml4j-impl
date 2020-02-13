@@ -30,10 +30,9 @@ public class ComponentMetadataFactory implements NeuralComponentFactory<Componen
 	}
 
 	@Override
-	public <N extends Neurons> ComponentMetadata createBatchNormAxonsComponent(String name, BatchNormConfig<N> batchNormConfig) {
-		return new ComponentMetadata(name, batchNormConfig.getNeurons(), batchNormConfig.getNeurons(), "Batch Norm Axons:" + name);
+	public <N extends Neurons> ComponentMetadata createBatchNormAxonsComponent(String name, N neurons, BatchNormConfig<N> batchNormConfig) {
+		return new ComponentMetadata(name, neurons, neurons, "Batch Norm Axons:" + name);
 	}
-
 
 	@Override
 	public ComponentMetadata createConvolutionalAxonsComponent(String name, Axons3DConfig arg2,

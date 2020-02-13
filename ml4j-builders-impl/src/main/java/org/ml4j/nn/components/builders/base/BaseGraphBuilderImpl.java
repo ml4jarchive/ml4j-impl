@@ -139,7 +139,8 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 			}
 
 			T axonsComponent = directedComponentFactory.createBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),
-					new BatchNormConfig<>(builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
+					builderState.getComponentsGraphNeurons().getRightNeurons(),
+					new BatchNormConfig<Neurons>(builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
 					.withGammaColumnVector(builderState.getBatchNormAxonsBuilder().getGamma())
 					.withBetaColumnVector(builderState.getBatchNormAxonsBuilder().getBeta())
 					.withMeanColumnVector(builderState.getBatchNormAxonsBuilder().getMean())
