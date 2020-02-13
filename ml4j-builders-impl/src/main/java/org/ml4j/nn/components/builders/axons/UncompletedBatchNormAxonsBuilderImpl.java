@@ -112,7 +112,7 @@ public class UncompletedBatchNormAxonsBuilderImpl<C extends AxonsBuilder<?>>
 	}
 
 	@Override
-	public BatchNormDimension getBatchNormDimension() {
+	public BatchNormDimension<Neurons> getBatchNormDimension() {
 		return BatchNormDimension.INPUT_FEATURE;
 	}
 }

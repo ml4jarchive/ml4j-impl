@@ -210,7 +210,8 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 			}
 
 			T axonsComponent = directedComponentFactory.createBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),
-					new BatchNormConfig<>(builderState.getComponentsGraphNeurons().getRightNeurons(), builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
+					builderState.getComponentsGraphNeurons().getRightNeurons(),
+					new BatchNormConfig<>(builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
 					.withGammaColumnVector(builderState.getBatchNormAxonsBuilder().getGamma())
 					.withBetaColumnVector(builderState.getBatchNormAxonsBuilder().getBeta())
 					.withMeanColumnVector(builderState.getBatchNormAxonsBuilder().getMean())

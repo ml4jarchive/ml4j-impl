@@ -53,7 +53,7 @@ public class DefaultDirectedLayerFactory implements DirectedLayerFactory {
 	@Override
 	public FullyConnectedFeedForwardLayer createFullyConnectedFeedForwardLayer(String name, AxonsConfig<Neurons, Neurons> axonsConfig, WeightsMatrix connectionWeights, BiasMatrix biases,
 			ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties,
-			BatchNormConfig<?> batchNormConfig) {
+			BatchNormConfig<Neurons> batchNormConfig) {
 		return new FullyConnectedFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory,
 				axonsConfig, connectionWeights, biases, differentiableActivationFunctionFactory.createActivationFunction(activationFunctionType,
 						activationFunctionProperties),

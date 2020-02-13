@@ -16,9 +16,6 @@
 
 package org.ml4j.nn.synapses;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.AxonsContextImpl;
@@ -41,8 +38,7 @@ public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl 
 	 * The MatrixFactory we configure for this context.
 	 */
 	private boolean withFreezeOut;
-	private Map<Integer, AxonsContext> axonsContextsByAxonsIndex;
-
+	
 	/**
 	 * Construct a new default DirectedSynapsesContext.
 	 * 
@@ -53,22 +49,11 @@ public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl 
 			boolean withFreezeOut) {
 		super(matrixFactory, isTrainingContext);
 		this.withFreezeOut = withFreezeOut;
-		this.axonsContextsByAxonsIndex = new HashMap<>();
 	}
 
 	@Override
-	public AxonsContext getAxonsContext(int pathIndex, int axonsIndex) {
-
-		AxonsContext axonsContext = axonsContextsByAxonsIndex.get(axonsIndex);
-		if (axonsContext == null) {
-			axonsContext = new AxonsContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
-			axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
-		}
-		if (axonsContext.isWithFreezeOut() != withFreezeOut) {
-			axonsContext.withFreezeOut(withFreezeOut);
-			axonsContextsByAxonsIndex.put(axonsIndex, axonsContext);
-		}
-		return axonsContext;
+	public AxonsContext getAxonsContext() {
+		return new AxonsContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
 	}
 
 	@Override
