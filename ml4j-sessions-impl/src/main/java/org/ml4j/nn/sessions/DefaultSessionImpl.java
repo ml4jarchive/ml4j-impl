@@ -17,6 +17,7 @@ import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerFactory;
+import org.ml4j.nn.supervised.LayeredSupervisedFeedForwardNeuralNetworkFactory;
 import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetworkFactory;
 
 /**
@@ -28,16 +29,27 @@ public class DefaultSessionImpl extends SessionImpl<DefaultChainableDirectedComp
 
 	private DirectedComponentFactory directedComponentFactory;
 	private DirectedLayerFactory directedLayerFactory;
-	private SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardLayerFactory;
-	
+	private SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory;
+	private LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory;
+
 	public DefaultSessionImpl(DirectedComponentFactory directedComponentFactory,
 			DirectedLayerFactory directedLayerFactory,
-			 SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardLayerFactory,
+			 SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory,
+			 LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory,
 			DirectedComponentsContext directedComponentsContext) {
 		super(directedComponentFactory, directedComponentsContext);
 		this.directedComponentFactory = directedComponentFactory;
 		this.directedLayerFactory = directedLayerFactory;
-		this.supervisedFeedForwardLayerFactory = supervisedFeedForwardLayerFactory;
+		this.supervisedFeedForwardNeuralNetworkFactory = supervisedFeedForwardNeuralNetworkFactory;
+		this.layeredSupervisedFeedForwardNeuralNetworkFactory = layeredSupervisedFeedForwardNeuralNetworkFactory;
+
+	}
+	
+	public DefaultSessionImpl(DirectedComponentFactory directedComponentFactory,
+			DirectedLayerFactory directedLayerFactory,
+			 SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory,
+			DirectedComponentsContext directedComponentsContext) {
+		this(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, null, directedComponentsContext);
 	}
 	
 	@Override
@@ -52,6 +64,24 @@ public class DefaultSessionImpl extends SessionImpl<DefaultChainableDirectedComp
 
 	@Override
 	public SupervisedFeedForwardNeuralNetworkFactory getSupervisedFeedForwardNeuralNetworkFactory() {
-		return supervisedFeedForwardLayerFactory;
+		return supervisedFeedForwardNeuralNetworkFactory;
+	}
+
+	@Override
+	public SupervisedFeedForwardNeuralNetwork3DBuilderSession buildNeuralNetwork(String networkName) {
+		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, networkName);
+	}
+
+	@Override
+	public DirectedLayerBuilderSession buildLayer() {
+		if (directedLayerFactory == null) {
+			throw new IllegalStateException("No DirectedLayerFactory has been configured on the Session");
+		}
+		return new DefaultDirectedLayerBuilderSession(directedLayerFactory);
+	}
+
+	@Override
+	public LayeredSupervisedFeedForwardNeuralNetworkFactory getLayeredSupervisedFeedForwardNeuralNetworkFactory() {
+		return layeredSupervisedFeedForwardNeuralNetworkFactory;
 	}
 }

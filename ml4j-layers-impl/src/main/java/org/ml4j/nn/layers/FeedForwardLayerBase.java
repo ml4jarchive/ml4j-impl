@@ -115,7 +115,8 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		Objects.requireNonNull(primaryAxons, "primaryAxons");
 		List<DefaultChainableDirectedComponent<?, ?>> synapses = new ArrayList<>();
 		if (batchNormConfig != null) {
-			throw new UnsupportedOperationException("Not yet implemented");
+			// TODO
+			throw new UnsupportedOperationException("Batch norm not yet implemented");
 		} else {
 			synapses.add(new DirectedSynapsesImpl<>(name + ":DirectedSynapses", directedComponentFactory, primaryAxons, primaryActivationFunction));
 		}
