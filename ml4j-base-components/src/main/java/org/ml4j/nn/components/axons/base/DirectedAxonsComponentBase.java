@@ -106,4 +106,12 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public String toString() {
+		return "DirectedAxonsComponentBase [name='" + name + "', axonsType=" + getAxonsType()
+				+ ", inputNeurons=" + getInputNeurons() + ", outputNeurons()=" + getOutputNeurons() + "]";
+	}
+	
+	
 }

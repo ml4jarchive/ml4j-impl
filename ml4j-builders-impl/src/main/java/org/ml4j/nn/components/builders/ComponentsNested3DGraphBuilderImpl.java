@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
@@ -66,6 +67,24 @@ public abstract class ComponentsNested3DGraphBuilderImpl<P extends ComponentsCon
 	@Override
 	public C withActivationFunction(String name,ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
 		addActivationFunction(name, activationFunctionType, activationFunctionProperties);
+		return get3DBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(String name, ActivationFunctionType activationFunctionType) {
+		addActivationFunction(name, activationFunctionType, new ActivationFunctionProperties());
+		return get3DBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(String name, ActivationFunctionBaseType activationFunctionBaseType, ActivationFunctionProperties activationFunctionProperties) {
+		addActivationFunction(name, ActivationFunctionType.getBaseType(activationFunctionBaseType), activationFunctionProperties);
+		return get3DBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(String name, ActivationFunctionBaseType activationFunctionBaseType) {
+		addActivationFunction(name, ActivationFunctionType.getBaseType(activationFunctionBaseType), new ActivationFunctionProperties());
 		return get3DBuilder();
 	}
 }

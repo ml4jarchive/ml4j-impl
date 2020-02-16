@@ -13,10 +13,13 @@
  */
 package org.ml4j.nn.sessions;
 
+import java.util.ArrayList;
+
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerFactory;
+import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
 import org.ml4j.nn.supervised.LayeredSupervisedFeedForwardNeuralNetworkFactory;
 import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetworkFactory;
@@ -69,8 +72,13 @@ public class DefaultSessionImpl extends SessionImpl<DefaultChainableDirectedComp
 	}
 
 	@Override
-	public SupervisedFeedForwardNeuralNetwork3DBuilderSession buildNeuralNetwork(String networkName, Neurons3D initialNeurons) {
-		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, networkName, getDirectedComponentsContext(), initialNeurons);
+	public SupervisedFeedForwardNeuralNetwork3DBuilderSession buildSupervised3DNeuralNetwork(String networkName, Neurons3D initialNeurons) {
+		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, networkName, getDirectedComponentsContext(), new ArrayList<>(), initialNeurons);
+	}
+	
+	@Override
+	public SupervisedFeedForwardNeuralNetworkBuilderSession buildSupervisedNeuralNetwork(String networkName, Neurons initialNeurons) {
+		return new DefaultSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, networkName, getDirectedComponentsContext(), new ArrayList<>(), initialNeurons);
 	}
 
 	@Override
@@ -84,5 +92,15 @@ public class DefaultSessionImpl extends SessionImpl<DefaultChainableDirectedComp
 	@Override
 	public LayeredSupervisedFeedForwardNeuralNetworkFactory getLayeredSupervisedFeedForwardNeuralNetworkFactory() {
 		return layeredSupervisedFeedForwardNeuralNetworkFactory;
+	}
+
+	@Override
+	public LayeredSupervisedFeedForwardNeuralNetwork3DBuilderSession buildLayeredSupervised3DNeuralNetwork(String networkName) {
+		return new DefaultLayeredSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactory, directedLayerFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, new ArrayList<>(), networkName);
+	}
+
+	@Override
+	public LayeredSupervisedFeedForwardNeuralNetworkBuilderSession buildLayeredSupervisedNeuralNetwork(String networkName) {
+		return new DefaultLayeredSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactory, directedLayerFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, new ArrayList<>(), networkName);
 	}
 }

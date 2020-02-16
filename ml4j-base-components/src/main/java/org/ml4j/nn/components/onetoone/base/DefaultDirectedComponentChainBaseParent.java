@@ -76,11 +76,11 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 	}
 
 	public Neurons getInputNeurons() {
-		return sequentialComponents.get(0).getInputNeurons();
+		return sequentialComponents.isEmpty() ? null : sequentialComponents.get(0).getInputNeurons();
 	}
 
 	public Neurons getOutputNeurons() {
-		return sequentialComponents.get(sequentialComponents.size() - 1).getOutputNeurons();
+		return sequentialComponents.isEmpty() ? null : sequentialComponents.get(sequentialComponents.size() - 1).getOutputNeurons();
 	}
 	
 	@Override

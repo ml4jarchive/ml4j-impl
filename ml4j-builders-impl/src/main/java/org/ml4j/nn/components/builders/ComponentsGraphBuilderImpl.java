@@ -16,6 +16,7 @@ package org.ml4j.nn.components.builders;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
@@ -62,6 +63,24 @@ public abstract class ComponentsGraphBuilderImpl<C extends AxonsBuilder<T>, T ex
 	@Override
 	public C withActivationFunction(String name, ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties) {
 		addActivationFunction(name, activationFunctionType, activationFunctionProperties);
+		return getBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(String name, ActivationFunctionType activationFunctionType) {
+		addActivationFunction(name, activationFunctionType, new ActivationFunctionProperties());
+		return getBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(String name, ActivationFunctionBaseType activationFunctionBaseType, ActivationFunctionProperties activationFunctionProperties) {
+		addActivationFunction(name, ActivationFunctionType.getBaseType(activationFunctionBaseType), activationFunctionProperties);
+		return getBuilder();
+	}
+	
+	@Override
+	public C withActivationFunction(String name, ActivationFunctionBaseType activationFunctionBaseType) {
+		addActivationFunction(name, ActivationFunctionType.getBaseType(activationFunctionBaseType), new ActivationFunctionProperties());
 		return getBuilder();
 	}
 }

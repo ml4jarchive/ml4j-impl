@@ -195,4 +195,18 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	public Neurons getOutputNeurons() {
 		return trailingActivationFunctionComponentChain.getOutputNeurons();
 	}
+
+	@Override
+	public String toString() {
+		return "SupervisedFeedForwardNeuralNetworkImpl [name='" + name + "', inputNeurons=" + getInputNeurons()
+				+ ", outputNeurons=" + getOutputNeurons() + ", costFunction=" + getCostFunction()
+				+ ", lastEpochTrainingContext=" + getLastEpochTrainingContext() + ", componentType="
+				+ getComponentType() + ", optimisedFor=" + optimisedFor() + "]";
+	}
+
+	@Override
+	public List<DefaultChainableDirectedComponent<?, ?>> getComponents() {
+		return initialisingComponentChain.getComponents();
+	}
+
 }
