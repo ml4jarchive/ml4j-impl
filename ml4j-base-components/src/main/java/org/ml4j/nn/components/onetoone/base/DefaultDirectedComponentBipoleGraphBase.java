@@ -38,10 +38,11 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	
 	protected DefaultDirectedComponentBatch parallelComponentBatch;
 
+	protected String name;
+
 	protected Neurons inputNeurons;
 	protected Neurons outputNeurons;
 	protected PathCombinationStrategy pathCombinationStrategy;
-	protected String name;
 	
 	/**
 	 * @param inputNeurons The input neurons of this graph.
@@ -92,4 +93,13 @@ public abstract class DefaultDirectedComponentBipoleGraphBase implements Default
 	public String getName() {
 		return name;
 	}
+	
+	
+	@Override
+	public String toString() {
+		return "DefaultDirectedComponentBipoleGraphBase [name='" + name + "', inputNeurons=" + inputNeurons + ", parallelPaths=" + this.parallelComponentBatch.getComponents().size()
+				+ ", outputNeurons=" + outputNeurons + ", pathCombinationStrategy=" + pathCombinationStrategy + "]";
+	}
+	
+	
 }

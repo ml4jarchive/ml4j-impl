@@ -37,7 +37,23 @@ public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 	protected SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory;
 	protected LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory;
 
-
+	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
+			DirectedLayerFactory directedLayerFactory, SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory) {
+		this.directedComponentFactory = directedComponentFactory;
+		this.matrixFactory = matrixFactory;
+		this.directedLayerFactory = directedLayerFactory;
+		this.supervisedFeedForwardNeuralNetworkFactory = supervisedFeedForwardNeuralNetworkFactory;
+	}
+	
+	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
+			DirectedLayerFactory directedLayerFactory, 
+			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory) {
+		this.directedComponentFactory = directedComponentFactory;
+		this.matrixFactory = matrixFactory;
+		this.directedLayerFactory = directedLayerFactory;
+		this.layeredSupervisedFeedForwardNeuralNetworkFactory = layeredSupervisedFeedForwardNeuralNetworkFactory;
+	}
+	
 	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
 			DirectedLayerFactory directedLayerFactory, SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory,
 			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory) {
@@ -47,8 +63,6 @@ public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 		this.supervisedFeedForwardNeuralNetworkFactory = supervisedFeedForwardNeuralNetworkFactory;
 		this.layeredSupervisedFeedForwardNeuralNetworkFactory = layeredSupervisedFeedForwardNeuralNetworkFactory;
 	}
-	
-	
 
 	@Override
 	public DefaultSession createSession(DirectedComponentsContext directedComponentsContext) {

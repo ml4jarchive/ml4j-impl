@@ -24,4 +24,13 @@ public abstract class DifferentiableActivationFunctionComponentAdapterBase
 	public DifferentiableActivationFunction getActivationFunction() {
 		return activationFunction;
 	}
+
+	@Override
+	public String toString() {
+		return "DifferentiableActivationFunctionComponentAdapterBase [name='" + name + "', activationFunctionType="
+				+ getActivationFunctionType() + ", inputNeurons" + getInputNeurons() + "]";
+	}
+	
+	
+	
 }

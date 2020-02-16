@@ -138,7 +138,11 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 
 	@Override
 	public Neurons getInputNeurons() {
-		return precedingChain.getInputNeurons();
+		if (precedingChain.decompose().isEmpty()) {
+			return finalDifferentiableActivationFunctionComponent.getInputNeurons();
+		} else {
+			return precedingChain.getInputNeurons();
+		}
 	}
 
 	@Override

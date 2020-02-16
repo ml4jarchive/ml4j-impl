@@ -208,4 +208,13 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		return trailingActivationFunctionDirectedComponentChain.getOutputNeurons();
 	}
 
+	@Override
+	public String toString() {
+		return "FeedForwardLayerBase [name='" + name + "', inputNeurons="
+				+ getInputNeurons() + ", outputNeurons=" + getOutputNeurons() + 
+				", primaryAxons=" + getPrimaryAxons()
+				+ ", primaryActivationFunction=" + getPrimaryActivationFunction() + "]";
+	}
+
+	
 }
