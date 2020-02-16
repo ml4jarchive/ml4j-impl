@@ -358,7 +358,7 @@ public class PrototypeAxons3DConfigPopulatorImpl<B extends Axons3DConfigBuilderB
 			}
 		}
 
-		if (samePadding != null && (leftNeurons.getHeight() != localRightNeurons.getHeight()
+		if (samePadding != null && samePadding.booleanValue() && (leftNeurons.getHeight() != localRightNeurons.getHeight()
 				|| leftNeurons.getWidth() != localRightNeurons.getWidth())) {
 			throw new IllegalStateException(
 					"For same padding, the left neurons and right neurons must have the same width/height");

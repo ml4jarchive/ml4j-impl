@@ -17,6 +17,7 @@ import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.layers.DirectedLayerFactory;
+import org.ml4j.nn.neurons.Neurons3D;
 import org.ml4j.nn.supervised.LayeredSupervisedFeedForwardNeuralNetworkFactory;
 import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetworkFactory;
 
@@ -68,8 +69,8 @@ public class DefaultSessionImpl extends SessionImpl<DefaultChainableDirectedComp
 	}
 
 	@Override
-	public SupervisedFeedForwardNeuralNetwork3DBuilderSession buildNeuralNetwork(String networkName) {
-		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, networkName);
+	public SupervisedFeedForwardNeuralNetwork3DBuilderSession buildNeuralNetwork(String networkName, Neurons3D initialNeurons) {
+		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, networkName, getDirectedComponentsContext(), initialNeurons);
 	}
 
 	@Override
