@@ -4,29 +4,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ml4j.nn.axons.Axons3DConfigBuilder;
+import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.components.builders.initial.InitialComponents3DGraphBuilderImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
+import org.ml4j.nn.definitions.Component3Dto3DGraphDefinition;
+import org.ml4j.nn.definitions.Component3DtoNon3DGraphDefinition;
 import org.ml4j.nn.layers.DirectedLayerFactory;
 import org.ml4j.nn.layers.FeedForwardLayer;
 import org.ml4j.nn.layers.builders.AveragePoolingFeedForwardLayerPropertiesBuilder;
 import org.ml4j.nn.layers.builders.MaxPoolingFeedForwardLayerPropertiesBuilder;
+import org.ml4j.nn.neurons.Neurons3D;
 import org.ml4j.nn.supervised.LayeredSupervisedFeedForwardNeuralNetwork;
 import org.ml4j.nn.supervised.LayeredSupervisedFeedForwardNeuralNetworkFactory;
 import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetwork;
 import org.ml4j.nn.supervised.SupervisedFeedForwardNeuralNetworkFactory;
 
-public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
+public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession extends InitialComponents3DGraphBuilderImpl<DefaultChainableDirectedComponent<?, ?>>
 		implements SupervisedFeedForwardNeuralNetwork3DBuilderSession{
 
-	private List<DefaultChainableDirectedComponent<?, ?>> components;
+	//private List<DefaultChainableDirectedComponent<?, ?>> components;
 	private String networkName;
 	
 	private DirectedLayerFactory directedLayerFactory;
 	private SupervisedFeedForwardNeuralNetworkFactory neuralNetworkFactory;
-	private DirectedComponentFactory directedComponentFactory;
+	private DirectedComponentFactory directedComponentFactoryReference;
 	private LayeredSupervisedFeedForwardNeuralNetworkFactory layeredNeuralNetworkFactory;
+	
+	public DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(
+			DirectedComponentFactory directedComponentFactory,
+			DirectedLayerFactory directedLayerFactory,
+			SupervisedFeedForwardNeuralNetworkFactory neuralNetworkFactory,
+			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredNeuralNetworkFactory, String networkName,
+			DirectedComponentsContext directedComponentsContext, Neurons3D currentNeurons) {
+		super(directedComponentFactory, directedComponentsContext, currentNeurons);
+		this.directedComponentFactoryReference = directedComponentFactory;
+		this.directedLayerFactory = directedLayerFactory;
+		this.neuralNetworkFactory = neuralNetworkFactory;
+		this.layeredNeuralNetworkFactory = layeredNeuralNetworkFactory;
+		this.networkName = networkName;
+	}
 
 	
+	/*
 	public DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(DirectedComponentFactory directedComponentFactory,
 			DirectedLayerFactory directedLayerFactory,
 			SupervisedFeedForwardNeuralNetworkFactory neuralNetworkFactory, 
@@ -38,16 +58,17 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 		this.networkName = networkName;
 		this.directedComponentFactory = directedComponentFactory;
 	}
+	*/
 	
 	public List<DefaultChainableDirectedComponent<?, ?>> getLayers() {
-		return components;
+		return getComponents();
 	}
 
 	@Override
 	public SupervisedFeedForwardNeuralNetwork build() {
 
 		if (neuralNetworkFactory != null) {
-			return neuralNetworkFactory.createSupervisedFeedForwardNeuralNetwork(networkName, components);
+			return neuralNetworkFactory.createSupervisedFeedForwardNeuralNetwork(networkName, getComponents());
 		} else {
 			throw new IllegalStateException("No neural network factory available for SupervisedFeedForwardNeuralNetworks");
 		}		
@@ -58,7 +79,7 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 		// TODO - refactor this and use type-specific lists.
 		boolean notFeedForwardLayer = false;
 		List<FeedForwardLayer<?, ?>> layers = new ArrayList<>();
-		for (DefaultChainableDirectedComponent<?, ?> component : components) {
+		for (DefaultChainableDirectedComponent<?, ?> component : getComponents()) {
 			if (!(component instanceof FeedForwardLayer)) {
 				notFeedForwardLayer = true;
 			} else {
@@ -79,7 +100,7 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 
 	@Override
 	public DirectedComponentFactory getDirectedComponentFactory() {
-		return directedComponentFactory;
+		return directedComponentFactoryReference;
 	}
 
 	@Override
@@ -88,7 +109,7 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 		if (directedLayerFactory == null) {
 			throw new IllegalStateException("No DirectedLayerFactory has been set on the session");
 		}
-		return new DefaultConvolutionalFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, components::add);
+		return new DefaultConvolutionalFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, getComponents()::add);
 	}
 
 	@Override
@@ -105,7 +126,7 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 		if (directedLayerFactory == null) {
 			throw new IllegalStateException("No DirectedLayerFactory has been set on the session");
 		}
-		return new DefaultAveragePoolingFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, components::add);
+		return new DefaultAveragePoolingFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, getComponents()::add);
 	}
 	
 	@Override
@@ -114,7 +135,7 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 		if (directedLayerFactory == null) {
 			throw new IllegalStateException("No DirectedLayerFactory has been set on the session");
 		}
-		return new DefaultMaxPoolingFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, components::add);
+		return new DefaultMaxPoolingFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, getComponents()::add);
 	}
 
 	@Override
@@ -123,7 +144,23 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession
 		if (directedLayerFactory == null) {
 			throw new IllegalStateException("No DirectedLayerFactory has been set on the session");
 		}
-		return new DefaultFullyConnectedFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, components::add);
+		return new DefaultFullyConnectedFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, () -> this, getComponents()::add);
+	}
+
+	@Override
+	public SupervisedFeedForwardNeuralNetworkBuilderSession withComponentGraphDefinition(
+			Component3DtoNon3DGraphDefinition definition) {
+		definition.createComponentGraph(this, directedComponentFactory);
+		return this;
+		
+	}
+	
+	@Override
+	public SupervisedFeedForwardNeuralNetwork3DBuilderSession withComponentGraphDefinition(
+			Component3Dto3DGraphDefinition definition) {
+		definition.createComponentGraph(this, directedComponentFactory);
+		return this;
+		
 	}
 
 }
