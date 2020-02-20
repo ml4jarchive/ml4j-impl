@@ -8,9 +8,12 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.BatchNormConfig;
+import org.ml4j.nn.axons.AxonsContextConfigurer;
+import org.ml4j.nn.axons.BatchNormAxonsConfig;
+import org.ml4j.nn.axons.BatchNormAxonsConfigConfigurer;
 import org.ml4j.nn.axons.BatchNormConfig.BatchNormDimension;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.FullyConnectedAxonsConfig;
 import org.ml4j.nn.axons.WeightsFormat;
 import org.ml4j.nn.axons.WeightsFormatImpl;
 import org.ml4j.nn.axons.WeightsMatrix;
@@ -37,7 +40,8 @@ public class DefaultFullyConnectedFeedForwardLayerBuilderSession<C> extends
 	private FullyConnectedLayerConfigBuilder layerConfigBuilder;
 
 	public DefaultFullyConnectedFeedForwardLayerBuilderSession(String layerName,
-			DirectedLayerFactory directedLayerFactory, Supplier<C> layerContainer,
+			DirectedLayerFactory directedLayerFactory, 
+			Supplier<C> layerContainer,
 			Consumer<FullyConnectedFeedForwardLayer> completedLayerConsumer) {
 		super(layerName, directedLayerFactory, null, completedLayerConsumer);
 		withLayerContainer(() -> this);
@@ -49,23 +53,46 @@ public class DefaultFullyConnectedFeedForwardLayerBuilderSession<C> extends
 	protected FullyConnectedFeedForwardLayer build(FullyConnectedLayerAxonsConfig layerConfig) {
 		
 		WeightsMatrix weightsMatrix = layerConfigBuilder.getWeightsMatrix();
-		BiasMatrix biasMatrix = layerConfigBuilder.getBiasMatrix();
-		BatchNormConfig<Neurons> batchNormConfig = layerConfigBuilder.getBatchNormConfig();
+		BiasVector biasMatrix = layerConfigBuilder.getBiasVector();
+		BatchNormAxonsConfig<Neurons> batchNormAxonsConfig = layerConfigBuilder.getBatchNormAxonsConfig();
 		
 		// If no weights matrix has been explicitly configured, create a weights with null matrix and default format.
 		// If no bias matrix has been set, it will be defaulted by the directedlayerfactory if left neurons have bias unit.
 		if (weightsMatrix == null) {
 			weightsMatrix = DEFAULT_UNINITIALISED_WEIGHTS_MATRIX;
 		}
-		
-		if (layerConfig.getActivationFunctionType() == null) {
-			return directedLayerFactory.createFullyConnectedFeedForwardLayer(layerName, layerConfig, weightsMatrix, biasMatrix,
-					ActivationFunctionType.getBaseType(ActivationFunctionBaseType.LINEAR),
-					new ActivationFunctionProperties(), batchNormConfig);
-		} else {
-			return directedLayerFactory.createFullyConnectedFeedForwardLayer(layerName, layerConfig, weightsMatrix, biasMatrix,
-					layerConfig.getActivationFunctionType(), layerConfig.getActivationFunctionProperties(), batchNormConfig);
+
+		if (batchNormAxonsConfig != null) {
+			
+			if (batchNormAxonsConfig.getNeurons() == null) {
+				batchNormAxonsConfig.withNeurons(layerConfig.getRightNeurons());
+			} else {
+				if (!layerConfig.getRightNeurons().equals(batchNormAxonsConfig.getNeurons())) {
+					throw new IllegalStateException("Neurons set on BatchNormAxonsConfig should match the output neurons of "
+							+ "the FullyConnectedAxons");
+				}
+			}
+			
 		}
+		
+		FullyConnectedAxonsConfig fullyConnectedAxonsConfig = 
+				FullyConnectedAxonsConfig.create(layerConfig.getLeftNeurons(), layerConfig.getRightNeurons());
+		
+		if (layerConfigBuilder.getAxonsContextConfigurer() != null) {
+			fullyConnectedAxonsConfig = fullyConnectedAxonsConfig.withAxonsContextConfigurer(layerConfigBuilder.getAxonsContextConfigurer());
+		}
+		
+		FullyConnectedFeedForwardLayer layer;
+		if (layerConfig.getActivationFunctionType() == null) {
+			layer = directedLayerFactory.createFullyConnectedFeedForwardLayer(layerName, fullyConnectedAxonsConfig, weightsMatrix, biasMatrix,
+					ActivationFunctionType.getBaseType(ActivationFunctionBaseType.LINEAR),
+					new ActivationFunctionProperties(), batchNormAxonsConfig);
+		} else {
+			layer = directedLayerFactory.createFullyConnectedFeedForwardLayer(layerName, fullyConnectedAxonsConfig, weightsMatrix, biasMatrix,
+					layerConfig.getActivationFunctionType(), layerConfig.getActivationFunctionProperties(), batchNormAxonsConfig);
+		}
+		
+		return layer;
 	}
 
 	@Override
@@ -139,14 +166,14 @@ public class DefaultFullyConnectedFeedForwardLayerBuilderSession<C> extends
 	public FullyConnectedFeedForwardLayerPropertiesBuilder<C> withOutputNeurons(Neurons outputNeurons) {
 
 		layerConfigBuilder.withOutputNeurons(outputNeurons);
-
+		
 		return this;
 	}
 
 	@Override
-	public FullyConnectedFeedForwardLayerPropertiesBuilder<C> withBiasMatrix(BiasMatrix biasMatrix) {
+	public FullyConnectedFeedForwardLayerPropertiesBuilder<C> withBiasVector(BiasVector biasMatrix) {
 
-		layerConfigBuilder.withBiasMatrix(biasMatrix);
+		layerConfigBuilder.withBiasVector(biasMatrix);
 		return this;
 	}
 
@@ -169,12 +196,18 @@ public class DefaultFullyConnectedFeedForwardLayerBuilderSession<C> extends
 	}
 
 	@Override
-	public FullyConnectedFeedForwardLayerPropertiesBuilder<C> withBatchNormConfig(
-			Consumer<BatchNormConfig<Neurons>> batchNormConfigConfiger) {
+	public FullyConnectedFeedForwardLayerPropertiesBuilder<C> withBatchNormAxonsConfig(
+			BatchNormAxonsConfigConfigurer<Neurons> batchNormAxonsConfigConfigurer) {
 		
-		BatchNormConfig<Neurons> batchNormConfig = new BatchNormConfig<>(BatchNormDimension.INPUT_FEATURE);
-		batchNormConfigConfiger.accept(batchNormConfig);
+		BatchNormAxonsConfig<Neurons> batchNormConfig = BatchNormAxonsConfig.create(BatchNormDimension.INPUT_FEATURE);
+		batchNormAxonsConfigConfigurer.accept(batchNormConfig);
 		layerConfigBuilder.withBatchNormConfig(batchNormConfig);
+		return this;
+	}
+
+	@Override
+	public FullyConnectedFeedForwardLayerPropertiesBuilder<C> withAxonsContextConfigurer(AxonsContextConfigurer axonsContextConfiguer) {
+		layerConfigBuilder.withAxonsContextConfigurer(axonsContextConfiguer);
 		return this;
 	}
 }

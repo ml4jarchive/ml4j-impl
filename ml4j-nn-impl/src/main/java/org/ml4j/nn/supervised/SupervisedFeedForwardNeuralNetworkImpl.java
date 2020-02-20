@@ -15,7 +15,9 @@
 package org.ml4j.nn.supervised;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -182,8 +184,8 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	}
 
 	@Override
-	public FeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0) {
-		throw new UnsupportedOperationException();
+	public FeedForwardNeuralNetworkContext getContext(DirectedComponentsContext directedComponentsContext) {
+		return new FeedForwardNeuralNetworkContextImpl(directedComponentsContext, directedComponentsContext.isTrainingContext());
 	}
 
 	@Override
@@ -208,5 +210,13 @@ public class SupervisedFeedForwardNeuralNetworkImpl extends
 	public List<DefaultChainableDirectedComponent<?, ?>> getComponents() {
 		return initialisingComponentChain.getComponents();
 	}
+
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(trailingActivationFunctionComponentChain.flatten());
+		return allComponentsIncludingThis;
+	}
+
 
 }

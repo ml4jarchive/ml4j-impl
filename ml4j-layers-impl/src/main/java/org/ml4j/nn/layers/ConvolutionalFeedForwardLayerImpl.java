@@ -16,15 +16,19 @@
 
 package org.ml4j.nn.layers;
 
+import java.util.Optional;
+
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
+import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.BatchNormConfig;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
 import org.ml4j.nn.axons.ConvolutionalAxons;
 import org.ml4j.nn.axons.WeightsFormat;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.axons.WeightsMatrixImpl;
 import org.ml4j.nn.axons.factories.AxonsFactory;
+import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons3D;
 
@@ -91,7 +95,7 @@ public class ConvolutionalFeedForwardLayerImpl
 	 * @param batchNormConfig          The batch norm config for this layer, or null if no batch norm.
 	 */
 	public ConvolutionalFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
-			AxonsFactory axonsFactory, Axons3DConfig axonsConfig, WeightsMatrix weightsMatrix, BiasMatrix biasMatrix, 
+			AxonsFactory axonsFactory, Axons3DConfig axonsConfig, WeightsMatrix weightsMatrix, BiasVector biasMatrix, 
 			DifferentiableActivationFunction primaryActivationFunction,
 			BatchNormConfig<Neurons3D> batchNormConfig) {
 		super(name, directedComponentFactory,
@@ -126,5 +130,15 @@ public class ConvolutionalFeedForwardLayerImpl
 	@Override
 	public int getZeroPadding() {
 		return getPrimaryAxons().getConfig().getPaddingWidth();
+	}
+
+	@Override
+	public Optional<AxonsContext> getBatchNormAxonsContext(DirectedComponentsContext directedComponentsContext) {
+		return Optional.empty();
+	}
+
+	@Override
+	public AxonsContext getPrimaryAxonsContext(DirectedComponentsContext directedComponentsContext) {
+		return getAxonsContext(directedComponentsContext, getPrimaryAxonsComponentName());
 	}
 }

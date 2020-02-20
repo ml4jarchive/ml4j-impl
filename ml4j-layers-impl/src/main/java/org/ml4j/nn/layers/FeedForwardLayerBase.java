@@ -27,8 +27,6 @@ import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.BatchNormConfig;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.components.ChainableDirectedComponentActivation;
-import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
 import org.ml4j.nn.components.onetone.DefaultDirectedComponentChain;
@@ -59,6 +57,8 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedForwardLayerBase.class);
+	
+	public static final String PRIMARY_SYNAPSES_NAME_SUFFIX = ":PrimarySynapses";
 
 	protected A primaryAxons;
 
@@ -118,7 +118,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 			// TODO
 			throw new UnsupportedOperationException("Batch norm not yet implemented");
 		} else {
-			synapses.add(new DirectedSynapsesImpl<>(name + ":DirectedSynapses", directedComponentFactory, primaryAxons, primaryActivationFunction));
+			synapses.add(new DirectedSynapsesImpl<>(name + PRIMARY_SYNAPSES_NAME_SUFFIX, directedComponentFactory, primaryAxons, primaryActivationFunction));
 		}
 		return synapses;
 	}
@@ -132,25 +132,23 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 		chainableComponents.addAll(synapseChain.decompose());
 		return new TrailingActivationFunctionDirectedComponentChainImpl(directedComponentFactory, chainableComponents);
 	}
+	
+	
+
+	@Override
+	protected String getPrimaryAxonsComponentName() {
+		return name + PRIMARY_SYNAPSES_NAME_SUFFIX + DirectedSynapsesImpl.PRIMARY_AXONS_COMPONENT_NAME_SUFFIX;
+	}
 
 	@Override
 	public DirectedLayerActivation forwardPropagate(NeuronsActivation inputNeuronsActivation,
 			DirectedLayerContext directedLayerContext) {
 		LOGGER.debug(directedLayerContext.toString() + ":Forward propagating through layer");
 
-		DirectedComponentsContext componentsContext = new DirectedComponentsContextImpl(
-				directedLayerContext.getMatrixFactory(), directedLayerContext.isTrainingContext());
-
 		TrailingActivationFunctionDirectedComponentChainActivation activation = this.trailingActivationFunctionDirectedComponentChain
-				.forwardPropagate(inputNeuronsActivation, componentsContext);
+				.forwardPropagate(inputNeuronsActivation, directedLayerContext.getDirectedComponentsContext());
 
 		return new DirectedLayerActivationImpl(this, activation, directedLayerContext);
-	}
-
-	@Override
-	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext) {
-		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(
-				directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
 	}
 
 	@Override
@@ -166,7 +164,7 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 			throw new UnsupportedOperationException("Axons do not have connection weights");
 		}
 		Matrix weightsOnly = ((TrainableAxons<?, ?, ?>) getPrimaryAxons()).getDetachedAxonWeights()
-				.getConnectionWeights().getWeights();
+				.getConnectionWeights().getMatrix();
 
 		int countJ = weightsOnly.getColumns(); // - (getPrimaryAxons().getLeftNeurons().hasBiasUnit() ? 1 : 0);
 		float[] maximisingInputFeatures = new float[countJ];
@@ -215,6 +213,6 @@ public abstract class FeedForwardLayerBase<A extends Axons<?, ?, ?>, L extends F
 				", primaryAxons=" + getPrimaryAxons()
 				+ ", primaryActivationFunction=" + getPrimaryActivationFunction() + "]";
 	}
-
+	
 	
 }

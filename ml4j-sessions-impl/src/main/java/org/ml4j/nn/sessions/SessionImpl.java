@@ -43,7 +43,7 @@ public class SessionImpl<T extends NeuralComponent<?>> implements Session<T> {
 
 	@Override
 	public ComponentGraphBuilderSession<T> buildComponentGraph() {
-		return new ComponentGraphBuilderSessionImpl<>(neuralComponentFactory, directedComponentsContext);
+		return new ComponentGraphBuilderSessionImpl<>(neuralComponentFactory);
 	}
 
 	@Override

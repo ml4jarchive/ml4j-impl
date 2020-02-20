@@ -1,6 +1,5 @@
 package org.ml4j.nn.sessions;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.Components3DGraphBuilderImpl;
 import org.ml4j.nn.components.builders.base.BaseGraphBuilderStateImpl;
@@ -15,8 +14,8 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DGraphBuilderSession
 	
 	public DefaultSupervisedFeedForwardNeuralNetwork3DGraphBuilderSession(
 			DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession previousBuilderSession, 
-			Base3DGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext) {
-		super(previousBuilderSession.getDirectedComponentFactory(), builderState, directedComponentsContext, 
+			Base3DGraphBuilderState builderState) {
+		super(previousBuilderSession.getDirectedComponentFactory(), builderState, 
 				previousBuilderSession.getComponents());
 		this.previousBuilderSession = previousBuilderSession;
 	}
@@ -43,7 +42,7 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DGraphBuilderSession
 	public SupervisedFeedForwardNeuralNetworkGraphBuilderSession getBuilder() {
 		//addAxonsIfApplicable();
 		return new DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(this, 
-				previousBuilderSession.getDirectedComponentFactory(), new BaseGraphBuilderStateImpl(this.getBuilderState().getComponentsGraphNeurons().getCurrentNeurons()), directedComponentsContext);
+				previousBuilderSession.getDirectedComponentFactory(), new BaseGraphBuilderStateImpl(this.getBuilderState().getComponentsGraphNeurons().getCurrentNeurons()));
 	}
 
 

@@ -31,7 +31,7 @@ public class DefaultComponents3DGraphBuilderFactory<T extends NeuralComponent<?>
 	@Override
 	public InitialComponents3DGraphBuilder<T> createInitialComponents3DGraphBuilder(Neurons3D initialNeurons,
 			DirectedComponentsContext directedComponentsContext) {
-		return new InitialComponents3DGraphBuilderImpl<>(directedComponentFactory, directedComponentsContext,
+		return new InitialComponents3DGraphBuilderImpl<>(directedComponentFactory,
 				initialNeurons);
 	}
 

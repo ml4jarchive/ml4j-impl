@@ -13,11 +13,10 @@
  */
 package org.ml4j.nn.components.builders.axons;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.AxonsContextConfigurer;
+import org.ml4j.nn.axons.BiasVector;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.neurons.Neurons3D;
 
@@ -48,7 +47,7 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 	}
 
 	@Override
-	public UncompletedConvolutionalAxonsBuilder<C> withBiases(BiasMatrix biases) {
+	public UncompletedConvolutionalAxonsBuilder<C> withBiases(BiasVector biases) {
 		previousBuilderSupplier.get().getBuilderState().setBiases(biases);
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
@@ -119,7 +118,7 @@ public class UncompletedConvolutionalAxonsBuilderImpl<C extends Axons3DBuilder<?
 
 	@Override
 	public UncompletedConvolutionalAxonsBuilder<C> withAxonsContextConfigurer(
-			Consumer<AxonsContext> axonsContextConfigurer) {
+			AxonsContextConfigurer axonsContextConfigurer) {
 		this.axonsContextConfigurer = axonsContextConfigurer;
 		return this;
 	}

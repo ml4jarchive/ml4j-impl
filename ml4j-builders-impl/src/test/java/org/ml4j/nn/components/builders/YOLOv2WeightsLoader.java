@@ -15,9 +15,10 @@
  */
 package org.ml4j.nn.components.builders;
 
-import org.ml4j.Matrix;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.FeaturesVector;
 import org.ml4j.nn.axons.WeightsMatrix;
+import org.ml4j.nn.axons.WeightsVector;
 
 /**
  * Interface for helper to load YOLO v2 weights
@@ -28,11 +29,11 @@ import org.ml4j.nn.axons.WeightsMatrix;
 public interface YOLOv2WeightsLoader {
 	
 	WeightsMatrix getConvolutionalLayerWeights(String name, int width, int height, int inputDepth, int outputDepth);
-	BiasMatrix getConvolutionalLayerBiases(String name, int outputDepth);
-	WeightsMatrix getBatchNormLayerWeights(String name, int inputDepth);
-	BiasMatrix getBatchNormLayerBias(String name, int inputDepth);
-	Matrix getBatchNormLayerMovingVariance(String name, int inputDepth);
-	Matrix getBatchNormLayerMovingMean(String name, int inputDepth);
+	BiasVector getConvolutionalLayerBiases(String name, int outputDepth);
+	WeightsVector getBatchNormLayerWeights(String name, int inputDepth);
+	BiasVector getBatchNormLayerBias(String name, int inputDepth);
+	FeaturesVector getBatchNormLayerMovingVariance(String name, int inputDepth);
+	FeaturesVector getBatchNormLayerMovingMean(String name, int inputDepth);
 
 
 }

@@ -13,7 +13,6 @@
  */
 package org.ml4j.nn.sessions;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.componentsgraph.InitialComponents3DGraphBuilder;
 import org.ml4j.nn.components.builders.componentsgraph.InitialComponentsGraphBuilder;
@@ -34,23 +33,20 @@ import org.ml4j.nn.neurons.Neurons3D;
 public class ComponentGraphBuilderSessionImpl<T extends NeuralComponent<?>> implements ComponentGraphBuilderSession<T> {
 
 	private NeuralComponentFactory<T> neuralComponentFactory;
-	private DirectedComponentsContext directedComponentsContext;
 
-	public ComponentGraphBuilderSessionImpl(NeuralComponentFactory<T> neuralComponentFactory,
-			DirectedComponentsContext directedComponentsContext) {
+	public ComponentGraphBuilderSessionImpl(NeuralComponentFactory<T> neuralComponentFactory) {
 		this.neuralComponentFactory = neuralComponentFactory;
-		this.directedComponentsContext = directedComponentsContext;
 	}
 
 	@Override
 	public InitialComponents3DGraphBuilder<T> startWith3DNeurons(Neurons3D initialNeurons) {
-		return new InitialComponents3DGraphBuilderImpl<>(neuralComponentFactory, directedComponentsContext,
+		return new InitialComponents3DGraphBuilderImpl<>(neuralComponentFactory,
 				initialNeurons);
 	}
 
 	@Override
 	public InitialComponentsGraphBuilder<T> startWithNeurons(Neurons initialNeurons) {
-		return new InitialComponentsGraphBuilderImpl<>(neuralComponentFactory, directedComponentsContext,
+		return new InitialComponentsGraphBuilderImpl<>(neuralComponentFactory,
 				initialNeurons);
 	}
 

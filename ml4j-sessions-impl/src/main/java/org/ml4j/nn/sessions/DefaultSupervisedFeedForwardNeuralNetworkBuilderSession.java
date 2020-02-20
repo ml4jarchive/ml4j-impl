@@ -3,7 +3,6 @@ package org.ml4j.nn.sessions;
 import java.util.List;
 
 import org.ml4j.nn.axons.Axons;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.builders.initial.InitialComponentsGraphBuilderImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -27,8 +26,8 @@ public class DefaultSupervisedFeedForwardNeuralNetworkBuilderSession extends Ini
 			DirectedComponentFactory directedComponentFactory,
 			DirectedLayerFactory directedLayerFactory,
 			SupervisedFeedForwardNeuralNetworkFactory neuralNetworkFactory, String networkName,
-			DirectedComponentsContext directedComponentsContext, List<DefaultChainableDirectedComponent<?, ?>> components, Neurons currentNeurons) {
-		super(directedComponentFactory, directedComponentsContext, currentNeurons);
+			List<DefaultChainableDirectedComponent<?, ?>> components, Neurons currentNeurons) {
+		super(directedComponentFactory, currentNeurons);
 		this.directedComponentFactoryReference = directedComponentFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.neuralNetworkFactory = neuralNetworkFactory;
@@ -94,13 +93,13 @@ public class DefaultSupervisedFeedForwardNeuralNetworkBuilderSession extends Ini
 
 	@Override
 	public SupervisedFeedForwardNeuralNetworkGraphBuilderSession withComponentGraph() {
-		return new DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(this, getBuilderState() , directedComponentsContext);
+		return new DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(this, getBuilderState());
 	}
 
 	@Override
 	public <A extends Axons<Neurons, Neurons, ?>, L extends FeedForwardLayer<A, L>> SupervisedFeedForwardNeuralNetworkBuilderSession withLayer(
 			L layer) {
 		getComponents().add(layer);
-		return new DefaultSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactoryReference, directedLayerFactory, neuralNetworkFactory, networkName, directedComponentsContext, getComponents(), getCurrentNeurons());
+		return new DefaultSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactoryReference, directedLayerFactory, neuralNetworkFactory, networkName, getComponents(), getCurrentNeurons());
 	}
 }

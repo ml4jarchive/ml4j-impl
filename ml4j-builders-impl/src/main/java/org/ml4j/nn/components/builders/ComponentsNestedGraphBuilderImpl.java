@@ -21,7 +21,6 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
 import org.ml4j.nn.components.builders.base.BaseNestedGraphBuilderImpl;
@@ -39,22 +38,20 @@ public abstract class ComponentsNestedGraphBuilderImpl<P extends ComponentsConta
 		extends BaseNestedGraphBuilderImpl<P, C, T> implements ComponentsGraphBuilder<C, T> {
 
 	public ComponentsNestedGraphBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			BaseGraphBuilderState builderState, 
 			List<T> components) {
-		super(parentGraph, directedComponentFactory, builderState, directedComponentsContext, components);
+		super(parentGraph, directedComponentFactory, builderState, components);
 	}
 
 	@Override
 	public ParallelPathsBuilder<ComponentsSubGraphBuilder<C, T>> withParallelPaths() {
 		addAxonsIfApplicable();
-		return new ComponentsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder,
-				directedComponentsContext);
+		return new ComponentsParallelPathsBuilderImpl<>(directedComponentFactory, this::getBuilder);
 	}
 
 	@Override
 	public ComponentsGraphSkipConnectionBuilder<C, T> withSkipConnection() {
-		return new ComponentsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState,
-				directedComponentsContext, new ArrayList<>());
+		return new ComponentsGraphSkipConnectionBuilderImpl<>(this::getBuilder, directedComponentFactory, builderState, new ArrayList<>());
 	}
 
 	@Override

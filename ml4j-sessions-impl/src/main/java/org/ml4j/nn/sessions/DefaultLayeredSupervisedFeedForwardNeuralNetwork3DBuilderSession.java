@@ -27,7 +27,8 @@ public class DefaultLayeredSupervisedFeedForwardNeuralNetwork3DBuilderSession
 	public DefaultLayeredSupervisedFeedForwardNeuralNetwork3DBuilderSession(
 			DirectedComponentFactory directedComponentFactory,
 			DirectedLayerFactory directedLayerFactory,
-			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredNeuralNetworkFactory, List<FeedForwardLayer<?, ?>> layers, String networkName) {
+			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredNeuralNetworkFactory, 
+			List<FeedForwardLayer<?, ?>> layers, String networkName) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.layeredNeuralNetworkFactory = layeredNeuralNetworkFactory;

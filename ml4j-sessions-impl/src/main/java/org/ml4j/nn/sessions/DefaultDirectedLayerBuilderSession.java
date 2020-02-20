@@ -30,7 +30,7 @@ public class DefaultDirectedLayerBuilderSession implements DirectedLayerBuilderS
 	public FullyConnectedFeedForwardLayerBuilderSession<FullyConnectedFeedForwardLayer> buildFullyConnectedLayer(
 			String layerName) {
 		List<FullyConnectedFeedForwardLayer> layers = new ArrayList<>();
-		return new DefaultFullyConnectedFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory,
+		return new DefaultFullyConnectedFeedForwardLayerBuilderSession<>(layerName, directedLayerFactory, 
 				() -> Optional.ofNullable(layers.size() == 1 ? layers.get(0) : null)
 						.orElseThrow(() -> new IllegalStateException("No layer has been built")),
 				layers::add);

@@ -17,13 +17,17 @@
 package org.ml4j.nn.layers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.axons.Axons;
+import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.NeuralComponentVisitor;
@@ -89,25 +93,33 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 			DirectedLayerContext directedLayerContext) {
 		LOGGER.debug(directedLayerContext.toString() + ":Forward propagating through layer");
 
-		DirectedComponentsContext componentsContext = new DirectedComponentsContextImpl(
-				directedLayerContext.getMatrixFactory(), directedLayerContext.isTrainingContext());
-
 		TrailingActivationFunctionDirectedComponentChainActivation activation = trailingActivationFunctionDirectedComponentChain
-				.forwardPropagate(inputNeuronsActivation, componentsContext);
+				.forwardPropagate(inputNeuronsActivation, directedLayerContext.getDirectedComponentsContext());
 
 		return new DirectedLayerActivationImpl(this, activation, directedLayerContext);
 	}
 
 	@Override
 	public DirectedLayerContext getContext(DirectedComponentsContext directedComponentsContext) {
-		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(
-				directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext()));
+		return directedComponentsContext.getContext(this, () -> new DirectedLayerContextImpl(this, 
+				directedComponentsContext), context -> { DirectedLayerContext layerContext = new DirectedLayerContextImpl(this, 
+						directedComponentsContext); layerContext.withFreezeOut(context.isWithFreezeOut()); return layerContext; });
 	}
 
 	@Override
 	public List<DefaultChainableDirectedComponent<?, ?>> decompose() {
 		return getComponents().stream().flatMap(c -> c.decompose().stream()).collect((Collectors.toList()));
 	}
+	
+
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(trailingActivationFunctionDirectedComponentChain.flatten());
+		return allComponentsIncludingThis;
+	}
+
+	
 
 	@Override
 	public NeuralComponentType getComponentType() {
@@ -141,4 +153,18 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitSequentialComponentChain(getComponents());
 	}
+	
+	protected abstract String getPrimaryAxonsComponentName();
+	
+	protected AxonsContext getAxonsContext(DirectedComponentsContext directedComponentsContext, String axonsComponentName) {
+		System.out.println("Getting axons context:" + directedComponentsContext.isTrainingContext());
+		Map<String, AxonsContext> nestedAxonsContextsByComponentName = getNestedContexts(directedComponentsContext, AxonsContext.class);
+		AxonsContext primaryAxonsContext = nestedAxonsContextsByComponentName.get(axonsComponentName);
+		if (primaryAxonsContext == null) {
+			throw new IllegalStateException("Unable to lookup primary axons components context for component name:" + axonsComponentName);
+		} else {
+			return primaryAxonsContext;
+		}
+	}
+
 }

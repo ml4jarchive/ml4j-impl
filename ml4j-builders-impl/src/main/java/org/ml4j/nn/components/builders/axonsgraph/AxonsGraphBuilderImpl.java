@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
@@ -34,21 +33,19 @@ public abstract class AxonsGraphBuilderImpl<C extends AxonsBuilder<T>, T extends
 	protected C builder;
 
 	public AxonsGraphBuilderImpl(Supplier<C> previousSupplier, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			BaseGraphBuilderState builderState, 
 			List<T> components) {
-		super(directedComponentFactory, builderState, directedComponentsContext, components);
+		super(directedComponentFactory, builderState, components);
 		this.previousSupplier = previousSupplier;
 	}
 
 	@Override
 	public ParallelPathsBuilder<AxonsSubGraphBuilder<C, T>> withParallelPaths() {
-		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, previousSupplier,
-				directedComponentsContext);
+		return new AxonsParallelPathsBuilderImpl<>(directedComponentFactory, previousSupplier);
 	}
 
 	@Override
 	public AxonsGraphSkipConnectionBuilder<C, T> withSkipConnection() {
-		return new AxonsGraphSkipConnectionBuilderImpl<>(previousSupplier, directedComponentFactory, builderState,
-				directedComponentsContext, new ArrayList<>());
+		return new AxonsGraphSkipConnectionBuilderImpl<>(previousSupplier, directedComponentFactory, builderState, new ArrayList<>());
 	}
 }

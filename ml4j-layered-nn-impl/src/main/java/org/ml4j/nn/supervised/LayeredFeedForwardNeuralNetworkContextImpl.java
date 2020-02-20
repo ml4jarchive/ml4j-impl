@@ -14,12 +14,8 @@
 
 package org.ml4j.nn.supervised;
 
-import java.util.HashMap;
-
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkContext;
-import org.ml4j.nn.layers.DirectedLayerContext;
-import org.ml4j.nn.layers.DirectedLayerContextImpl;
+import org.ml4j.nn.components.DirectedComponentsContext;
 
 /**
  * Simple default implementation of FeedForwardNeuralNetworkContext.
@@ -39,20 +35,9 @@ public class LayeredFeedForwardNeuralNetworkContextImpl extends FeedForwardNeura
 
 	private Integer endLayerIndex;
 
-	private HashMap<Integer, DirectedLayerContext> directedLayerContexts;
-
-	private boolean isTrainingContext;
-
-	/**
-	 * 
-	 * @param matrixFactory
-	 * @param startLayerIndex
-	 * @param endLayerIndex
-	 */
-	public LayeredFeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, int startLayerIndex,
+	public LayeredFeedForwardNeuralNetworkContextImpl(DirectedComponentsContext directedComponentsContext, int startLayerIndex,
 			Integer endLayerIndex, boolean isTrainingContext) {
-		super(matrixFactory, isTrainingContext);
-		this.isTrainingContext = isTrainingContext;
+		super(directedComponentsContext, isTrainingContext);
 		this.startLayerIndex = startLayerIndex;
 		this.endLayerIndex = endLayerIndex;
 
@@ -60,23 +45,6 @@ public class LayeredFeedForwardNeuralNetworkContextImpl extends FeedForwardNeura
 			throw new IllegalArgumentException("Start layer index cannot be greater " + "than end layer index");
 		}
 
-		this.directedLayerContexts = new HashMap<>();
-	}
-
-	@Override
-	public DirectedLayerContext getLayerContext(int layerIndex) {
-
-		DirectedLayerContext layerContext = directedLayerContexts.get(layerIndex);
-		if (layerContext == null) {
-			layerContext = new DirectedLayerContextImpl(getMatrixFactory(), isTrainingContext);
-			directedLayerContexts.put(layerIndex, layerContext);
-		}
-
-		return layerContext;
-	}
-
-	public boolean isTrainingContext() {
-		return isTrainingContext;
 	}
 
 	@Override
@@ -88,4 +56,15 @@ public class LayeredFeedForwardNeuralNetworkContextImpl extends FeedForwardNeura
 	public Integer getEndLayerIndex() {
 		return endLayerIndex;
 	}
+
+	@Override
+	public LayeredFeedForwardNeuralNetworkContext asNonTrainingContext() {
+		return new LayeredFeedForwardNeuralNetworkContextImpl(getDirectedComponentsContext().asNonTrainingContext(), startLayerIndex, endLayerIndex, false);
+	}
+
+	@Override
+	public LayeredFeedForwardNeuralNetworkContext asTrainingContext() {
+		return new LayeredFeedForwardNeuralNetworkContextImpl(getDirectedComponentsContext().asTrainingContext(), startLayerIndex, endLayerIndex, true);
+	}
+
 }

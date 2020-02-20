@@ -14,12 +14,10 @@
 
 package org.ml4j.nn.supervised;
 
-import org.ml4j.MatrixFactory;
 import org.ml4j.nn.BackPropagationListener;
 import org.ml4j.nn.FeedForwardNeuralNetworkContext;
 import org.ml4j.nn.ForwardPropagationListener;
 import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 import org.ml4j.nn.optimisation.GradientDescentOptimisationStrategy;
 import org.ml4j.nn.optimisation.TrainingLearningRateAdjustmentStrategy;
@@ -67,10 +65,12 @@ public class FeedForwardNeuralNetworkContextImpl extends NeuronsActivationContex
 	 * 
 	 * @param matrixFactory The MatrixFactory we configure for this context
 	 */
+	/*
 	public FeedForwardNeuralNetworkContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
 		super(matrixFactory, isTrainingContext);
 		this.directedComponentsContext = new DirectedComponentsContextImpl(matrixFactory, isTrainingContext);
 	}
+	*/
 	
 	/**
 	 * Construct a default AutoEncoderContext.
@@ -190,6 +190,20 @@ public class FeedForwardNeuralNetworkContextImpl extends NeuronsActivationContex
 
 	@Override
 	public DirectedComponentsContext getDirectedComponentsContext() {
-		return this.directedComponentsContext;
+		if (isTrainingContext() == directedComponentsContext.isTrainingContext()) {
+			return directedComponentsContext;
+		} else {
+			return isTrainingContext() ? directedComponentsContext.asTrainingContext() : directedComponentsContext.asNonTrainingContext();
+		}
+	}
+
+	@Override
+	public FeedForwardNeuralNetworkContext asNonTrainingContext() {
+		return new FeedForwardNeuralNetworkContextImpl(getDirectedComponentsContext().asNonTrainingContext(), false);
+	}
+
+	@Override
+	public FeedForwardNeuralNetworkContext asTrainingContext() {
+		return new FeedForwardNeuralNetworkContextImpl(getDirectedComponentsContext().asTrainingContext(), true);
 	}
 }

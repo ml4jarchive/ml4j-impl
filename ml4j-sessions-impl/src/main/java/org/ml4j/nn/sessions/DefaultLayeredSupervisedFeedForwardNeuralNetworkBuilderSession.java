@@ -23,7 +23,8 @@ public class DefaultLayeredSupervisedFeedForwardNeuralNetworkBuilderSession
 
 	public DefaultLayeredSupervisedFeedForwardNeuralNetworkBuilderSession(
 			DirectedComponentFactory directedComponentFactory, DirectedLayerFactory directedLayerFactory,
-			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredNeuralNetworkFactory, List<FeedForwardLayer<?, ?>> layers, String networkName) {
+			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredNeuralNetworkFactory, 
+			List<FeedForwardLayer<?, ?>> layers, String networkName) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.layeredNeuralNetworkFactory = layeredNeuralNetworkFactory;
@@ -73,6 +74,6 @@ public class DefaultLayeredSupervisedFeedForwardNeuralNetworkBuilderSession
 	public <A extends Axons<Neurons, Neurons, ?>, L extends FeedForwardLayer<A, L>> LayeredSupervisedFeedForwardNeuralNetworkBuilderSession withLayer(
 			L layer) {
 		getComponents().add(layer);
-		return new DefaultLayeredSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactory, directedLayerFactory, layeredNeuralNetworkFactory, getComponents(), networkName);
+		return new DefaultLayeredSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactory, directedLayerFactory, layeredNeuralNetworkFactory,  getComponents(), networkName);
 	}
 }

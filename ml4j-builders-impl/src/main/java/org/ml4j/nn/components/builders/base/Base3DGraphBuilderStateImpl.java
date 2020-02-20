@@ -13,7 +13,7 @@
  */
 package org.ml4j.nn.components.builders.base;
 
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxons3DBuilder;
@@ -37,7 +37,7 @@ public class Base3DGraphBuilderStateImpl implements Base3DGraphBuilderState {
 
 	protected SynapsesAxons3DGraphBuilder<?, ?, ?> synapsesBuilder;
 	private WeightsMatrix connectionWeights;
-	private BiasMatrix biases;
+	private BiasVector biases;
 
 	public Base3DGraphBuilderStateImpl() {
 	}
@@ -107,12 +107,12 @@ public class Base3DGraphBuilderStateImpl implements Base3DGraphBuilderState {
 	}
 
 	@Override
-	public BiasMatrix getBiases() {
+	public BiasVector getBiases() {
 		return biases;
 	}
 
 	@Override
-	public void setBiases(BiasMatrix biases) {
+	public void setBiases(BiasVector biases) {
 		this.biases = biases;
 	}
 

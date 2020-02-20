@@ -13,17 +13,16 @@
  */
 package org.ml4j.nn.components.builders.axons;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.AxonsContextConfigurer;
 import org.ml4j.nn.neurons.Neurons;
 
 public abstract class UncompletedAxonsBuilderImpl<N extends Neurons, C> implements UncompletedAxonsBuilder<N, C> {
 
 	protected Supplier<C> previousBuilderSupplier;
 	protected N leftNeurons;
-	protected Consumer<AxonsContext> axonsContextConfigurer;
+	protected AxonsContextConfigurer axonsContextConfigurer;
 	protected String name;
 
 	public UncompletedAxonsBuilderImpl(String name, Supplier<C> previousBuilderSupplier, N leftNeurons) {
@@ -36,7 +35,7 @@ public abstract class UncompletedAxonsBuilderImpl<N extends Neurons, C> implemen
 		return leftNeurons;
 	}
 
-	public Consumer<AxonsContext> getAxonsContextConfigurer() {
+	public AxonsContextConfigurer getAxonsContextConfigurer() {
 		return axonsContextConfigurer;
 	}
 

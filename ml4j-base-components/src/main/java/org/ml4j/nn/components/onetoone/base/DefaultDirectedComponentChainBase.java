@@ -15,7 +15,11 @@ package org.ml4j.nn.components.onetoone.base;
 
 
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.NeuralComponentBaseType;
 import org.ml4j.nn.components.NeuralComponentType;
@@ -58,6 +62,13 @@ public abstract class DefaultDirectedComponentChainBase
 	@Override
 	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitComponent(this);
+	}
+	
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(this.sequentialComponents.stream().flatMap(c -> c.flatten().stream()).collect(Collectors.toSet()));
+		return allComponentsIncludingThis;
 	}
 
 }

@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.axons.AxonsConfig;
-import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.axons.FullyConnectedAxonsConfig;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
@@ -38,9 +37,9 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 	private boolean pathsEnded;
 
 	public BaseNestedGraphBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			BaseGraphBuilderState builderState, 
 			List<T> components) {
-		super(directedComponentFactory, builderState, directedComponentsContext, components);
+		super(directedComponentFactory, builderState, components);
 		this.parentGraph = parentGraph;
 	}
 
@@ -68,7 +67,7 @@ public abstract class BaseNestedGraphBuilderImpl<P extends ComponentsContainer<N
 					this.parentGraph.get().getChains().add(skipConnection);
 				} else {
 					T skipConnectionAxons = directedComponentFactory.createFullyConnectedAxonsComponent("SkipConnection-" + UUID.randomUUID().toString(),
-							new AxonsConfig<>(new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons), null, null);
+							FullyConnectedAxonsConfig.create(new Neurons(initialNeurons.getNeuronCountExcludingBias(), true), endNeurons), null, null);
 					T skipConnection = directedComponentFactory
 							.createDirectedComponentChain(Arrays.asList(skipConnectionAxons));
 					this.parentGraph.get().getChains().add(skipConnection);

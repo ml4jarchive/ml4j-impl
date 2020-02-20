@@ -15,9 +15,12 @@
 package org.ml4j.nn.unsupervised;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.ml4j.nn.CostAndGradientsImpl;
+import org.ml4j.nn.ForwardPropagation;
 import org.ml4j.nn.LayeredFeedForwardNeuralNetworkBase;
 import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -131,6 +134,19 @@ public class AutoEncoderImpl extends LayeredFeedForwardNeuralNetworkBase<AutoEnc
 	@Override
 	public Neurons getOutputNeurons() {
 		return trailingActivationFunctionComponentChain.getOutputNeurons();
+	}
+
+	@Override
+	public ForwardPropagation forwardPropagate(NeuronsActivation arg0, AutoEncoderContext arg1) {
+		// TODO
+		return null;
+	}
+
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(trailingActivationFunctionComponentChain.flatten());
+		return allComponentsIncludingThis;
 	}
 
 }

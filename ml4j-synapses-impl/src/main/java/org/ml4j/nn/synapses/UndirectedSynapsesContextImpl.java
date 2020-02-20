@@ -38,6 +38,7 @@ public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl 
 	 * The MatrixFactory we configure for this context.
 	 */
 	private boolean withFreezeOut;
+	private String synapsesName;
 	
 	/**
 	 * Construct a new default DirectedSynapsesContext.
@@ -45,7 +46,7 @@ public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl 
 	 * @param matrixFactory The MatrixFactory we configure for this context
 	 * @param withFreezeOut Whether to freeze out these Synapses.
 	 */
-	public UndirectedSynapsesContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext,
+	public UndirectedSynapsesContextImpl(String name, MatrixFactory matrixFactory, boolean isTrainingContext,
 			boolean withFreezeOut) {
 		super(matrixFactory, isTrainingContext);
 		this.withFreezeOut = withFreezeOut;
@@ -53,7 +54,7 @@ public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl 
 
 	@Override
 	public AxonsContext getAxonsContext() {
-		return new AxonsContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
+		return new AxonsContextImpl(synapsesName, getMatrixFactory(), isTrainingContext(), withFreezeOut);
 	}
 
 	@Override
@@ -62,7 +63,8 @@ public class UndirectedSynapsesContextImpl extends NeuronsActivationContextImpl 
 	}
 
 	@Override
-	public void setWithFreezeOut(boolean withFreezeOut) {
+	public UndirectedSynapsesContext withFreezeOut(boolean withFreezeOut) {
 		this.withFreezeOut = withFreezeOut;
+		return this;
 	}
 }
