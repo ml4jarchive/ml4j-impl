@@ -157,7 +157,6 @@ public abstract class AbstractFeedForwardLayer<A extends Axons<?, ?, ?>, L exten
 	protected abstract String getPrimaryAxonsComponentName();
 	
 	protected AxonsContext getAxonsContext(DirectedComponentsContext directedComponentsContext, String axonsComponentName) {
-		System.out.println("Getting axons context:" + directedComponentsContext.isTrainingContext());
 		Map<String, AxonsContext> nestedAxonsContextsByComponentName = getNestedContexts(directedComponentsContext, AxonsContext.class);
 		AxonsContext primaryAxonsContext = nestedAxonsContextsByComponentName.get(axonsComponentName);
 		if (primaryAxonsContext == null) {
