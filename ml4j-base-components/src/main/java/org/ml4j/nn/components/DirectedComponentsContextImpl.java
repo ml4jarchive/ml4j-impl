@@ -75,7 +75,10 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	
 			C context;
 			if (existingContext != null) {
-				context = creator.apply(existingContext.getContext());
+				C newContext = creator.apply(existingContext.getContext());
+				ComponentContext<C> newComponentContext = new ComponentContext<>(component, newContext);
+				contexts.put(component, newComponentContext);
+				context = newContext;
 			} else {
 				ComponentContext<C> newContext = new ComponentContext<>(component, defaultContextSupplier.get());
 				contexts.put(component, newContext);

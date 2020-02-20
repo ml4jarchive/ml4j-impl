@@ -70,8 +70,11 @@ public abstract class DirectedAxonsComponentBase<L extends Neurons, R extends Ne
 
 	@Override
 	public AxonsContext getContext(DirectedComponentsContext directedComponentsContext) {
-		return directedComponentsContext.getContext(this, () -> new AxonsContextImpl(name, directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext(), false),
-				context -> new AxonsContextImpl(name, directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext(), context.isWithFreezeOut()));
+		return directedComponentsContext.getContext(this, () -> 
+		new AxonsContextImpl(name, directedComponentsContext.getMatrixFactory(), directedComponentsContext.isTrainingContext(), false),
+				context -> new AxonsContextImpl(name, directedComponentsContext.getMatrixFactory(), 
+						directedComponentsContext.isTrainingContext(), context.isWithFreezeOut())
+				.withLeftHandInputDropoutKeepProbability(context.getLeftHandInputDropoutKeepProbability()).withRegularisationLambda(context.getRegularisationLambda()));
 	}
 
 	@Override
