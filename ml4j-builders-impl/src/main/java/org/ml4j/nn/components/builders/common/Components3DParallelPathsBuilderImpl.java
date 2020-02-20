@@ -16,7 +16,6 @@ package org.ml4j.nn.components.builders.common;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.Components3DSubGraphBuilderImpl;
 import org.ml4j.nn.components.builders.componentsgraph.Components3DGraphBuilder;
@@ -30,13 +29,11 @@ public class Components3DParallelPathsBuilderImpl<C extends Components3DGraphBui
 	private NeuralComponentFactory<T> directedComponentFactory;
 	private Supplier<C> previousSupplier;
 	private Components3DSubGraphBuilder<C, D, T> currentPath;
-	private DirectedComponentsContext directedComponentsContext;
 
 	public Components3DParallelPathsBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
-			Supplier<C> previousSupplier, DirectedComponentsContext directedComponentsContext) {
+			Supplier<C> previousSupplier) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.previousSupplier = previousSupplier;
-		this.directedComponentsContext = directedComponentsContext;
 	}
 
 	@Override
@@ -45,7 +42,7 @@ public class Components3DParallelPathsBuilderImpl<C extends Components3DGraphBui
 			throw new UnsupportedOperationException("Multiple paths not yet supported");
 		}
 		currentPath = new Components3DSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory,
-				previousSupplier.get().getBuilderState(), directedComponentsContext, new ArrayList<>());
+				previousSupplier.get().getBuilderState(), new ArrayList<>());
 		return currentPath;
 	}
 }

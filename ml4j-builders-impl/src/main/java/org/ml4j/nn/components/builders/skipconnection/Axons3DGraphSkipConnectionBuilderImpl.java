@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axonsgraph.Axons3DGraphBuilder;
@@ -43,8 +42,8 @@ public class Axons3DGraphSkipConnectionBuilderImpl<P extends Axons3DGraphBuilder
 
 	public Axons3DGraphSkipConnectionBuilderImpl(Supplier<P> parent3DGraph, Supplier<Q> parentNon3DGraph,
 			NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
-			DirectedComponentsContext directedComponentsContext, List<T> components) {
-		super(parent3DGraph, directedComponentFactory, builderState, directedComponentsContext, components);
+			List<T> components) {
+		super(parent3DGraph, directedComponentFactory, builderState, components);
 		this.parentNon3DGraph = parentNon3DGraph;
 	}
 
@@ -73,26 +72,25 @@ public class Axons3DGraphSkipConnectionBuilderImpl<P extends Axons3DGraphBuilder
 		} else {
 			parent3DGraph.get().addComponents(this.getComponents());
 			builder = new AxonsGraphSkipConnectionBuilderImpl<>(parentNon3DGraph, directedComponentFactory,
-					builderState.getNon3DBuilderState(), directedComponentsContext, new ArrayList<>());
+					builderState.getNon3DBuilderState(), new ArrayList<>());
 			return builder;
 		}
 	}
 
 	@Override
 	public ParallelPathsBuilder<Axons3DSubGraphBuilder<Axons3DGraphSkipConnectionBuilder<P, Q, T>, AxonsGraphSkipConnectionBuilder<Q, T>, T>> withParallelPaths() {
-		return new Axons3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder, this::getBuilder,
-				directedComponentsContext);
+		return new Axons3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder, this::getBuilder);
 	}
 
 	@Override
 	public Axons3DGraphSkipConnectionBuilder<Axons3DGraphSkipConnectionBuilder<P, Q, T>, AxonsGraphSkipConnectionBuilder<Q, T>, T> withSkipConnection() {
 		return new Axons3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, this::getBuilder,
-				directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+				directedComponentFactory, builderState, new ArrayList<>());
 	}
 
 	@Override
 	protected Axons3DGraphSkipConnectionBuilder<P, Q, T> createNewNestedGraphBuilder() {
 		return new Axons3DGraphSkipConnectionBuilderImpl<>(parent3DGraph, parentNon3DGraph, directedComponentFactory,
-				initialBuilderState, directedComponentsContext, new ArrayList<>());
+				initialBuilderState, new ArrayList<>());
 	}
 }

@@ -13,12 +13,16 @@
  */
 package org.ml4j.nn.components.onetoone;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -34,7 +38,7 @@ import org.ml4j.nn.neurons.format.NeuronsActivationFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainableDirectedComponentActivation, C> implements DefaultChainableDirectedComponent<A, C> {
+public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainableDirectedComponentActivation, C extends Serializable> implements DefaultChainableDirectedComponent<A, C> {
 
 	/**
 	 * Default serialization.
@@ -156,6 +160,13 @@ public class DefaultChainableDirectedComponentAdapter<A extends DefaultChainable
 	@Override
 	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return delegated.accept(visitor);
+	}
+
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(delegated.flatten());
+		return allComponentsIncludingThis;
 	}
 
 }

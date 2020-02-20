@@ -15,7 +15,6 @@ package org.ml4j.nn.components.builders.initial;
 
 import java.util.ArrayList;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.Components3DGraphBuilderImpl;
 import org.ml4j.nn.components.builders.base.Base3DGraphBuilderStateImpl;
@@ -30,9 +29,8 @@ public class InitialComponents3DGraphBuilderImpl<T extends NeuralComponent<?>>
 
 	private InitialComponentsGraphBuilder<T> nestedBuilder;
 
-	public InitialComponents3DGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
-			DirectedComponentsContext directedComponentsContext, Neurons3D currentNeurons) {
-		super(directedComponentFactory, new Base3DGraphBuilderStateImpl(currentNeurons), directedComponentsContext,
+	public InitialComponents3DGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, Neurons3D currentNeurons) {
+		super(directedComponentFactory, new Base3DGraphBuilderStateImpl(currentNeurons),
 				new ArrayList<>());
 	}
 
@@ -47,7 +45,7 @@ public class InitialComponents3DGraphBuilderImpl<T extends NeuralComponent<?>>
 			return nestedBuilder;
 		} else {
 			nestedBuilder = new InitialComponentsGraphBuilderImpl<>(directedComponentFactory,
-					builderState.getNon3DBuilderState(), directedComponentsContext, getComponents());
+					builderState.getNon3DBuilderState(), getComponents());
 			return nestedBuilder;
 		}
 	}

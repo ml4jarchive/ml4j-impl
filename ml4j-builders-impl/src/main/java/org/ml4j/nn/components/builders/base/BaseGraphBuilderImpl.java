@@ -19,12 +19,9 @@ import java.util.List;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.AxonsConfig;
-import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.axons.BatchNormConfig;
+import org.ml4j.nn.axons.BatchNormAxonsConfig;
+import org.ml4j.nn.axons.FullyConnectedAxonsConfig;
 import org.ml4j.nn.axons.WeightsMatrix;
-import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.AxonsBuilder;
@@ -50,15 +47,12 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 
 	protected BaseGraphBuilderState initialBuilderState;
 
-	protected DirectedComponentsContext directedComponentsContext;
-
 	private List<T> chains;
 	private List<Neurons> endNeurons;
 
 	protected List<T> components;
 
-	public BaseGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
-			DirectedComponentsContext directedComponentsContext, List<T> components) {
+	public BaseGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState, List<T> components) {
 		this.builderState = builderState;
 		this.components = components;
 		this.directedComponentFactory = directedComponentFactory;
@@ -66,7 +60,6 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 				builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		this.chains = new ArrayList<>();
 		this.endNeurons = new ArrayList<>();
-		this.directedComponentsContext = directedComponentsContext;
 	}
 
 	@Override
@@ -111,18 +104,10 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 			}
 
 			T axonsComponent = directedComponentFactory.createFullyConnectedAxonsComponent(builderState.getFullyConnectedAxonsBuilder().getName(), 
-					new AxonsConfig<>(leftNeurons,
+					FullyConnectedAxonsConfig.create(leftNeurons,
 					builderState.getComponentsGraphNeurons().getRightNeurons()), builderState.getConnectionWeights(),
 					builderState.getBiases());
 
-			if (builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer() != null) {
-				// TODO
-				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
-					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent<?>) axonsComponent)
-							.getContext(directedComponentsContext);
-					builderState.getFullyConnectedAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
-				}
-			}
 
 			components.add(axonsComponent);
 
@@ -137,23 +122,19 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 			if (builderState.getComponentsGraphNeurons().hasBiasUnit() && !leftNeurons.hasBiasUnit()) {
 				leftNeurons = new Neurons(builderState.getComponentsGraphNeurons().getCurrentNeurons().getNeuronCountExcludingBias(), true);
 			}
-
-			T axonsComponent = directedComponentFactory.createBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),
-					builderState.getComponentsGraphNeurons().getRightNeurons(),
-					new BatchNormConfig<Neurons>(builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
+			
+			BatchNormAxonsConfig<Neurons> batchNormConfig = BatchNormAxonsConfig.create(builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
 					.withGammaColumnVector(builderState.getBatchNormAxonsBuilder().getGamma())
 					.withBetaColumnVector(builderState.getBatchNormAxonsBuilder().getBeta())
 					.withMeanColumnVector(builderState.getBatchNormAxonsBuilder().getMean())
-					.withVarianceColumnVector(builderState.getBatchNormAxonsBuilder().getVariance()));
-
+					.withVarianceColumnVector(builderState.getBatchNormAxonsBuilder().getVariance());
+			
 			if (builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer() != null) {
-				// TODO
-				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
-					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent<?>) axonsComponent)
-							.getContext(directedComponentsContext);
-					builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
-				}
+				batchNormConfig = batchNormConfig.withBatchNormAxonsContextConfigurer(builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer());
 			}
+
+			T axonsComponent = directedComponentFactory.createBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),
+					batchNormConfig);
 
 			this.components.add(axonsComponent);
 			builderState.setBatchNormAxonsBuilder(null);
@@ -191,7 +172,7 @@ public abstract class BaseGraphBuilderImpl<C extends AxonsBuilder<T>, T extends 
 	public SynapsesAxonsGraphBuilder<C, T> withSynapses() {
 		addAxonsIfApplicable();
 		SynapsesAxonsGraphBuilder<C, T> synapsesBuilder = new SynapsesAxonsGraphBuilderImpl<>(this::getBuilder,
-				directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+				directedComponentFactory, builderState, new ArrayList<>());
 		builderState.setSynapsesBuilder(synapsesBuilder);
 		return synapsesBuilder;
 	}

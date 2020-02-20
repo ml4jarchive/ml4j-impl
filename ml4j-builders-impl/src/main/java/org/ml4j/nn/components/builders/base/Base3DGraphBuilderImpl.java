@@ -20,12 +20,11 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.Axons3DConfig;
-import org.ml4j.nn.axons.AxonsContext;
-import org.ml4j.nn.axons.BatchNormConfig;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BatchNormAxonsConfig;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.ConvolutionalAxonsConfig;
+import org.ml4j.nn.axons.PoolingAxonsConfig;
 import org.ml4j.nn.axons.WeightsMatrix;
-import org.ml4j.nn.components.AxonsContextAwareNeuralComponent;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.Base3DGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.Axons3DBuilder;
@@ -63,8 +62,6 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 
 	protected Base3DGraphBuilderState builderState;
 
-	protected DirectedComponentsContext directedComponentsContext;
-
 	public abstract C get3DBuilder();
 
 	public abstract D getBuilder();
@@ -82,11 +79,11 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 		return this;
 	}
 
-	public BiasMatrix getBiases() {
+	public BiasVector getBiases() {
 		return builderState.getBiases();
 	}
 
-	public Axons3DBuilder<T> withBiases(BiasMatrix biases) {
+	public Axons3DBuilder<T> withBiases(BiasVector biases) {
 		builderState.setBiases(biases);
 		return this;
 	}
@@ -108,7 +105,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	}
 
 	public Base3DGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
-			Base3DGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			Base3DGraphBuilderState builderState, 
 			List<T> components) {
 		this.components = components;
 		this.directedComponentFactory = directedComponentFactory;
@@ -116,7 +113,6 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 		this.initialBuilderState = new Base3DGraphBuilderStateImpl(
 				builderState.getComponentsGraphNeurons().getCurrentNeurons());
 		this.endNeurons = new ArrayList<>();
-		this.directedComponentsContext = directedComponentsContext;
 		this.chains = new ArrayList<>();
 
 	}
@@ -154,17 +150,15 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 				axons3DConfig = axons3DConfig.withFilterWidth(builderState.getConvolutionalAxonsBuilder().getFilterWidth());
 			}
 
-			T axonsComponent = directedComponentFactory.createConvolutionalAxonsComponent(builderState.getConvolutionalAxonsBuilder().getName(), axons3DConfig,
+			ConvolutionalAxonsConfig config = ConvolutionalAxonsConfig.create(axons3DConfig);
+			if (builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer() != null) {
+				config = config.withAxonsContextConfigurer(builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer());
+			}
+			
+			T axonsComponent = directedComponentFactory.createConvolutionalAxonsComponent(
+					builderState.getConvolutionalAxonsBuilder().getName(), config,
 					builderState.getConnectionWeights(), builderState.getBiases());
 
-			if (builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer() != null) {
-				// TODO
-				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
-					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent<?>) axonsComponent)
-							.getContext(directedComponentsContext);
-					builderState.getConvolutionalAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
-				}
-			}
 
 			components.add(axonsComponent);
 
@@ -189,9 +183,10 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 			if (builderState.getMaxPoolingAxonsBuilder().getFilterWidth() != null) {
 				axons3DConfig = axons3DConfig.withFilterWidth(builderState.getMaxPoolingAxonsBuilder().getFilterWidth());
 			}
+
 			
 			T axonsComponent = directedComponentFactory.createMaxPoolingAxonsComponent(builderState.getMaxPoolingAxonsBuilder().getName(),
-					axons3DConfig,
+					PoolingAxonsConfig.create(axons3DConfig),
 					builderState.getMaxPoolingAxonsBuilder().isScaleOutputs());
 			this.components.add(axonsComponent);
 			builderState.setMaxPoolingAxonsBuilder(null);
@@ -208,23 +203,21 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 						builderState.getComponentsGraphNeurons().getCurrentNeurons().getHeight(),
 						builderState.getComponentsGraphNeurons().getCurrentNeurons().getDepth(), true);
 			}
+			
+			BatchNormAxonsConfig<Neurons3D> batchNormConfig = BatchNormAxonsConfig.create(builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
+			.withGammaColumnVector(builderState.getBatchNormAxonsBuilder().getGamma())
+			.withBetaColumnVector(builderState.getBatchNormAxonsBuilder().getBeta())
+			.withMeanColumnVector(builderState.getBatchNormAxonsBuilder().getMean())
+			.withVarianceColumnVector(builderState.getBatchNormAxonsBuilder().getVariance())
+			.withNeurons(builderState.getComponentsGraphNeurons().getRightNeurons());
+			
+			if (builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer() != null) {
+				batchNormConfig = batchNormConfig.withBatchNormAxonsContextConfigurer(builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer());
+			}
 
 			T axonsComponent = directedComponentFactory.createBatchNormAxonsComponent(builderState.getBatchNormAxonsBuilder().getName(),
-					builderState.getComponentsGraphNeurons().getRightNeurons(),
-					new BatchNormConfig<>(builderState.getBatchNormAxonsBuilder().getBatchNormDimension())
-					.withGammaColumnVector(builderState.getBatchNormAxonsBuilder().getGamma())
-					.withBetaColumnVector(builderState.getBatchNormAxonsBuilder().getBeta())
-					.withMeanColumnVector(builderState.getBatchNormAxonsBuilder().getMean())
-					.withVarianceColumnVector(builderState.getBatchNormAxonsBuilder().getVariance()));
+					batchNormConfig);
 
-			if (builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer() != null) {
-				// TODO
-				if (axonsComponent instanceof AxonsContextAwareNeuralComponent) {
-					AxonsContext axonsContext = ((AxonsContextAwareNeuralComponent<?>) axonsComponent)
-							.getContext(directedComponentsContext);
-					builderState.getBatchNormAxonsBuilder().getAxonsContextConfigurer().accept(axonsContext);
-				}
-			}
 
 			this.components.add(axonsComponent);
 			builderState.setBatchNormAxonsBuilder(null);
@@ -251,7 +244,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 			}
 			
 			T axonsComponent = directedComponentFactory.createAveragePoolingAxonsComponent(builderState.getAveragePoolingAxonsBuilder().getName(),
-					axons3DConfig);
+					PoolingAxonsConfig.create(axons3DConfig));
 			this.components.add(axonsComponent);
 			builderState.setAveragePoolingAxonsBuilder(null);
 			builderState.getComponentsGraphNeurons()
@@ -325,7 +318,7 @@ public abstract class Base3DGraphBuilderImpl<C extends Axons3DBuilder<T>, D exte
 	public SynapsesAxons3DGraphBuilder<C, D, T> withSynapses() {
 		addAxonsIfApplicable();
 		SynapsesAxons3DGraphBuilder<C, D, T> synapsesBuilder = new SynapsesAxons3DGraphBuilderImpl<>(this::get3DBuilder,
-				this::getBuilder, directedComponentFactory, builderState, directedComponentsContext, new ArrayList<>());
+				this::getBuilder, directedComponentFactory, builderState, new ArrayList<>());
 		builderState.setSynapsesBuilder(synapsesBuilder);
 		return synapsesBuilder;
 	}

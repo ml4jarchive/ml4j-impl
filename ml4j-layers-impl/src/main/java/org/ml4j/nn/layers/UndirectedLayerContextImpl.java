@@ -17,6 +17,7 @@
 package org.ml4j.nn.layers;
 
 import org.ml4j.MatrixFactory;
+import org.ml4j.nn.neurons.FreezeableNeuronsActivationContext;
 import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
 import org.ml4j.nn.synapses.UndirectedSynapsesContext;
 import org.ml4j.nn.synapses.UndirectedSynapsesContextImpl;
@@ -36,19 +37,22 @@ public class UndirectedLayerContextImpl extends NeuronsActivationContextImpl imp
 	private boolean withFreezeOut;
 	
 	private int layerIndex;
+	
+	private String layerName;
 
 	/**
 	 * @param layerIndex    The index of this Layer.
 	 * @param matrixFactory The MatrixFactory.
 	 */
-	public UndirectedLayerContextImpl(int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
+	public UndirectedLayerContextImpl(String layerName, int layerIndex, MatrixFactory matrixFactory, boolean isTrainingContext) {
 		super(matrixFactory, isTrainingContext);
 		this.layerIndex = layerIndex;
+		this.layerName = layerName;
 	}
 	
 	@Override
 	public UndirectedSynapsesContext createSynapsesContext(int synapsesIndex) {
-		return new UndirectedSynapsesContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
+		return new UndirectedSynapsesContextImpl(layerName, getMatrixFactory(), isTrainingContext(), withFreezeOut);
 	}
 
 	@Override
@@ -57,12 +61,29 @@ public class UndirectedLayerContextImpl extends NeuronsActivationContextImpl imp
 	}
 
 	@Override
-	public void setWithFreezeOut(boolean withFreezeOut) {
+	public UndirectedLayerContext withFreezeOut(boolean withFreezeOut) {
 		this.withFreezeOut = withFreezeOut;
+		return this;
 	}
 
 	@Override
 	public String toString() {
 		return "UndirectedLayerContextImpl [layerIndex=" + layerIndex + "]";
+	}
+
+	@Override
+	public String getOwningComponentName() {
+		return layerName;
+	}
+
+	@Override
+	public void addFreezeoutOverrideContext(FreezeableNeuronsActivationContext<?> arg0) {
+		throw new UnsupportedOperationException("Not currently supported");
+	}
+
+
+	@Override
+	public void removeFreezeoutOverrideContext(FreezeableNeuronsActivationContext<?> arg0) {
+		throw new UnsupportedOperationException("Not currently supported");
 	}
 }

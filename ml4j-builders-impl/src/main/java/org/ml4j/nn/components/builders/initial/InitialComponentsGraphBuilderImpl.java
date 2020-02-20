@@ -16,7 +16,6 @@ package org.ml4j.nn.components.builders.initial;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.ComponentsGraphBuilderImpl;
@@ -29,14 +28,14 @@ public class InitialComponentsGraphBuilderImpl<T extends NeuralComponent<?>> ext
 		ComponentsGraphBuilderImpl<InitialComponentsGraphBuilder<T>, T> implements InitialComponentsGraphBuilder<T> {
 
 	public InitialComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			BaseGraphBuilderState builderState, 
 			List<T> components) {
-		super(directedComponentFactory, builderState, directedComponentsContext, components);
+		super(directedComponentFactory, builderState, components);
 	}
 
 	public InitialComponentsGraphBuilderImpl(NeuralComponentFactory<T> directedComponentFactory,
-			DirectedComponentsContext directedComponentsContext, Neurons initialNeurons) {
-		super(directedComponentFactory, new BaseGraphBuilderStateImpl(initialNeurons), directedComponentsContext,
+			Neurons initialNeurons) {
+		super(directedComponentFactory, new BaseGraphBuilderStateImpl(initialNeurons),
 				new ArrayList<>());
 	}
 

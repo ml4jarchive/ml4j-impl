@@ -23,7 +23,8 @@ import org.ml4j.Matrix;
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.activationfunctions.ActivationFunction;
 import org.ml4j.nn.axons.AxonsConfig;
-import org.ml4j.nn.axons.BiasMatrixImpl;
+import org.ml4j.nn.axons.BiasVectorImpl;
+import org.ml4j.nn.axons.FeaturesVectorFormat;
 import org.ml4j.nn.axons.TrainableAxons;
 import org.ml4j.nn.axons.WeightsFormatImpl;
 import org.ml4j.nn.axons.WeightsMatrixImpl;
@@ -101,8 +102,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 				new WeightsMatrixImpl(initialWeights,
 						new WeightsFormatImpl(Arrays.asList(Dimension.INPUT_FEATURE), Arrays.asList(Dimension.OUTPUT_FEATURE),
 								WeightsMatrixOrientation.ROWS_SPAN_OUTPUT_DIMENSIONS)),
-				initialLeftToRightBiases == null ? null : new BiasMatrixImpl(initialLeftToRightBiases), 
-						initialRightToLeftBiases == null? null : new BiasMatrixImpl(initialRightToLeftBiases));
+				initialLeftToRightBiases == null ? null : new BiasVectorImpl(initialLeftToRightBiases, FeaturesVectorFormat.DEFAULT_BIAS_FORMAT));
 		this.synapses = new UndirectedSynapsesImpl<Neurons, Neurons>(axons, visibleActivationFunction,
 				hiddenActivationFunction);
 	}
@@ -127,7 +127,7 @@ public class RestrictedBoltzmannLayerImpl implements RestrictedBoltzmannLayer<Tr
 	public NeuronsActivation getOptimalVisibleActivationsForHiddenNeuron(int hiddenNeuronIndex,
 			UndirectedLayerContext undirectedLayerContext, MatrixFactory matrixFactory) {
 		LOGGER.debug("Obtaining optimal input for hidden neuron with index:" + hiddenNeuronIndex);
-		Matrix weights = getPrimaryAxons().getDetachedAxonWeights().getConnectionWeights().getWeights();
+		Matrix weights = getPrimaryAxons().getDetachedAxonWeights().getConnectionWeights().getMatrix();
 		int countJ = weights.getColumns();
 		float[] maximisingInputFeatures = new float[countJ];
 		boolean hasBiasUnit = getPrimaryAxons().getLeftNeurons().hasBiasUnit();

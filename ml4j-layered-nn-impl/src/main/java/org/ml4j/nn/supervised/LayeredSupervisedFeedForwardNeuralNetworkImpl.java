@@ -14,7 +14,10 @@
 
 package org.ml4j.nn.supervised;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.ml4j.EditableMatrix;
 import org.ml4j.Matrix;
@@ -129,9 +132,9 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
 	}
 
 	@Override
-	public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext arg0) {
-		throw new UnsupportedOperationException();
-
+	public LayeredFeedForwardNeuralNetworkContext getContext(DirectedComponentsContext directedComponentsContext) {
+		return directedComponentsContext.getContext(this, ()  -> new LayeredFeedForwardNeuralNetworkContextImpl(directedComponentsContext, 0, null, directedComponentsContext.isTrainingContext()),
+				context -> new LayeredFeedForwardNeuralNetworkContextImpl(context.getDirectedComponentsContext(), context.getStartLayerIndex(), context.getEndLayerIndex(), directedComponentsContext.isTrainingContext()));
 	}
 
 	@Override
@@ -149,6 +152,13 @@ public class LayeredSupervisedFeedForwardNeuralNetworkImpl extends
 	@Override
 	public Neurons getOutputNeurons() {
 		return initialisingComponentChain.getOutputNeurons();
+	}
+
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(trailingActivationFunctionComponentChain.flatten());
+		return allComponentsIncludingThis;
 	}
 
 }

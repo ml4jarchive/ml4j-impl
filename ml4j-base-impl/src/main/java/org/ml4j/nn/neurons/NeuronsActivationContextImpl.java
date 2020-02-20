@@ -58,4 +58,21 @@ public class NeuronsActivationContextImpl implements NeuronsActivationContext {
 		this.isTrainingContext.set(trainingContext);
 	}
 
+	@Override
+	public String toString() {
+		return "NeuronsActivationContextImpl [isTrainingContext=" + isTrainingContext.get() + "]";
+	}
+
+	@Override
+	public NeuronsActivationContext asNonTrainingContext() {
+		return new NeuronsActivationContextImpl(matrixFactory.get(), false);
+	}
+
+	@Override
+	public NeuronsActivationContext asTrainingContext() {
+		return new NeuronsActivationContextImpl(matrixFactory.get(), true);
+	}
+	
+	
+
 }

@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.common.ComponentsContainer;
 import org.ml4j.nn.components.builders.common.PathEnder;
@@ -30,9 +29,9 @@ public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons
 		implements ComponentsSubGraphBuilder<P, T>, PathEnder<P, ComponentsSubGraphBuilder<P, T>> {
 
 	public ComponentsSubGraphBuilderImpl(Supplier<P> parentGraph, NeuralComponentFactory<T> directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext,
+			BaseGraphBuilderState builderState, 
 			List<T> components) {
-		super(parentGraph, directedComponentFactory, builderState, directedComponentsContext, components);
+		super(parentGraph, directedComponentFactory, builderState, components);
 	}
 
 	@Override
@@ -47,7 +46,6 @@ public class ComponentsSubGraphBuilderImpl<P extends ComponentsContainer<Neurons
 
 	@Override
 	protected ComponentsSubGraphBuilder<P, T> createNewNestedGraphBuilder() {
-		return new ComponentsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState,
-				directedComponentsContext, new ArrayList<>());
+		return new ComponentsSubGraphBuilderImpl<>(parentGraph, directedComponentFactory, initialBuilderState, new ArrayList<>());
 	}
 }

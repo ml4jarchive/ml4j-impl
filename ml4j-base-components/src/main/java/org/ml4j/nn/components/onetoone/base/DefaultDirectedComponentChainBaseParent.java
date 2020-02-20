@@ -13,6 +13,7 @@
  */
 package org.ml4j.nn.components.onetoone.base;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -56,7 +57,7 @@ public abstract class DefaultDirectedComponentChainBaseParent<L extends DefaultC
 		this.sequentialComponents = sequentialComponents;
 	}
 
-	protected <X, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, DirectedComponentsContext context) {
+	protected <X extends Serializable, Y> Y forwardPropagate(NeuronsActivation input, DefaultChainableDirectedComponent<? extends Y, X> component, DirectedComponentsContext context) {
 		return component.forwardPropagate(input, component.getContext(context));
 	}
 

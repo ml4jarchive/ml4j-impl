@@ -13,7 +13,7 @@
  */
 package org.ml4j.nn.components.builders.base;
 
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.axons.UncompletedBatchNormAxonsBuilder;
@@ -26,7 +26,7 @@ public class BaseGraphBuilderStateImpl implements BaseGraphBuilderState {
 
 	protected ComponentsGraphNeurons<Neurons> componentsGraphNeurons;
 	protected WeightsMatrix connectionWeights;
-	protected BiasMatrix biases;
+	protected BiasVector biases;
 	protected UncompletedFullyConnectedAxonsBuilder<?> fullyConnectedAxonsBuilder;
 	protected UncompletedBatchNormAxonsBuilder<Neurons, ?> batchNormAxonsBuilder;
 	protected SynapsesAxonsGraphBuilder<?, ?> synapsesBuilder;
@@ -58,12 +58,12 @@ public class BaseGraphBuilderStateImpl implements BaseGraphBuilderState {
 	}
 
 	@Override
-	public BiasMatrix getBiases() {
+	public BiasVector getBiases() {
 		return biases;
 	}
 
 	@Override
-	public void setBiases(BiasMatrix biases) {
+	public void setBiases(BiasVector biases) {
 		this.biases = biases;
 	}
 

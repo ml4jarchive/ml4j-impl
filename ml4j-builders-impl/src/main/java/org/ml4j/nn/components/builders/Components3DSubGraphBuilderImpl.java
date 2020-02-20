@@ -22,7 +22,6 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.common.PathEnder;
 import org.ml4j.nn.components.builders.componentsgraph.Components3DGraphBuilder;
@@ -46,8 +45,8 @@ public class Components3DSubGraphBuilderImpl<P extends Components3DGraphBuilder<
 
 	public Components3DSubGraphBuilderImpl(Supplier<P> previousSupplier,
 			NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
-			DirectedComponentsContext directedComponentsContext, List<T> components) {
-		super(previousSupplier, directedComponentFactory, builderState, directedComponentsContext, components);
+			List<T> components) {
+		super(previousSupplier, directedComponentFactory, builderState, components);
 		this.previousSupplier = previousSupplier;
 	}
 
@@ -63,7 +62,7 @@ public class Components3DSubGraphBuilderImpl<P extends Components3DGraphBuilder<
 		} else {
 			previousSupplier.get().addComponents(getComponents());
 			builder = new ComponentsSubGraphBuilderImpl<>(() -> previousSupplier.get().getBuilder(),
-					directedComponentFactory, builderState.getNon3DBuilderState(), directedComponentsContext,
+					directedComponentFactory, builderState.getNon3DBuilderState(),
 					new ArrayList<>());
 			return builder;
 		}
@@ -109,8 +108,7 @@ public class Components3DSubGraphBuilderImpl<P extends Components3DGraphBuilder<
 	@Override
 	protected Components3DSubGraphBuilder<P, Q, T> createNewNestedGraphBuilder() {
 		// FIX
-		return new Components3DSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory, initialBuilderState,
-				directedComponentsContext, new ArrayList<>());
+		return new Components3DSubGraphBuilderImpl<>(previousSupplier, directedComponentFactory, initialBuilderState, new ArrayList<>());
 	}
 
 	@Override
@@ -124,7 +122,7 @@ public class Components3DSubGraphBuilderImpl<P extends Components3DGraphBuilder<
 			Component3Dto3DGraphDefinition componentDefinition) {
 		addAxonsIfApplicable();
 		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(
-				directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
+				directedComponentFactory, componentDefinition.getInputNeurons());
 		addComponents(componentDefinition.createComponentGraph(builder, directedComponentFactory).getComponents());
 		builderState.getComponentsGraphNeurons().setRightNeurons(null);
 		builderState.getComponentsGraphNeurons().setCurrentNeurons(componentDefinition.getOutputNeurons());
@@ -138,7 +136,7 @@ public class Components3DSubGraphBuilderImpl<P extends Components3DGraphBuilder<
 			Component3DtoNon3DGraphDefinition componentDefinition) {
 		addAxonsIfApplicable();
 		InitialComponents3DGraphBuilder<T> builder = new InitialComponents3DGraphBuilderImpl<T>(
-				directedComponentFactory, directedComponentsContext, componentDefinition.getInputNeurons());
+				directedComponentFactory, componentDefinition.getInputNeurons());
 		addComponents(componentDefinition.createComponentGraph(builder, directedComponentFactory).getComponents());
 		builderState.getComponentsGraphNeurons().setRightNeurons(null);
 		builderState.getComponentsGraphNeurons().setHasBiasUnit(false);

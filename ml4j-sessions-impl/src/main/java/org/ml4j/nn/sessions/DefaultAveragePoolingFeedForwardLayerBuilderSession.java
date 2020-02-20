@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import org.ml4j.nn.axons.Axons3DConfig;
 import org.ml4j.nn.axons.Axons3DConfigBuilder;
+import org.ml4j.nn.axons.PoolingAxonsConfig;
 import org.ml4j.nn.layers.AveragePoolingFeedForwardLayer;
 import org.ml4j.nn.layers.DirectedLayerFactory;
 import org.ml4j.nn.layers.builders.AveragePoolingFeedForwardLayerPropertiesBuilder;
@@ -21,7 +22,7 @@ public class DefaultAveragePoolingFeedForwardLayerBuilderSession<C> extends Defa
 	@Override
 	protected AveragePoolingFeedForwardLayer build(Axons3DConfig axons3DConfig) {
 		return directedLayerFactory.createAveragePoolingFeedForwardLayer(layerName,
-				axons3DConfig);
+				PoolingAxonsConfig.create(axons3DConfig));
 	}
 
 	@Override

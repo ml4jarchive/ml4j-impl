@@ -34,9 +34,9 @@ public class RestrictedBoltzmannMachineContextImpl extends NeuronsActivationCont
 
 	private Integer trainingMiniBatchSize;
 
-	public RestrictedBoltzmannMachineContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
+	public RestrictedBoltzmannMachineContextImpl(String rbmName, MatrixFactory matrixFactory, boolean isTrainingContext) {
 		super(matrixFactory, isTrainingContext);
-		this.layerContext = new UndirectedLayerContextImpl(0, matrixFactory, isTrainingContext);
+		this.layerContext = new UndirectedLayerContextImpl(rbmName, 0, matrixFactory, isTrainingContext);
 	}
 
 	public UndirectedLayerContext getLayerContext() {

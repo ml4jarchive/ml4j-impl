@@ -15,7 +15,6 @@ package org.ml4j.nn.sessions.factories;
 
 import org.ml4j.MatrixFactory;
 import org.ml4j.nn.components.DirectedComponentsContext;
-import org.ml4j.nn.components.DirectedComponentsContextImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.layers.DirectedLayerFactory;
 import org.ml4j.nn.sessions.DefaultSession;
@@ -36,32 +35,38 @@ public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 	protected DirectedLayerFactory directedLayerFactory;
 	protected SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory;
 	protected LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory;
+	protected DirectedComponentsContext directedComponentsContext;
 
 	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
-			DirectedLayerFactory directedLayerFactory, SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory) {
+			DirectedLayerFactory directedLayerFactory, SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory, DirectedComponentsContext directedComponentsContext) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.matrixFactory = matrixFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.supervisedFeedForwardNeuralNetworkFactory = supervisedFeedForwardNeuralNetworkFactory;
+		this.directedComponentsContext = directedComponentsContext;
 	}
 	
 	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
 			DirectedLayerFactory directedLayerFactory, 
-			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory) {
+			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory,
+			DirectedComponentsContext directedComponentsContext) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.matrixFactory = matrixFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.layeredSupervisedFeedForwardNeuralNetworkFactory = layeredSupervisedFeedForwardNeuralNetworkFactory;
+		this.directedComponentsContext = directedComponentsContext;
 	}
 	
 	public DefaultSessionFactoryImpl(MatrixFactory matrixFactory, DirectedComponentFactory directedComponentFactory, 
 			DirectedLayerFactory directedLayerFactory, SupervisedFeedForwardNeuralNetworkFactory supervisedFeedForwardNeuralNetworkFactory,
-			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory) {
+			LayeredSupervisedFeedForwardNeuralNetworkFactory layeredSupervisedFeedForwardNeuralNetworkFactory,
+			DirectedComponentsContext directedComponentsContext) {
 		this.directedComponentFactory = directedComponentFactory;
 		this.matrixFactory = matrixFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.supervisedFeedForwardNeuralNetworkFactory = supervisedFeedForwardNeuralNetworkFactory;
 		this.layeredSupervisedFeedForwardNeuralNetworkFactory = layeredSupervisedFeedForwardNeuralNetworkFactory;
+		this.directedComponentsContext = directedComponentsContext;
 	}
 
 	@Override
@@ -74,9 +79,9 @@ public class DefaultSessionFactoryImpl implements DefaultSessionFactory{
 	public DirectedComponentFactory getNeuralComponentFactory() {
 		return directedComponentFactory;
 	}
-
+	
 	@Override
 	public DefaultSession createSession() {
-		return new DefaultSessionImpl(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, new DirectedComponentsContextImpl(matrixFactory, false));
+		return new DefaultSessionImpl(directedComponentFactory, directedLayerFactory, supervisedFeedForwardNeuralNetworkFactory, layeredSupervisedFeedForwardNeuralNetworkFactory, directedComponentsContext);
 	}
 }

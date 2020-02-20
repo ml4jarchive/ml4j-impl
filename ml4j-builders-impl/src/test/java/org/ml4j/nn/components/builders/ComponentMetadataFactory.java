@@ -5,10 +5,11 @@ import java.util.List;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.Axons3DConfig;
-import org.ml4j.nn.axons.AxonsConfig;
-import org.ml4j.nn.axons.BatchNormConfig;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BatchNormAxonsConfig;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.ConvolutionalAxonsConfig;
+import org.ml4j.nn.axons.FullyConnectedAxonsConfig;
+import org.ml4j.nn.axons.PoolingAxonsConfig;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.components.NeuralComponentType;
 import org.ml4j.nn.components.factories.NeuralComponentFactory;
@@ -25,19 +26,20 @@ import org.ml4j.nn.neurons.Neurons;
 public class ComponentMetadataFactory implements NeuralComponentFactory<ComponentMetadata>{
 
 	@Override
-	public ComponentMetadata createAveragePoolingAxonsComponent(String name, Axons3DConfig arg2) {
-		return new ComponentMetadata(name, arg2.getLeftNeurons(), arg2.getRightNeurons(), "Average Pooling Axons:" + name);
+	public ComponentMetadata createAveragePoolingAxonsComponent(String name, PoolingAxonsConfig arg2) {
+		return new ComponentMetadata(name, arg2.getAxonsConfig().getLeftNeurons(), arg2.getAxonsConfig().getRightNeurons(), 
+				"Average Pooling Axons:" + name);
 	}
 
 	@Override
-	public <N extends Neurons> ComponentMetadata createBatchNormAxonsComponent(String name, N neurons, BatchNormConfig<N> batchNormConfig) {
-		return new ComponentMetadata(name, neurons, neurons, "Batch Norm Axons:" + name);
+	public <N extends Neurons> ComponentMetadata createBatchNormAxonsComponent(String name, BatchNormAxonsConfig<N> batchNormAxonsConfig) {
+		return new ComponentMetadata(name, batchNormAxonsConfig.getNeurons(), batchNormAxonsConfig.getNeurons(), "Batch Norm Axons:" + name);
 	}
 
 	@Override
-	public ComponentMetadata createConvolutionalAxonsComponent(String name, Axons3DConfig arg2,
-			WeightsMatrix arg3, BiasMatrix arg4) {
-		return new ComponentMetadata(name, arg2.getLeftNeurons(), arg2.getRightNeurons(), "Convolutional Axons:" + name);
+	public ComponentMetadata createConvolutionalAxonsComponent(String name, ConvolutionalAxonsConfig arg2,
+			WeightsMatrix arg3, BiasVector arg4) {
+		return new ComponentMetadata(name, arg2.getAxonsConfig().getLeftNeurons(), arg2.getAxonsConfig().getRightNeurons(), "Convolutional Axons:" + name);
 	}
 
 	@Override
@@ -64,14 +66,14 @@ public class ComponentMetadataFactory implements NeuralComponentFactory<Componen
 	}
 
 	@Override
-	public ComponentMetadata createFullyConnectedAxonsComponent(String name, AxonsConfig<Neurons, Neurons> axonsConfig, WeightsMatrix arg2, BiasMatrix arg3) {
-		return new ComponentMetadata(name, axonsConfig.getLeftNeurons(), axonsConfig.getRightNeurons(), "Fully Connected Axons Component:" + name);
+	public ComponentMetadata createFullyConnectedAxonsComponent(String name, FullyConnectedAxonsConfig axonsConfig, WeightsMatrix arg2, BiasVector arg3) {
+		return new ComponentMetadata(name, axonsConfig.getAxonsConfig().getLeftNeurons(), axonsConfig.getAxonsConfig().getRightNeurons(), "Fully Connected Axons Component:" + name);
 	}
 
 	@Override
-	public ComponentMetadata createMaxPoolingAxonsComponent(String name, Axons3DConfig arg2,
+	public ComponentMetadata createMaxPoolingAxonsComponent(String name, PoolingAxonsConfig arg2,
 			boolean arg3) {
-		return new ComponentMetadata(name, arg2.getLeftNeurons(), arg2.getRightNeurons(), "Max Pooling Axons Component:" + name);
+		return new ComponentMetadata(name, arg2.getAxonsConfig().getLeftNeurons(), arg2.getAxonsConfig().getRightNeurons(), "Max Pooling Axons Component:" + name);
 	}
 
 	@Override

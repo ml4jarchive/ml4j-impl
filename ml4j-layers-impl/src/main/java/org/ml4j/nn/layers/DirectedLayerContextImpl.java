@@ -16,13 +16,12 @@
 
 package org.ml4j.nn.layers;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.ml4j.MatrixFactory;
-import org.ml4j.nn.neurons.NeuronsActivationContextImpl;
-import org.ml4j.nn.synapses.DirectedSynapsesContext;
-import org.ml4j.nn.synapses.DirectedSynapsesContextImpl;
+import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.components.DirectedComponentActivationContextImpl;
+import org.ml4j.nn.components.DirectedComponentsContext;
+import org.ml4j.nn.neurons.FreezeableNeuronsActivationContext;
 
 /**
  * Simple default implementation of DirectedLayerContext.
@@ -30,7 +29,7 @@ import org.ml4j.nn.synapses.DirectedSynapsesContextImpl;
  * @author Michael Lavelle
  * 
  */
-public class DirectedLayerContextImpl extends NeuronsActivationContextImpl implements DirectedLayerContext {
+public class DirectedLayerContextImpl extends DirectedComponentActivationContextImpl implements DirectedLayerContext {
 
 	/**
 	 * Default serialization id.
@@ -38,7 +37,7 @@ public class DirectedLayerContextImpl extends NeuronsActivationContextImpl imple
 	private static final long serialVersionUID = 1L;
 	
 	private boolean withFreezeOut;
-	private Map<Integer, DirectedSynapsesContext> synapsesContextsBySynapsesIndex;
+	private DirectedLayer<?, ?> directedLayer;
 
 	/**
 	 * Construct a new DirectedLayerContext.
@@ -46,38 +45,54 @@ public class DirectedLayerContextImpl extends NeuronsActivationContextImpl imple
 	 * @param layerIndex    The index of the layer
 	 * @param matrixFactory The MatrixFactory we configure for this context
 	 */
-	public DirectedLayerContextImpl(MatrixFactory matrixFactory, boolean isTrainingContext) {
-		super(matrixFactory, isTrainingContext);
-		this.synapsesContextsBySynapsesIndex = new HashMap<>();
-	}
-
-	@Override
-	public DirectedSynapsesContext getSynapsesContext(int synapsesIndex) {
-
-		DirectedSynapsesContext synapsesContext = synapsesContextsBySynapsesIndex.get(synapsesIndex);
-		if (synapsesContext == null) {
-			synapsesContext = new DirectedSynapsesContextImpl(getMatrixFactory(), isTrainingContext(), withFreezeOut);
-
-		}
-		if (synapsesContext.isWithFreezeOut() != withFreezeOut) {
-			synapsesContext.setWithFreezeOut(withFreezeOut);
-			synapsesContextsBySynapsesIndex.put(synapsesIndex, synapsesContext);
-		}
-
-		return synapsesContext;
+	public DirectedLayerContextImpl(DirectedLayer<?, ?> directedLayer, DirectedComponentsContext directedComponentsContext) {
+		super(directedComponentsContext);
+		this.directedLayer = directedLayer;
 	}
 
 	public boolean isWithFreezeOut() {
 		return withFreezeOut;
 	}
 
-	public void setWithFreezeOut(boolean withFreezeOut) {
+	@Override
+	public DirectedLayerContext withFreezeOut(boolean withFreezeOut) {
 		this.withFreezeOut = withFreezeOut;
+		Map<String, AxonsContext> nestedAxonsContexts = directedLayer.getNestedContexts(getDirectedComponentsContext(), AxonsContext.class);
+		nestedAxonsContexts.values().forEach(a -> a.addFreezeoutOverrideContext(this));
+		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "DirectedLayerContextImpl [withFreezeOut=" + withFreezeOut + ", synapsesContextsBySynapsesIndex="
-				+ synapsesContextsBySynapsesIndex + "]";
+		return "DirectedLayerContextImpl [withFreezeOut=" + withFreezeOut + "]";
+	}
+
+	@Override
+	public String getOwningComponentName() {
+		return directedLayer.getName();
+	}
+
+	@Override
+	public void addFreezeoutOverrideContext(FreezeableNeuronsActivationContext<?> arg0) {
+		throw new UnsupportedOperationException("Not currently supported");
+	}
+
+	@Override
+	public void removeFreezeoutOverrideContext(FreezeableNeuronsActivationContext<?> arg0) {
+		throw new UnsupportedOperationException("Not currently supported");
+	}
+
+	@Override
+	public DirectedLayerContext asNonTrainingContext() {
+		DirectedLayerContext layerContext = new DirectedLayerContextImpl(directedLayer, getDirectedComponentsContext().asNonTrainingContext());
+		layerContext.withFreezeOut(isWithFreezeOut());
+		return layerContext;
+	}
+
+	@Override
+	public DirectedLayerContext asTrainingContext() {
+		DirectedLayerContext layerContext = new DirectedLayerContextImpl(directedLayer, getDirectedComponentsContext().asTrainingContext());
+		layerContext.withFreezeOut(isWithFreezeOut());
+		return layerContext;
 	}
 }

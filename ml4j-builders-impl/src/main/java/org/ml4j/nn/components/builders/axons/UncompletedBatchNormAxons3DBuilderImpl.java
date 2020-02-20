@@ -13,69 +13,69 @@
  */
 package org.ml4j.nn.components.builders.axons;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.ml4j.Matrix;
-import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.AxonsContextConfigurer;
 import org.ml4j.nn.axons.BatchNormConfig.BatchNormDimension;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.FeaturesVector;
 import org.ml4j.nn.axons.WeightsMatrix;
+import org.ml4j.nn.axons.WeightsVector;
 import org.ml4j.nn.neurons.Neurons3D;
 
 public class UncompletedBatchNormAxons3DBuilderImpl<C extends Axons3DBuilder<?>>
 		extends UncompletedAxonsBuilderImpl<Neurons3D, C> implements UncompletedBatchNormAxons3DBuilder<C> {
 
-	private WeightsMatrix gamma;
-	private BiasMatrix beta;
-	private Matrix mean;
-	private Matrix variance;
+	private WeightsVector gamma;
+	private BiasVector beta;
+	private FeaturesVector mean;
+	private FeaturesVector variance;
 
 	public UncompletedBatchNormAxons3DBuilderImpl(String name, Supplier<C> previousBuilderSupplier, Neurons3D leftNeurons) {
 		super(name, previousBuilderSupplier, leftNeurons);
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withGamma(WeightsMatrix gamma) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withGamma(WeightsVector gamma) {
 		this.gamma = gamma;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBeta(BiasMatrix beta) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBeta(BiasVector beta) {
 		this.beta = beta;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withMean(Matrix mean) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withMean(FeaturesVector mean) {
 		this.mean = mean;
 		return this;
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withVariance(Matrix variance) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withVariance(FeaturesVector variance) {
 		this.variance = variance;
 		return this;
 	}
 
 	@Override
-	public WeightsMatrix getGamma() {
+	public WeightsVector getGamma() {
 		return gamma;
 	}
 
 	@Override
-	public BiasMatrix getBeta() {
+	public BiasVector getBeta() {
 		return beta;
 	}
 
 	@Override
-	public Matrix getMean() {
+	public FeaturesVector getMean() {
 		return mean;
 	}
 
 	@Override
-	public Matrix getVariance() {
+	public FeaturesVector getVariance() {
 		return variance;
 	}
 
@@ -98,7 +98,7 @@ public class UncompletedBatchNormAxons3DBuilderImpl<C extends Axons3DBuilder<?>>
 	}
 
 	@Override
-	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBiases(BiasMatrix biases) {
+	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withBiases(BiasVector biases) {
 		previousBuilderSupplier.get().getBuilderState().setBiases(biases);
 		previousBuilderSupplier.get().getBuilderState().getComponentsGraphNeurons().setHasBiasUnit(true);
 		return this;
@@ -106,7 +106,7 @@ public class UncompletedBatchNormAxons3DBuilderImpl<C extends Axons3DBuilder<?>>
 
 	@Override
 	public UncompletedBatchNormAxonsBuilder<Neurons3D, C> withAxonsContextConfigurer(
-			Consumer<AxonsContext> axonsContextConfigurer) {
+			AxonsContextConfigurer axonsContextConfigurer) {
 		this.axonsContextConfigurer = axonsContextConfigurer;
 		return this;
 	}

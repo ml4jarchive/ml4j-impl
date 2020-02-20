@@ -16,7 +16,7 @@
 
 package org.ml4j.nn.unsupervised;
 
-import org.ml4j.MatrixFactory;
+import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.supervised.LayeredFeedForwardNeuralNetworkContextImpl;
 
 /**
@@ -27,13 +27,25 @@ import org.ml4j.nn.supervised.LayeredFeedForwardNeuralNetworkContextImpl;
  */
 public class AutoEncoderContextImpl extends LayeredFeedForwardNeuralNetworkContextImpl implements AutoEncoderContext {
 
+	@Override
+	public AutoEncoderContext asNonTrainingContext() {
+		return new AutoEncoderContextImpl(getDirectedComponentsContext().asNonTrainingContext(),
+				getStartLayerIndex(), getEndLayerIndex(), false);
+	}
+
+	@Override
+	public AutoEncoderContext asTrainingContext() {
+		return new AutoEncoderContextImpl(getDirectedComponentsContext().asTrainingContext(),
+				getStartLayerIndex(), getEndLayerIndex(), true);
+	}
+
 	/**
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public AutoEncoderContextImpl(MatrixFactory matrixFactory, int startLayerIndex, Integer endLayerIndex,
-			boolean isTrainingContext) {
-		super(matrixFactory, startLayerIndex, endLayerIndex, isTrainingContext);
+	
+	public AutoEncoderContextImpl(DirectedComponentsContext directedComponentsContext, int startLayerIndex, Integer endLayerIndex, boolean isTrainingContext) {
+		super(directedComponentsContext, startLayerIndex, endLayerIndex, isTrainingContext);
 	}
+
 }

@@ -16,12 +16,15 @@ package org.ml4j.nn.layers;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.factories.DifferentiableActivationFunctionFactory;
-import org.ml4j.nn.axons.Axons3DConfig;
-import org.ml4j.nn.axons.AxonsConfig;
-import org.ml4j.nn.axons.BatchNormConfig;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.AxonsContext;
+import org.ml4j.nn.axons.BatchNormAxonsConfig;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.ConvolutionalAxonsConfig;
+import org.ml4j.nn.axons.FullyConnectedAxonsConfig;
+import org.ml4j.nn.axons.PoolingAxonsConfig;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.axons.factories.AxonsFactory;
+import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.Neurons3D;
@@ -36,48 +39,63 @@ public class DefaultDirectedLayerFactory implements DirectedLayerFactory {
 	protected AxonsFactory axonsFactory;
 	protected DirectedComponentFactory directedComponentFactory;
 	protected DifferentiableActivationFunctionFactory differentiableActivationFunctionFactory;
+	private DirectedComponentsContext directedComponentsContext;
 
 	/**
 	 * @param axonsFactory The axons factory.
 	 * @param differentiableActivationFunctionFactory The activation function factory.
 	 * @param directedComponentFactory The directed component factory.
+	 * @param directedComponentsContext The directed components context.
 	 */
 	public DefaultDirectedLayerFactory(AxonsFactory axonsFactory,
 			DifferentiableActivationFunctionFactory differentiableActivationFunctionFactory,
-			DirectedComponentFactory directedComponentFactory) {
+			DirectedComponentFactory directedComponentFactory,
+			DirectedComponentsContext directedComponentsContext) {
 		this.axonsFactory = axonsFactory;
 		this.differentiableActivationFunctionFactory = differentiableActivationFunctionFactory;
 		this.directedComponentFactory = directedComponentFactory;
+		this.directedComponentsContext = directedComponentsContext;
 	}
 
 	@Override
-	public FullyConnectedFeedForwardLayer createFullyConnectedFeedForwardLayer(String name, AxonsConfig<Neurons, Neurons> axonsConfig, WeightsMatrix connectionWeights, BiasMatrix biases,
+	public FullyConnectedFeedForwardLayer createFullyConnectedFeedForwardLayer(String name, FullyConnectedAxonsConfig primaryAxonsConfig, WeightsMatrix connectionWeights, BiasVector biases,
 			ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties,
-			BatchNormConfig<Neurons> batchNormConfig) {
-		return new FullyConnectedFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory,
-				axonsConfig, connectionWeights, biases, differentiableActivationFunctionFactory.createActivationFunction(activationFunctionType,
+			BatchNormAxonsConfig<Neurons> batchNormConfig) {
+		FullyConnectedFeedForwardLayer layer = new FullyConnectedFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory,
+				primaryAxonsConfig.getAxonsConfig(), connectionWeights, biases, differentiableActivationFunctionFactory.createActivationFunction(activationFunctionType,
 						activationFunctionProperties),
-				batchNormConfig);
+				batchNormConfig == null ? null : batchNormConfig.getBatchNormConfig());
+		if (primaryAxonsConfig.getAxonsContextConfigurer() != null) {
+			AxonsContext axonsContext = layer.getPrimaryAxonsContext(directedComponentsContext);
+			primaryAxonsConfig.getAxonsContextConfigurer() .accept(axonsContext);
+		}
+		return layer;
 	}
 
 	@Override
-	public MaxPoolingFeedForwardLayer createMaxPoolingFeedForwardLayer(String name, Axons3DConfig axonsConfig, boolean scaleOutputs) {
-		return new MaxPoolingFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory, axonsConfig,
+	public MaxPoolingFeedForwardLayer createMaxPoolingFeedForwardLayer(String name, PoolingAxonsConfig axonsConfig, boolean scaleOutputs) {
+		return new MaxPoolingFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory, axonsConfig.getAxonsConfig(),
 				differentiableActivationFunctionFactory, scaleOutputs);
 	}
 
 	@Override
-	public AveragePoolingFeedForwardLayer createAveragePoolingFeedForwardLayer(String name, Axons3DConfig axonsConfig) {
+	public AveragePoolingFeedForwardLayer createAveragePoolingFeedForwardLayer(String name, PoolingAxonsConfig axonsConfig) {
 		return new AveragePoolingFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory,
-				differentiableActivationFunctionFactory, axonsConfig);
+				differentiableActivationFunctionFactory, axonsConfig.getAxonsConfig());
 	}
 
 	@Override
-	public ConvolutionalFeedForwardLayer createConvolutionalFeedForwardLayer(String name, Axons3DConfig axons3DConfig,  WeightsMatrix connectionWeights, BiasMatrix biases,
+	public ConvolutionalFeedForwardLayer createConvolutionalFeedForwardLayer(String name, ConvolutionalAxonsConfig primaryAxonsConfig,  WeightsMatrix connectionWeights, BiasVector biases,
 			ActivationFunctionType activationFunctionType, ActivationFunctionProperties activationFunctionProperties,
-			BatchNormConfig<Neurons3D> batchNormConfig) {
-		return new ConvolutionalFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory, axons3DConfig, connectionWeights, biases, differentiableActivationFunctionFactory
-						.createActivationFunction(activationFunctionType, activationFunctionProperties), batchNormConfig);
+			BatchNormAxonsConfig<Neurons3D> batchNormConfig) {
+		ConvolutionalFeedForwardLayer layer =new ConvolutionalFeedForwardLayerImpl(name, directedComponentFactory, axonsFactory, primaryAxonsConfig.getAxonsConfig(), connectionWeights, biases, differentiableActivationFunctionFactory
+						.createActivationFunction(activationFunctionType, activationFunctionProperties), batchNormConfig == null ? null : batchNormConfig.getBatchNormConfig());
+		
+		if (primaryAxonsConfig.getAxonsContextConfigurer() != null) {
+			AxonsContext axonsContext = layer.getPrimaryAxonsContext(directedComponentsContext);
+			primaryAxonsConfig.getAxonsContextConfigurer().accept(axonsContext);
+		}
+		return layer;
 	}
 
 }

@@ -16,9 +16,12 @@ package org.ml4j.nn.components;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import org.ml4j.MatrixFactory;
+import org.ml4j.nn.neurons.NeuronsActivationContext;
 
 public class DirectedComponentsContextImpl implements DirectedComponentsContext {
 
@@ -26,7 +29,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	 * Default serialization id.
 	 */
 	private static final long serialVersionUID = 1L;
-	private Map<DirectedComponent<?, ?, ?, ?>, ComponentContext<?>> contexts;
+	private Map<ContextualNeuralComponent<?>, ComponentContext<?>> contexts;
 	private MatrixFactory matrixFactory;
 	private boolean isTraining;
 
@@ -36,7 +39,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 		this.isTraining = isTraining;
 	}
 
-	private DirectedComponentsContextImpl(Map<DirectedComponent<?, ?, ?, ?>, ComponentContext<?>> contexts,
+	private DirectedComponentsContextImpl(Map<ContextualNeuralComponent<?>, ComponentContext<?>> contexts,
 			MatrixFactory matrixFactory, boolean isTraining) {
 		super();
 		this.contexts = contexts;
@@ -44,23 +47,60 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 		this.isTraining = isTraining;
 	}
 	
+	private boolean isComponentNameExistingUnderAnotherComponent(ContextualNeuralComponent<?> component) {
+		Optional<ContextualNeuralComponent<?>> found = contexts.keySet().stream()
+				.filter(c -> c.getName().equals(component.getName())).findFirst();
+		return found.isPresent();
+	}
+	
+	private <C extends Serializable> Object getLockObject(ContextualNeuralComponent<C> component) {
+		synchronized (contexts) {
+			ComponentContext<?> componentContext = contexts.get(component);
+			if (componentContext == null) {
+				return contexts;
+			} else {
+				return componentContext;
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <C extends Serializable> C getContext(DirectedComponent<?, ?, C, ?> component,
-			Supplier<C> defaultContextSupplier) {
-		ComponentContext<C> existingContext = (ComponentContext<C>) contexts.get(component);
-
-		if (existingContext != null) {
-			return existingContext.getContext();
-		} else {
-			ComponentContext<C> newContext = new ComponentContext<>(component, defaultContextSupplier.get());
-			contexts.put(component, newContext);
-			return newContext.getContext();
+	public  <C extends Serializable> C getContext(ContextualNeuralComponent<C> component,
+			Supplier<C> defaultContextSupplier, UnaryOperator<C> creator) {
+	
+		synchronized (getLockObject(component)) {
+		
+			ComponentContext<C> existingContext = (ComponentContext<C>) contexts.get(component);
+	
+			C context;
+			if (existingContext != null) {
+				context = creator.apply(existingContext.getContext());
+			} else {
+				ComponentContext<C> newContext = new ComponentContext<>(component, defaultContextSupplier.get());
+				contexts.put(component, newContext);
+				context = newContext.getContext();
+			}
+			
+			if (context instanceof NeuronsActivationContext) {
+				NeuronsActivationContext neuronsActivationContext = (NeuronsActivationContext)context;
+				neuronsActivationContext.setTrainingContext(isTraining);
+				neuronsActivationContext.setMatrixFactory(getMatrixFactory());
+			}
+			return context;
 		}
 	}
 
 	public void addComponentContext(ComponentContext<?> componentContext) {
-		this.contexts.put(componentContext.getComponent(), componentContext);
+		
+		synchronized (getLockObject(componentContext.getComponent())) {
+		
+			if (isComponentNameExistingUnderAnotherComponent(componentContext.getComponent())) {
+				throw new IllegalArgumentException("Component name already registered under another component:" + 
+						componentContext.getComponent().getName());
+			}
+			this.contexts.put(componentContext.getComponent(), componentContext);
+		}
 	}
 
 	private class ComponentContext<C extends Serializable> implements Serializable {
@@ -69,21 +109,28 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 		 * Default serialization id.
 		 */
 		private static final long serialVersionUID = 1L;
-		private DirectedComponent<?, ?, C, ?> component;
+		private ContextualNeuralComponent<C> component;
 		private C context;
 
-		public ComponentContext(DirectedComponent<?, ?, C, ?> component, C context) {
+		public ComponentContext(ContextualNeuralComponent<C> component, C context) {
 			this.component = component;
 			this.context = context;
 		}
 
-		public DirectedComponent<?, ?, C, ?> getComponent() {
+		public ContextualNeuralComponent<C> getComponent() {
 			return component;
 		}
 
 		public C getContext() {
 			return context;
 		}
+
+		@Override
+		public String toString() {
+			return "ComponentContext [component=" + component.getName() + ", context=" + context + "]";
+		}
+		
+		
 
 	}
 
@@ -93,7 +140,7 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	}
 
 	@Override
-	public <C extends Serializable> void setContext(DirectedComponent<?, ?, C, ?> component, C context) {
+	public <C extends Serializable> void setContext(ContextualNeuralComponent<C> component, C context) {
 		this.contexts.put(component, new ComponentContext<C>(component, context));
 	}
 
@@ -111,4 +158,12 @@ public class DirectedComponentsContextImpl implements DirectedComponentsContext 
 	public DirectedComponentsContext asNonTrainingContext() {
 		return new DirectedComponentsContextImpl(contexts, matrixFactory, false);
 	}
+
+	@Override
+	public String toString() {
+		return "DirectedComponentsContextImpl [contexts=" + contexts.values() + ", matrixFactory=" + matrixFactory
+				+ ", isTraining=" + isTraining + "]";
+	}
+	
+	
 }

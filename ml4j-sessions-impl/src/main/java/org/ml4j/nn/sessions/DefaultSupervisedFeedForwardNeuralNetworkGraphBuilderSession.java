@@ -1,6 +1,5 @@
 package org.ml4j.nn.sessions;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.ComponentsGraphBuilderImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
@@ -15,8 +14,8 @@ public class DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession extend
 	
 	public DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(
 			SupervisedFeedForwardNeuralNetworkBuilderSession previousBuilderSession,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext) {
-		super(previousBuilderSession.getDirectedComponentFactory(), builderState, directedComponentsContext, 
+			BaseGraphBuilderState builderState) {
+		super(previousBuilderSession.getDirectedComponentFactory(), builderState, 
 				previousBuilderSession.getComponents());
 		this.previousBuilderSession = previousBuilderSession;		
 	}
@@ -24,8 +23,8 @@ public class DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession extend
 	public DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(
 			SupervisedFeedForwardNeuralNetwork3DGraphBuilderSession previousBuilderSession,
 			DirectedComponentFactory directedComponentFactory,
-			BaseGraphBuilderState builderState, DirectedComponentsContext directedComponentsContext) {
-		super(directedComponentFactory, builderState, directedComponentsContext, 
+			BaseGraphBuilderState builderState) {
+		super(directedComponentFactory, builderState, 
 				previousBuilderSession.getComponents());		
 	}
 	

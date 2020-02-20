@@ -112,6 +112,10 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	// TODO - Refactor these methods
 	protected void train(NeuronsActivation trainingDataActivations, NeuronsActivation trainingLabelActivations,
 			C trainingContext) {
+		
+		if (!trainingContext.isTrainingContext()) {
+			throw new IllegalArgumentException("Context is not a training context");
+		}
 
 		if (trainingDataActivations
 				.getFeatureOrientation() != NeuronsActivationFeatureOrientation.ROWS_SPAN_FEATURE_SET) {
@@ -722,6 +726,4 @@ public abstract class FeedForwardNeuralNetworkBase<C extends FeedForwardNeuralNe
 	public String accept(NeuralComponentVisitor<DefaultChainableDirectedComponent<?, ?>> visitor) {
 		return visitor.visitSequentialComponentChain(trailingActivationFunctionComponentChain.getComponents());
 	}
-
-
 }

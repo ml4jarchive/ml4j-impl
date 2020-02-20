@@ -21,7 +21,6 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.base.BaseNested3DGraphBuilderImpl;
 import org.ml4j.nn.components.builders.common.Components3DParallelPathsBuilderImpl;
@@ -40,22 +39,21 @@ public abstract class ComponentsNested3DGraphBuilderImpl<P extends ComponentsCon
 
 	public ComponentsNested3DGraphBuilderImpl(Supplier<P> parent3DGraph,
 			NeuralComponentFactory<T> directedComponentFactory, Base3DGraphBuilderState builderState,
-			DirectedComponentsContext directedComponentsContext, List<T> components) {
-		super(parent3DGraph, directedComponentFactory, builderState, directedComponentsContext, components);
+			List<T> components) {
+		super(parent3DGraph, directedComponentFactory, builderState, components);
 
 	}
 
 	@Override
 	public ParallelPathsBuilder<Components3DSubGraphBuilder<C, D, T>> withParallelPaths() {
 		addAxonsIfApplicable();
-		return new Components3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder,
-				directedComponentsContext);
+		return new Components3DParallelPathsBuilderImpl<>(directedComponentFactory, this::get3DBuilder);
 	}
 
 	@Override
 	public Components3DGraphSkipConnectionBuilder<C, D, T> withSkipConnection() {
 		return new Components3DGraphSkipConnectionBuilderImpl<>(this::get3DBuilder, directedComponentFactory,
-				builderState, directedComponentsContext, new ArrayList<>());
+				builderState, new ArrayList<>());
 	}
 
 	@Override

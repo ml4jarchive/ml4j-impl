@@ -14,8 +14,11 @@
 package org.ml4j.nn.components.onetoone;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ml4j.nn.components.ChainableDirectedComponent;
@@ -117,6 +120,13 @@ public class TrailingActivationFunctionDirectedComponentChainImpl
 		
 		return components.stream().flatMap(c -> c.decompose().stream()).collect(Collectors.toList());
 
+	}
+
+	@Override
+	public Set<DefaultChainableDirectedComponent<?, ?>> flatten() {
+		Set<DefaultChainableDirectedComponent<?, ?>> allComponentsIncludingThis = new HashSet<>(Arrays.asList(this));
+		allComponentsIncludingThis.addAll(components.stream().flatMap(c -> c.flatten().stream()).collect(Collectors.toSet()));
+		return allComponentsIncludingThis;
 	}
 
 	@Override

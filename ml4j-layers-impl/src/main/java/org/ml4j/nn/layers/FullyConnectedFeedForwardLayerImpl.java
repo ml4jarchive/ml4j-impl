@@ -17,17 +17,20 @@
 package org.ml4j.nn.layers;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
 import org.ml4j.nn.axons.AxonsConfig;
+import org.ml4j.nn.axons.AxonsContext;
 import org.ml4j.nn.axons.BatchNormConfig;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
 import org.ml4j.nn.axons.FullyConnectedAxons;
 import org.ml4j.nn.axons.WeightsFormatImpl;
 import org.ml4j.nn.axons.WeightsMatrix;
 import org.ml4j.nn.axons.WeightsMatrixImpl;
 import org.ml4j.nn.axons.WeightsMatrixOrientation;
 import org.ml4j.nn.axons.factories.AxonsFactory;
+import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.neurons.Neurons;
 import org.ml4j.nn.neurons.format.features.Dimension;
@@ -95,7 +98,7 @@ public class FullyConnectedFeedForwardLayerImpl
 	 */
 	public FullyConnectedFeedForwardLayerImpl(String name, DirectedComponentFactory directedComponentFactory,
 			AxonsFactory axonsFactory, AxonsConfig<Neurons, Neurons> axonsConfig, 
-			WeightsMatrix connectionWeights, BiasMatrix biases, DifferentiableActivationFunction primaryActivationFunction, BatchNormConfig<?> batchNormConfig) {
+			WeightsMatrix connectionWeights, BiasVector biases, DifferentiableActivationFunction primaryActivationFunction, BatchNormConfig<?> batchNormConfig) {
 		super(name, directedComponentFactory,
 				axonsFactory.createFullyConnectedAxons(axonsConfig, 
 						connectionWeights,
@@ -107,5 +110,15 @@ public class FullyConnectedFeedForwardLayerImpl
 	public FullyConnectedFeedForwardLayer dup(DirectedComponentFactory directedComponentFactory) {
 		return new FullyConnectedFeedForwardLayerImpl(name, directedComponentFactory, 
 				this.primaryAxons.dup(), primaryActivationFunction, batchNormConfig.dup());
+	}
+
+	@Override
+	public Optional<AxonsContext> getBatchNormAxonsContext(DirectedComponentsContext arg0) {
+		return Optional.empty();
+	}
+
+	@Override
+	public AxonsContext getPrimaryAxonsContext(DirectedComponentsContext directedComponentsContext) {
+		return getAxonsContext(directedComponentsContext, this.getPrimaryAxonsComponentName());
 	}
 }

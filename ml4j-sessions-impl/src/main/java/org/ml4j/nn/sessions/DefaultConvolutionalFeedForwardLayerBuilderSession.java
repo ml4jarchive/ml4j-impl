@@ -8,9 +8,12 @@ import org.ml4j.nn.activationfunctions.ActivationFunctionBaseType;
 import org.ml4j.nn.activationfunctions.ActivationFunctionProperties;
 import org.ml4j.nn.activationfunctions.ActivationFunctionType;
 import org.ml4j.nn.activationfunctions.DifferentiableActivationFunction;
-import org.ml4j.nn.axons.BatchNormConfig;
+import org.ml4j.nn.axons.AxonsContextConfigurer;
+import org.ml4j.nn.axons.BatchNormAxonsConfig;
+import org.ml4j.nn.axons.BatchNormAxonsConfigConfigurer;
 import org.ml4j.nn.axons.BatchNormConfig.BatchNormDimension;
-import org.ml4j.nn.axons.BiasMatrix;
+import org.ml4j.nn.axons.BiasVector;
+import org.ml4j.nn.axons.ConvolutionalAxonsConfig;
 import org.ml4j.nn.axons.WeightsFormat;
 import org.ml4j.nn.axons.WeightsFormatImpl;
 import org.ml4j.nn.axons.WeightsMatrix;
@@ -49,23 +52,47 @@ public class DefaultConvolutionalFeedForwardLayerBuilderSession<C> extends
 	@Override
 	protected ConvolutionalFeedForwardLayer build(ConvolutionalLayerAxonsConfig layerConfig) {
 		WeightsMatrix weightsMatrix = layerConfigBuilder.getWeightsMatrix();
-		BiasMatrix biasMatrix = layerConfigBuilder.getBiasMatrix();
-		BatchNormConfig<Neurons3D> batchNormConfig = layerConfigBuilder.getBatchNormConfig();
+		BiasVector biasMatrix = layerConfigBuilder.getBiasVector();
+		BatchNormAxonsConfig<Neurons3D> batchNormAxonsConfig = layerConfigBuilder.getBatchNormAxonsConfig();
 		
+	
 		// If no weights matrix has been explicitly configured, create a weights with null matrix and default format.
 		// If no bias matrix has been set, it will be defaulted by the directedlayerfactory if left neurons have bias unit.
 		if (weightsMatrix == null) {
 			weightsMatrix = DEFAULT_UNINITIALISED_WEIGHTS_MATRIX;
 		}
 		
-		if (layerConfig.getActivationFunctionType() == null) {
-			return directedLayerFactory.createConvolutionalFeedForwardLayer(layerName, layerConfig, weightsMatrix, biasMatrix,
-					ActivationFunctionType.getBaseType(ActivationFunctionBaseType.LINEAR),
-					new ActivationFunctionProperties(), batchNormConfig);
-		} else {
-			return directedLayerFactory.createConvolutionalFeedForwardLayer(layerName, layerConfig, weightsMatrix, biasMatrix,
-					layerConfig.getActivationFunctionType(), layerConfig.getActivationFunctionProperties(), batchNormConfig);
+		if (batchNormAxonsConfig != null) {
+		
+			if (batchNormAxonsConfig.getNeurons() == null) {
+				batchNormAxonsConfig.withNeurons(layerConfigBuilder.getRightNeurons());
+			} else {
+				if (!layerConfigBuilder.getRightNeurons().equals(batchNormAxonsConfig.getNeurons())) {
+					throw new IllegalStateException("Neurons set on BatchNormAxonsConfig should match the output neurons of "
+							+ "the ConvolutionalAxons");
+				}
+			}
+		
 		}
+		
+		ConvolutionalAxonsConfig convolutionalAxonsConfig = ConvolutionalAxonsConfig.create(layerConfig);
+		
+		if (layerConfigBuilder.getAxonsContextConfigurer() != null) {
+			convolutionalAxonsConfig = convolutionalAxonsConfig.withAxonsContextConfigurer(layerConfigBuilder.getAxonsContextConfigurer());
+		}
+				
+		ConvolutionalFeedForwardLayer layer;
+		if (layerConfig.getActivationFunctionType() == null) {
+			layer = directedLayerFactory.createConvolutionalFeedForwardLayer(layerName, convolutionalAxonsConfig, weightsMatrix, biasMatrix,
+					ActivationFunctionType.getBaseType(ActivationFunctionBaseType.LINEAR),
+					new ActivationFunctionProperties(), batchNormAxonsConfig);
+		} else {
+			layer = directedLayerFactory.createConvolutionalFeedForwardLayer(layerName, convolutionalAxonsConfig, weightsMatrix, biasMatrix,
+					layerConfig.getActivationFunctionType(), layerConfig.getActivationFunctionProperties(), batchNormAxonsConfig);
+		}
+		
+		return layer;
+		
 	}
 
 
@@ -122,18 +149,18 @@ public class DefaultConvolutionalFeedForwardLayerBuilderSession<C> extends
 	}
 
 	@Override
-	public ConvolutionalFeedForwardLayerPropertiesBuilder<C> withBatchNormConfig(
-			Consumer<BatchNormConfig<Neurons3D>> batchNormConfigConfigurer) {
+	public ConvolutionalFeedForwardLayerPropertiesBuilder<C> withBatchNormAxonsConfig(
+			BatchNormAxonsConfigConfigurer<Neurons3D> batchNormConfigConfigurer) {
 	
-		BatchNormConfig<Neurons3D> batchNormConfig = new BatchNormConfig<>(BatchNormDimension.CHANNEL);
-		batchNormConfigConfigurer.accept(batchNormConfig);
-		layerConfigBuilder.withBatchNormConfig(batchNormConfig);
+		BatchNormAxonsConfig<Neurons3D> batchNormAxonsConfig = BatchNormAxonsConfig.create(BatchNormDimension.CHANNEL);
+		batchNormConfigConfigurer.accept(batchNormAxonsConfig);
+		layerConfigBuilder.withBatchNormAxonsConfig(batchNormAxonsConfig);
 		return this;
 	}
 
 	@Override
-	public ConvolutionalFeedForwardLayerPropertiesBuilder<C> withBiasMatrix(BiasMatrix biasMatrix) {
-		layerConfigBuilder.withBiasMatrix(biasMatrix);
+	public ConvolutionalFeedForwardLayerPropertiesBuilder<C> withBiasVector(BiasVector biasMatrix) {
+		layerConfigBuilder.withBiasVector(biasMatrix);
 		return this;
 	}
 
@@ -188,6 +215,13 @@ public class DefaultConvolutionalFeedForwardLayerBuilderSession<C> extends
 	@Override
 	public C withActivationFunction(ActivationFunctionBaseType activationFunctionBaseType, ActivationFunctionProperties activationFunctionProperties) {
 		return withActivationFunction(ActivationFunctionType.getBaseType(activationFunctionBaseType), activationFunctionProperties);
+	}
+
+
+	@Override
+	public ConvolutionalFeedForwardLayerPropertiesBuilder<C> withAxonsContextConfigurer(AxonsContextConfigurer axonsContextConfigurer) {
+		layerConfigBuilder.withAxonsContextConfigurer(axonsContextConfigurer);
+		return this;
 	}
 	
 }

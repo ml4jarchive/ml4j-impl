@@ -16,7 +16,6 @@ package org.ml4j.nn.components.builders.skipconnection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.NeuralComponent;
 import org.ml4j.nn.components.builders.BaseGraphBuilderState;
 import org.ml4j.nn.components.builders.ComponentsNestedGraphBuilderImpl;
@@ -31,8 +30,8 @@ public class ComponentsGraphSkipConnectionBuilderImpl<P extends ComponentsContai
 
 	public ComponentsGraphSkipConnectionBuilderImpl(Supplier<P> parentGraph,
 			NeuralComponentFactory<T> directedComponentFactory, BaseGraphBuilderState builderState,
-			DirectedComponentsContext directedComponentsContext, List<T> components) {
-		super(parentGraph, directedComponentFactory, builderState, directedComponentsContext, components);
+			List<T> components) {
+		super(parentGraph, directedComponentFactory, builderState, components);
 	}
 
 	@Override
@@ -50,6 +49,6 @@ public class ComponentsGraphSkipConnectionBuilderImpl<P extends ComponentsContai
 	@Override
 	protected ComponentsGraphSkipConnectionBuilder<P, T> createNewNestedGraphBuilder() {
 		return new ComponentsGraphSkipConnectionBuilderImpl<>(parentGraph, directedComponentFactory,
-				initialBuilderState, directedComponentsContext, components);
+				initialBuilderState, components);
 	}
 }

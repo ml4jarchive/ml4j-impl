@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.ml4j.nn.axons.Axons;
 import org.ml4j.nn.axons.Axons3DConfigBuilder;
-import org.ml4j.nn.components.DirectedComponentsContext;
 import org.ml4j.nn.components.builders.initial.InitialComponents3DGraphBuilderImpl;
 import org.ml4j.nn.components.factories.DirectedComponentFactory;
 import org.ml4j.nn.components.onetone.DefaultChainableDirectedComponent;
@@ -33,8 +32,8 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession extends I
 			DirectedComponentFactory directedComponentFactory,
 			DirectedLayerFactory directedLayerFactory,
 			SupervisedFeedForwardNeuralNetworkFactory neuralNetworkFactory, String networkName,
-			DirectedComponentsContext directedComponentsContext, List<DefaultChainableDirectedComponent<?, ?>> components, Neurons3D currentNeurons) {
-		super(directedComponentFactory, directedComponentsContext, currentNeurons);
+			List<DefaultChainableDirectedComponent<?, ?>> components, Neurons3D currentNeurons) {
+		super(directedComponentFactory, currentNeurons);
 		this.directedComponentFactoryReference = directedComponentFactory;
 		this.directedLayerFactory = directedLayerFactory;
 		this.neuralNetworkFactory = neuralNetworkFactory;
@@ -143,27 +142,27 @@ public class DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession extends I
 
 	@Override
 	public SupervisedFeedForwardNeuralNetwork3DGraphBuilderSession with3DComponentGraph() {
-		return new DefaultSupervisedFeedForwardNeuralNetwork3DGraphBuilderSession(this, getBuilderState(), directedComponentsContext);
+		return new DefaultSupervisedFeedForwardNeuralNetwork3DGraphBuilderSession(this, getBuilderState());
 	}
 
 	@Override
 	public SupervisedFeedForwardNeuralNetworkGraphBuilderSession withComponentGraph() {
-		return new DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(this, getBuilderState().getNon3DBuilderState(), directedComponentsContext);
+		return new DefaultSupervisedFeedForwardNeuralNetworkGraphBuilderSession(this, getBuilderState().getNon3DBuilderState());
 	}
 
 	@Override
 	public <A extends Axons<Neurons, Neurons, ?>, L extends FeedForwardLayer<A, L>> SupervisedFeedForwardNeuralNetworkBuilderSession withLayer(
 			L layer) {
 		getComponents().add(layer);
-		return new DefaultSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactoryReference, directedLayerFactory, neuralNetworkFactory, networkName, directedComponentsContext, getComponents(), getCurrentNeurons());
+		return new DefaultSupervisedFeedForwardNeuralNetworkBuilderSession(directedComponentFactoryReference, directedLayerFactory, neuralNetworkFactory, networkName, getComponents(), getCurrentNeurons());
 	}
 
 	@Override
 	public <A extends Axons<Neurons3D, Neurons3D, ?>, L extends FeedForwardLayer<A, L>> SupervisedFeedForwardNeuralNetwork3DBuilderSession with3DLayer(
 			L layer) {
 		getComponents().add(layer);
-		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactoryReference, directedLayerFactory, neuralNetworkFactory, networkName, directedComponentsContext, getComponents(), getCurrentNeurons());
+		return new DefaultSupervisedFeedForwardNeuralNetwork3DBuilderSession(directedComponentFactoryReference, directedLayerFactory, neuralNetworkFactory, networkName, getComponents(), getCurrentNeurons());
 	}
 
-
+	
 }
