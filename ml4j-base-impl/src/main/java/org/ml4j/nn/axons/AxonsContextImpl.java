@@ -173,6 +173,8 @@ public class AxonsContextImpl extends NeuronsActivationContextImpl implements Ax
 	@Override
 	public AxonsContext asNonTrainingContext() {
 		AxonsContextImpl axonsContext =  new AxonsContextImpl(axonsName, getMatrixFactory(), false, localFreezeOut);
+		axonsContext.withLeftHandInputDropoutKeepProbability(leftHandInputDropoutKeepProbability);
+		axonsContext.withRegularisationLambda(regularisationLambda);
 		axonsContext.freezeOutOverrideContexts = this.freezeOutOverrideContexts;
 		return axonsContext;
 	}
@@ -180,6 +182,8 @@ public class AxonsContextImpl extends NeuronsActivationContextImpl implements Ax
 	@Override
 	public AxonsContext asTrainingContext() {
 		AxonsContextImpl axonsContext =  new AxonsContextImpl(axonsName, getMatrixFactory(), true, localFreezeOut);
+		axonsContext.withLeftHandInputDropoutKeepProbability(leftHandInputDropoutKeepProbability);
+		axonsContext.withRegularisationLambda(regularisationLambda);
 		axonsContext.freezeOutOverrideContexts = this.freezeOutOverrideContexts;
 		return axonsContext;
 	}
