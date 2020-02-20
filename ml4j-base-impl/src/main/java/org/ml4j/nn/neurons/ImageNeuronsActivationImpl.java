@@ -84,7 +84,10 @@ public class ImageNeuronsActivationImpl implements ImageNeuronsActivation {
 
 	@Override
 	public ImageNeuronsActivation asImageNeuronsActivation(Neurons3D neurons, DimensionScope scope) {
-		if (neurons.equals(this.neurons)) {
+		Neurons3D neuronsWithoutBias = new Neurons3D(neurons.getWidth(), neurons.getHeight(), neurons.getDepth(), false);
+		Neurons3D thisNeuronsWithoutBias = new Neurons3D(this.neurons.getWidth(), this.neurons.getHeight(), this.neurons.getDepth(), false);
+
+		if (neuronsWithoutBias.equals(thisNeuronsWithoutBias)) {
 			// TODO - scope
 			return this;
 		} else {
