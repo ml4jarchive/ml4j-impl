@@ -89,8 +89,8 @@ public class JBlasRowMajorMatrix implements Matrix, EditableMatrix, InterrimMatr
 
 	@Override
 	public Matrix addRowVector(Matrix other) {
-		if (other.getRows() != this.getRows()) {
-			throw new IllegalArgumentException("Rows do not match");
+		if (other.getColumns() != this.getColumns()) {
+			throw new IllegalArgumentException("Columns do not match");
 		}
 		return createJBlasMatrix(getMatrix().addColumnVector(createJBlasFloatMatrix(other)), false);
 	}
